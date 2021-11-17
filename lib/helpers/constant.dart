@@ -112,6 +112,15 @@ class ConstantHelpers {
   /// home feature calendar icon
   static String homeFeatureHikingIcon = 'assets/images/hiking.png';
 
+/// sample image for profile
+  static String image1 = 'assets/images/image1.png';
+
+/// sample image for profile
+  static String image2 = 'assets/images/image2.png';
+
+/// profile certificate icon
+  static String certificateIcon = 'assets/images/certificateIcon.png';
+
   /// spacing 20
   static Widget spacing20 = const SizedBox(
     height: 20,
