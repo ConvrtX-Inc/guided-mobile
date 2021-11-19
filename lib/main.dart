@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/settings/profile_screen.dart';
 import 'package:guided/signin_signup/loginScreen.dart';
 import 'package:guided/signin_signup/splashScreen.dart';
 import 'package:guided/main_navigation/main_navigation.dart';
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
                   ),
             ),
             debugShowCheckedModeBanner: false,
-            home: const LoginScreen(),
+            home: const ProfileScreen(),
           );
         }
       },
