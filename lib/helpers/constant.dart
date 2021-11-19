@@ -59,6 +59,62 @@ class ConstantHelpers {
   /// hex color for venus
   static HexColor venus = HexColor('#8B8B8B');
 
+  /// hex color for back arrow grey
+  static HexColor backarrowgrey = HexColor('#ECEFF0');
+
+  /// hex color for calendar font
+  static HexColor lightgrey = HexColor('#898A8D');
+
+  /// hex color for active calendar date
+  static HexColor activeDate = HexColor('#FFC31A');
+
+  /// hex color for badge
+  static HexColor badgeColor = HexColor('#007749');
+
+  /// hex color for Calendar
+  static HexColor calendarMonth = HexColor('#FFC74A');
+
+  /// hex Color for the button Next
+  static HexColor buttonNext = HexColor('#C4C4C4');
+
+  /// String used for Calendar Management
+  static String fontGilroy = 'Gilroy';
+
+  static String fontPoppins = 'Poppins';
+
+  static String cancel = 'Cancel';
+
+  static String findBookingDates = 'Find Booking Dates';
+
+  static String fullDateSample = '9/April/2021';
+
+  static String viewSchedule = 'View Schedule';
+
+  static String january = 'January';
+
+  static String february = 'February';
+
+  static String march = 'March';
+
+  static String april = 'April';
+
+  static String may = 'May';
+
+  static String june = 'June';
+
+  static String july = 'July';
+
+  static String august = 'August';
+
+  static String september = 'September';
+
+  static String october = 'October';
+
+  static String november = 'November';
+
+  static String december = 'December';
+
+
   /// logo URL
   static String logo = 'assets/images/logo.png';
 

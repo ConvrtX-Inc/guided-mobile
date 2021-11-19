@@ -43,6 +43,7 @@ dependencies:
   table_calendar: ^3.0.3
   flutter_screenutil: ^5.0.0+2
   flutter_svg: ^0.22.0
+  badges: ^2.0.1
 
 dev_dependencies:
   flutter_test:
@@ -93,6 +94,9 @@ flutter:
       fonts:
         - asset: fonts/Gilroy-ExtraBold.otf
         # - asset: fonts/Gilroy-Light.otf
+    - family: Poppins
+      fonts:
+        - asset: fonts/Poppins-Light.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
