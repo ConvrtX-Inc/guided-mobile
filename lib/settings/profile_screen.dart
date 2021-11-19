@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/helpers/constant.dart';
 
+/// screen for profile
 class ProfileScreen extends StatefulWidget {
+  ///constructor
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
@@ -12,24 +14,27 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: Container(
-          margin: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(6),
-              color: Colors.grey.withOpacity(0.2)),
-          child: const Icon(
-            Icons.arrow_back,
-            color: Colors.black,
+    return ScreenUtilInit(
+      builder: () => Scaffold(
+        appBar: AppBar(
+          leading: Container(
+            margin: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                color: Colors.grey.withOpacity(0.2)),
+            child: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            ),
           ),
+          elevation: 0.2,
+          backgroundColor: Colors.white,
         ),
-        elevation: 0.2,
+        body: getbody(context),
         backgroundColor: Colors.white,
+        //resizeToAvoidBottomPadding: false,
       ),
-      body: getbody(context),
-      backgroundColor: Colors.white,
-      //resizeToAvoidBottomPadding: false,
+      designSize: const Size(375, 812),
     );
   }
 }
@@ -37,42 +42,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
 /// Body of profile screen
 Widget getbody(BuildContext context) {
   return SingleChildScrollView(
-      child: Padding(
-    padding: const EdgeInsets.fromLTRB(25, 10, 25, 0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Profile',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      child: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 32.w),
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Profile',
+            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            height: 14.h,
+          ),
+          getprofile(context),
+          SizedBox(
+            height: 9.h,
+          ),
+          Text(
+            'About Me',
+            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            height: 9.h,
+          ),
+          Text(
+            'above the Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed venenatis volutpat risus vitae iaculis. ',
+            style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w400, fontSize: 14.sp),
+          ),
+          getAboutme(context),
+          getprofilesetting(context)
+        ],
+          ),
         ),
-        ConstantHelpers.spacing15,
-        getprofile(context),
-        ConstantHelpers.spacing15,
-        const Text(
-          'About Me',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(
-          height: 8,
-        ),
-        const Text(
-          'above the Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed venenatis volutpat risus vitae iaculis. ',
-          style: TextStyle(color: Colors.grey),
-        ),
-        getAboutme(context),
-        getprofilesetting(context)
-      ],
-    ),
-  ));
+      ));
 }
 
 /// profile image
 Widget getprofile(BuildContext context) {
   return Center(
     child: Column(
-      children: [
+      children: <Widget>[
         Container(
+          width: 101.w,
+          height: 101.h,
           decoration: BoxDecoration(
             border: Border.all(
               color: Colors.white,
@@ -92,8 +105,8 @@ Widget getprofile(BuildContext context) {
               child: Align(
                 alignment: Alignment.topRight,
                 child: Container(
-                    width: 20,
-                    height: 20,
+                    width: 33.3.w,
+                    height: 33.3.h,
                     decoration: BoxDecoration(
                         border: Border.all(
                           color: Colors.white,
@@ -106,27 +119,27 @@ Widget getprofile(BuildContext context) {
                           )
                         ],
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: const Icon(
+                        borderRadius: BorderRadius.circular(55)),
+                    child: Icon(
                       Icons.edit,
-                      size: 10,
+                      size: 15.sp,
                       color: Colors.black,
                     )),
               )),
         ),
-        const SizedBox(
-          height: 8,
+        SizedBox(
+          height: 13.h,
         ),
-        const Text(
+        Text(
           'Edit',
-          style: TextStyle(fontSize: 12, color: Colors.grey),
+          style: TextStyle(fontSize: 12.sp, color: Colors.grey, fontWeight: FontWeight.w400),
         ),
-        const SizedBox(
-          height: 8,
+        SizedBox(
+          height: 6.h,
         ),
-        const Text(
+        Text(
           'Ethan Hunt',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
         ),
       ],
     ),
@@ -139,7 +152,7 @@ Widget getAboutme(BuildContext context) {
     crossAxisCount: 2,
     crossAxisSpacing: 20,
     shrinkWrap: true,
-    children: [
+    children: <Widget>[
       Container(
         margin: const EdgeInsets.fromLTRB(0,23,0,23),
         decoration: BoxDecoration(
@@ -158,12 +171,12 @@ Widget getAboutme(BuildContext context) {
                 image: AssetImage(ConstantHelpers.image1),
                 colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.dstATop),
                 fit: BoxFit.cover)),
-        child: const Center(
+        child: Center(
           child: Text(
             '4+', style: TextStyle(
               color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 24
+              fontWeight: FontWeight.w700,
+              fontSize: 24.sp
             ),
           ),
         ),
@@ -174,58 +187,58 @@ Widget getAboutme(BuildContext context) {
 
 /// widget for profile settings
 Widget getprofilesetting(BuildContext context) {
-  return Column(children: [
+  return Column(children: <Widget>[
     ListTile(
         leading: Container(
-            width: 35,
-            height: 35,
+            width: 38.w,
+            height: 38.h,
             decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(20)),
             child: const Icon(Icons.lock_outline)),
-        title: const Text(
+        title: Text(
           'Change Password',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 17)),
+        trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
     ListTile(
         leading: Container(
-            width: 35,
-            height: 35,
+            width: 38.w,
+            height: 38.w,
             decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(20)),
             child: const Icon(Icons.tablet_android_outlined)),
-        title: const Text(
+        title: Text(
           'Change Mobile Number',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 15)),
+        trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
     ListTile(
         leading: Container(
-            width: 35,
-            height: 35,
+            width: 38.w,
+            height: 38.h,
             decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(20)),
             child: Image.asset(ConstantHelpers.certificateIcon)),
-        title: const Text(
+        title: Text(
           'Certificates',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 15)),
+        trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
     ListTile(
         leading: Container(
-            width: 35,
-            height: 35,
+            width: 38.w,
+            height: 38.h,
             decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(20)),
             child: const Icon(Icons.lock_outline)),
-        title: const Text(
+        title: Text(
           'About Me',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 15)),
+        trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
   ]);
 }
