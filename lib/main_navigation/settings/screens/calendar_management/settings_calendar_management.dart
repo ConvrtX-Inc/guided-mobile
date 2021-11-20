@@ -1,8 +1,8 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
-import 'package:guided/helpers/constant.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart';
+import 'package:guided/helpers/constant.dart';
 import 'settings_calendar_modal.dart';
 
 class SettingsCalendarManagement extends StatefulWidget {
@@ -16,17 +16,19 @@ class _SettingsCalendarManagementState extends State<SettingsCalendarManagement>
   @override
   Widget build(BuildContext context) {
 
+    /// Default button style
     final ButtonStyle style = ElevatedButton.styleFrom(
         primary: Colors.white,
         elevation: 0,
         shadowColor: Colors.transparent,
         onPrimary: ConstantHelpers.lightgrey,
         side: BorderSide(width: 1.5, color: ConstantHelpers.lightgrey),
-        textStyle: TextStyle( fontSize: 13.0, fontWeight: FontWeight.w800, fontFamily: ConstantHelpers.fontPoppins),
+        textStyle: TextStyle( fontSize: 13, fontWeight: FontWeight.w800, fontFamily: ConstantHelpers.fontPoppins),
         fixedSize: const Size(108, 38),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
     );
 
+    /// Active button style
     final ButtonStyle active = ElevatedButton.styleFrom(
         primary: ConstantHelpers.activeDate,
         elevation: 0,
@@ -65,7 +67,7 @@ class _SettingsCalendarManagementState extends State<SettingsCalendarManagement>
                       icon: const Icon(
                         Icons.arrow_back_sharp,
                         color: Colors.black,
-                        size: 25.0,
+                        size: 25,
                       ),
                       onPressed: () {
                         Navigator.pop(context);
@@ -107,8 +109,9 @@ class _SettingsCalendarManagementState extends State<SettingsCalendarManagement>
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(22, 0, 22, 27),
-                child: Row(
+                // padding: const EdgeInsets.fromLTRB(22, 0, 22, 27),
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 27),
+              child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Badge(
@@ -157,7 +160,7 @@ class _SettingsCalendarManagementState extends State<SettingsCalendarManagement>
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(22, 0, 22, 27),
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 27),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -207,7 +210,7 @@ class _SettingsCalendarManagementState extends State<SettingsCalendarManagement>
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(22, 0, 22, 27),
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 27),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -257,7 +260,7 @@ class _SettingsCalendarManagementState extends State<SettingsCalendarManagement>
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(22, 0, 22, 27),
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 27),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [

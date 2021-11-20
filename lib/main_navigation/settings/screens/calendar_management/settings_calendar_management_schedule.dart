@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:guided/models/home.dart';
@@ -30,17 +31,17 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
     );
 
     /// Sample only
-    List<dynamic> timeList = [
-      ["7:00 - 8:00 AM", true],
-      ["9:00 - 10:00 AM", false],
-      ["11:00 - 12:00 PM", false],
-      ["12:00 - 1:00 PM", false],
-      ["2:00 - 3:00 PM", false],
-      ["4:00 - 5:00 PM", false],
-      ["6:00 - 7:00 PM", false],
+    final List<dynamic> timeList = [
+      ['7:00 - 8:00 AM', true],
+      ['9:00 - 10:00 AM', false],
+      ['11:00 - 12:00 PM', false],
+      ['12:00 - 1:00 PM', false],
+      ['2:00 - 3:00 PM', false],
+      ['4:00 - 5:00 PM', false],
+      ['6:00 - 7:00 PM', false],
     ];
 
-    return Scaffold(
+    return ScreenUtilInit(builder: () => Scaffold(
       appBar: AppBar(
         elevation: 0,
         leading: Transform.scale(
@@ -305,6 +306,8 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
           ),
         ),
       ),
+    ),
+    designSize: const Size(375, 812)
     );
   }
 }
