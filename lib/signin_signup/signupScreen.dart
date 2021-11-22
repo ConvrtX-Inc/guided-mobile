@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/signin_signup/continue_with_phone.dart';
 import 'package:guided/signin_signup/loginScreen.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -163,11 +164,11 @@ class _SignupScreenState extends State<SignupScreen> {
                     height: 60,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => const LoginScreen()),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ContinueWithPhone()),
+                        );
                       },
                       child: const Text(
                         'Sign up',
@@ -209,7 +210,6 @@ class _SignupScreenState extends State<SignupScreen> {
                         child: Text(
                           "Login",
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             fontSize: 15,
                             decoration: TextDecoration.underline,
                             color: ConstantHelpers.primaryGreen,

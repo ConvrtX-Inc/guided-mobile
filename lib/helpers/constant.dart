@@ -77,7 +77,11 @@ class ConstantHelpers {
   /// hex Color for the button Next
   static HexColor buttonNext = HexColor('#C4C4C4');
 
-  /// String used for Calendar Management
+  static HexColor limeGreen = HexColor('#76B947');
+
+  static HexColor whiteFiller = HexColor('#F7F7F7');
+
+  /// Strings used for Calendar Management
   static String fontGilroy = 'Gilroy';
 
   static String fontPoppins = 'Poppins';
@@ -113,6 +117,40 @@ class ConstantHelpers {
   static String november = 'November';
 
   static String december = 'December';
+
+  static String agreeContinue = 'Agree & Continue';
+
+  /// Strings used for Sign in/Sign up Verification Screen
+
+  static String continueWithPhone = 'Continue With Phone';
+
+  static String codeDescription = "You'll receive 4 digit code to verify text.";
+
+  static String enterPhoneNumber = 'Enter Phone Number';
+
+  static String phoneNumberHint = '123-555-2514';
+
+  static String continueText = 'Continue';
+
+  static String verifyPhone = 'Verify Your Phone';
+
+  static String verifyPhoneCode = 'Verification code sent to your phone';
+
+  static String didnotReceive = 'Didn’t recive code? ';
+
+  static String resendOTP = 'Resend OTP';
+
+  static String verifyText = 'Verify';
+
+  static String signupForm = 'Finish Your Sign Up';
+
+  static String firstName = 'First Name';
+
+  static String lastName = 'Last Name';
+
+  static String birthday = 'Birthday';
+
+  static String email = 'Email';
 
 
   /// logo URL
