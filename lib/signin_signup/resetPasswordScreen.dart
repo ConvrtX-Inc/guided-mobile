@@ -14,6 +14,10 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+
+  String id = 'Reset';
+  String phoneNumber = '+1 234 567 8901';
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -125,7 +129,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const VerifyPhoneScreen()),
+                    builder: (context) => VerifyPhoneScreen(id: id, phoneNumber: phoneNumber)),
               );
             },
             child: const Text(
