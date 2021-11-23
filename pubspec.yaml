@@ -45,6 +45,7 @@ dependencies:
   flutter_screenutil: ^5.0.0+2
   flutter_svg: ^0.22.0
   badges: ^2.0.1
+  twilio_flutter: ^0.0.9
 
 dev_dependencies:
   flutter_test:

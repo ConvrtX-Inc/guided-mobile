@@ -1,4 +1,5 @@
 // ignore_for_file: file_names
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:guided/helpers/constant.dart';
@@ -6,33 +7,101 @@ import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/signin_signup/createNewPasswordScreen.dart';
 import 'package:guided/signin_signup/signup_form.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:twilio_flutter/twilio_flutter.dart';
 
 class VerifyPhoneScreen extends StatefulWidget {
   final String id;
   final String phoneNumber;
+  final String code;
 
-  VerifyPhoneScreen({Key? key, required this.id, required this.phoneNumber}) : super(key: key);
+  VerifyPhoneScreen({Key? key, required this.id, required this.phoneNumber, required this.code}) : super(key: key);
 
   @override
-  _VerifyPhoneScreenState createState() => _VerifyPhoneScreenState(id, phoneNumber);
+  _VerifyPhoneScreenState createState() => _VerifyPhoneScreenState(id, phoneNumber, code);
 }
 
 class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
   String id = '';
   String phoneNumber = '';
+  String code = '';
 
-  _VerifyPhoneScreenState(this.id, this.phoneNumber);
+  bool incorrectOTP = false;
+
+  _VerifyPhoneScreenState(this.id, this.phoneNumber, this.code);
+
+  TextEditingController txtCode_1 = new TextEditingController();
+  TextEditingController txtCode_2 = new TextEditingController();
+  TextEditingController txtCode_3 = new TextEditingController();
+  TextEditingController txtCode_4 = new TextEditingController();
+
+  late TwilioFlutter twilioFlutter;
+
+  @override
+  void initState() {
+    twilioFlutter =
+        TwilioFlutter(accountSid: 'AC6aeec4233812df810ce39c0eb698dd3b', authToken: 'dbb33f76dc4f534cbeb520221c34f312', twilioNumber: '(830) 947-5543');
+
+    super.initState();
+  }
+
+
+  void reset() {
+    setState(() {
+      txtCode_1.clear();
+      txtCode_2.clear();
+      txtCode_3.clear();
+      txtCode_4.clear();
+      incorrectOTP = false;
+    });
+  }
+
+  /// Process verification
+  void verifyCode() {
+    String userCode = txtCode_1.text + txtCode_2.text + txtCode_3.text + txtCode_4.text;
+
+    if(userCode == code){
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => id == 'Signup' ? const SignupForm() : const CreateNewPasswordScreen()
+        ),
+      );
+    }
+    else{
+      setState(() {
+        incorrectOTP = true;
+      });
+    }
+  }
+
+  /// Generate the 4 code verification
+  void generateCode() {
+    setState(() {
+      code = (Random().nextInt(1111) + 8888).toString();
+    });
+  }
+
+  /// Twilio send message to user
+  void sendSms() async {
+    generateCode();
+    reset();
+    await twilioFlutter.sendSMS(toNumber: phoneNumber, messageBody: '[GuidED] Your verification code is: $code');
+  }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
-    _txtCode() {
+    _txtCode_1() {
       return SizedBox(
         width: 55,
         child: TextField(
+          keyboardType: TextInputType.number,
+          maxLength: 1,
+          controller: txtCode_1,
+          textInputAction: TextInputAction.next,
           style: const TextStyle(
             fontSize: 20,
             color: Colors.black,
@@ -40,6 +109,88 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
           ),
           textAlign: TextAlign.center,
           decoration: InputDecoration(
+            counterText: '',
+            fillColor: ConstantHelpers.whiteFiller,
+            filled: true,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Colors.grey, width: 0.2),
+            ),
+          ),
+        ),
+      );
+    }
+
+    _txtCode_2() {
+      return SizedBox(
+        width: 55,
+        child: TextField(
+          keyboardType: TextInputType.number,
+          maxLength: 1,
+          controller: txtCode_2,
+          textInputAction: TextInputAction.next,
+          style: const TextStyle(
+            fontSize: 20,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+          decoration: InputDecoration(
+            counterText: '',
+            fillColor: ConstantHelpers.whiteFiller,
+            filled: true,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Colors.grey, width: 0.2),
+            ),
+          ),
+        ),
+      );
+    }
+
+    _txtCode_3() {
+      return SizedBox(
+        width: 55,
+        child: TextField(
+          keyboardType: TextInputType.number,
+          maxLength: 1,
+          controller: txtCode_3,
+          textInputAction: TextInputAction.next,
+          style: const TextStyle(
+            fontSize: 20,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+          decoration: InputDecoration(
+            counterText: '',
+            fillColor: ConstantHelpers.whiteFiller,
+            filled: true,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Colors.grey, width: 0.2),
+            ),
+          ),
+        ),
+      );
+    }
+
+    _txtCode_4() {
+      return SizedBox(
+        width: 55,
+        child: TextField(
+          keyboardType: TextInputType.number,
+          maxLength: 1,
+          controller: txtCode_4,
+          textInputAction: TextInputAction.done,
+          style: const TextStyle(
+            fontSize: 20,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+          decoration: InputDecoration(
+            counterText: '',
             fillColor: ConstantHelpers.whiteFiller,
             filled: true,
             enabledBorder: OutlineInputBorder(
@@ -55,13 +206,13 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _txtCode(),
+          _txtCode_1(),
           ConstantHelpers.spacingwidth20,
-          _txtCode(),
+          _txtCode_2(),
           ConstantHelpers.spacingwidth20,
-          _txtCode(),
+          _txtCode_3(),
           ConstantHelpers.spacingwidth20,
-          _txtCode(),
+          _txtCode_4(),
         ],
       );
     }
@@ -141,7 +292,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                               ),
                             ),
                             InkWell(
-                              onTap: () {},
+                              onTap: sendSms,
                               child: Text(
                                 ConstantHelpers.resendOTP,
                                 style: TextStyle(
@@ -155,20 +306,28 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                           ],
                         ),
                         const SizedBox(
-                          height: 50,
+                          height: 20,
+                        ),
+                        Center(
+                          child: SizedBox(
+                              child: incorrectOTP ? Text(
+                                'Authentication Failed, Try again!',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontFamily: ConstantHelpers.fontGilroy,
+                                  color: Colors.red,
+                                ),
+                              ) : const Text(''),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 30,
                         ),
                         SizedBox(
                           width: width,
                           height: 60,
                           child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => id == 'Signup' ? const SignupForm() : const CreateNewPasswordScreen()
-                                        ),
-                              );
-                            },
+                            onPressed: verifyCode,
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                 side: BorderSide(
