@@ -136,7 +136,7 @@ class ConstantHelpers {
 
   static String verifyPhoneCode = 'Verification code sent to your phone';
 
-  static String didnotReceive = 'Didn’t recive code? ';
+  static String didnotReceive = 'Didn’t receive code? ';
 
   static String resendOTP = 'Resend OTP';
 

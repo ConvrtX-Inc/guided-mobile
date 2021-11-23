@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/signin_signup/verifyPhoneScreen.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:twilio_flutter/twilio_flutter.dart';
 
 class ContinueWithPhone extends StatefulWidget {
   const ContinueWithPhone({Key? key}) : super(key: key);
@@ -13,7 +16,42 @@ class ContinueWithPhone extends StatefulWidget {
 
 class _ContinueWithPhoneState extends State<ContinueWithPhone> {
   String id = 'Signup';
-  String phoneNumber = '+1 234 567 8902';
+  String code = '';
+  String _dialCode = '+1';
+
+  TextEditingController phoneController = new TextEditingController();
+
+  late TwilioFlutter twilioFlutter;
+
+  /// Twilio Account Initialization
+  @override
+  void initState() {
+    twilioFlutter =
+        TwilioFlutter(accountSid: 'AC6aeec4233812df810ce39c0eb698dd3b', authToken: 'dbb33f76dc4f534cbeb520221c34f312', twilioNumber: '(830) 947-5543');
+
+    super.initState();
+  }
+
+  /// Generate the 4 code verification
+  void generateCode() {
+    setState(() {
+      code = (Random().nextInt(1111) + 8888).toString();
+    });
+  }
+
+  /// Twilio send message to user
+  void sendSms() async {
+    generateCode();
+    await twilioFlutter.sendSMS(toNumber: _dialCode + phoneController.text, messageBody: '[GuidED] Your verification code is: $code');
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => VerifyPhoneScreen(id: id, phoneNumber: _dialCode + phoneController.text, code: code)),
+    );
+  }
+
+  /// Country code
+  void _onCountryChange(CountryCode countryCode) => _dialCode = countryCode.dialCode.toString();
 
   @override
   Widget build(BuildContext context) {
@@ -71,11 +109,13 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
                       ),
                       ConstantHelpers.spacing15,
                       TextField(
+                        controller: phoneController,
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           hintText: ConstantHelpers.phoneNumberHint,
                           prefixIcon: SizedBox(
                             child: CountryCodePicker(
-                              onChanged: print,
+                              onChanged: _onCountryChange,
                               initialSelection: 'US',
                               favorite: const ['+1', 'US'],
                               showCountryOnly: false,
@@ -105,13 +145,7 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
               width: width,
               height: 60,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => VerifyPhoneScreen(id: id, phoneNumber: phoneNumber)),
-                  );
-                },
+                onPressed: sendSms,
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     side: BorderSide(

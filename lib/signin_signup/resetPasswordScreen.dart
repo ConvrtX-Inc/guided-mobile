@@ -1,10 +1,12 @@
 // ignore_for_file: file_names
+import 'dart:math';
 
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/signin_signup/verifyPhoneScreen.dart';
+import 'package:twilio_flutter/twilio_flutter.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({Key? key}) : super(key: key);
@@ -16,7 +18,42 @@ class ResetPasswordScreen extends StatefulWidget {
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   String id = 'Reset';
-  String phoneNumber = '+1 234 567 8901';
+  String code = '';
+  String _dialCode = '+1';
+
+  TextEditingController phoneController = new TextEditingController();
+
+  late TwilioFlutter twilioFlutter;
+
+  /// Twilio Account Initialization
+  @override
+  void initState() {
+    twilioFlutter =
+        TwilioFlutter(accountSid: 'AC6aeec4233812df810ce39c0eb698dd3b', authToken: 'dbb33f76dc4f534cbeb520221c34f312', twilioNumber: '(830) 947-5543');
+
+    super.initState();
+  }
+
+  /// Generate the 4 code verification
+  void generateCode() {
+    setState(() {
+      code = (Random().nextInt(1111) + 8888).toString();
+    });
+  }
+
+  /// Twilio send message to user
+  void sendSms() async {
+    generateCode();
+    await twilioFlutter.sendSMS(toNumber: _dialCode + phoneController.text, messageBody: '[GuidED] Your verification code is: $code');
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => VerifyPhoneScreen(id: id, phoneNumber: _dialCode + phoneController.text, code: code)),
+    );
+  }
+
+  /// Country code
+  void _onCountryChange(CountryCode countryCode) => _dialCode = countryCode.dialCode.toString();
 
   @override
   Widget build(BuildContext context) {
@@ -92,10 +129,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                   ConstantHelpers.spacing15,
                   TextField(
+                    controller: phoneController,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       prefixIcon: SizedBox(
                         child: CountryCodePicker(
-                          onChanged: print,
+                          onChanged: _onCountryChange,
                           initialSelection: 'US',
                           favorite: const ['+1', 'US'],
                           showCountryOnly: false,
@@ -125,17 +164,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           width: width,
           height: 60,
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => VerifyPhoneScreen(id: id, phoneNumber: phoneNumber)),
-              );
-            },
-            child: const Text(
-              'Reset Password',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            onPressed: sendSms,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -145,6 +174,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
               primary: ConstantHelpers.primaryGreen,
               onPrimary: Colors.white, // <-- Splash color
+            ),
+            child: const Text(
+              'Reset Password',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
