@@ -46,6 +46,7 @@ dependencies:
   flutter_svg: ^0.22.0
   badges: ^2.0.1
   twilio_flutter: ^0.0.9
+  flutter_image_slideshow: ^0.1.2
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +76,8 @@ flutter:
     - assets/images/svg/
     - assets/images/2x/
     - assets/images/3x/
+    - assets/images/jpg/
+    - assets/images/png/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

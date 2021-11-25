@@ -81,6 +81,11 @@ class ConstantHelpers {
 
   static HexColor whiteFiller = HexColor('#F7F7F7');
 
+  static HexColor f0f0f0 = HexColor('#F0F0F0');
+
+  /// Floating button in Outfitter
+  static HexColor green = HexColor('#3EB75E');
+
   /// Strings used for Calendar Management
   static String fontGilroy = 'Gilroy';
 
@@ -152,6 +157,118 @@ class ConstantHelpers {
 
   static String email = 'Email';
 
+  /// Strings used in Content tab
+  static String myPackage = 'My Packages';
+
+  static String myEvent = 'My Events';
+
+  static String myOutfitter = 'My Outfitters';
+
+  static String myAds = 'My Advertisements';
+
+  static String package = 'Package';
+
+  static String event = 'Events';
+
+  static String outfitter = 'Outfitter';
+
+  static String outfitters = 'Outfitters';
+
+  static String myads = 'My Ads';
+
+
+  /// String used for Outfitters Screen
+  static String loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget nibh quis metus venenatis porta nec eget sem. Pellentesque nec ';
+
+  static String assetSample1 = 'assets/images/jpg/sample_1.jpg';
+
+  static String assetSample2 = 'assets/images/png/moab-mid.png';
+
+  static String assetSample3 = 'assets/images/jpg/sample_2.jpg';
+
+  static String assetSample4 = 'assets/images/jpg/sample_3.jpg';
+
+  static String productName = 'Product Name';
+
+  static String companyName = 'Company Name';
+
+  static String visitOurStore = 'Visit to our store';
+
+  static String sampleDescr = 'Sample description goes here to exlpain about your package desils. Sample description goes here to exlpain about your package desils.';
+
+  static String productLink = 'Product Link';
+
+  static String link = 'www.productlink.com';
+
+  static String location = 'Location';
+
+  static String country = 'Country';
+
+  static String canada = 'Canada';
+
+  static String street = 'Street';
+
+  static String modaca = 'Modaca';
+
+  static String city = 'City';
+
+  static String tonado = 'Tonado';
+
+  static String province = 'Province';
+
+  static String west = 'West';
+
+  static String date = 'Date';
+
+  static String constDate = '12.10.2021';
+
+  static String constDate1 = '21.10.2021';
+
+  static String price = 'Price';
+
+  static String priceTag = 'USD 45';
+
+  static String visitShop = 'Visit Shop';
+
+  static String travelVest = 'Travel Vest';
+
+  static String hikingShoes = 'Hiking Shoes';
+
+  static String images = 'Images';
+
+  static String edit = 'Edit';
+
+  static String sampleImage = 'Sample_image.jpg';
+
+  static String title = 'Title';
+
+  static String sportGloves = 'Sports gloves';
+
+  static String description = 'Description';
+
+  static String state = 'State';
+
+  static String postalCode = 'Postal Code';
+
+  static String postCode = '102000';
+
+  static String editsummaryTitle = 'Edit Summary Of Details';
+
+  static String post = 'Post';
+
+  static String imageprey = 'assets/images/imageprev.png';
+
+  static String uploadImages = 'Upload Images';
+
+  static String useCurrentLocation = 'Use Current Location';
+
+  static String streethint = 'Your place name/number + Street/Road';
+
+  static String provinceHint = 'Province / Territory (Canada)';
+
+  static String postalCodeHint = 'Postal Code (Canada)';
+
+  static String createOutfitter = 'Create Outfitter';
 
   /// logo URL
   static String logo = 'assets/images/logo.png';
@@ -261,12 +378,15 @@ class ConstantHelpers {
 
 class HeaderText {
   static Widget headerText(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 25,
-        // fontFamily: 'GilRoy',
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 25,
+          // fontFamily: 'GilRoy',
+        ),
       ),
     );
   }
