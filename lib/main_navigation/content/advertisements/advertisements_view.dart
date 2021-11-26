@@ -1,53 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/helpers/constant.dart';
-import 'package:guided/main_navigation/content/outfitters/outfitters_edit.dart';
+import 'package:guided/main_navigation/content/advertisements/advertisements_edit.dart';
 
-class OutfitterView extends StatefulWidget {
-  const OutfitterView({Key? key}) : super(key: key);
+class AdvertisementView extends StatefulWidget {
+  const AdvertisementView({Key? key}) : super(key: key);
 
   @override
-  _OutfitterViewState createState() => _OutfitterViewState();
+  _AdvertisementViewState createState() => _AdvertisementViewState();
 }
 
-class _OutfitterViewState extends State<OutfitterView> {
-
-  final TextStyle txtStyle = TextStyle(
-    color: Colors.black,
-    fontFamily: ConstantHelpers.fontGilroy,
-    fontWeight: FontWeight.w600,
-    fontSize: 18,
-  );
-
-  final TextStyle greyStyle = TextStyle(
-      color: ConstantHelpers.osloGrey,
-      fontFamily: ConstantHelpers.fontGilroy,
-      fontWeight: FontWeight.w200,
-      fontSize: 12
-  );
-
-  final TextStyle semiBoldStyle = TextStyle(
-      color: Colors.black,
-      fontFamily: ConstantHelpers.fontGilroy,
-      fontWeight: FontWeight.w600,
-      fontSize: 12
-  );
-
-  final TextStyle descrStyle = TextStyle(
-      color: Colors.grey,
-      fontFamily: ConstantHelpers.fontGilroy,
-      fontSize: 14,
-      height: 1.5
-  );
-
-  final TextStyle underlinedLinkStyle = TextStyle(
-    color: ConstantHelpers.green,
-    fontFamily: ConstantHelpers.fontGilroy,
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    decoration: TextDecoration.underline,
-  );
+class _AdvertisementViewState extends State<AdvertisementView> {
 
   @override
   Widget build(BuildContext context) {
@@ -133,9 +96,9 @@ class _OutfitterViewState extends State<OutfitterView> {
                           ),
                           onPressed: () {
                             Navigator.pushReplacement(
-                              context,
-                                MaterialPageRoute(builder: (context) => OutfitterEdit())
-                              );
+                                context,
+                                MaterialPageRoute(builder: (context) => AdvertisementEdit())
+                            );
                           },
                         ),
                       ),
@@ -170,7 +133,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                 ],
               ),
               flexibleSpace: Image(
-                image: AssetImage(ConstantHelpers.assetSample1),
+                image: AssetImage(ConstantHelpers.assetAds1),
                 fit: BoxFit.fitHeight,
               ),
             ),
@@ -179,34 +142,13 @@ class _OutfitterViewState extends State<OutfitterView> {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(25.0),
+                  padding: const EdgeInsets.only(left: 25, top: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                          ConstantHelpers.productName,
-                          style: txtStyle
-                      ),
-                      Text(
-                        '\$45',
-                        style: txtStyle,
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        ConstantHelpers.companyName,
-                        style: semiBoldStyle,
-                      ),
-                      const SizedBox(width: 15,),
-                      Text(
-                        ConstantHelpers.visitOurStore,
-                        style: underlinedLinkStyle
+                          ConstantHelpers.sportGloves,
+                          style: ConstantHelpers.txtStyle
                       ),
                     ],
                   ),
@@ -215,7 +157,69 @@ class _OutfitterViewState extends State<OutfitterView> {
                   padding: const EdgeInsets.only(left: 25, top: 15, right: 25),
                   child: Text(
                     ConstantHelpers.sampleDescr,
-                    style: descrStyle,
+                    style: ConstantHelpers.descrStyle,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20, left: 25),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 40),
+                        child: Text(
+                            ConstantHelpers.activities,
+                            style: ConstantHelpers.semiBoldStyle
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: ConstantHelpers.harp,
+                          border: Border.all(
+                            color: ConstantHelpers.harp),
+                          borderRadius: BorderRadius.all(Radius.circular(5))
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(
+                            ConstantHelpers.camping,
+                            style: TextStyle(color: ConstantHelpers.nobel)
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: ConstantHelpers.harp,
+                            border: Border.all(
+                                color: ConstantHelpers.harp),
+                            borderRadius: BorderRadius.all(Radius.circular(5))
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(
+                              ConstantHelpers.hiking,
+                              style: TextStyle(color: ConstantHelpers.nobel)
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: ConstantHelpers.harp,
+                            border: Border.all(
+                                color: ConstantHelpers.harp),
+                            borderRadius: BorderRadius.all(const Radius.circular(5))
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(
+                              ConstantHelpers.hunt,
+                              style: TextStyle(color: ConstantHelpers.nobel)
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Padding(
@@ -224,30 +228,13 @@ class _OutfitterViewState extends State<OutfitterView> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                          ConstantHelpers.productLink,
-                          style: semiBoldStyle
-                      ),
-                      const SizedBox(width: 35,),
-                      Text(
-                        ConstantHelpers.link,
-                        style: greyStyle,
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20.0, left: 25),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
                           ConstantHelpers.location,
-                          style: semiBoldStyle
+                          style: ConstantHelpers.semiBoldStyle
                       ),
                       const SizedBox(width: 55),
                       Text(
                         '${ConstantHelpers.country} : ${ConstantHelpers.canada}',
-                        style: greyStyle,
+                        style: ConstantHelpers.greyStyle,
                       )
                     ],
                   ),
@@ -261,7 +248,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                       const SizedBox(width: 105),
                       Text(
                         '${ConstantHelpers.street} : ${ConstantHelpers.modaca}',
-                        style: greyStyle,
+                        style: ConstantHelpers.greyStyle,
                       )
                     ],
                   ),
@@ -275,7 +262,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                       const SizedBox(width: 105),
                       Text(
                         '${ConstantHelpers.city} : ${ConstantHelpers.tonado}',
-                        style: greyStyle,
+                        style: ConstantHelpers.greyStyle,
                       )
                     ],
                   ),
@@ -287,12 +274,12 @@ class _OutfitterViewState extends State<OutfitterView> {
                     children: [
                       Text(
                         ConstantHelpers.province,
-                        style: semiBoldStyle,
+                        style: ConstantHelpers.semiBoldStyle,
                       ),
-                      const SizedBox(width: 60),
+                      const SizedBox(width: 55),
                       Text(
                         ConstantHelpers.west,
-                        style: greyStyle,
+                        style: ConstantHelpers.greyStyle,
                       )
                     ],
                   ),
@@ -304,12 +291,12 @@ class _OutfitterViewState extends State<OutfitterView> {
                     children: [
                       Text(
                         ConstantHelpers.date,
-                        style: semiBoldStyle,
+                        style: ConstantHelpers.semiBoldStyle,
                       ),
-                      const SizedBox(width: 80),
+                      const SizedBox(width: 75),
                       Text(
                         ConstantHelpers.constDate,
-                        style: greyStyle,
+                        style: ConstantHelpers.greyStyle,
                       )
                     ],
                   ),
@@ -321,40 +308,14 @@ class _OutfitterViewState extends State<OutfitterView> {
                     children: [
                       Text(
                         ConstantHelpers.price,
-                        style: semiBoldStyle,
+                        style: ConstantHelpers.semiBoldStyle,
                       ),
-                      const SizedBox(width: 80),
+                      const SizedBox(width: 75),
                       Text(
                         ConstantHelpers.priceTag,
-                        style: greyStyle,
+                        style: ConstantHelpers.greyStyle,
                       )
                     ],
-                  ),
-                ),
-                const SizedBox(height: 50,),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 60,
-                    child: ElevatedButton(
-                      onPressed: () {
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                            color: ConstantHelpers.buttonNext,
-                          ),
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        primary: ConstantHelpers.primaryGreen,
-                        onPrimary: Colors.white,
-                      ),
-                      child: Text(
-                        ConstantHelpers.visitShop,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ),
                   ),
                 ),
               ],

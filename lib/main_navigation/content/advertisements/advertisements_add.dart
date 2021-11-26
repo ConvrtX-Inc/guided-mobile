@@ -3,21 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/helpers/constant.dart';
 
-class OutfitterAdd extends StatefulWidget {
-  const OutfitterAdd({Key? key}) : super(key: key);
+class AdvertisementAdd extends StatefulWidget {
+  const AdvertisementAdd({Key? key}) : super(key: key);
 
   @override
-  _OutfitterAddState createState() => _OutfitterAddState();
+  _AdvertisementAddState createState() => _AdvertisementAddState();
 }
 
-class _OutfitterAddState extends State<OutfitterAdd> {
-
-  final TextStyle greyStyle = TextStyle(
-      color: ConstantHelpers.osloGrey,
-      fontFamily: ConstantHelpers.fontGilroy,
-      fontWeight: FontWeight.w200,
-      fontSize: 12
-  );
+class _AdvertisementAddState extends State<AdvertisementAdd> {
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +116,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       HeaderText.headerText(
-                        ConstantHelpers.outfitters
+                          ConstantHelpers.advertisement
                       ),
                       ConstantHelpers.spacing30,
                       ConstantHelpers.spacing20,
@@ -145,36 +138,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.fromLTRB(30, 20, 20, 20),
                           hintText: ConstantHelpers.title,
-                          hintStyle: TextStyle(
-                            color: ConstantHelpers.grey,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide:
-                            const BorderSide(color: Colors.grey, width: 0.2),
-                          ),
-                        ),
-                      ),
-                      ConstantHelpers.spacing20,
-                      TextField(
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.fromLTRB(30, 20, 20, 20),
-                          hintText: ConstantHelpers.price,
-                          hintStyle: TextStyle(
-                            color: ConstantHelpers.grey,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide:
-                            const BorderSide(color: Colors.grey, width: 0.2),
-                          ),
-                        ),
-                      ),
-                      ConstantHelpers.spacing20,
-                      TextField(
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.fromLTRB(30, 20, 20, 20),
-                          hintText: ConstantHelpers.productLink,
                           hintStyle: TextStyle(
                             color: ConstantHelpers.grey,
                           ),
@@ -238,7 +201,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                         padding: EdgeInsets.all(8.0),
                         child:  Text(
                           ConstantHelpers.streethint,
-                          style: greyStyle,
+                          style: ConstantHelpers.greyStyle,
                         ),
                       ),
                       ConstantHelpers.spacing20,
@@ -318,6 +281,21 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                         ),
                       ),
                       ConstantHelpers.spacing20,
+                      TextField(
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.fromLTRB(30, 20, 20, 20),
+                          hintText: ConstantHelpers.price,
+                          hintStyle: TextStyle(
+                            color: ConstantHelpers.grey,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide:
+                            const BorderSide(color: Colors.grey, width: 0.2),
+                          ),
+                        ),
+                      ),
+                      ConstantHelpers.spacing20,
                     ],
                   ),
                 ),
@@ -344,7 +322,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                   onPrimary: Colors.white,
                 ),
                 child: Text(
-                  ConstantHelpers.createOutfitter,
+                  ConstantHelpers.createAdvertisement,
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
