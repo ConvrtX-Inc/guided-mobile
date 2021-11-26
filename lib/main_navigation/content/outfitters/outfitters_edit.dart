@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/helpers/constant.dart';
-import 'package:guided/helpers/hexColor.dart';
-import 'package:guided/packages/create_package/waiverScreen.dart';
 
 class OutfitterEdit extends StatefulWidget {
   const OutfitterEdit({Key? key}) : super(key: key);
@@ -488,21 +486,13 @@ class _OutfitterEditState extends State<OutfitterEdit> {
                       HeaderText.headerText(ConstantHelpers.editsummaryTitle),
                       ConstantHelpers.spacing30,
                       _widgetImagesList(),
-                      ConstantHelpers.spacing15,
                       _widgetTitle(),
-                      ConstantHelpers.spacing15,
                       _widgetPrice(),
-                      ConstantHelpers.spacing15,
                       _widgetProductLink(),
-                      ConstantHelpers.spacing15,
                       _widgetDescription(),
-                      ConstantHelpers.spacing15,
                       _widgetLocation(),
-                      ConstantHelpers.spacing15,
                       _widgetProvince(),
-                      ConstantHelpers.spacing15,
                       _widgetPostalCode(),
-                      ConstantHelpers.spacing15,
                       _widgetDate(),
                     ],
                   ),

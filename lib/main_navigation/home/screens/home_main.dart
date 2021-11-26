@@ -47,6 +47,12 @@ class _HomeScreenState extends State<HomeScreen> {
       fontFamily: ConstantHelpers.fontGilroy
   );
 
+  final TextStyle inactive = TextStyle(
+      color: ConstantHelpers.osloGrey,
+      fontWeight: FontWeight.w600,
+      fontFamily: ConstantHelpers.fontGilroy
+  );
+
   @override
   Widget build(BuildContext context) {
 
@@ -106,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               MaterialPageRoute(builder: (context) => const MainNavigationScreen(navIndex: 1, contentIndex: 1,))
                           );
                         },
-                        child: Text('Events', style: defaultStyle,)),
+                        child: Text('Events', style: inactive,)),
                     TextButton(
                         onPressed: () {
                           Navigator.pushReplacement(
@@ -114,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               MaterialPageRoute(builder: (context) => const MainNavigationScreen(navIndex: 1, contentIndex: 2,))
                           );
                         },
-                        child: Text('Outfitters', style: defaultStyle,)),
+                        child: Text('Outfitters', style: inactive,)),
                     TextButton(
                         onPressed: () {
                           Navigator.pushReplacement(
@@ -122,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               MaterialPageRoute(builder: (context) => const MainNavigationScreen(navIndex: 1, contentIndex: 3,))
                           );
                         },
-                        child: Text('My ads', style: defaultStyle,)),
+                        child: Text('My ads', style: inactive,)),
                   ],
                 ),
               ),

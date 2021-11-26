@@ -270,6 +270,32 @@ class ConstantHelpers {
 
   static String createOutfitter = 'Create Outfitter';
 
+  /// Strings used in My ads
+
+  static String assetAds1 = 'assets/images/png/ads_sample_1.png';
+
+  static String assetAds2 = 'assets/images/png/ads_sample_2.png';
+
+  static String assetAds3 = 'assets/images/png/ads_sample_3.png';
+
+  static String lakeCleaning = 'Lake Cleaning Initiative By XYZ Company';
+
+  static String adventureTime = 'Adventure time';
+
+  static String advertisement = 'Advertisement';
+
+  static String createAdvertisement = 'Create Advertisement';
+
+  static String activities = 'Activities';
+
+  static String camping = 'Camping';
+
+  static String hiking = 'Hiking';
+
+  static String hunt = 'Hunt';
+
+  static String postEvent = 'Post Events';
+
   /// logo URL
   static String logo = 'assets/images/logo.png';
 
@@ -374,6 +400,51 @@ class ConstantHelpers {
     BadgesModel(9, "Outfitter", "assets/images/badge-Outfitter.png"),
     BadgesModel(10, "Motor", "assets/images/badge-Motor.png"),
   ];
+
+  /// Font design and colors
+  static TextStyle greyStyle = TextStyle(
+      color: ConstantHelpers.osloGrey,
+      fontFamily: ConstantHelpers.fontGilroy,
+      fontWeight: FontWeight.w200,
+      fontSize: 12
+  );
+
+  static TextStyle txtStyle = TextStyle(
+    color: Colors.black,
+    fontFamily: ConstantHelpers.fontGilroy,
+    fontWeight: FontWeight.w600,
+    fontSize: 18,
+  );
+
+  static TextStyle semiBoldStyle = TextStyle(
+      color: Colors.black,
+      fontFamily: ConstantHelpers.fontGilroy,
+      fontWeight: FontWeight.w600,
+      fontSize: 12
+  );
+
+  static TextStyle descrStyle = TextStyle(
+      color: Colors.grey,
+      fontFamily: ConstantHelpers.fontGilroy,
+      fontSize: 14,
+      height: 1.5
+  );
+
+  static TextStyle underlinedLinkStyle = TextStyle(
+    color: ConstantHelpers.green,
+    fontFamily: ConstantHelpers.fontGilroy,
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    decoration: TextDecoration.underline,
+  );
+
+  static TextStyle blackStyle = TextStyle(
+      color: Colors.black,
+      fontFamily: ConstantHelpers.fontGilroy,
+      fontSize: 14,
+      fontWeight: FontWeight.w600
+  );
+
 }
 
 class HeaderText {
@@ -409,3 +480,5 @@ class SubHeaderText {
 
   SubHeaderText(final String text);
 }
+
+

@@ -6,6 +6,7 @@ import 'package:guided/common/widgets/custom_tab_bar_view/contained_tab_bar_view
 import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_properties.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/main_navigation/content/outfitters/outfitters_list.dart';
+import 'package:guided/main_navigation/content/advertisements/advertisements_list.dart';
 
 class MainContent extends StatefulWidget {
 
@@ -26,6 +27,12 @@ class _MainContentState extends State<MainContent> {
 
   final TextStyle defaultStyle = TextStyle(
       color: Colors.black,
+      fontWeight: FontWeight.w600,
+      fontFamily: ConstantHelpers.fontGilroy
+  );
+
+  final TextStyle inactive = TextStyle(
+      color: ConstantHelpers.osloGrey,
       fontWeight: FontWeight.w600,
       fontFamily: ConstantHelpers.fontGilroy
   );
@@ -91,10 +98,10 @@ class _MainContentState extends State<MainContent> {
             // height: 300,
             child: ContainedTabBarView(
               tabs: [
-                Text(ConstantHelpers.package, style: defaultStyle),
-                Text(ConstantHelpers.event, style: defaultStyle),
-                Text(ConstantHelpers.outfitter, style: defaultStyle),
-                Text(ConstantHelpers.myads, style: defaultStyle),
+                Text(ConstantHelpers.package, style: title == ConstantHelpers.myPackage ? defaultStyle : inactive),
+                Text(ConstantHelpers.event, style: title == ConstantHelpers.myEvent ? defaultStyle : inactive),
+                Text(ConstantHelpers.outfitter, style: title == ConstantHelpers.myOutfitter ? defaultStyle : inactive),
+                Text(ConstantHelpers.myads, style: title == ConstantHelpers.myAds ? defaultStyle : inactive),
               ],
               tabBarProperties: const TabBarProperties(
                 height: 42,
@@ -105,17 +112,17 @@ class _MainContentState extends State<MainContent> {
                 unselectedLabelColor: Colors.grey,
 
               ),
-              views: [
-                const Padding(
+              views: const [
+                Padding(
                   padding: EdgeInsets.all(8),
                   child: Text('Package Content'),
                 ),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(8),
                   child: Text('Event Content'),
                 ),
-                const OutfitterList(),
-                Container(color: Colors.yellow),
+                OutfitterList(),
+                AdvertisementList(),
               ],
               onChange: setTitle,
               initialIndex: initIndex,
