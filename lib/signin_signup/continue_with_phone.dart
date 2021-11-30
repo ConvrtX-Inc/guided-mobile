@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/signin_signup/verifyPhoneScreen.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class ContinueWithPhone extends StatefulWidget {
   const ContinueWithPhone({Key? key}) : super(key: key);
@@ -21,38 +24,25 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
 
   TextEditingController phoneController = new TextEditingController();
 
-  late TwilioFlutter twilioFlutter;
-
-  /// Twilio Account Initialization
-  @override
-  void initState() {
-    twilioFlutter =
-        TwilioFlutter(accountSid: 'AC6aeec4233812df810ce39c0eb698dd3b', authToken: 'dbb33f76dc4f534cbeb520221c34f312', twilioNumber: '(830) 947-5543');
-
-    super.initState();
-  }
-
-  /// Generate the 4 code verification
-  void generateCode() {
-    setState(() {
-      code = (Random().nextInt(1111) + 8888).toString();
-    });
-  }
-
-  /// Twilio send message to user
-  void sendSms() async {
-    generateCode();
-    await twilioFlutter.sendSMS(toNumber: _dialCode + phoneController.text, messageBody: '[GuidED] Your verification code is: $code');
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => VerifyPhoneScreen(id: id, phoneNumber: _dialCode + phoneController.text, code: code)),
-    );
-  }
-
   /// Country code
   void _onCountryChange(CountryCode countryCode) => _dialCode = countryCode.dialCode.toString();
 
+  /// Send code to user
+  sendCode() async {
+    var response = await http.post(Uri.parse('https://dev-guided-convrtx.herokuapp.com/api/v1/auth/verify/mobile/send'),
+    body: {
+      'phone_number': _dialCode + phoneController.text,
+    });
+
+    if(response.statusCode == 201){
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => VerifyPhoneScreen(id: id, phoneNumber: _dialCode + phoneController.text, code: code)),
+      );
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -145,7 +135,8 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
               width: width,
               height: 60,
               child: ElevatedButton(
-                onPressed: sendSms,
+                // onPressed: sendSms,
+                onPressed: sendCode,
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     side: BorderSide(

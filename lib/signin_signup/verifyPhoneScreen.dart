@@ -1,13 +1,18 @@
 // ignore_for_file: file_names
+import 'dart:convert';
 import 'dart:math';
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/settings/profile_screen.dart';
 import 'package:guided/signin_signup/createNewPasswordScreen.dart';
 import 'package:guided/signin_signup/signup_form.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class VerifyPhoneScreen extends StatefulWidget {
   final String id;
@@ -35,17 +40,6 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   TextEditingController txtCode_3 = new TextEditingController();
   TextEditingController txtCode_4 = new TextEditingController();
 
-  late TwilioFlutter twilioFlutter;
-
-  @override
-  void initState() {
-    twilioFlutter =
-        TwilioFlutter(accountSid: 'AC6aeec4233812df810ce39c0eb698dd3b', authToken: 'dbb33f76dc4f534cbeb520221c34f312', twilioNumber: '(830) 947-5543');
-
-    super.initState();
-  }
-
-
   void reset() {
     setState(() {
       txtCode_1.clear();
@@ -56,12 +50,16 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     });
   }
 
-  /// Process verification
-  void verifyCode() {
-    String userCode = txtCode_1.text + txtCode_2.text + txtCode_3.text + txtCode_4.text;
+  /// Send code to user
+  verifyCode() async {
+    var response = await http.post(Uri.parse('https://dev-guided-convrtx.herokuapp.com/api/v1/auth/verify/mobile/check'),
+        body: {
+          'phone_number': phoneNumber,
+          'verifyCode': txtCode_1.text + txtCode_2.text + txtCode_3.text + txtCode_4.text,
+        });
 
-    if(userCode == code){
-      Navigator.push(
+    if(response.statusCode == 201){
+      await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => id == 'Signup' ? const SignupForm() : const CreateNewPasswordScreen()
@@ -75,18 +73,14 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     }
   }
 
-  /// Generate the 4 code verification
-  void generateCode() {
-    setState(() {
-      code = (Random().nextInt(1111) + 8888).toString();
-    });
-  }
-
-  /// Twilio send message to user
-  void sendSms() async {
-    generateCode();
+  /// Resend code to user
+  reSendCode() async {
     reset();
-    await twilioFlutter.sendSMS(toNumber: phoneNumber, messageBody: '[GuidED] Your verification code is: $code');
+
+    var response = await http.post(Uri.parse('https://dev-guided-convrtx.herokuapp.com/api/v1/auth/verify/mobile/send'),
+        body: {
+          'phone_number': phoneNumber,
+        });
   }
 
   @override
@@ -292,7 +286,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                               ),
                             ),
                             InkWell(
-                              onTap: sendSms,
+                              onTap: reSendCode,
                               child: Text(
                                 ConstantHelpers.resendOTP,
                                 style: TextStyle(
@@ -328,6 +322,11 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                           height: 60,
                           child: ElevatedButton(
                             onPressed: verifyCode,
+                            // onPressed: () {
+                            //   setState(() {
+                            //     _smsVerification = SendNumber(txtCode_1.text+ txtCode_2.text + txtCode_3.text + txtCode_4.text);
+                            //   });
+                            // },
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                 side: BorderSide(

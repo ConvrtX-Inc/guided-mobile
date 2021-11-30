@@ -47,6 +47,7 @@ dependencies:
   badges: ^2.0.1
   twilio_flutter: ^0.0.9
   flutter_image_slideshow: ^0.1.2
+  http: ^0.13.4
 
 dev_dependencies:
   flutter_test:
