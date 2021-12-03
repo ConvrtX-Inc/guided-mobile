@@ -1,14 +1,9 @@
-import 'dart:math';
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/helpers/constant.dart';
-import 'package:guided/signin_signup/verifyPhoneScreen.dart';
-import 'package:twilio_flutter/twilio_flutter.dart';
-import 'package:http/http.dart' as http;
+import 'package:guided/helpers/api_calls.dart';
+import 'package:guided/signin_signup/signup_verify_phone.dart';
 
 class ContinueWithPhone extends StatefulWidget {
   const ContinueWithPhone({Key? key}) : super(key: key);
@@ -18,31 +13,22 @@ class ContinueWithPhone extends StatefulWidget {
 }
 
 class _ContinueWithPhoneState extends State<ContinueWithPhone> {
-  String id = 'Signup';
-  String code = '';
   String _dialCode = '+1';
+  bool isPhoneValid = false;
 
   TextEditingController phoneController = new TextEditingController();
 
   /// Country code
   void _onCountryChange(CountryCode countryCode) => _dialCode = countryCode.dialCode.toString();
 
-  /// Send code to user
-  sendCode() async {
-    var response = await http.post(Uri.parse('https://dev-guided-convrtx.herokuapp.com/api/v1/auth/verify/mobile/send'),
-    body: {
-      'phone_number': _dialCode + phoneController.text,
-    });
-
-    if(response.statusCode == 201){
-      await Navigator.push(
+  void _ApiCall() {
+    // ApiCalls.sendCode(context, _dialCode + phoneController.text);
+    Navigator.push(
         context,
-        MaterialPageRoute(
-            builder: (context) => VerifyPhoneScreen(id: id, phoneNumber: _dialCode + phoneController.text, code: code)),
-      );
-    }
+        MaterialPageRoute(builder: (context) => SignupVerify(phoneNumber: _dialCode + phoneController.text))
+    );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -84,9 +70,9 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
                       ConstantHelpers.spacing20,
                       Text(
                         ConstantHelpers.codeDescription,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.black,
-                          fontFamily: "Gilroy",
+                          fontFamily: ConstantHelpers.fontGilroy,
                           fontWeight: FontWeight.w400,
                           fontSize: 16,
                         ),
@@ -135,8 +121,7 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
               width: width,
               height: 60,
               child: ElevatedButton(
-                // onPressed: sendSms,
-                onPressed: sendCode,
+                onPressed: _ApiCall,
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     side: BorderSide(

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/signin_signup/continue_with_phone.dart';
-import 'package:guided/signin_signup/loginScreen.dart';
+import 'package:guided/signin_signup/login_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignupForm extends StatefulWidget {

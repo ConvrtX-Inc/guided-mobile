@@ -188,6 +188,10 @@ class ConstantHelpers {
 
   static String assetSample4 = 'assets/images/jpg/sample_3.jpg';
 
+  static String assetSample5 = 'assets/images/jpg/hikingshoes_2.jpg';
+
+  static String assetSample6 = 'assets/images/jpg/hikingshoes_3.jpg';
+
   static String productName = 'Product Name';
 
   static String companyName = 'Company Name';
@@ -443,6 +447,13 @@ class ConstantHelpers {
       fontFamily: ConstantHelpers.fontGilroy,
       fontSize: 14,
       fontWeight: FontWeight.w600
+  );
+
+  static TextStyle dateStyle = TextStyle(
+      color: ConstantHelpers.osloGrey,
+      fontFamily: ConstantHelpers.fontGilroy,
+      fontWeight: FontWeight.w200,
+      fontSize: 12
   );
 
 }

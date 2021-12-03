@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/slideshow.dart';
 import 'package:guided/helpers/constant.dart';
+import 'package:guided/main_navigation/content/outfitters/widget/outfitter_features.dart';
+import 'package:guided/models/outfitter.dart';
+import 'package:guided/utils/outfitter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:guided/main_navigation/content/outfitters/outfitters_add.dart';
 
@@ -35,6 +38,9 @@ class _OutfitterListState extends State<OutfitterList> {
       height: 2
   );
 
+  /// Get features items mocked data
+  List<OutfitterModel> features = OutfitterUtil.getMockFeatures();
+
   void _settingModalBottomSheet() {
     showAvatarModalBottomSheet(
       expand: false,
@@ -49,121 +55,23 @@ class _OutfitterListState extends State<OutfitterList> {
     return ScreenUtilInit(builder: () =>
         Scaffold(
           body: SingleChildScrollView(
+            physics: ScrollPhysics(),
             child: Column(
               children: [
-                const SlideShow(),
-                const SizedBox(height: 20,),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        ConstantHelpers.travelVest,
-                        style: txtStyle,
-                      ),
-                      Text(
-                        '\$45',
-                        style: txtStyle,
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today_outlined,
-                        size: 15,
-                        color: ConstantHelpers.osloGrey,
-                      ),
-                      SizedBox(width: 5,),
-                      Text(
-                          ConstantHelpers.constDate1,
-                          style: dateStyle
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text(
-                    ConstantHelpers.loremIpsum,
-                    style: descrStyle,
-                  ),
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    ElevatedButton(
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              ConstantHelpers.lightRed),
-                          shape: MaterialStateProperty.all<
-                              RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  side: const BorderSide(
-                                      color: Colors.red)))),
-                      child: Text(
-                        ConstantHelpers.visitShop,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 15,),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image.asset(ConstantHelpers.assetSample2),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        ConstantHelpers.hikingShoes,
-                        style: txtStyle,
-                      ),
-                      Text(
-                        '\$63',
-                        style: txtStyle,
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today_outlined,
-                        size: 15,
-                        color: ConstantHelpers.osloGrey,
-                      ),
-                      const SizedBox(width: 5,),
-                      Text(
-                        ConstantHelpers.constDate1,
-                        style: dateStyle,
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    ConstantHelpers.loremIpsum,
-                    style: descrStyle,
-                  ),
-                ),
+                ListView.builder(
+                    itemCount: features.length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext ctx, int index) {
+                      return OutfitterFeature(
+                          title: features[index].featureTitle,
+                          imageUrl1: features[index].featureImageUrl1,
+                          imageUrl2: features[index].featureImageUrl2,
+                          imageUrl3: features[index].featureImageUrl3,
+                          price: features[index].featurePrice,
+                          date: features[index].featureDate,
+                          description: features[index].featureDescription);
+                    }),
               ],
             ),
           ),
