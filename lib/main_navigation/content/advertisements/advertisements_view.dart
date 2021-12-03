@@ -134,7 +134,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
               ),
               flexibleSpace: Image(
                 image: AssetImage(ConstantHelpers.assetAds1),
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.fitWidth,
               ),
             ),
           ),

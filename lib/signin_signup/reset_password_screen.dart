@@ -1,12 +1,9 @@
-// ignore_for_file: file_names
-import 'dart:math';
-
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/helpers/hexColor.dart';
-import 'package:guided/signin_signup/verifyPhoneScreen.dart';
-import 'package:twilio_flutter/twilio_flutter.dart';
+import 'package:guided/signin_signup/reset_password_verify_phone.dart';
+import 'package:guided/helpers/api_calls.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({Key? key}) : super(key: key);
@@ -16,44 +13,17 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-
-  String id = 'Reset';
-  String code = '';
   String _dialCode = '+1';
 
   TextEditingController phoneController = new TextEditingController();
+  TextEditingController emailController = new TextEditingController();
 
-  late TwilioFlutter twilioFlutter;
-
-  /// Twilio Account Initialization
-  @override
-  void initState() {
-    twilioFlutter =
-        TwilioFlutter(accountSid: 'AC6aeec4233812df810ce39c0eb698dd3b', authToken: 'dbb33f76dc4f534cbeb520221c34f312', twilioNumber: '(830) 947-5543');
-
-    super.initState();
-  }
-
-  /// Generate the 4 code verification
-  void generateCode() {
-    setState(() {
-      code = (Random().nextInt(1111) + 8888).toString();
-    });
-  }
-
-  /// Twilio send message to user
-  void sendSms() async {
-    generateCode();
-    await twilioFlutter.sendSMS(toNumber: _dialCode + phoneController.text, messageBody: '[GuidED] Your verification code is: $code');
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => VerifyPhoneScreen(id: id, phoneNumber: _dialCode + phoneController.text, code: code)),
-    );
-  }
-
-  /// Country code
+  // Country code
   void _onCountryChange(CountryCode countryCode) => _dialCode = countryCode.dialCode.toString();
+
+  void _ApiForgotPassword(){
+    ApiCalls.forgotPassword(context, emailController.text, phoneController.text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +64,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                   ConstantHelpers.spacing20,
                   const Text(
-                    "Enter your email ID  or phone number associated with your account and we’ll send an verification code for reset your password",
+                    "Enter your email ID  or phone number associated with your account and we’ll send a verification code to reset your password",
                     style: TextStyle(
                       color: Colors.black,
                       fontFamily: "Gilroy",
@@ -110,6 +80,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                   ConstantHelpers.spacing15,
                   TextField(
+                    controller: emailController,
                     decoration: InputDecoration(
                       hintText: "johnsmith@gmail.com",
                       hintStyle: TextStyle(
@@ -118,7 +89,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
                         borderSide:
-                            const BorderSide(color: Colors.grey, width: 0.2),
+                        const BorderSide(color: Colors.grey, width: 0.2),
                       ),
                     ),
                   ),
@@ -148,7 +119,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
                         borderSide:
-                            const BorderSide(color: Colors.grey, width: 0.2),
+                        const BorderSide(color: Colors.grey, width: 0.2),
                       ),
                     ),
                   ),
@@ -164,7 +135,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           width: width,
           height: 60,
           child: ElevatedButton(
-            onPressed: sendSms,
+            onPressed: _ApiForgotPassword,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(

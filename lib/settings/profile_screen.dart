@@ -14,18 +14,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
         leading: Container(
-          margin: const EdgeInsets.all(15),
+          margin: const EdgeInsets.only(left: 10, top: 10, right: 5, bottom: 5),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6),
               color: Colors.grey.withOpacity(0.2)),
-          child: const Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
+          child: IconButton(
+              onPressed: () {Navigator.pop(context);},
+              icon: const Icon(Icons.arrow_back),
+              color: Colors.black,
+              ),
         ),
-        elevation: 0.2,
-        backgroundColor: Colors.white,
       ),
       body: getbody(context),
       backgroundColor: Colors.white,

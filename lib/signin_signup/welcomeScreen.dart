@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/helpers/hexColor.dart';
-import 'package:guided/signin_signup/loginScreen.dart';
+import 'package:guided/signin_signup/login_screen.dart';
 import 'package:guided/signin_signup/signupScreen.dart';
 
 class WelcomeScreen extends StatelessWidget {

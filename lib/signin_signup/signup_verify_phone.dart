@@ -1,39 +1,26 @@
-// ignore_for_file: file_names
-import 'dart:convert';
-import 'dart:math';
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:guided/helpers/constant.dart';
-import 'package:guided/helpers/hexColor.dart';
-import 'package:guided/settings/profile_screen.dart';
-import 'package:guided/signin_signup/createNewPasswordScreen.dart';
-import 'package:guided/signin_signup/signup_form.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:twilio_flutter/twilio_flutter.dart';
-import 'package:http/http.dart' as http;
+import 'package:guided/helpers/api_calls.dart';
+import 'package:guided/signin_signup/create_new_password_screen.dart';
+import 'package:guided/signin_signup/signup_form.dart';
 
-class VerifyPhoneScreen extends StatefulWidget {
-  final String id;
+class SignupVerify extends StatefulWidget {
   final String phoneNumber;
-  final String code;
 
-  VerifyPhoneScreen({Key? key, required this.id, required this.phoneNumber, required this.code}) : super(key: key);
+  SignupVerify({Key? key, required this.phoneNumber}) : super(key: key);
 
   @override
-  _VerifyPhoneScreenState createState() => _VerifyPhoneScreenState(id, phoneNumber, code);
+  _SignupVerifyState createState() => _SignupVerifyState(phoneNumber);
 }
 
-class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
+class _SignupVerifyState extends State<SignupVerify> {
 
-  String id = '';
   String phoneNumber = '';
-  String code = '';
 
   bool incorrectOTP = false;
 
-  _VerifyPhoneScreenState(this.id, this.phoneNumber, this.code);
+  _SignupVerifyState(this.phoneNumber);
 
   TextEditingController txtCode_1 = new TextEditingController();
   TextEditingController txtCode_2 = new TextEditingController();
@@ -50,37 +37,21 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     });
   }
 
-  /// Send code to user
-  verifyCode() async {
-    var response = await http.post(Uri.parse('https://dev-guided-convrtx.herokuapp.com/api/v1/auth/verify/mobile/check'),
-        body: {
-          'phone_number': phoneNumber,
-          'verifyCode': txtCode_1.text + txtCode_2.text + txtCode_3.text + txtCode_4.text,
-        });
+  void _ApiVerify(){
+    // ApiCalls.verifyCode(context, phoneNumber, txtCode_1.text + txtCode_2.text + txtCode_3.text + txtCode_4.text, id);
 
-    if(response.statusCode == 201){
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => id == 'Signup' ? const SignupForm() : const CreateNewPasswordScreen()
-        ),
-      );
-    }
-    else{
-      setState(() {
-        incorrectOTP = true;
-      });
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => const SignupForm()
+      ),
+    );
   }
 
   /// Resend code to user
   reSendCode() async {
     reset();
-
-    var response = await http.post(Uri.parse('https://dev-guided-convrtx.herokuapp.com/api/v1/auth/verify/mobile/send'),
-        body: {
-          'phone_number': phoneNumber,
-        });
+    ApiCalls.reSendCode(phoneNumber);
   }
 
   @override
@@ -304,14 +275,14 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                         ),
                         Center(
                           child: SizedBox(
-                              child: incorrectOTP ? Text(
-                                'Authentication Failed, Try again!',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontFamily: ConstantHelpers.fontGilroy,
-                                  color: Colors.red,
-                                ),
-                              ) : const Text(''),
+                            child: incorrectOTP ? Text(
+                              'Authentication Failed, Try again!',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontFamily: ConstantHelpers.fontGilroy,
+                                color: Colors.red,
+                              ),
+                            ) : const Text(''),
                           ),
                         ),
                         const SizedBox(
@@ -321,19 +292,14 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                           width: width,
                           height: 60,
                           child: ElevatedButton(
-                            onPressed: verifyCode,
-                            // onPressed: () {
-                            //   setState(() {
-                            //     _smsVerification = SendNumber(txtCode_1.text+ txtCode_2.text + txtCode_3.text + txtCode_4.text);
-                            //   });
-                            // },
+                            onPressed: _ApiVerify,
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                 side: BorderSide(
                                   color: ConstantHelpers.buttonNext,
                                 ),
                                 borderRadius:
-                                    BorderRadius.circular(18), // <-- Radius
+                                BorderRadius.circular(18), // <-- Radius
                               ),
                               primary: ConstantHelpers.primaryGreen,
                               onPrimary: Colors.white, // <-- Splash color
