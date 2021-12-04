@@ -1,15 +1,10 @@
-// ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/main_navigation/main_navigation.dart';
-import 'package:guided/packages/create_package/createPackageScreen.dart';
-import 'package:guided/signin_signup/resetPasswordScreen.dart';
-
+import 'package:guided/signin_signup/reset_password_screen.dart';
 import 'package:guided/signin_signup/signupScreen.dart';
-
-import '../homeScreen.dart';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,25 +14,20 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController emailController = new TextEditingController();
+  TextEditingController passwordController = new TextEditingController();
+
+  ///Temporary commented out
+  // void _ApiLogin(){
+  //   ApiCalls.login(context, emailController.text, passwordController.text);
+  // }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      // appBar: AppBar(
-      //   leading: IconButton(
-      //     icon: const Icon(
-      //       Icons.chevron_left,
-      //       color: Colors.black,
-      //     ),
-      //     onPressed: () {
-      //       Navigator.pop(context);
-      //     },
-      //   ),
-      //   elevation: 0,
-      //   backgroundColor: Colors.white,
-      // ),
       body: SafeArea(
         child: SizedBox(
           width: width,
@@ -113,6 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   ConstantHelpers.spacing15,
                   TextField(
+                    controller: emailController,
                     decoration: InputDecoration(
                       hintText: "johnsmith@gmail.com",
                       hintStyle: TextStyle(
@@ -132,6 +123,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   ConstantHelpers.spacing15,
                   TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
                     decoration: InputDecoration(
                       hintText: "*******",
                       hintStyle: TextStyle(
@@ -167,20 +162,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: width,
                     height: 60,
                     child: ElevatedButton(
+                      // onPressed: _ApiLogin,
                       onPressed: () {
-                        // Temp set to different screen
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  const MainNavigationScreen()),
+                              builder: (context) => const MainNavigationScreen(
+                                    navIndex: 0,
+                                    contentIndex: 0,
+                                  )),
                         );
                       },
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
@@ -190,6 +182,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         primary: ConstantHelpers.primaryGreen,
                         onPrimary: Colors.white, // <-- Splash color
+                      ),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                     ),
                   ),

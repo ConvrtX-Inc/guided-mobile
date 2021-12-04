@@ -4,7 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/main_navigation/settings/widgets/settings_items.dart';
 import 'package:guided/models/settings.dart';
-import 'package:guided/signin_signup/loginScreen.dart';
+import 'package:guided/settings/profile_screen.dart';
+import 'package:guided/signin_signup/login_screen.dart';
 import 'package:guided/utils/settings.dart';
 
 /// Screen for user settings
@@ -86,10 +87,17 @@ class SettingsMain extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Icon(
-                    Icons.navigate_next,
-                    size: 36,
+                  IconButton(
+                    icon: const Icon(Icons.navigate_next),
+                    iconSize: 36,
                     color: Colors.black,
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute<dynamic>(
+                              builder: (BuildContext context) => const ProfileScreen()),
+                      );
+                    },
                   ),
                 ],
               ),

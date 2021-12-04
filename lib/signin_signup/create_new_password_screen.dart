@@ -1,18 +1,40 @@
-// ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
 import 'package:guided/helpers/constant.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/helpers/api_calls.dart';
 
 class CreateNewPasswordScreen extends StatefulWidget {
-  const CreateNewPasswordScreen({Key? key}) : super(key: key);
+  final String code;
+  final String phoneNumber;
+
+  const CreateNewPasswordScreen({Key? key, required this.code, required this.phoneNumber}) : super(key: key);
 
   @override
-  _CreateNewPasswordScreenState createState() =>
-      _CreateNewPasswordScreenState();
+  _CreateNewPasswordScreenState createState() => _CreateNewPasswordScreenState(code, phoneNumber);
 }
 
 class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
+
+  TextEditingController newPassword = new TextEditingController();
+  TextEditingController confirmPassword = new TextEditingController();
+
+  bool isPasswordMatch = false;
+  String code = '';
+  String phoneNumber = '';
+
+  _CreateNewPasswordScreenState(this.code, this.phoneNumber);
+
+  void _checkPassword(){
+    if(newPassword.text == confirmPassword.text){
+      ApiCalls.resetPassword(confirmPassword.text, code, phoneNumber);
+    }
+    else{
+      setState(() {
+        isPasswordMatch = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -68,6 +90,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   ),
                   ConstantHelpers.spacing20,
                   TextField(
+                    controller: newPassword,
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: "******",
@@ -77,7 +100,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
                         borderSide:
-                            const BorderSide(color: Colors.grey, width: 0.2),
+                        const BorderSide(color: Colors.grey, width: 0.2),
                       ),
                     ),
                   ),
@@ -88,6 +111,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   ),
                   ConstantHelpers.spacing15,
                   TextField(
+                    controller: confirmPassword,
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: "******",
@@ -97,7 +121,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
                         borderSide:
-                            const BorderSide(color: Colors.grey, width: 0.2),
+                        const BorderSide(color: Colors.grey, width: 0.2),
                       ),
                     ),
                   ),
@@ -113,13 +137,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
           width: width,
           height: 60,
           child: ElevatedButton(
-            onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => const VerifyPhoneScreen()),
-              // );
-            },
+            onPressed: _checkPassword,
             child: const Text(
               'Set Password',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),

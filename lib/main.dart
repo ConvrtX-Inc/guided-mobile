@@ -6,7 +6,8 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:guided/helpers/hexColor.dart';
-import 'package:guided/signin_signup/loginScreen.dart';
+import 'package:guided/settings/profile_screen.dart';
+import 'package:guided/signin_signup/login_screen.dart';
 import 'package:guided/signin_signup/splashScreen.dart';
 import 'package:guided/main_navigation/main_navigation.dart';
 

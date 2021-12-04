@@ -30,6 +30,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_switch: ^0.3.2
+  flutter_staggered_grid_view: ^0.4.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -45,6 +46,12 @@ dependencies:
   flutter_svg: ^0.22.0
   get: ^4.5.1  #this library is for state management
   flutter_keyboard_visibility: ^5.1.0 #this library is for checking keyboard visibility 
+  badges: ^2.0.1
+  twilio_flutter: ^0.0.9
+  flutter_image_slideshow: ^0.1.2
+  http: ^0.13.4
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -74,6 +81,7 @@ flutter:
     - assets/images/png/
     - assets/images/2x/
     - assets/images/3x/
+    - assets/images/jpg/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -95,6 +103,9 @@ flutter:
       fonts:
         - asset: fonts/Gilroy-ExtraBold.otf
         # - asset: fonts/Gilroy-Light.otf
+    - family: Poppins
+      fonts:
+        - asset: fonts/Poppins-Light.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

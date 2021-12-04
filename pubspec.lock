@@ -22,6 +22,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.8.1"
+  badges:
+    dependency: "direct main"
+    description:
+      name: badges
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -111,6 +118,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_image_slideshow:
+    dependency: "direct main"
+    description:
+      name: flutter_image_slideshow
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   flutter_keyboard_visibility:
     dependency: "direct main"
     description:
@@ -153,6 +167,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.0.0+2"
+  flutter_staggered_grid_view:
+    dependency: "direct main"
+    description:
+      name: flutter_staggered_grid_view
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.1"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -184,6 +205,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.5.1"
+  http:
+    dependency: "direct main"
+    description:
+      name: http
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.13.4"
+  http_parser:
+    dependency: transitive
+    description:
+      name: http_parser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
   image:
     dependency: transitive
     description:
@@ -336,6 +371,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.2"
+  twilio_flutter:
+    dependency: "direct main"
+    description:
+      name: twilio_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.9"
   typed_data:
     dependency: transitive
     description:
