@@ -43,7 +43,8 @@ dependencies:
   table_calendar: ^3.0.3
   flutter_screenutil: ^5.0.0+2
   flutter_svg: ^0.22.0
-
+  get: ^4.5.1  #this library is for state management
+  flutter_keyboard_visibility: ^5.1.0 #this library is for checking keyboard visibility 
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -70,6 +71,7 @@ flutter:
     - assets/images/
     - assets/images/no_user.png
     - assets/images/svg/
+    - assets/images/png/
     - assets/images/2x/
     - assets/images/3x/
 

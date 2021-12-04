@@ -1,10 +1,18 @@
+// ignore_for_file: always_specify_types
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/signin_signup/loginScreen.dart';
 import 'package:guided/signin_signup/splashScreen.dart';
 import 'package:guided/main_navigation/main_navigation.dart';
 
+import 'routes/route_generator.dart';
+
+String _defaultHome = '/notification';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIOverlays(
@@ -20,33 +28,38 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: Init.instance.initialize(),
-      builder: (context, AsyncSnapshot snapshot) {
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
           return MaterialApp(
             home: Splash(),
           );
         } else {
-          return MaterialApp(
-            title: 'GuidED',
-            theme: ThemeData(
-              backgroundColor: HexColor("#E5E5E5"),
-              visualDensity: VisualDensity.adaptivePlatformDensity,
-              textTheme: const TextTheme(
-                bodyText1: TextStyle(
-                  color: Colors.black,
-                ),
-                bodyText2: TextStyle(
-                  color: Colors.black,
-                ),
-              ).apply(
-                  // fontFamily: 'Lora',
-                  // bodyColor: Colors.white,
-                  // displayColor: Colors.white,
+          return ScreenUtilInit(
+            builder: () => KeyboardDismissOnTap(
+              child: GetMaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  theme: ThemeData(
+                    fontFamily: 'Gilroy',
+                    backgroundColor: HexColor('#E5E5E5'),
+                    visualDensity: VisualDensity.adaptivePlatformDensity,
+                    textTheme: const TextTheme(
+                      bodyText1: TextStyle(
+                        color: Colors.black,
+                      ),
+                      bodyText2: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ).apply(
+                        // fontFamily: 'Lora',
+                        // bodyColor: Colors.white,
+                        // displayColor: Colors.white,
+                        ),
                   ),
+                  initialRoute: _defaultHome,
+                  onGenerateRoute: RouteGenerator.generateRoute),
             ),
-            debugShowCheckedModeBanner: false,
-            home: const LoginScreen(),
+            designSize: const Size(375, 812),
           );
         }
       },

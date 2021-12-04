@@ -5,7 +5,8 @@ import 'package:guided/helpers/constant.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/main_navigation/main_navigation.dart';
 import 'package:guided/packages/create_package/createPackageScreen.dart';
-import 'package:guided/signin_signup/resetpasswordScreen.dart';
+import 'package:guided/signin_signup/resetPasswordScreen.dart';
+
 import 'package:guided/signin_signup/signupScreen.dart';
 
 import '../homeScreen.dart';
