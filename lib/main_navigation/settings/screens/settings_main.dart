@@ -35,8 +35,14 @@ class SettingsMain extends StatelessWidget {
                       fontSize: 24,
                     ),
                   )),
-                  SvgPicture.asset('assets/images/svg/settings_icon_bell.svg',
-                      fit: BoxFit.scaleDown),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/notification');
+                    },
+                    child: SvgPicture.asset(
+                        'assets/images/svg/settings_icon_bell.svg',
+                        fit: BoxFit.scaleDown),
+                  ),
                 ],
               ),
             ),
@@ -93,9 +99,10 @@ class SettingsMain extends StatelessWidget {
                     color: Colors.black,
                     onPressed: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute<dynamic>(
-                              builder: (BuildContext context) => const ProfileScreen()),
+                        context,
+                        MaterialPageRoute<dynamic>(
+                            builder: (BuildContext context) =>
+                                const ProfileScreen()),
                       );
                     },
                   ),

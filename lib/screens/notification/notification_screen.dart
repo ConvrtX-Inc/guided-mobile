@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/helpers/constant.dart';
 
 /// Notification Screen
 class NotificationScreen extends StatefulWidget {
