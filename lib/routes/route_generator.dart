@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guided/screens/notification/notification_screen.dart';
-import 'package:guided/signin_signup/loginScreen.dart';
+import 'package:guided/signin_signup/login_screen.dart';
 
 /// Route generator configuration
 class RouteGenerator {
