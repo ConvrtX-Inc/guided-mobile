@@ -3,6 +3,7 @@ import 'package:guided/common/widgets/bottom_navigation_bar.dart';
 import 'package:guided/main_navigation/home/screens/home_main.dart';
 import 'package:guided/main_navigation/settings/screens/settings_main.dart';
 import 'package:guided/main_navigation/content/content_main.dart';
+import 'package:guided/screens/messsage/message_inbox.dart';
 
 /// Screen for home
 class MainNavigationScreen extends StatefulWidget {
@@ -10,7 +11,9 @@ class MainNavigationScreen extends StatefulWidget {
   final int contentIndex;
 
   /// Constructor
-  const MainNavigationScreen({Key? key, required this.navIndex, required this.contentIndex}) : super(key: key);
+  const MainNavigationScreen(
+      {Key? key, required this.navIndex, required this.contentIndex})
+      : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState(navIndex, contentIndex);
@@ -33,7 +36,7 @@ class _HomeScreenState extends State<MainNavigationScreen> {
   }
 
   @override
-  void initState(){
+  void initState() {
     setState(() {
       _selectedIndex = navIndex;
       _selectedContent = contentIndex;
@@ -51,10 +54,7 @@ class _HomeScreenState extends State<MainNavigationScreen> {
       'Index 2: School',
       style: optionStyle,
     ),
-    const Text(
-      'Index 3: Mall',
-      style: optionStyle,
-    ),
+    const MessageInbox(),
     SettingsMain(),
   ];
 
@@ -66,5 +66,4 @@ class _HomeScreenState extends State<MainNavigationScreen> {
             selectedIndex: _selectedIndex,
             setBottomNavigationIndex: setBottomNavigationIndexHandler));
   }
-
 }

@@ -15,7 +15,6 @@ class SignupVerify extends StatefulWidget {
 }
 
 class _SignupVerifyState extends State<SignupVerify> {
-
   String phoneNumber = '';
 
   bool incorrectOTP = false;
@@ -37,14 +36,12 @@ class _SignupVerifyState extends State<SignupVerify> {
     });
   }
 
-  void _ApiVerify(){
+  void _ApiVerify() {
     // ApiCalls.verifyCode(context, phoneNumber, txtCode_1.text + txtCode_2.text + txtCode_3.text + txtCode_4.text, id);
 
     Navigator.push(
       context,
-      MaterialPageRoute(
-          builder: (context) => const SignupForm()
-      ),
+      MaterialPageRoute(builder: (context) => const SignupForm()),
     );
   }
 
@@ -184,143 +181,146 @@ class _SignupVerifyState extends State<SignupVerify> {
 
     return ScreenUtilInit(
         builder: () => Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(
-                Icons.chevron_left,
-                color: Colors.black,
+              appBar: AppBar(
+                leading: IconButton(
+                  icon: const Icon(
+                    Icons.chevron_left,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                elevation: 0,
+                backgroundColor: Colors.white,
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            elevation: 0,
-            backgroundColor: Colors.white,
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: SizedBox(
-                width: width,
-                height: height,
+              body: SafeArea(
                 child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          ConstantHelpers.verifyPhone,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25,
-                          ),
-                        ),
-                        ConstantHelpers.spacing20,
-                        Text(
-                          ConstantHelpers.verifyPhoneCode,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: ConstantHelpers.fontGilroy,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          phoneNumber,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: ConstantHelpers.fontGilroy,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        _codeWidget(),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        Row(
+                  child: SizedBox(
+                    width: width,
+                    height: height,
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              ConstantHelpers.didnotReceive,
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontFamily: ConstantHelpers.fontGilroy,
-                                color: Colors.black,
+                              ConstantHelpers.verifyPhone,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
                               ),
                             ),
-                            InkWell(
-                              onTap: reSendCode,
-                              child: Text(
-                                ConstantHelpers.resendOTP,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  decoration: TextDecoration.underline,
-                                  color: ConstantHelpers.primaryGreen,
+                            ConstantHelpers.spacing20,
+                            Text(
+                              ConstantHelpers.verifyPhoneCode,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: ConstantHelpers.fontGilroy,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              phoneNumber,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: ConstantHelpers.fontGilroy,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            _codeWidget(),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  ConstantHelpers.didnotReceive,
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontFamily: ConstantHelpers.fontGilroy,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: reSendCode,
+                                  child: Text(
+                                    ConstantHelpers.resendOTP,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                      decoration: TextDecoration.underline,
+                                      color: ConstantHelpers.primaryGreen,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Center(
+                              child: SizedBox(
+                                child: incorrectOTP
+                                    ? Text(
+                                        'Authentication Failed, Try again!',
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          fontFamily:
+                                              ConstantHelpers.fontGilroy,
+                                          color: Colors.red,
+                                        ),
+                                      )
+                                    : const Text(''),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            SizedBox(
+                              width: width,
+                              height: 60,
+                              child: ElevatedButton(
+                                onPressed: _ApiVerify,
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                      color: ConstantHelpers.buttonNext,
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.circular(18), // <-- Radius
+                                  ),
+                                  primary: ConstantHelpers.primaryGreen,
+                                  onPrimary: Colors.white, // <-- Splash color
+                                ),
+                                child: Text(
+                                  ConstantHelpers.verifyText,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
                                 ),
                               ),
                             ),
+                            ConstantHelpers.spacing20,
                           ],
                         ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Center(
-                          child: SizedBox(
-                            child: incorrectOTP ? Text(
-                              'Authentication Failed, Try again!',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontFamily: ConstantHelpers.fontGilroy,
-                                color: Colors.red,
-                              ),
-                            ) : const Text(''),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        SizedBox(
-                          width: width,
-                          height: 60,
-                          child: ElevatedButton(
-                            onPressed: _ApiVerify,
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                  color: ConstantHelpers.buttonNext,
-                                ),
-                                borderRadius:
-                                BorderRadius.circular(18), // <-- Radius
-                              ),
-                              primary: ConstantHelpers.primaryGreen,
-                              onPrimary: Colors.white, // <-- Splash color
-                            ),
-                            child: Text(
-                              ConstantHelpers.verifyText,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                          ),
-                        ),
-                        ConstantHelpers.spacing20,
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
-        designSize: const Size(375, 812)
-    );
+        designSize: const Size(375, 812));
   }
 }

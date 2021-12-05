@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 
 /// Notification Screen
@@ -38,9 +39,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
               Padding(
                 padding: EdgeInsets.only(left: 8.w),
-                child: const Text(
-                  'Notifictions',
-                  style: TextStyle(
+                child: Text(
+                  AppTextConstants.notification,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 24,
                   ),
@@ -106,7 +107,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    'Request Pending',
+                    AppTextConstants.requestPending,
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 14.sp,
@@ -114,7 +115,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     ),
                   ),
                   Text(
-                    '16 Sc',
+                    AppTextConstants.messageTime,
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: AppColors.cloud,
@@ -126,7 +127,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 height: 6.h,
               ),
               Text(
-                'Your booking request in pending status',
+                'Your booking request in pending status', // dont add this on the app text constant since this will be coming from the api
                 style: TextStyle(
                   fontSize: 12.sp,
                   color: AppColors.dustyGrey,
@@ -144,7 +145,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(10.r))),
                 child: Text(
-                  'Pending',
+                  AppTextConstants.pending,
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: Colors.white,
@@ -195,7 +196,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    'Request accepted',
+                    AppTextConstants.requestAccepted,
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 14.sp,
@@ -203,7 +204,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     ),
                   ),
                   Text(
-                    '16 Sc',
+                    AppTextConstants.messageTime,
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: AppColors.cloud,
@@ -215,7 +216,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 height: 6.h,
               ),
               Text(
-                'Congratulations!',
+                AppTextConstants.congratulations,
                 style: TextStyle(
                   decoration: TextDecoration.underline,
                   fontWeight: FontWeight.w700,
@@ -225,8 +226,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 ),
               ),
               Text(
-                'James Brown accepted your custom offer. Please contact with him for mre info',
-                maxLines: null,
+                'James Brown accepted your custom offer. Please contact with him for mre info', // dont add this on the app text constant since this will be coming from the api
                 style: TextStyle(
                   fontSize: 12.sp,
                   color: AppColors.dustyGrey,
@@ -282,7 +282,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: 'New message  ',
+                          text: AppTextConstants.newMessage,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14.sp,
@@ -290,7 +290,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           ),
                         ),
                         TextSpan(
-                          text: 'from Ethan Hunt',
+                          text:
+                              'from Ethan Hunt', // dont add this on the app text constant since this will be coming from the api
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14.sp,
@@ -301,7 +302,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     ),
                   ),
                   Text(
-                    '16 Sc',
+                    AppTextConstants.messageTime,
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: AppColors.cloud,
@@ -317,7 +318,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.6,
                     child: Text(
-                      'Sample tourist text message goes here to receive tourist guide ',
+                      'Sample tourist text message goes here to receive tourist guide ', // dont add this on the app text constant since this will be coming from the api
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: AppColors.dustyGrey,

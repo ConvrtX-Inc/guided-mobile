@@ -16,4 +16,13 @@ class AppColors {
 
   /// Returns cloud color
   static HexColor cloud = HexColor('#C4C4C4');
+
+  /// Returns Champagne color
+  static HexColor champagne = HexColor('#FFE7D1');
+
+  /// Returns Sunset color
+  static HexColor sunset = HexColor('#FFCFA3');
+
+  /// Returns Rust Orange color
+  static HexColor rustOrange = HexColor('#BF610A');
 }
