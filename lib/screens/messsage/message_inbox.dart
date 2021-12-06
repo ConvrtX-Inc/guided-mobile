@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
@@ -162,112 +163,154 @@ class _MessageInboxState extends State<MessageInbox> {
                 child: ListView.separated(
                   itemCount: AppListConstants.filterList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(
-                          horizontal: 15.w, vertical: 20.h),
-                      child: Row(
+                    return Slidable(
+                      key: ValueKey<int>(index),
+                      // The end action pane is the one at the right or the bottom side.
+                      endActionPane: const ActionPane(
+                        motion: ScrollMotion(),
                         children: <Widget>[
-                          Container(
-                            height: 58.h,
-                            width: 58.w,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.white, width: 3),
-                              shape: BoxShape.circle,
-                              image: const DecorationImage(
-                                image: AssetImage(
-                                    '${AssetsPath.assetsPNGPath}/student_profile.png'),
-                                fit: BoxFit.contain,
+                          // Row(
+                          //   children: <Widget>[
+                          //     IconButton(
+                          //       iconSize: 38.h,
+                          //       icon: Image.asset(
+                          //           '${AssetsPath.assetsPNGPath}/delete_message.png'),
+                          //       onPressed: () {},
+                          //     ),
+                          //     IconButton(
+                          //       iconSize: 38.h,
+                          //       icon: Image.asset(
+                          //           '${AssetsPath.assetsPNGPath}/block_message.png'),
+                          //       onPressed: () {},
+                          //     ),
+                          //   ],
+                          // )
+
+                          SlidableAction(
+                            onPressed: null,
+                            backgroundColor: Color(0xFFFF4848),
+                            foregroundColor: Colors.white,
+                            icon: Icons.delete,
+                            label: 'Delete',
+                          ),
+                          SlidableAction(
+                            onPressed: null,
+                            backgroundColor: Color(0xFFFF4848),
+                            foregroundColor: Colors.white,
+                            icon: Icons.block,
+                            label: 'Block',
+                          ),
+                        ],
+                      ),
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 15.w, vertical: 20.h),
+                        child: Row(
+                          children: <Widget>[
+                            Container(
+                              height: 58.h,
+                              width: 58.w,
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.white, width: 3),
+                                shape: BoxShape.circle,
+                                image: const DecorationImage(
+                                  image: AssetImage(
+                                      '${AssetsPath.assetsPNGPath}/student_profile.png'),
+                                  fit: BoxFit.contain,
+                                ),
+                                boxShadow: <BoxShadow>[
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 5,
+                                    // offset: const Offset(
+                                    //     0, 0), // changes position of shadow
+                                  ),
+                                ],
                               ),
-                              boxShadow: <BoxShadow>[
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                  // offset: const Offset(
-                                  //     0, 0), // changes position of shadow
-                                ),
-                              ],
                             ),
-                          ),
-                          SizedBox(
-                            width: 15.w,
-                          ),
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Text.rich(
-                                      TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: 'Anne Sasha',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 14.sp,
-                                              color: Colors.black,
+                            SizedBox(
+                              width: 15.w,
+                            ),
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text.rich(
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: 'Anne Sasha',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 14.sp,
+                                                color: Colors.black,
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Text(
-                                      AppTextConstants.messageTime,
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: AppColors.cloud,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 6.h,
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.6,
-                                      child: Text(
-                                        'Sample tourist text message goes here to receive tourist guide ',
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          color: AppColors.dustyGrey,
+                                          ],
                                         ),
                                       ),
-                                    ),
-                                    if (index == 0)
-                                      Expanded(
-                                        child: Container(
-                                          padding: const EdgeInsets.all(5),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.mediumGreen,
-                                            shape: BoxShape.circle,
+                                      Text(
+                                        AppTextConstants.messageTime,
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          color: AppColors.cloud,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 6.h,
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.6,
+                                        child: Text(
+                                          'Sample tourist text message goes here to receive tourist guide ',
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            color: AppColors.dustyGrey,
                                           ),
-                                          child: Center(
-                                            child: Text(
-                                              '3',
-                                              style: TextStyle(
-                                                fontSize: 12.sp,
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      if (index == 0)
+                                        Expanded(
+                                          child: Container(
+                                            padding: const EdgeInsets.all(5),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.mediumGreen,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '3',
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      )
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 6.h,
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
+                                        )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 6.h,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     );
                   },

@@ -46,6 +46,7 @@ dependencies:
   flutter_svg: ^0.22.0
   get: ^4.5.1  #this library is for state management
   flutter_keyboard_visibility: ^5.1.0 #this library is for checking keyboard visibility 
+  flutter_slidable: ^1.1.0 #this is for the slidable list item 
   badges: ^2.0.1
   twilio_flutter: ^0.0.9
   flutter_image_slideshow: ^0.1.2
