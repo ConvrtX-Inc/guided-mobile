@@ -50,6 +50,7 @@ dependencies:
   badges: ^2.0.1
   twilio_flutter: ^0.0.9
   flutter_image_slideshow: ^0.1.2
+  date_time_picker: ^2.1.0
   http: ^0.13.4
 
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guided/screens/messsage/message_custom_offer_screen.dart';
 import 'package:guided/screens/messsage/message_filter_screen.dart';
 import 'package:guided/screens/messsage/message_inbox_screen.dart';
 import 'package:guided/screens/messsage/message_individual_screen.dart';
@@ -26,6 +27,9 @@ class RouteGenerator {
       case '/message_individual':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const MessageIndividual());
+      case '/message_custom_offer':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const MessageCustomOffer());
       default:
         return _errorRoute();
     }

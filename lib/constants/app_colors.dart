@@ -37,4 +37,13 @@ class AppColors {
 
   /// Returns Porcelain color
   static HexColor porcelain = HexColor('#ECEFF0');
+
+  /// Returns Platinum color
+  static HexColor platinum = HexColor('#E3E3E3');
+
+  /// Returns Novel color
+  static HexColor novel = HexColor('#ADB1B1');
+
+  /// Returns Coral Pink color
+  static HexColor coralPink = HexColor('#FF7E7E');
 }
