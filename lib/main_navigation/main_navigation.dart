@@ -3,7 +3,7 @@ import 'package:guided/common/widgets/bottom_navigation_bar.dart';
 import 'package:guided/main_navigation/home/screens/home_main.dart';
 import 'package:guided/main_navigation/settings/screens/settings_main.dart';
 import 'package:guided/main_navigation/content/content_main.dart';
-import 'package:guided/screens/messsage/message_inbox.dart';
+import 'package:guided/screens/messsage/message_inbox_screen.dart';
 
 /// Screen for home
 class MainNavigationScreen extends StatefulWidget {

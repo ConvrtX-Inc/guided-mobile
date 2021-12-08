@@ -13,7 +13,8 @@ import 'package:guided/main_navigation/main_navigation.dart';
 
 import 'routes/route_generator.dart';
 
-String _defaultHome = '/login'; void main() {
+String _defaultHome = '/message_individual';
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIOverlays(
       [SystemUiOverlay.bottom, SystemUiOverlay.top]);

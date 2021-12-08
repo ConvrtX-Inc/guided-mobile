@@ -25,4 +25,16 @@ class AppColors {
 
   /// Returns Rust Orange color
   static HexColor rustOrange = HexColor('#BF610A');
+
+  /// Returns Light Red color
+  static HexColor lightRed = HexColor('#FF4848');
+
+  /// Returns Teal Green color
+  static HexColor tealGreen = HexColor('#007749');
+
+  /// Returns Deep Green color
+  static HexColor deepGreen = HexColor('#066028');
+
+  /// Returns Porcelain color
+  static HexColor porcelain = HexColor('#ECEFF0');
 }

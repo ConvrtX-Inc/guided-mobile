@@ -166,40 +166,83 @@ class _MessageInboxState extends State<MessageInbox> {
                     return Slidable(
                       key: ValueKey<int>(index),
                       // The end action pane is the one at the right or the bottom side.
-                      endActionPane: const ActionPane(
-                        motion: ScrollMotion(),
+                      endActionPane: ActionPane(
+                        motion: const ScrollMotion(),
                         children: <Widget>[
-                          // Row(
-                          //   children: <Widget>[
-                          //     IconButton(
-                          //       iconSize: 38.h,
-                          //       icon: Image.asset(
-                          //           '${AssetsPath.assetsPNGPath}/delete_message.png'),
-                          //       onPressed: () {},
-                          //     ),
-                          //     IconButton(
-                          //       iconSize: 38.h,
-                          //       icon: Image.asset(
-                          //           '${AssetsPath.assetsPNGPath}/block_message.png'),
-                          //       onPressed: () {},
-                          //     ),
-                          //   ],
-                          // )
-
-                          SlidableAction(
-                            onPressed: null,
-                            backgroundColor: Color(0xFFFF4848),
-                            foregroundColor: Colors.white,
-                            icon: Icons.delete,
-                            label: 'Delete',
+                          Expanded(
+                            child: SizedBox.expand(
+                              child: OutlinedButton(
+                                onPressed: null,
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor: AppColors.lightRed,
+                                  shape: const RoundedRectangleBorder(),
+                                  side: BorderSide.none,
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Flexible(
+                                        child: IconButton(
+                                          iconSize: 40.h,
+                                          icon: Image.asset(
+                                              '${AssetsPath.assetsPNGPath}/delete_message.png'),
+                                          onPressed: () {},
+                                        ),
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          'Delete',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 10.sp,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                          SlidableAction(
-                            onPressed: null,
-                            backgroundColor: Color(0xFFFF4848),
-                            foregroundColor: Colors.white,
-                            icon: Icons.block,
-                            label: 'Block',
-                          ),
+                          Expanded(
+                            child: SizedBox.expand(
+                              child: OutlinedButton(
+                                onPressed: null,
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor: AppColors.lightRed,
+                                  shape: const RoundedRectangleBorder(),
+                                  side: BorderSide.none,
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Flexible(
+                                        child: IconButton(
+                                          iconSize: 40.h,
+                                          icon: Image.asset(
+                                              '${AssetsPath.assetsPNGPath}/block_message.png'),
+                                          onPressed: () {},
+                                        ),
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          'Block',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 10.sp,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                       child: Container(

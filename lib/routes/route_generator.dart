@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:guided/screens/messsage/message_filter_screen.dart';
-import 'package:guided/screens/messsage/message_inbox.dart';
+import 'package:guided/screens/messsage/message_inbox_screen.dart';
+import 'package:guided/screens/messsage/message_individual_screen.dart';
 import 'package:guided/screens/notification/notification_screen.dart';
 import 'package:guided/signin_signup/login_screen.dart';
 
@@ -22,6 +23,9 @@ class RouteGenerator {
             builder: (_) => const MessageFilterScreen());
       case '/message_inbox':
         return MaterialPageRoute<dynamic>(builder: (_) => const MessageInbox());
+      case '/message_individual':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const MessageIndividual());
       default:
         return _errorRoute();
     }
