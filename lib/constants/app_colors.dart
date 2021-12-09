@@ -25,4 +25,80 @@ class AppColors {
 
   /// Returns Rust Orange color
   static HexColor rustOrange = HexColor('#BF610A');
+
+  /// hex color for primaryGreen
+  static HexColor primaryGreen = HexColor('#066028');
+
+  /// hex color for grey
+  static HexColor grey = HexColor('#979B9B');
+
+  /// hex color for platinum
+  static HexColor platinum = HexColor('#E3E3E3');
+
+  /// hex color for primaryGreen
+  static HexColor lightRed = HexColor('#FF4848');
+
+  /// hex color for primaryGreen
+  static HexColor doveGrey = HexColor('#696D6D');
+
+  /// hex color for primaryGreen
+  static HexColor nobel = HexColor('#696D6D');
+
+  /// hex color for spruce
+  static HexColor spruce = HexColor('#066028');
+
+  /// hex color for harp
+  static HexColor harp = HexColor('#ECEFF0');
+
+  /// hex color for rangooGreen
+  static HexColor rangooGreen = HexColor('#181B1B');
+
+  /// hex color for osloGrey
+  static HexColor osloGrey = HexColor('#898A8D');
+
+  /// hex color for duckEggBlue
+  static HexColor duckEggBlue = HexColor('#B6FFE3');
+
+  /// hex color for tropicalRainForest
+  static HexColor tropicalRainForest = HexColor('#007749');
+
+  /// hex color for porcelain
+  static HexColor porcelain = HexColor('#F2F2F2');
+
+  /// hex color for aqua green
+  static HexColor aquaGreen = HexColor('#37DD8D');
+
+  /// hex color for butter scotch
+  static HexColor butterScotch = HexColor('#FFB240');
+
+  /// hex color for pine cone
+  static HexColor pineCone = HexColor('#705F5A');
+
+  /// hex color for venus
+  static HexColor venus = HexColor('#8B8B8B');
+
+  /// hex color for brightSun
+  static HexColor brightSun = HexColor('#FFC74A');
+
+  /// hex Color for silver
+  static HexColor silver = HexColor('#C4C4C4');
+
+  /// hex Color for sushi
+  static HexColor sushi = HexColor('#76B947');
+
+  /// hex Color for alabaster
+  static HexColor alabaster = HexColor('#F7F7F7');
+
+  /// hex Color for gallery
+  static HexColor gallery = HexColor('#F0F0F0');
+
+  /// hex color for chateauGreen
+  static HexColor chateauGreen = HexColor('#3EB75E');
+
+  /// hex color for mercury
+  static HexColor mercury = HexColor('#e6e6e6');
+
+  /// hex color for snowy mint
+  static HexColor snowyMint = HexColor('#CCFFD5');
+
 }

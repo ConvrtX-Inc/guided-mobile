@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:guided/main_navigation/main_navigation.dart';
-import 'package:guided/signin_signup/create_new_password_screen.dart';
-import 'package:guided/signin_signup/reset_password_verify_phone.dart';
-import 'package:guided/signin_signup/signup_form.dart';
-import 'package:guided/signin_signup/signup_verify_phone.dart';
+import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/signin_signup/create_new_password_screen.dart';
+import 'package:guided/screens/signin_signup/reset_password_verify_phone.dart';
+import 'package:guided/screens/signin_signup/signup_form.dart';
+import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:http/http.dart' as http;
 
+/// Class for API Calls
 class ApiCalls {
 
-    // Send code to user
+    /// Send code to user
     static sendCode(BuildContext context, String phoneNumber, String id) async {
       try{
         var response = await http.post(Uri.parse('http://localhost:3000/api/v1/auth/verify/mobile/send'),
@@ -52,8 +53,8 @@ class ApiCalls {
         if(response.statusCode == 201){
           await Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => const SignupForm()
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => const SignupForm()
             ),
           );
         }
@@ -63,7 +64,7 @@ class ApiCalls {
       }
     }
 
-    // Verify code (Reset Password)
+    /// Verify code (Reset Password)
     static verifyForgotPassword(BuildContext context, String code, String phoneNumber) async {
       try{
         var response = await http.post(Uri.parse('http://localhost:3000/api/v1/auth/email/confirm'),
