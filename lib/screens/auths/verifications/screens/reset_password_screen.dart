@@ -2,24 +2,26 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/helpers/api_calls.dart';
-import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
-/// Continue w/ phone screen
-class ContinueWithPhone extends StatefulWidget {
+/// Reset Password Screen
+class ResetPasswordScreen extends StatefulWidget {
   /// Constructor
-  const ContinueWithPhone({Key? key}) : super(key: key);
+  const ResetPasswordScreen({Key? key}) : super(key: key);
 
   @override
-  _ContinueWithPhoneState createState() => _ContinueWithPhoneState();
+  _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
 }
 
-class _ContinueWithPhoneState extends State<ContinueWithPhone> {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  // ignore: unused_field
   String _dialCode = '+1';
-  bool isPhoneValid = false;
+
   TextEditingController phoneController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -51,17 +53,15 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    AppTextConstants.continueWithPhone,
+                    AppTextConstants.resetPassword,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 25,
                     ),
                   ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
+                  SizedBox(height: 20.h),
                   Text(
-                    AppTextConstants.codeDescription,
+                    AppTextConstants.enterYourEmailID,
                     style: const TextStyle(
                       color: Colors.black,
                       fontFamily: 'Gilroy',
@@ -69,9 +69,28 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(
-                    height: 40.h,
+                  SizedBox(height: 40.h),
+                  Text(
+                    AppTextConstants.email,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w600, fontSize: 15),
                   ),
+                  SizedBox(height: 15.h),
+                  TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      hintText: AppTextConstants.emailHint,
+                      hintStyle: TextStyle(
+                        color: AppColors.grey,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14.r),
+                        borderSide:
+                            BorderSide(color: Colors.grey, width: 0.2.w),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 15.h),
                   Text(
                     AppTextConstants.enterPhoneNumber,
                     style: const TextStyle(
@@ -82,12 +101,12 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
                     controller: phoneController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      hintText: AppTextConstants.phoneNumberHint,
                       prefixIcon: SizedBox(
                         child: CountryCodePicker(
                           onChanged: _onCountryChange,
                           initialSelection: AppTextConstants.defaultCountry,
-                          favorite: ['+1', 'US'],
+                          // ignore: always_specify_types
+                          favorite: const ['+1', 'US'],
                         ),
                       ),
                       hintStyle: TextStyle(
@@ -112,19 +131,19 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: _apiCall,
+            onPressed: () async => sendVerificationCode(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
-                  color: AppColors.cloud,
+                  color: AppColors.silver,
                 ),
-                borderRadius: BorderRadius.circular(18), // <-- Radius
+                borderRadius: BorderRadius.circular(18.r),
               ),
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white, // <-- Splash color
             ),
             child: Text(
-              AppTextConstants.continueText,
+              AppTextConstants.resetPassword,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
@@ -133,25 +152,30 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
     );
   }
 
-  /// Method for getting the country code
+  /// Country code
   void _onCountryChange(CountryCode countryCode) =>
       _dialCode = countryCode.dialCode.toString();
 
-  /// Method for calling the API
-  void _apiCall() {
-    // ApiCalls.sendCode(context, _dialCode + phoneController.text); // Temporary commented out for setting up other API Integration
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (BuildContext context) =>
-                SignupVerify(phoneNumber: _dialCode + phoneController.text)));
+  Future<void> sendVerificationCode() async {
+    final Map<String, dynamic> userDetails = {
+      'email': emailController.text,
+      'phone_no': _dialCode + phoneController.text
+    };
+
+    await APIServices().request(
+        AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
+        data: userDetails);
+    await Navigator.pushNamed(context, '/verification_code',
+        arguments: userDetails);
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>('isPhoneValid', isPhoneValid));
     properties.add(DiagnosticsProperty<TextEditingController>(
         'phoneController', phoneController));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'emailController', emailController));
   }
 }

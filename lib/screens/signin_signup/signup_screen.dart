@@ -5,8 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/screens/signin_signup/continue_with_phone.dart';
-import 'package:guided/screens/signin_signup/login_screen.dart';
+import 'package:guided/screens/signin_signup/phone_number.dart';
+import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 
 /// Sign up screen
 class SignupScreen extends StatefulWidget {

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/signin_signup/login_screen.dart';
+import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 
 /// Sign up form screen
 class SignupForm extends StatefulWidget {

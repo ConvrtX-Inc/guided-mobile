@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
-import 'package:guided/screens/signin_signup/create_new_password_screen.dart';
-import 'package:guided/screens/signin_signup/reset_password_verify_phone.dart';
+import 'package:guided/screens/auths/verifications/screens/create_new_password_screen.dart';
+import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:http/http.dart' as http;
@@ -64,27 +64,27 @@ class ApiCalls {
       }
     }
 
-    /// Verify code (Reset Password)
-    static verifyForgotPassword(BuildContext context, String code, String phoneNumber) async {
-      try{
-        var response = await http.post(Uri.parse('http://localhost:3000/api/v1/auth/email/confirm'),
-            body: {
-              'hash': code,
-            });
+    // /// Verify code (Reset Password)
+    // static verifyForgotPassword(BuildContext context, String code, String phoneNumber) async {
+    //   try{
+    //     var response = await http.post(Uri.parse('http://localhost:3000/api/v1/auth/email/confirm'),
+    //         body: {
+    //           'hash': code,
+    //         });
 
-        if(response.statusCode == 200){
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => CreateNewPasswordScreen(code: code, phoneNumber: phoneNumber)
-            ),
-          );
-        }
-      }
-      catch(e){
-        print(e);
-      }
-    }
+    //     if(response.statusCode == 200){
+    //       await Navigator.push(
+    //         context,
+    //         MaterialPageRoute(
+    //             builder: (context) => CreateNewPasswordScreen(code: code, phoneNumber: phoneNumber)
+    //         ),
+    //       );
+    //     }
+    //   }
+    //   catch(e){
+    //     print(e);
+    //   }
+    // }
 
     // Login API
     static login(BuildContext context, String email, String password) async {
@@ -108,27 +108,27 @@ class ApiCalls {
       }
     }
 
-    // Forgot Password
-    static forgotPassword(BuildContext context, String email, String phoneNumber) async {
-      try{
-        var response = await http.post(Uri.parse('http://localhost:3000/api/v1/auth/forgot/password'),
-            body: {
-              'email': email,
-              'phone_no': phoneNumber
-            });
+    // // Forgot Password
+    // static forgotPassword(BuildContext context, String email, String phoneNumber) async {
+    //   try{
+    //     var response = await http.post(Uri.parse('http://localhost:3000/api/v1/auth/forgot/password'),
+    //         body: {
+    //           'email': email,
+    //           'phone_no': phoneNumber
+    //         });
 
-        if(response.statusCode == 200){
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ResetVerifyPhone(email: email, phoneNumber: phoneNumber)),
-          );
-        }
-      }
-      catch(e){
-        print(e);
-      }
-    }
+    //     if(response.statusCode == 200){
+    //       await Navigator.push(
+    //         context,
+    //         MaterialPageRoute(
+    //             builder: (context) => ResetVerifyPhone(email: email, phoneNumber: phoneNumber)),
+    //       );
+    //     }
+    //   }
+    //   catch(e){
+    //     print(e);
+    //   }
+    // }
 
     // Resend OTP (Forgot Password)
     static resendOTP(String email, String phoneNumber) async {

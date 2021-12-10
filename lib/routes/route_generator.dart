@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:guided/screens/auths/logins/screens/login_screen.dart';
+import 'package:guided/screens/auths/splashes/screens/splash_screen.dart';
+import 'package:guided/screens/auths/splashes/screens/user_on_boarding_screen.dart';
+import 'package:guided/screens/auths/splashes/screens/user_type_screen.dart';
+import 'package:guided/screens/auths/splashes/screens/welcome_screen.dart';
+import 'package:guided/screens/auths/verifications/screens/create_new_password_screen.dart';
+import 'package:guided/screens/auths/verifications/screens/reset_password_screen.dart';
+import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
 import 'package:guided/screens/home/calendar_availability_screen.dart';
 import 'package:guided/screens/home/set_booking_date_screen.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
@@ -21,15 +29,9 @@ import 'package:guided/screens/packages/create_package/package_price_screen.dart
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
-import 'package:guided/screens/signin_signup/continue_with_phone.dart';
-import 'package:guided/screens/signin_signup/login_screen.dart';
-import 'package:guided/screens/signin_signup/reset_password_screen.dart';
+import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
-import 'package:guided/screens/signin_signup/splash_screen.dart';
-import 'package:guided/screens/signin_signup/user_on_boarding_screen.dart';
-import 'package:guided/screens/signin_signup/user_type_screen.dart';
-import 'package:guided/screens/signin_signup/welcome_screen.dart';
 
 /// Route generator configuration
 class RouteGenerator {
@@ -52,57 +54,87 @@ class RouteGenerator {
       case '/splash_screen':
         return MaterialPageRoute<dynamic>(builder: (_) => const SplashScreen());
       case '/profile':
-        return MaterialPageRoute<dynamic>(builder: (_) => const ProfileScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ProfileScreen());
       case '/main_navigation':
-        return MaterialPageRoute<dynamic>(builder: (_) => const MainNavigationScreen(navIndex: 0, contentIndex: 0));
+        return MaterialPageRoute<dynamic>(
+            builder: (_) =>
+                const MainNavigationScreen(navIndex: 0, contentIndex: 0));
       case '/create_package':
-        return MaterialPageRoute<dynamic>(builder: (_) => const CreatePackageScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CreatePackageScreen());
       case '/calendar_availability':
-        return MaterialPageRoute<dynamic>(builder: (_) => const CalendarAvailabilityScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CalendarAvailabilityScreen());
       case '/set_booking_date':
-        return MaterialPageRoute<dynamic>(builder: (_) => const SetBookingDateScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SetBookingDateScreen());
       case '/guide_rule':
-        return MaterialPageRoute<dynamic>(builder: (_) => const GuideRulesScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const GuideRulesScreen());
       case '/advertisement_view':
-        return MaterialPageRoute<dynamic>(builder: (_) => const AdvertisementView());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AdvertisementView());
       case '/advertisement_edit':
-        return MaterialPageRoute<dynamic>(builder: (_) => const AdvertisementEdit());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AdvertisementEdit());
       case '/outfitter_view':
-        return MaterialPageRoute<dynamic>(builder: (_) => const OutfitterView());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const OutfitterView());
       case '/outfitter_edit':
-        return MaterialPageRoute<dynamic>(builder: (_) => const OutfitterEdit());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const OutfitterEdit());
       case '/package_photo':
-        return MaterialPageRoute<dynamic>(builder: (_) => const PackagePhotosScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PackagePhotosScreen());
       case '/package_price':
-        return MaterialPageRoute<dynamic>(builder: (_) => const PackagePriceScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PackagePriceScreen());
       case '/waiver':
         return MaterialPageRoute<dynamic>(builder: (_) => const WaiverScreen());
       case '/free_service':
-        return MaterialPageRoute<dynamic>(builder: (_) => const FreeServicesScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const FreeServicesScreen());
       case '/location':
-        return MaterialPageRoute<dynamic>(builder: (_) => const LocationScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const LocationScreen());
       case '/number_of_traveler':
-        return MaterialPageRoute<dynamic>(builder: (_) => const NumberOfTravelersScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const NumberOfTravelersScreen());
       case '/local_law_taxes':
-        return MaterialPageRoute<dynamic>(builder: (_) => const LocalLawsTaxesScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const LocalLawsTaxesScreen());
       case '/package_info':
-        return MaterialPageRoute<dynamic>(builder: (_) => const PackageInfoScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PackageInfoScreen());
       case '/package_summary':
-        return MaterialPageRoute<dynamic>(builder: (_) => const PackageSummaryScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PackageSummaryScreen());
       case '/sign_up':
         return MaterialPageRoute<dynamic>(builder: (_) => const SignupScreen());
       case '/reset_password':
-        return MaterialPageRoute<dynamic>(builder: (_) => const ResetPasswordScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ResetPasswordScreen());
       case '/continue_with_phone':
-        return MaterialPageRoute<dynamic>(builder: (_) => const ContinueWithPhone());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ContinueWithPhone());
       case '/sign_up_form':
         return MaterialPageRoute<dynamic>(builder: (_) => const SignupForm());
       case '/user_type':
-        return MaterialPageRoute<dynamic>(builder: (_) => const UserTypeScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const UserTypeScreen());
       case '/welcome':
-        return MaterialPageRoute<dynamic>(builder: (_) => const WelcomeScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const WelcomeScreen());
       case '/user_on_boarding':
-        return MaterialPageRoute<dynamic>(builder: (_) => const UserOnboardingScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const UserOnboardingScreen());
+      case '/verification_code':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ResetVerifyPhone(), settings: settings);
+      case '/create_new_password':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CreateNewPasswordScreen(), settings: settings);
       default:
         return _errorRoute();
     }

@@ -5,22 +5,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/helpers/api_calls.dart';
+import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 
-/// Reset Password Screen
-class ResetPasswordScreen extends StatefulWidget {
-
+/// Continue w/ phone screen
+class ContinueWithPhone extends StatefulWidget {
   /// Constructor
-  const ResetPasswordScreen({Key? key}) : super(key: key);
+  const ContinueWithPhone({Key? key}) : super(key: key);
 
   @override
-  _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
+  _ContinueWithPhoneState createState() => _ContinueWithPhoneState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+class _ContinueWithPhoneState extends State<ContinueWithPhone> {
   String _dialCode = '+1';
-
+  bool isPhoneValid = false;
   TextEditingController phoneController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -52,17 +51,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    AppTextConstants.resetPassword,
+                    AppTextConstants.continueWithPhone,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 25,
                     ),
                   ),
                   SizedBox(
-                    height: 20.h
+                    height: 20.h,
                   ),
                   Text(
-                    AppTextConstants.enterYourEmailID,
+                    AppTextConstants.codeDescription,
                     style: const TextStyle(
                       color: Colors.black,
                       fontFamily: 'Gilroy',
@@ -71,57 +70,24 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: 40.h
-                  ),
-                  Text(
-                    AppTextConstants.email,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15
-                    ),
-                  ),
-                  SizedBox(
-                      height: 15.h
-                  ),
-                  TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      hintText: AppTextConstants.emailHint,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                        BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                      height: 15.h
+                    height: 40.h,
                   ),
                   Text(
                     AppTextConstants.enterPhoneNumber,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15
-                    ),
+                        fontWeight: FontWeight.w600, fontSize: 15),
                   ),
-                  SizedBox(
-                      height: 15.h
-                  ),
+                  SizedBox(height: 15.h),
                   TextField(
                     controller: phoneController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
+                      hintText: AppTextConstants.phoneNumberHint,
                       prefixIcon: SizedBox(
                         child: CountryCodePicker(
                           onChanged: _onCountryChange,
                           initialSelection: AppTextConstants.defaultCountry,
-                          favorite: const ['+1', 'US'],
+                          favorite: ['+1', 'US'],
                         ),
                       ),
                       hintStyle: TextStyle(
@@ -130,10 +96,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                        BorderSide(
-                          color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -149,23 +112,20 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: _apiForgotPassword,
+            onPressed: _apiCall,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
-                  color: AppColors.silver,
+                  color: AppColors.cloud,
                 ),
-                borderRadius: BorderRadius.circular(18.r),
+                borderRadius: BorderRadius.circular(18), // <-- Radius
               ),
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white, // <-- Splash color
             ),
             child: Text(
-              AppTextConstants.resetPassword,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+              AppTextConstants.continueText,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
@@ -173,18 +133,26 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 
-  /// Country code
-  void _onCountryChange(CountryCode countryCode) => _dialCode = countryCode.dialCode.toString();
+  /// Method for getting the country code
+  void _onCountryChange(CountryCode countryCode) =>
+      _dialCode = countryCode.dialCode.toString();
 
-  /// Calls the forgot password API
-  void _apiForgotPassword(){
-    ApiCalls.forgotPassword(context, emailController.text, phoneController.text);
+  /// Method for calling the API
+  void _apiCall() {
+    // ApiCalls.sendCode(context, _dialCode + phoneController.text); // Temporary commented out for setting up other API Integration
+    Navigator.push(
+        context,
+        MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) =>
+                SignupVerify(phoneNumber: _dialCode + phoneController.text)));
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<TextEditingController>('phoneController', phoneController));
-    properties.add(DiagnosticsProperty<TextEditingController>('emailController', emailController));
+    properties.add(DiagnosticsProperty<bool>('isPhoneValid', isPhoneValid));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'phoneController', phoneController));
   }
 }

@@ -37,20 +37,23 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_native_splash: ^1.2.4
   introduction_screen: ^2.1.0
-  dots_indicator: ^2.0.0
-  carousel_slider: ^4.0.0
-  country_code_picker: ^2.0.2
+  dots_indicator: ^2.0.0 #this library is for the dots indicator
+  carousel_slider: ^4.0.0 #this library is for the carousel
+  country_code_picker: ^2.0.2 #this library is for the list of phone country code
   custom_check_box: ^0.0.4
-  table_calendar: ^3.0.3
+  table_calendar: ^3.0.3 #this library is for calendar api
   flutter_screenutil: ^5.0.0+2
   flutter_svg: ^0.22.0
   get: ^4.5.1  #this library is for state management
   flutter_keyboard_visibility: ^5.1.0 #this library is for checking keyboard visibility 
-  badges: ^2.0.1
-  twilio_flutter: ^0.0.9
-  flutter_image_slideshow: ^0.1.2
-  http: ^0.13.4
-
+  badges: ^2.0.1 #this library is for badges model
+  twilio_flutter: ^0.0.9 #this library is for phone verification using twilio api
+  flutter_image_slideshow: ^0.1.2 #this library is for slideshow
+  http: ^0.13.4 #this library is for http client
+  email_validator: ^2.0.1 #this library is for email validator
+  flutter_secure_storage: ^5.0.2 #this library is for secure storage for token
+  advance_notification: ^1.0.5 #this library is for notification
+  pinput: ^1.2.2 #this library is for the 4-digit code
 
 dev_dependencies:
   flutter_test:

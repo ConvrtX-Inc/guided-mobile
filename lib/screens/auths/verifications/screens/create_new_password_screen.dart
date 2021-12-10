@@ -9,28 +9,14 @@ import 'package:guided/helpers/api_calls.dart';
 class CreateNewPasswordScreen extends StatefulWidget {
 
   /// Constructor
-  const CreateNewPasswordScreen({Key? key, required this.code, required this.phoneNumber}) : super(key: key);
-
-  /// 4 digit code
-  final String code;
-
-  /// User phone number
-  final String phoneNumber;
+  const CreateNewPasswordScreen({Key? key}) : super(key: key);
 
   @override
-  _CreateNewPasswordScreenState createState() => _CreateNewPasswordScreenState(code, phoneNumber);
+  _CreateNewPasswordScreenState createState() => _CreateNewPasswordScreenState();
 
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(StringProperty('code', code));
-    properties.add(StringProperty('phoneNumber', phoneNumber));
-  }
 }
 
 class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
-
-  _CreateNewPasswordScreenState(this.code, this.phoneNumber);
 
   TextEditingController newPassword = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
