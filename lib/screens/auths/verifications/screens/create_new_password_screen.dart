@@ -1,23 +1,22 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/helpers/api_calls.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Create new password screen
 class CreateNewPasswordScreen extends StatefulWidget {
-
   /// Constructor
   const CreateNewPasswordScreen({Key? key}) : super(key: key);
 
   @override
-  _CreateNewPasswordScreenState createState() => _CreateNewPasswordScreenState();
-
+  _CreateNewPasswordScreenState createState() =>
+      _CreateNewPasswordScreenState();
 }
 
 class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
-
   TextEditingController newPassword = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
 
@@ -29,6 +28,10 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+
+    final Map<String, dynamic> screenArguments =
+        // ignore: cast_nullable_to_non_nullable
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
       appBar: AppBar(
@@ -61,9 +64,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       fontSize: 25,
                     ),
                   ),
-                  SizedBox(
-                    height: 20.h
-                  ),
+                  SizedBox(height: 20.h),
                   Text(
                     AppTextConstants.yourPasswordMustBeDifferent,
                     style: const TextStyle(
@@ -73,19 +74,13 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(
-                      height: 40.h
-                  ),
+                  SizedBox(height: 40.h),
                   Text(
                     AppTextConstants.newPassword,
                     style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15
+                        fontWeight: FontWeight.w600, fontSize: 15),
                   ),
-                  ),
-                  SizedBox(
-                      height: 20.h
-                  ),
+                  SizedBox(height: 20.h),
                   TextField(
                     controller: newPassword,
                     obscureText: true,
@@ -97,22 +92,15 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                        BorderSide(
-                          color: Colors.grey,
-                          width: 0.2.w
-                        ),
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 20.h
-                  ),
+                  SizedBox(height: 20.h),
                   Text(
                     AppTextConstants.confirmPassword,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15
-                    ),
+                        fontWeight: FontWeight.w600, fontSize: 15),
                   ),
                   SizedBox(
                     height: 15.h,
@@ -128,10 +116,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                        BorderSide(
-                          color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -147,7 +132,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: _checkPassword,
+            onPressed: () async => setPasswordAPI(screenArguments),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -160,10 +145,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             ),
             child: Text(
               AppTextConstants.setPassword,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
@@ -171,12 +153,17 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     );
   }
 
-  /// Method for checking the password
-  void _checkPassword(){
-    if(newPassword.text == confirmPassword.text){
-      ApiCalls.resetPassword(confirmPassword.text, code, phoneNumber);
-    }
-    else{
+  Future<void> setPasswordAPI(Map<String, dynamic> verificationDetails) async {
+    final Map<String, dynamic> passwordDetails = {
+      'password': confirmPassword.text,
+      'hash': verificationDetails['hash']
+    };
+
+    if (newPassword.text == confirmPassword.text) {
+      await APIServices().request(AppAPIPath.resetPasswordUrl, RequestType.POST,
+          data: passwordDetails);
+      await Navigator.pushNamed(context, '/login');
+    } else {
       setState(() {
         isPasswordMatch = true;
       });
@@ -186,10 +173,17 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<TextEditingController>('newPassword', newPassword));
-    properties.add(DiagnosticsProperty<TextEditingController>('confirmPassword', confirmPassword));
-    properties.add(DiagnosticsProperty<bool>('isPasswordMatch', isPasswordMatch));
+    properties.add(
+        DiagnosticsProperty<TextEditingController>('newPassword', newPassword));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'confirmPassword', confirmPassword));
+    // ignore: cascade_invocations
+    properties
+        .add(DiagnosticsProperty<bool>('isPasswordMatch', isPasswordMatch));
+    // ignore: cascade_invocations
     properties.add(StringProperty('code', code));
+    // ignore: cascade_invocations
     properties.add(StringProperty('phoneNumber', phoneNumber));
   }
 }

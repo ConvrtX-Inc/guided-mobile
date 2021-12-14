@@ -103,4 +103,7 @@ class AppColors {
 
   /// hex color for honey yellow
   static HexColor honeyYellow = HexColor('#FDB726');
+
+  /// hex color for cod gray
+  static HexColor codGray = HexColor('#090909');
 }

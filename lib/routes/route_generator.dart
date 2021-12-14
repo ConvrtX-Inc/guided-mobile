@@ -12,6 +12,7 @@ import 'package:guided/screens/home/set_booking_date_screen.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_view.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_edit.dart';
+import 'package:guided/screens/main_navigation/content/outfitters/outfitters_list.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_view.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
@@ -32,6 +33,7 @@ import 'package:guided/screens/settings/profile_screen.dart';
 import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
+import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 
 /// Route generator configuration
 class RouteGenerator {
@@ -84,6 +86,9 @@ class RouteGenerator {
       case '/outfitter_edit':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const OutfitterEdit());
+      case '/outfitter_list':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const OutfitterList());
       case '/package_photo':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PackagePhotosScreen());
@@ -134,7 +139,11 @@ class RouteGenerator {
             builder: (_) => const ResetVerifyPhone(), settings: settings);
       case '/create_new_password':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const CreateNewPasswordScreen(), settings: settings);
+            builder: (_) => const CreateNewPasswordScreen(),
+            settings: settings);
+      case '/sign_up_verify':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SignupVerify(), settings: settings);
       default:
         return _errorRoute();
     }

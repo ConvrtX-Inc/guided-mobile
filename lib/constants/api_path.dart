@@ -20,4 +20,18 @@ class AppAPIPath {
 
   /// Returns check verification code url
   static String checkVerificationCodeUrl = 'api/v1/auth/email/confirm';
+
+  /// Returns send verification code for sign up url
+  static String sendVerificationCodeSignUpUrl =
+      'api/v1/auth/verify/mobile/send';
+
+  /// Returns check verification code for sign up url
+  static String checkVericationCodeSignUpUrl =
+      'api/v1/auth/verify/mobile/check';
+
+  /// Returns create outffiter url
+  static String createOutfitterUrl = 'api/v1/activity-outfitter';
+
+  /// Retunrs reset password url
+  static String resetPasswordUrl = 'api/v1/auth/reset/password';
 }

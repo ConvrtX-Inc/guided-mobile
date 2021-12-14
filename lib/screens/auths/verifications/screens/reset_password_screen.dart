@@ -156,6 +156,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   void _onCountryChange(CountryCode countryCode) =>
       _dialCode = countryCode.dialCode.toString();
 
+  /// Methode for caling the API
   Future<void> sendVerificationCode() async {
     final Map<String, dynamic> userDetails = {
       'email': emailController.text,

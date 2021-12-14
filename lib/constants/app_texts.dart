@@ -652,6 +652,9 @@ class AppTextConstants {
 
   /// Returns token text
   static String userToken = 'user_token';
+
+  /// Returns bigger bullet
+  static String biggerBullet = '●';
 }
 
 /// Class for error messages text

@@ -6,40 +6,22 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/helpers/api_calls.dart';
-import 'package:guided/screens/auths/verifications/screens/create_new_password_screen.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 
 /// Reset password verification screen
 class ResetVerifyPhone extends StatefulWidget {
   /// Constructor
-  // const ResetVerifyPhone({Key? key, required this.email, required this.phoneNumber}) : super(key: key);
   const ResetVerifyPhone({Key? key}) : super(key: key);
-  // /// user's email
-  // final String email;
-
-  // /// user's phone number
-  // final String phoneNumber;
 
   @override
-  // ignore: no_logic_in_create_state
-  // _ResetVerifyPhoneState createState() => _ResetVerifyPhoneState(email, phoneNumber);
   _ResetVerifyPhoneState createState() => _ResetVerifyPhoneState();
-
-  // @override
-  // void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  //   super.debugFillProperties(properties);
-  //   properties.add(StringProperty('email', email));
-  //   // ignore: cascade_invocations
-  //   properties.add(StringProperty('phoneNumber', phoneNumber));
-  // }
 }
 
 class _ResetVerifyPhoneState extends State<ResetVerifyPhone> {
-
   final TextEditingController _verifyCodeController = TextEditingController();
 
+  /// Method for verifying code
   Future<void> verifyCode(Map<String, dynamic> userDetails) async {
     final Map<String, dynamic> verificationDetails =
         Map<String, dynamic>.from(userDetails);
@@ -51,6 +33,16 @@ class _ResetVerifyPhoneState extends State<ResetVerifyPhone> {
         data: verificationDetails);
     await Navigator.pushNamed(context, '/create_new_password',
         arguments: verificationDetails);
+  }
+
+  /// Method for resending code
+  Future<void> resendCode(Map<String, dynamic> details) async {
+    final Map<String, dynamic> phoneDetails =
+        Map<String, dynamic>.from(details);
+
+    await APIServices().request(
+        AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
+        data: phoneDetails);
   }
 
   @override
@@ -142,7 +134,7 @@ class _ResetVerifyPhoneState extends State<ResetVerifyPhone> {
                           ),
                         ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () => resendCode(screenArguments),
                           child: Text(
                             AppTextConstants.resendOTP,
                             style: TextStyle(
@@ -155,23 +147,6 @@ class _ResetVerifyPhoneState extends State<ResetVerifyPhone> {
                         ),
                       ],
                     ),
-                    // SizedBox(
-                    //   height: 20.h,
-                    // ),
-                    // Center(
-                    //   child: SizedBox(
-                    //     child: incorrectOTP
-                    //         ? Text(
-                    //             AppTextConstants.authenticationFailed,
-                    //             style: const TextStyle(
-                    //               fontSize: 17,
-                    //               fontFamily: 'Gilroy',
-                    //               color: Colors.red,
-                    //             ),
-                    //           )
-                    //         : const Text(''),
-                    //   ),
-                    // ),
                     SizedBox(
                       height: 30.h,
                     ),

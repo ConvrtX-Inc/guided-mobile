@@ -2,10 +2,11 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/helpers/api_calls.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Continue w/ phone screen
 class ContinueWithPhone extends StatefulWidget {
@@ -112,7 +113,7 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: _apiCall,
+            onPressed: () async => sendVerification(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -138,13 +139,16 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
       _dialCode = countryCode.dialCode.toString();
 
   /// Method for calling the API
-  void _apiCall() {
-    // ApiCalls.sendCode(context, _dialCode + phoneController.text); // Temporary commented out for setting up other API Integration
-    Navigator.push(
-        context,
-        MaterialPageRoute<dynamic>(
-            builder: (BuildContext context) =>
-                SignupVerify(phoneNumber: _dialCode + phoneController.text)));
+  Future<void> sendVerification() async {
+    final Map<String, dynamic> phoneDetails = {
+      'phone_number': _dialCode + phoneController.text
+    };
+
+    await APIServices().request(
+        AppAPIPath.sendVerificationCodeSignUpUrl, RequestType.POST,
+        data: phoneDetails);
+    await Navigator.pushNamed(context, '/sign_up_verify',
+        arguments: phoneDetails);
   }
 
   @override
