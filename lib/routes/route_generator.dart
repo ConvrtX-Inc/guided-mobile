@@ -122,9 +122,9 @@ class RouteGenerator {
             builder: (_) => const ResetPasswordScreen());
       case '/continue_with_phone':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const ContinueWithPhone());
+            builder: (_) => const ContinueWithPhone(), settings: settings);
       case '/sign_up_form':
-        return MaterialPageRoute<dynamic>(builder: (_) => const SignupForm());
+        return MaterialPageRoute<dynamic>(builder: (_) => const SignupForm(), settings: settings);
       case '/user_type':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const UserTypeScreen());

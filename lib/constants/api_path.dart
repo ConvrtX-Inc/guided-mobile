@@ -32,6 +32,9 @@ class AppAPIPath {
   /// Returns create outffiter url
   static String createOutfitterUrl = 'api/v1/activity-outfitter';
 
-  /// Retunrs reset password url
+  /// Returns reset password url
   static String resetPasswordUrl = 'api/v1/auth/reset/password';
+
+  /// Returns sign up url
+  static String signupUrl = 'api/v1/auth/email/register';
 }

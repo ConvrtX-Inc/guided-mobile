@@ -1,3 +1,4 @@
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -164,9 +165,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
           data: passwordDetails);
       await Navigator.pushNamed(context, '/login');
     } else {
-      setState(() {
-        isPasswordMatch = true;
-      });
+      AdvanceSnackBar(message: ErrorMessageConstants.passwordDoesNotMatch)
+          .show(context);
     }
   }
 

@@ -676,4 +676,7 @@ class ErrorMessageConstants {
 
   /// Returns 'Password is Empty' text
   static String emptyPassword = 'Password is Empty';
+
+  /// Returns 'Password does not match' text
+  static String passwordDoesNotMatch = 'Password does not match';
 }

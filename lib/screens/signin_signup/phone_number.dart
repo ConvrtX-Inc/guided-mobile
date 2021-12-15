@@ -27,6 +27,10 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
+    final Map<String, dynamic> screenArguments =
+        // ignore: cast_nullable_to_non_nullable
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -113,7 +117,7 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () async => sendVerification(),
+            onPressed: () async => sendVerification(screenArguments),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -139,16 +143,21 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
       _dialCode = countryCode.dialCode.toString();
 
   /// Method for calling the API
-  Future<void> sendVerification() async {
+  Future<void> sendVerification(Map<String, dynamic> data) async {
     final Map<String, dynamic> phoneDetails = {
-      'phone_number': _dialCode + phoneController.text
+      'phone_number': _dialCode + phoneController.text,
     };
 
+    final Map<String, dynamic> signupDetails = Map<String, dynamic>.from(data);
+    signupDetails['phone_number'] = _dialCode + phoneController.text;
+    signupDetails['country_code'] = _dialCode.substring(0);
+    
     await APIServices().request(
         AppAPIPath.sendVerificationCodeSignUpUrl, RequestType.POST,
         data: phoneDetails);
+        
     await Navigator.pushNamed(context, '/sign_up_verify',
-        arguments: phoneDetails);
+        arguments: signupDetails);
   }
 
   @override

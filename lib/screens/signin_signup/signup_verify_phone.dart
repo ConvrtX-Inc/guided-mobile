@@ -20,37 +20,6 @@ class _SignupVerifyState extends State<SignupVerify> {
   final TextEditingController _verifyCodeController = TextEditingController();
   bool incorrectOTP = false;
 
-  /// Method for verifying Code
-  Future<void> verifyCode(Map<String, dynamic> phoneDetails) async {
-    final Map<String, dynamic> verificationDetails =
-        Map<String, dynamic>.from(phoneDetails);
-
-    verificationDetails['verifyCode'] = _verifyCodeController.text;
-
-    if (_verifyCodeController.text.isNotEmpty) {
-      incorrectOTP = false;
-      await APIServices().request(
-          AppAPIPath.checkVericationCodeSignUpUrl, RequestType.POST,
-          data: verificationDetails);
-      await Navigator.pushNamed(context, '/sign_up_form',
-          arguments: verificationDetails);
-    } else {
-      setState(() {
-        incorrectOTP = true;
-      });
-    }
-  }
-
-  /// Method for resending code
-  Future<void> resendCode(Map<String, dynamic> details) async {
-    final Map<String, dynamic> phoneDetails =
-        Map<String, dynamic>.from(details);
-
-    await APIServices().request(
-        AppAPIPath.sendVerificationCodeSignUpUrl, RequestType.POST,
-        data: phoneDetails);
-  }
-
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -96,7 +65,7 @@ class _SignupVerifyState extends State<SignupVerify> {
                       height: 20.h,
                     ),
                     Text(
-                      'Verification code sent to your phone + ${screenArguments['phone_number']}',
+                      'Verification code sent to your phone ${screenArguments['phone_number'].toString()}',
                       style: const TextStyle(
                         color: Colors.black,
                         fontFamily: 'Gilroy',
@@ -208,5 +177,39 @@ class _SignupVerifyState extends State<SignupVerify> {
         ),
       ),
     );
+  }
+
+  /// Method for verifying Code
+  Future<void> verifyCode(Map<String, dynamic> data) async {
+    print(data['phone_number']);
+    final Map<String, dynamic> details = {
+      'phone_number': data['phone_number'],
+      'verifyCode': _verifyCodeController.text
+    };
+    
+    print(details);
+    if (_verifyCodeController.text.isNotEmpty) {
+      incorrectOTP = false;
+      await APIServices().request(
+          AppAPIPath.checkVericationCodeSignUpUrl, RequestType.POST,
+          data: details);
+      await Navigator.pushNamed(context, '/sign_up_form',
+          arguments: data);
+    print(data);
+    } else {
+      setState(() {
+        incorrectOTP = true;
+      });
+    }
+  }
+
+  /// Method for resending code
+  Future<void> resendCode(Map<String, dynamic> details) async {
+    final Map<String, dynamic> phoneDetails =
+        Map<String, dynamic>.from(details);
+
+    await APIServices().request(
+        AppAPIPath.sendVerificationCodeSignUpUrl, RequestType.POST,
+        data: phoneDetails);
   }
 }
