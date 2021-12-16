@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:guided/screens/message/message_custom_offer_screen.dart';
+import 'package:guided/screens/message/message_individual_screen.dart';
 import 'package:guided/screens/home/calendar_availability_screen.dart';
 import 'package:guided/screens/home/set_booking_date_screen.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
@@ -49,60 +51,90 @@ class RouteGenerator {
             builder: (_) => const MessageFilterScreen());
       case '/message_inbox':
         return MaterialPageRoute<dynamic>(builder: (_) => const MessageInbox());
+      case '/message_individual':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const MessageIndividual());
+      case '/message_custom_offer':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const MessageCustomOffer());
       case '/splash_screen':
         return MaterialPageRoute<dynamic>(builder: (_) => const SplashScreen());
       case '/profile':
-        return MaterialPageRoute<dynamic>(builder: (_) => const ProfileScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ProfileScreen());
       case '/main_navigation':
-        return MaterialPageRoute<dynamic>(builder: (_) => const MainNavigationScreen(navIndex: 0, contentIndex: 0));
+        return MaterialPageRoute<dynamic>(
+            builder: (_) =>
+                const MainNavigationScreen(navIndex: 0, contentIndex: 0));
       case '/create_package':
-        return MaterialPageRoute<dynamic>(builder: (_) => const CreatePackageScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CreatePackageScreen());
       case '/calendar_availability':
-        return MaterialPageRoute<dynamic>(builder: (_) => const CalendarAvailabilityScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CalendarAvailabilityScreen());
       case '/set_booking_date':
-        return MaterialPageRoute<dynamic>(builder: (_) => const SetBookingDateScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SetBookingDateScreen());
       case '/guide_rule':
-        return MaterialPageRoute<dynamic>(builder: (_) => const GuideRulesScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const GuideRulesScreen());
       case '/advertisement_view':
-        return MaterialPageRoute<dynamic>(builder: (_) => const AdvertisementView());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AdvertisementView());
       case '/advertisement_edit':
-        return MaterialPageRoute<dynamic>(builder: (_) => const AdvertisementEdit());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AdvertisementEdit());
       case '/outfitter_view':
-        return MaterialPageRoute<dynamic>(builder: (_) => const OutfitterView());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const OutfitterView());
       case '/outfitter_edit':
-        return MaterialPageRoute<dynamic>(builder: (_) => const OutfitterEdit());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const OutfitterEdit());
       case '/package_photo':
-        return MaterialPageRoute<dynamic>(builder: (_) => const PackagePhotosScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PackagePhotosScreen());
       case '/package_price':
-        return MaterialPageRoute<dynamic>(builder: (_) => const PackagePriceScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PackagePriceScreen());
       case '/waiver':
         return MaterialPageRoute<dynamic>(builder: (_) => const WaiverScreen());
       case '/free_service':
-        return MaterialPageRoute<dynamic>(builder: (_) => const FreeServicesScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const FreeServicesScreen());
       case '/location':
-        return MaterialPageRoute<dynamic>(builder: (_) => const LocationScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const LocationScreen());
       case '/number_of_traveler':
-        return MaterialPageRoute<dynamic>(builder: (_) => const NumberOfTravelersScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const NumberOfTravelersScreen());
       case '/local_law_taxes':
-        return MaterialPageRoute<dynamic>(builder: (_) => const LocalLawsTaxesScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const LocalLawsTaxesScreen());
       case '/package_info':
-        return MaterialPageRoute<dynamic>(builder: (_) => const PackageInfoScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PackageInfoScreen());
       case '/package_summary':
-        return MaterialPageRoute<dynamic>(builder: (_) => const PackageSummaryScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PackageSummaryScreen());
       case '/sign_up':
         return MaterialPageRoute<dynamic>(builder: (_) => const SignupScreen());
       case '/reset_password':
-        return MaterialPageRoute<dynamic>(builder: (_) => const ResetPasswordScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ResetPasswordScreen());
       case '/continue_with_phone':
-        return MaterialPageRoute<dynamic>(builder: (_) => const ContinueWithPhone());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ContinueWithPhone());
       case '/sign_up_form':
         return MaterialPageRoute<dynamic>(builder: (_) => const SignupForm());
       case '/user_type':
-        return MaterialPageRoute<dynamic>(builder: (_) => const UserTypeScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const UserTypeScreen());
       case '/welcome':
-        return MaterialPageRoute<dynamic>(builder: (_) => const WelcomeScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const WelcomeScreen());
       case '/user_on_boarding':
-        return MaterialPageRoute<dynamic>(builder: (_) => const UserOnboardingScreen());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const UserOnboardingScreen());
       default:
         return _errorRoute();
     }

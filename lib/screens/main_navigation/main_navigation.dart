@@ -21,7 +21,6 @@ class MainNavigationScreen extends StatefulWidget {
 
   @override
   _HomeScreenState createState() => _HomeScreenState(navIndex, contentIndex);
-
 }
 
 class _HomeScreenState extends State<MainNavigationScreen> {
@@ -71,6 +70,7 @@ class _HomeScreenState extends State<MainNavigationScreen> {
             selectedIndex: _selectedIndex,
             setBottomNavigationIndex: setBottomNavigationIndexHandler));
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);

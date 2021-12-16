@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/avatar_bottom_sheet.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/models/advertisement.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
@@ -10,7 +11,6 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Advertisement List Screen
 class AdvertisementList extends StatefulWidget {
-
   /// Constructor
   const AdvertisementList({Key? key}) : super(key: key);
 
@@ -19,32 +19,31 @@ class AdvertisementList extends StatefulWidget {
 }
 
 class _AdvertisementListState extends State<AdvertisementList> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-          physics: const ScrollPhysics(),
-          child: Column(
-            children: <Widget>[
-              ListView.builder(
-                  itemCount: features.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext ctx, int index) {
-                    return AdvertisementFeature(
-                        title: features[index].featureTitle,
-                        imageUrl: features[index].featureImageUrl);
-                  }),
-            ],
-          ),
+      body: SingleChildScrollView(
+        physics: const ScrollPhysics(),
+        child: Column(
+          children: <Widget>[
+            ListView.builder(
+                itemCount: features.length,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (BuildContext ctx, int index) {
+                  return AdvertisementFeature(
+                      title: features[index].featureTitle,
+                      imageUrl: features[index].featureImageUrl);
+                }),
+          ],
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: AppColors.chateauGreen,
-          onPressed: _settingModalBottomSheet,
-          child: const Icon(Icons.add),
-        ),
-      );
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.chateauGreen,
+        onPressed: _settingModalBottomSheet,
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 
   /// Get features items mocked data
@@ -58,6 +57,7 @@ class _AdvertisementListState extends State<AdvertisementList> {
       builder: (BuildContext context) => const AdvertisementAdd(),
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
