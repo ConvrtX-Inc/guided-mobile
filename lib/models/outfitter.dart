@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
 
 /// Class for home features
 class OutfitterModel {

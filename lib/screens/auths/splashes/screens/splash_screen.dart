@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/screens/signin_signup/user_type_screen.dart';
+import 'package:guided/screens/auths/splashes/screens/user_type_screen.dart';
 
 /// Splash screen
 class SplashScreen extends StatelessWidget {

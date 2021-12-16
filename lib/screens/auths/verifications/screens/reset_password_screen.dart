@@ -2,13 +2,13 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/helpers/api_calls.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Reset Password Screen
 class ResetPasswordScreen extends StatefulWidget {
-
   /// Constructor
   const ResetPasswordScreen({Key? key}) : super(key: key);
 
@@ -17,6 +17,7 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  // ignore: unused_field
   String _dialCode = '+1';
 
   TextEditingController phoneController = TextEditingController();
@@ -58,9 +59,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       fontSize: 25,
                     ),
                   ),
-                  SizedBox(
-                    height: 20.h
-                  ),
+                  SizedBox(height: 20.h),
                   Text(
                     AppTextConstants.enterYourEmailID,
                     style: const TextStyle(
@@ -70,19 +69,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(
-                    height: 40.h
-                  ),
+                  SizedBox(height: 40.h),
                   Text(
                     AppTextConstants.email,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15
-                    ),
+                        fontWeight: FontWeight.w600, fontSize: 15),
                   ),
-                  SizedBox(
-                      height: 15.h
-                  ),
+                  SizedBox(height: 15.h),
                   TextField(
                     controller: emailController,
                     decoration: InputDecoration(
@@ -93,26 +86,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                        BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
-                  SizedBox(
-                      height: 15.h
-                  ),
+                  SizedBox(height: 15.h),
                   Text(
                     AppTextConstants.enterPhoneNumber,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15
-                    ),
+                        fontWeight: FontWeight.w600, fontSize: 15),
                   ),
-                  SizedBox(
-                      height: 15.h
-                  ),
+                  SizedBox(height: 15.h),
                   TextField(
                     controller: phoneController,
                     keyboardType: TextInputType.number,
@@ -121,6 +105,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         child: CountryCodePicker(
                           onChanged: _onCountryChange,
                           initialSelection: AppTextConstants.defaultCountry,
+                          // ignore: always_specify_types
                           favorite: const ['+1', 'US'],
                         ),
                       ),
@@ -130,10 +115,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                        BorderSide(
-                          color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -149,7 +131,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: _apiForgotPassword,
+            onPressed: () async => sendVerificationCode(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -162,10 +144,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             ),
             child: Text(
               AppTextConstants.resetPassword,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
@@ -174,17 +153,30 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   /// Country code
-  void _onCountryChange(CountryCode countryCode) => _dialCode = countryCode.dialCode.toString();
+  void _onCountryChange(CountryCode countryCode) =>
+      _dialCode = countryCode.dialCode.toString();
 
-  /// Calls the forgot password API
-  void _apiForgotPassword(){
-    ApiCalls.forgotPassword(context, emailController.text, phoneController.text);
+  /// Methode for caling the API
+  Future<void> sendVerificationCode() async {
+    final Map<String, dynamic> userDetails = {
+      'email': emailController.text,
+      'phone_no': _dialCode + phoneController.text
+    };
+
+    await APIServices().request(
+        AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
+        data: userDetails);
+    await Navigator.pushNamed(context, '/verification_code',
+        arguments: userDetails);
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<TextEditingController>('phoneController', phoneController));
-    properties.add(DiagnosticsProperty<TextEditingController>('emailController', emailController));
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'phoneController', phoneController));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'emailController', emailController));
   }
 }

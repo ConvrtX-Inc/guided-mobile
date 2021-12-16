@@ -5,12 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/screens/signin_signup/continue_with_phone.dart';
-import 'package:guided/screens/signin_signup/login_screen.dart';
 
 /// Sign up screen
 class SignupScreen extends StatefulWidget {
-
   /// Constructor
   const SignupScreen({Key? key}) : super(key: key);
 
@@ -19,6 +16,14 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  final TextEditingController name = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+
+  final FocusNode _name = FocusNode();
+  final FocusNode _email = FocusNode();
+  final FocusNode _password = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -105,47 +110,39 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 20.h
-                  ),
+                  SizedBox(height: 20.h),
                   Text(
                     AppTextConstants.name,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(
-                      height: 15.h
-                  ),
+                  SizedBox(height: 15.h),
                   TextField(
+                    controller: name,
+                    focusNode: _name,
                     decoration: InputDecoration(
-                      hintText: AppTextConstants.nameHint,
+                      hintText: AppTextConstants.name,
                       hintStyle: TextStyle(
                         color: AppColors.grey,
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
-                        borderSide: BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                        borderSide:
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 20.h
-                  ),
+                  SizedBox(height: 20.h),
                   Text(
                     AppTextConstants.email,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15
-                    ),
+                        fontWeight: FontWeight.w600, fontSize: 15),
                   ),
-                  SizedBox(
-                      height: 15.h
-                  ),
+                  SizedBox(height: 15.h),
                   TextField(
+                    controller: email,
+                    focusNode: _email,
                     decoration: InputDecoration(
                       hintText: AppTextConstants.emailHint,
                       hintStyle: TextStyle(
@@ -153,27 +150,22 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
-                        borderSide: BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                        borderSide:
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
-                  SizedBox(
-                      height: 15.h
-                  ),
+                  SizedBox(height: 15.h),
                   Text(
                     AppTextConstants.password,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15
-                    ),
+                        fontWeight: FontWeight.w600, fontSize: 15),
                   ),
-                  SizedBox(
-                      height: 15.h
-                  ),
+                  SizedBox(height: 15.h),
                   TextField(
+                    controller: password,
+                    obscureText: true,
+                    focusNode: _password,
                     decoration: InputDecoration(
                       hintText: AppTextConstants.passwordHint,
                       hintStyle: TextStyle(
@@ -181,22 +173,23 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
-                        borderSide: BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                        borderSide:
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
-                  SizedBox(
-                      height: 20.h
-                  ),
+                  SizedBox(height: 20.h),
                   SizedBox(
                     width: width,
                     height: 60.h,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/continue_with_phone');
+                        Navigator.pushNamed(context, '/continue_with_phone',
+                            arguments: {
+                              'name': name.text,
+                              'email': email.text,
+                              'password': password.text
+                            });
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
@@ -211,15 +204,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: Text(
                         AppTextConstants.signup,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16
-                        ),
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                     ),
                   ),
-                  SizedBox(
-                      height: 20.h
-                  ),
+                  SizedBox(height: 20.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[

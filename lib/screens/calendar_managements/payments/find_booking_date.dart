@@ -15,98 +15,90 @@ Future<dynamic> findBookingDates(BuildContext context) {
       builder: (BuildContext context) {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-          return ScreenUtilInit(
-            builder: () => SingleChildScrollView(
-                child: Container(
-              height: 726.h,
-              padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 42.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6.r),
-                            color: Colors.grey.withOpacity(0.2)),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                        ),
+          return SingleChildScrollView(
+              child: Container(
+            height: 726.h,
+            padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 42.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6.r),
+                          color: Colors.grey.withOpacity(0.2)),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
                       ),
-                      const Spacer(),
-                      InkWell(
-                        onTap: () {},
-                        child: Text(
-                          AppTextConstants.cancel,
-                          style: TextStyle(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w600
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 24.h,
-                  ),
-                  Text(
-                    AppTextConstants.findBookingDates,
-                    style:
-                        TextStyle(
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.w600
-                        ),
-                  ),
-                  SizedBox(
-                    height: 60.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      getMonths(name: 'January', data: 0),
-                      getMonths(name: 'February', data: 0),
-                      getMonths(name: 'March', data: 0),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 27.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      getMonths(name: 'April', data: 2),
-                      getMonths(name: 'May', data: 1),
-                      getMonths(name: 'June', data: 0),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 27.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      getMonths(name: 'July', data: 0),
-                      getMonths(name: 'August', data: 3),
-                      getMonths(name: 'September', data: 0),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 27.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      getMonths(name: 'October', data: 0),
-                      getMonths(name: 'November', data: 0),
-                      getMonths(name: 'December', data: 0),
-                    ],
-                  ),
-                ],
-              ),
-            )),
-            designSize: const Size(375, 812),
-          );
+                    ),
+                    const Spacer(),
+                    InkWell(
+                      onTap: () {},
+                      child: Text(
+                        AppTextConstants.cancel,
+                        style: TextStyle(
+                            fontSize: 15.sp, fontWeight: FontWeight.w600),
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 24.h,
+                ),
+                Text(
+                  AppTextConstants.findBookingDates,
+                  style:
+                      TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+                ),
+                SizedBox(
+                  height: 60.h,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    getMonths(name: 'January', data: 0),
+                    getMonths(name: 'February', data: 0),
+                    getMonths(name: 'March', data: 0),
+                  ],
+                ),
+                SizedBox(
+                  height: 27.h,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    getMonths(name: 'April', data: 2),
+                    getMonths(name: 'May', data: 1),
+                    getMonths(name: 'June', data: 0),
+                  ],
+                ),
+                SizedBox(
+                  height: 27.h,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    getMonths(name: 'July', data: 0),
+                    getMonths(name: 'August', data: 3),
+                    getMonths(name: 'September', data: 0),
+                  ],
+                ),
+                SizedBox(
+                  height: 27.h,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    getMonths(name: 'October', data: 0),
+                    getMonths(name: 'November', data: 0),
+                    getMonths(name: 'December', data: 0),
+                  ],
+                ),
+              ],
+            ),
+          ));
         });
       });
 }
@@ -133,29 +125,28 @@ Widget getMonths({required String name, required int data}) {
             ),
           ),
           if (data >= 1)
-          Positioned(
-            right: -5,
-            top: -7,
-            child: Container(
-              height: 28.h,
-              width: 28.h,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.green,
+            Positioned(
+              right: -5,
+              top: -7,
+              child: Container(
+                height: 28.h,
+                width: 28.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.green,
+                ),
+                child: Center(
+                    child: Text(
+                  '$data',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w500),
+                )),
               ),
-              child: Center(
-                  child: Text(
-                '$data',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w500),
-              )),
-            ),
-          )
+            )
         ]),
       ),
     );
   });
 }
-

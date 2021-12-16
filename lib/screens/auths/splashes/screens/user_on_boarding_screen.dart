@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/signin_signup/welcome_screen.dart';
+import 'package:guided/screens/auths/splashes/screens/welcome_screen.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 /// User on boarding screen

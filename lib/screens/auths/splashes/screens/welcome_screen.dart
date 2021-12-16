@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/screens/signin_signup/login_screen.dart';
+import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
 
 /// Welcome screen
@@ -16,7 +16,6 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
