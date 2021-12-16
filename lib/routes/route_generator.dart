@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
-import 'package:guided/screens/messsage/message_custom_offer_screen.dart';
 import 'package:guided/screens/home/calendar_availability_screen.dart';
 import 'package:guided/screens/home/set_booking_date_screen.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
