@@ -6,12 +6,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:guided/helpers/hexColor.dart';
-import 'package:guided/settings/profile_screen.dart';
-import 'package:guided/signin_signup/login_screen.dart';
-import 'package:guided/signin_signup/splashScreen.dart';
-import 'package:guided/main_navigation/main_navigation.dart';
-
-import 'routes/route_generator.dart';
+import 'package:guided/routes/route_generator.dart';
 
 String _defaultHome = '/message_individual';
 void main() {
@@ -21,7 +16,9 @@ void main() {
   runApp(const MyApp());
 }
 
+/// My App Root
 class MyApp extends StatelessWidget {
+  /// Constructor
   const MyApp({Key? key}) : super(key: key);
 
   // This widgets is the root of your application.
@@ -32,7 +29,7 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return MaterialApp(
+          return const MaterialApp(
             home: Splash(),
           );
         } else {
@@ -68,7 +65,11 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// Splash Screen for waiting
 class Splash extends StatelessWidget {
+  /// Constructor
+  const Splash({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,10 +86,13 @@ class Splash extends StatelessWidget {
   }
 }
 
+/// Initialization
 class Init {
   Init._();
+  /// static final instance
   static final instance = Init._();
 
+  /// async initialization
   Future initialize() async {
     // This is where you can initialize the resources needed by your app while
     // the splash screen is displayed.  Remove the following example because
