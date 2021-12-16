@@ -38,29 +38,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   final TextEditingController _date = TextEditingController();
   final TextEditingController _description = TextEditingController();
 
-  /// Methode for caling the API
-  Future<void> createOutfitter() async {
-    final Map<String, dynamic> outfitterDetails = {
-      'user_id': await SecureStorage.readValue(key: SecureStorage.userIdKey),
-      'title': _title.text,
-      'price': int.parse(_price.text),
-      'product_link': _productLink.text,
-      'country': _country.text,
-      'address': _street.text + _city.text + _province.text + _postalCode.text,
-      'availability_date': _date.text,
-      'description': _description.text
-    };
-
-    await APIServices().request(AppAPIPath.createOutfitterUrl, RequestType.POST,
-        needAccessToken: true, data: outfitterDetails);
-
-    await Navigator.push(
-      context,
-      MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => const MainContent(initIndex: 2)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -422,6 +399,29 @@ class _OutfitterAddState extends State<OutfitterAdd> {
           ),
         ),
       ),
+    );
+  }
+
+  /// Methode for caling the API
+  Future<void> createOutfitter() async {
+    final Map<String, dynamic> outfitterDetails = {
+      'user_id': await SecureStorage.readValue(key: SecureStorage.userIdKey),
+      'title': _title.text,
+      'price': int.parse(_price.text),
+      'product_link': _productLink.text,
+      'country': _country.text,
+      'address': _street.text + _city.text + _province.text + _postalCode.text,
+      'availability_date': _date.text,
+      'description': _description.text
+    };
+
+    await APIServices().request(AppAPIPath.createOutfitterUrl, RequestType.POST,
+        needAccessToken: true, data: outfitterDetails);
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute<dynamic>(
+          builder: (BuildContext context) => const MainContent(initIndex: 2)),
     );
   }
 }

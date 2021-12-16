@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/common/widgets/avatar_bottom_sheet.dart';
+import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/models/advertisement.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
@@ -50,7 +49,7 @@ class _AdvertisementListState extends State<AdvertisementList> {
   List<AdvertisementModel> features = AdvertisementUtil.getMockFeatures();
 
   void _settingModalBottomSheet() {
-    showAvatarModalBottomSheet(
+    show_avatar.showAvatarModalBottomSheet(
       expand: false,
       context: context,
       backgroundColor: Colors.transparent,

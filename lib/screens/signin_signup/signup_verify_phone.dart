@@ -187,7 +187,6 @@ class _SignupVerifyState extends State<SignupVerify> {
       'verifyCode': _verifyCodeController.text
     };
     
-    print(details);
     if (_verifyCodeController.text.isNotEmpty) {
       incorrectOTP = false;
       await APIServices().request(
@@ -195,7 +194,6 @@ class _SignupVerifyState extends State<SignupVerify> {
           data: details);
       await Navigator.pushNamed(context, '/sign_up_form',
           arguments: data);
-    print(data);
     } else {
       setState(() {
         incorrectOTP = true;
