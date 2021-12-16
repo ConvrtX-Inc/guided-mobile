@@ -6,7 +6,6 @@ import 'package:guided/models/outfitter.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_add.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/widget/outfitter_features.dart';
 import 'package:guided/utils/outfitter.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Outfitter List Screen
 class OutfitterList extends StatefulWidget {
