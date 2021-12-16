@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/routes/route_generator.dart';
 
-String _defaultHome = '/login';
+String _defaultHome = '/message_individual';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIOverlays(

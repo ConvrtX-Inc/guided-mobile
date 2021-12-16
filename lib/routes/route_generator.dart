@@ -7,6 +7,8 @@ import 'package:guided/screens/auths/splashes/screens/welcome_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/create_new_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
+import 'package:guided/screens/message/message_custom_offer_screen.dart';
+import 'package:guided/screens/message/message_individual_screen.dart';
 import 'package:guided/screens/home/calendar_availability_screen.dart';
 import 'package:guided/screens/home/set_booking_date_screen.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
@@ -53,6 +55,12 @@ class RouteGenerator {
             builder: (_) => const MessageFilterScreen());
       case '/message_inbox':
         return MaterialPageRoute<dynamic>(builder: (_) => const MessageInbox());
+      case '/message_individual':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const MessageIndividual());
+      case '/message_custom_offer':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const MessageCustomOffer());
       case '/splash_screen':
         return MaterialPageRoute<dynamic>(builder: (_) => const SplashScreen());
       case '/profile':

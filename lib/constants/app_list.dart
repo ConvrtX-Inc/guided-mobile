@@ -14,6 +14,26 @@ class AppListConstants {
     'Archive'
   ];
 
+  /// use in message offer screen
+  static List<String> packages = <String>['Basic', 'Premium'];
+
+  /// Returns number of people list use in message offer screen
+  static List<String> people = <String>[
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10'
+  ];
+
+  /// Returns number of currency list use in message offer screen
+  static List<String> currency = <String>['CAD', 'USD'];
+
   /// use in badge model screen
   static List<BadgesModel> badges = [
     BadgesModel(1, 'Camping', 'assets/images/badge-Camping.png'),
@@ -64,5 +84,4 @@ class AppListConstants {
     '4:00 - 5:00 PM',
     '6:00 - 7:00 PM',
   ];
-
 }

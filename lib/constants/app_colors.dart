@@ -26,17 +26,32 @@ class AppColors {
   /// Returns Rust Orange color
   static HexColor rustOrange = HexColor('#BF610A');
 
+  /// Returns Light Red color
+  static HexColor lightRed = HexColor('#FF4848');
+
+  /// Returns Teal Green color
+  static HexColor tealGreen = HexColor('#007749');
+
+  /// Returns Deep Green color
+  static HexColor deepGreen = HexColor('#066028');
+
+  /// Returns Porcelain color
+  static HexColor porcelain = HexColor('#ECEFF0');
+
+  /// Returns Platinum color
+  static HexColor platinum = HexColor('#E3E3E3');
+
+  /// Returns Novel color
+  static HexColor novel = HexColor('#ADB1B1');
+
+  /// Returns Coral Pink color
+  static HexColor coralPink = HexColor('#FF7E7E');
+
   /// hex color for primaryGreen
   static HexColor primaryGreen = HexColor('#066028');
 
   /// hex color for grey
   static HexColor grey = HexColor('#979B9B');
-
-  /// hex color for platinum
-  static HexColor platinum = HexColor('#E3E3E3');
-
-  /// hex color for primaryGreen
-  static HexColor lightRed = HexColor('#FF4848');
 
   /// hex color for primaryGreen
   static HexColor doveGrey = HexColor('#696D6D');
@@ -61,9 +76,6 @@ class AppColors {
 
   /// hex color for tropicalRainForest
   static HexColor tropicalRainForest = HexColor('#007749');
-
-  /// hex color for porcelain
-  static HexColor porcelain = HexColor('#F2F2F2');
 
   /// hex color for aqua green
   static HexColor aquaGreen = HexColor('#37DD8D');
@@ -106,4 +118,5 @@ class AppColors {
 
   /// hex color for cod gray
   static HexColor codGray = HexColor('#090909');
+
 }

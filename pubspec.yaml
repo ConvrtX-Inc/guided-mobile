@@ -54,6 +54,9 @@ dependencies:
   flutter_secure_storage: ^5.0.2 #this library is for secure storage for token
   advance_notification: ^1.0.5 #this library is for notification
   pinput: ^1.2.2 #this library is for the 4-digit code
+  flutter_slidable: ^1.1.0 #this is for the slidable list item 
+  date_time_picker: ^2.1.0
+  http: ^0.13.4
 
 dev_dependencies:
   flutter_test:
