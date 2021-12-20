@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
+import 'package:guided/screens/faq/faq.dart';
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
 import 'package:guided/screens/home/calendar_availability_screen.dart';
@@ -32,6 +34,7 @@ import 'package:guided/screens/signin_signup/splash_screen.dart';
 import 'package:guided/screens/signin_signup/user_on_boarding_screen.dart';
 import 'package:guided/screens/signin_signup/user_type_screen.dart';
 import 'package:guided/screens/signin_signup/welcome_screen.dart';
+import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
 
 /// Route generator configuration
 class RouteGenerator {
@@ -135,6 +138,15 @@ class RouteGenerator {
       case '/user_on_boarding':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const UserOnboardingScreen());
+      case '/terms_and_condition':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TermsAndCondition());
+      case '/faq':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const FrequentlyAskQuestion());
+      case '/cancellation_policy':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CancellationPolicy());
       default:
         return _errorRoute();
     }
