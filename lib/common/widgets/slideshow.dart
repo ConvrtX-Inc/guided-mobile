@@ -25,7 +25,6 @@ class SlideShow extends StatelessWidget {
           height: 200.h,
           indicatorColor: Colors.white,
           onPageChanged: (int value) {
-            debugPrint('Page changed: $value');
           },
           autoPlayInterval: 3000,
           isLoop: true,

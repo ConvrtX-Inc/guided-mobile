@@ -131,8 +131,7 @@ class _SettingsCalendarManagementModalState extends State<SettingsCalendarManage
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
+                  Center(
                     child: Row(
                       children: <Widget>[
                         InkWell( // inkwell color
@@ -153,7 +152,7 @@ class _SettingsCalendarManagementModalState extends State<SettingsCalendarManage
                               children: <Widget>[
                                 SizedBox(
                                   height: 70.h,
-                                  width: width-120,
+                                  width: MediaQuery.of(context).size.width * 0.7,
                                   child: ListView.builder(
                                       controller: _controller,
                                       itemCount: 12,

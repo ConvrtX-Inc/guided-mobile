@@ -1,10 +1,15 @@
 // ignore_for_file: file_names
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/screens/main_navigation/content/content_main.dart';
+import 'package:guided/utils/secure_storage.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Adding Advertisement Screen
 class AdvertisementAdd extends StatefulWidget {
@@ -17,6 +22,17 @@ class AdvertisementAdd extends StatefulWidget {
 }
 
 class _AdvertisementAddState extends State<AdvertisementAdd> {
+
+  final TextEditingController title = TextEditingController();
+  final TextEditingController useCurrentLocation = TextEditingController();
+  final TextEditingController country = TextEditingController();
+  final TextEditingController street = TextEditingController();
+  final TextEditingController city = TextEditingController();
+  final TextEditingController province = TextEditingController();
+  final TextEditingController postalCode = TextEditingController();
+  final TextEditingController date = TextEditingController();
+  final TextEditingController description = TextEditingController();
+  final TextEditingController price = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -145,6 +161,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                         height: 20.h,
                       ),
                       TextField(
+                        controller: title,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                           hintText: AppTextConstants.title,
@@ -164,6 +181,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                         height: 20.h,
                       ),
                       TextField(
+                        controller: useCurrentLocation,
                         decoration: InputDecoration(
                           prefixIcon: const Icon(
                             Icons.pin_drop,
@@ -187,6 +205,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                         height: 20.h,
                       ),
                       TextField(
+                        controller: country,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                           hintText: AppTextConstants.canada,
@@ -206,6 +225,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                         height: 20.h,
                       ),
                       TextField(
+                        controller: street,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                           hintText: AppTextConstants.street,
@@ -232,6 +252,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                         height: 20.h
                       ),
                       TextField(
+                        controller: city,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                           hintText: AppTextConstants.city,
@@ -251,6 +272,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                           height: 20.h
                       ),
                       TextField(
+                        controller: province,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                           hintText: AppTextConstants.provinceHint,
@@ -270,6 +292,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                           height: 20.h
                       ),
                       TextField(
+                        controller: postalCode,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                           hintText: AppTextConstants.postalCodeHint,
@@ -289,6 +312,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                         height: 20.h,
                       ),
                       TextField(
+                        controller: date,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                           hintText: AppTextConstants.date,
@@ -308,6 +332,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                         height: 20.h,
                       ),
                       TextField(
+                        controller: description,
                         maxLines: 10,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
@@ -328,6 +353,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                         height: 20.h,
                       ),
                       TextField(
+                        controller: price,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                           hintText: AppTextConstants.price,
@@ -358,9 +384,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
               width: width,
               height: 60.h,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: () async => createAdvertisementData(),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     side: BorderSide(
@@ -379,5 +403,52 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
             ),
           ),
         );
+  }
+
+  /// Method for caling the API
+  Future<void> createAdvertisementData() async {
+    final Map<String, dynamic> outfitterDetails = {
+      'user_id': await SecureStorage.readValue(key: SecureStorage.userIdKey),
+      'title': title.text,
+      'country': country.text,
+      'address': street.text + city.text + province.text + postalCode.text,
+      'ad_date': date.text,
+      'description': description.text,
+      'price': int.parse(price.text),
+      'is_published': false
+    };
+
+    await APIServices().request(AppAPIPath.createAdvertisementUrl, RequestType.POST,
+        needAccessToken: true, data: outfitterDetails);
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute<dynamic>(
+          builder: (BuildContext context) => const MainContent(initIndex: 3)),
+    );
+  }
+  
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<TextEditingController>('title', title));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>('useCurrentLocation', useCurrentLocation));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>('country', country));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>('street', street));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>('city', city));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>('province', province));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>('postalCode', postalCode));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>('date', date));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>('description', description));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>('price', price));
   }
 }

@@ -677,4 +677,35 @@ class AppTextConstants {
 
   /// Returns amount text
   static String amount = 'Amount';
+
+  /// Returns token text
+  static String userToken = 'user_token';
+
+  /// Returns bigger bullet
+  static String biggerBullet = '●';
+}
+
+/// Class for error messages text
+class ErrorMessageConstants {
+  ///Constructor
+  const ErrorMessageConstants();
+
+  /// Returns 'Something went wrong' text
+  static String somethingWenWrong = 'Something went wrong';
+
+  /// Returns 'Incorrect email or Password' text
+  static String loginWrongEmailorPassword = 'Incorrect email or Password';
+
+  /// Returns 'Email is already taken or in use' text
+  static String emailAlreadyInUse = 'Email is already taken or in use';
+
+  /// Returns 'Invalid email' text
+  static String emailInvalidorEmpty = 'Invalid email or empty';
+
+  /// Returns 'Password is Empty' text
+  static String emptyPassword = 'Password is Empty';
+
+  /// Returns 'Password does not match' text
+  static String passwordDoesNotMatch = 'Password does not match';
+
 }
