@@ -167,7 +167,8 @@ class AppTextConstants {
   static String myads = 'My Ads';
 
   /// Returns lorem ipsum sample text
-  static String loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget nibh quis metus venenatis porta nec eget sem. Pellentesque nec ';
+  static String loremIpsum =
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget nibh quis metus venenatis porta nec eget sem. Pellentesque nec ';
 
   /// Returns product name text
   static String productName = 'Product Name';
@@ -179,7 +180,8 @@ class AppTextConstants {
   static String visitOurStore = 'Visit to our store';
 
   /// Returns sample description text
-  static String sampleDescr = 'Sample description goes here to exlpain about your package desils. Sample description goes here to exlpain about your package desils.';
+  static String sampleDescr =
+      'Sample description goes here to exlpain about your package desils. Sample description goes here to exlpain about your package desils.';
 
   /// Returns product link text
   static String productLink = 'Product Link';
@@ -320,7 +322,8 @@ class AppTextConstants {
   static String createNewPassword = 'Create new password';
 
   /// Returns your password must be different from the used password text
-  static String yourPasswordMustBeDifferent = 'Your password must be different from previous used password.';
+  static String yourPasswordMustBeDifferent =
+      'Your password must be different from previous used password.';
 
   /// Returns new password text
   static String newPassword = 'New Password';
@@ -359,7 +362,8 @@ class AppTextConstants {
   static String resetPassword = 'Reset Password';
 
   /// Returns enter your email id
-  static String enterYourEmailID = 'Enter your email ID  or phone number associated with your account and we’ll send a verification code to reset your password';
+  static String enterYourEmailID =
+      'Enter your email ID  or phone number associated with your account and we’ll send a verification code to reset your password';
 
   /// Returns authentication failed notifcation text
   static String authenticationFailed = 'Authentication Failed, Try again!';
@@ -383,7 +387,8 @@ class AppTextConstants {
   static String createYourBusiness = 'Create Your Business\n As A Guide';
 
   /// Returns the application will help you find tourist
-  static String theApplicationWillHelp = 'The application will help you find tourists\n and build to your tourism business';
+  static String theApplicationWillHelp =
+      'The application will help you find tourists\n and build to your tourism business';
 
   /// Returns user on boarding
   static String userOnBoarding = 'User Onboarding';
@@ -419,19 +424,23 @@ class AppTextConstants {
   static String createNewAccount = 'Create A New Account';
 
   /// Returns package description text
-  static String packageDescr = 'Hi John,\nLets Get Started To Build Your Tour Package';
+  static String packageDescr =
+      'Hi John,\nLets Get Started To Build Your Tour Package';
 
   /// Returns select badge text
-  static String selectBadge = 'Please Select Badge That Best Represent Your Interests';
+  static String selectBadge =
+      'Please Select Badge That Best Represent Your Interests';
 
   /// Returns discoveryBadge
-  static String discoveryBadge = 'Discovery Badge will let you discover unique activities hosted by different   local guides and organizations';
+  static String discoveryBadge =
+      'Discovery Badge will let you discover unique activities hosted by different   local guides and organizations';
 
   /// Returns header
   static String header = 'What are the free services do you offer?';
 
   /// Returns subheader
-  static String subHeader = 'These are just the services guests usually expect, but you can add even more after you publish.';
+  static String subHeader =
+      'These are just the services guests usually expect, but you can add even more after you publish.';
 
   /// Returns add new service
   static String addNewService = 'Add new free services';
@@ -452,7 +461,8 @@ class AppTextConstants {
   static String headerLocation = 'Where is your location?';
 
   /// Returns Sub header location text
-  static String subheaderLocation = 'Set current location or enter your location details';
+  static String subheaderLocation =
+      'Set current location or enter your location details';
 
   /// Returns place hint
   static String placeHint = 'Your place name/number + Street/ Road';
@@ -488,7 +498,8 @@ class AppTextConstants {
   static String headerUploadPhoto = 'Upload photos of your service package';
 
   /// Returns sub header upload photo
-  static String subheaderUploadPhoto = 'Upload at least one photo to publish your package overview. You can always add or edit your photos later.';
+  static String subheaderUploadPhoto =
+      'Upload at least one photo to publish your package overview. You can always add or edit your photos later.';
 
   /// Returns destination 1 text
   static String destination1 = 'Destination 1';
@@ -503,7 +514,8 @@ class AppTextConstants {
   static String headerPriceYourPackage = 'Price your package';
 
   /// Returns sub header price your package
-  static String subheaderPriceYourPackage = 'Add your package best price, minimum price, and maximum price';
+  static String subheaderPriceYourPackage =
+      'Add your package best price, minimum price, and maximum price';
 
   /// Returns based price text
   static String basedPrice = 'Based Price';
@@ -566,7 +578,8 @@ class AppTextConstants {
   static String submit = 'Submit';
 
   /// Returns header sub activities text
-  static String headerSubActivities = 'What kind of sub activities should be included';
+  static String headerSubActivities =
+      'What kind of sub activities should be included';
 
   /// Returns add multiple sub activities
   static String addMultipleSubActivities = 'Add Multiple Sub Activities';
@@ -584,13 +597,14 @@ class AppTextConstants {
   static String packageContent = 'Package Content';
 
   /// Returns event content text
-  static String eventContent ='Event Content';
+  static String eventContent = 'Event Content';
 
   /// Returns packages text
   static String packages = 'Packages';
 
   /// Returns home main header text
-  static String homeMainHeader = 'Great news! You have got three requests from your clients. Please check these out';
+  static String homeMainHeader =
+      'Great news! You have got three requests from your clients. Please check these out';
 
   /// Returns earning text
   static String earning = 'Earnings';
@@ -599,7 +613,8 @@ class AppTextConstants {
   static String contactUS = 'Contact US';
 
   /// Returns contact us message text
-  static String contactUsMessage = 'Leave us a message. We’ll get contact you as soon as possible';
+  static String contactUsMessage =
+      'Leave us a message. We’ll get contact you as soon as possible';
 
   /// Returns send text
   static String send = 'Send';
@@ -611,7 +626,8 @@ class AppTextConstants {
   static String headerAvailability = 'First Slot Availability';
 
   /// Returns sub header availability text
-  static String subheaderAvailability = 'Editing your calendar is easy—just select a date to block or unblock it. You can always make changes after you publish.';
+  static String subheaderAvailability =
+      'Editing your calendar is easy—just select a date to block or unblock it. You can always make changes after you publish.';
 
   /// Returns number of people
   static String headerNumberOfPeople = 'Number of people';
@@ -633,4 +649,32 @@ class AppTextConstants {
 
   /// Returns home text
   static String home = 'Home';
+
+  /// Returns manage cards text
+  static String manageCards = 'Manage Cards';
+
+  /// Returns set as default payment text
+  static String setAsDefaultPayment = 'Set as Default Payment';
+
+  /// Returns remove text
+  static String remove = 'Remove';
+
+  /// Returns payment text
+  static String payment = 'Payment';
+
+  /// Returns booking history text
+  static String bookingHistory = 'Booking History';
+
+  /// Returns setup the time duration for the events text
+  static String setupTheTimeDurationForTheEvents =
+      'Setup the time duration for the events';
+
+  /// Returns start date text
+  static String startDate = 'Start Date';
+
+  /// Returns end date text
+  static String endDate = 'End Date';
+
+  /// Returns amount text
+  static String amount = 'Amount';
 }
