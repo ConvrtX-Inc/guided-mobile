@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/screens/signin_signup/user_on_boarding_screen.dart';
 
 /// User type screen
 class UserTypeScreen extends StatefulWidget {

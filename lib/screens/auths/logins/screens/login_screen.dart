@@ -1,17 +1,17 @@
+import 'package:advance_notification/advance_notification.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/helpers/api_calls.dart';
-import 'package:guided/screens/main_navigation/main_navigation.dart';
-import 'package:guided/screens/signin_signup/reset_password_screen.dart';
-import 'package:guided/screens/signin_signup/signup_screen.dart';
+import 'package:guided/utils/secure_storage.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Login Screen
 class LoginScreen extends StatefulWidget {
-
   /// Constructor
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -20,8 +20,57 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final TextEditingController _emailController =
+      TextEditingController(text: 'test1@example.com');
+  final TextEditingController _passwordController =
+      TextEditingController(text: 'string');
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
+
+  bool hidePassword = true;
+  bool buttonIsLoading = false;
+
+  Future<void> login() async {
+    final Map<String, String> credentials = <String, String>{
+      'email': _emailController.text,
+      'password': _passwordController.text
+    };
+
+    if (!EmailValidator.validate(_emailController.text)) {
+      _emailFocus.requestFocus();
+      AdvanceSnackBar(message: ErrorMessageConstants.emailInvalidorEmpty)
+          .show(context);
+      return;
+    }
+
+    if (_passwordController.text.isEmpty) {
+      _passwordFocus.requestFocus();
+      AdvanceSnackBar(message: ErrorMessageConstants.emptyPassword)
+          .show(context);
+      return;
+    }
+    setState(() => buttonIsLoading = true);
+    final dynamic response = await APIServices()
+        .request(AppAPIPath.loginUrl, RequestType.POST, data: credentials);
+
+    if (response is Map) {
+      if (response.containsKey('status')) {
+        if (response['status'] == 422) {
+          AdvanceSnackBar(
+                  message: ErrorMessageConstants.loginWrongEmailorPassword)
+              .show(context);
+        }
+      } else {
+        await SecureStorage.saveValue(
+            key: AppTextConstants.userToken, value: response['token']);
+        // ignore: avoid_dynamic_calls
+        await SecureStorage.saveValue(
+            // ignore: avoid_dynamic_calls
+            key: SecureStorage.userIdKey, value: response['user']['id']);
+        await Navigator.of(context).pushNamed('/main_navigation');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                 Text(
+                  Text(
                     AppTextConstants.login,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -51,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   ListTile(
                     onTap: () {
-                       // Insert here the Facebook API Integration
+                      // Insert here the Facebook API Integration
                     },
                     shape: RoundedRectangleBorder(
                       side: BorderSide(
@@ -76,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   ListTile(
                     onTap: () {
-                       // Insert here the Google API Integration
+                      // Insert here the Google API Integration
                     },
                     shape: RoundedRectangleBorder(
                       side: BorderSide(
@@ -102,15 +151,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     AppTextConstants.email,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15
-                    ),
+                        fontWeight: FontWeight.w600, fontSize: 15),
                   ),
-                  SizedBox(
-                    height: 15.h
-                  ),
+                  SizedBox(height: 15.h),
                   TextField(
-                    controller: emailController,
+                    controller: _emailController,
+                    focusNode: _emailFocus,
                     decoration: InputDecoration(
                       hintText: AppTextConstants.emailHint,
                       hintStyle: TextStyle(
@@ -119,10 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                          BorderSide(
-                              color: Colors.grey,
-                              width: 0.2.w
-                          ),
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -132,15 +175,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     AppTextConstants.password,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15
-                    ),
+                        fontWeight: FontWeight.w600, fontSize: 15),
                   ),
                   SizedBox(
                     height: 15.h,
                   ),
                   TextField(
-                    controller: passwordController,
+                    controller: _passwordController,
+                    focusNode: _passwordFocus,
                     obscureText: true,
                     enableSuggestions: false,
                     autocorrect: false,
@@ -152,10 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                          BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
-                          ),
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -182,23 +221,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: width,
                     height: 60.h,
                     child: ElevatedButton(
-                      // onPressed: _ApiLogin,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute<dynamic>(
-                              builder: (BuildContext context) => const MainNavigationScreen(
-                                    navIndex: 0,
-                                    contentIndex: 0,
-                                  )),
-                        );
-                      },
+                      onPressed: () async => login(),
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
                             color: AppColors.silver,
                           ),
-                          borderRadius: BorderRadius.circular(18.r), // <-- Radius
+                          borderRadius:
+                              BorderRadius.circular(18.r), // <-- Radius
                         ),
                         primary: AppColors.primaryGreen,
                         onPrimary: Colors.white, // <-- Splash color
@@ -206,15 +236,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         AppTextConstants.login,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16
-                        ),
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 20.h
-                  ),
+                  SizedBox(height: 20.h),
                   Row(
                     children: <Widget>[
                       Text(
@@ -250,17 +276,17 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
-  // //Temporary commented out
-  // void _ApiLogin(){
-  //   ApiCalls.login(context, emailController.text, passwordController.text);
-  // }
-
-
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<TextEditingController>('emailController', emailController));
-    properties.add(DiagnosticsProperty<TextEditingController>('passwordController', passwordController));
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'emailController', _emailController));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'passwordController', _passwordController));
+        // ignore: cascade_invocations
+        properties.add(DiagnosticsProperty<bool>('hidePassword', hidePassword));
+        // ignore: cascade_invocations
+        properties.add(DiagnosticsProperty<bool>('buttonIsLoading', buttonIsLoading));
   }
 }

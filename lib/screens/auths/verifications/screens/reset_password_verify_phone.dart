@@ -1,3 +1,5 @@
+// ignore_for_file: always_put_required_named_parameters_first
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,18 +9,41 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 
-/// Sign up verification screen
-class SignupVerify extends StatefulWidget {
+/// Reset password verification screen
+class ResetVerifyPhone extends StatefulWidget {
   /// Constructor
-  const SignupVerify({Key? key}) : super(key: key);
+  const ResetVerifyPhone({Key? key}) : super(key: key);
 
   @override
-  _SignupVerifyState createState() => _SignupVerifyState();
+  _ResetVerifyPhoneState createState() => _ResetVerifyPhoneState();
 }
 
-class _SignupVerifyState extends State<SignupVerify> {
+class _ResetVerifyPhoneState extends State<ResetVerifyPhone> {
   final TextEditingController _verifyCodeController = TextEditingController();
-  bool incorrectOTP = false;
+
+  /// Method for verifying code
+  Future<void> verifyCode(Map<String, dynamic> userDetails) async {
+    final Map<String, dynamic> verificationDetails =
+        Map<String, dynamic>.from(userDetails);
+
+    verificationDetails['hash'] = _verifyCodeController.text;
+
+    await APIServices().request(
+        AppAPIPath.checkVerificationCodeUrl, RequestType.POST,
+        data: verificationDetails);
+    await Navigator.pushNamed(context, '/create_new_password',
+        arguments: verificationDetails);
+  }
+
+  /// Method for resending code
+  Future<void> resendCode(Map<String, dynamic> details) async {
+    final Map<String, dynamic> phoneDetails =
+        Map<String, dynamic>.from(details);
+
+    await APIServices().request(
+        AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
+        data: phoneDetails);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,11 +86,9 @@ class _SignupVerifyState extends State<SignupVerify> {
                         fontSize: 25,
                       ),
                     ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
+                    SizedBox(height: 20.h),
                     Text(
-                      'Verification code sent to your phone ${screenArguments['phone_number'].toString()}',
+                      'Verification code sent to your phone + ${screenArguments['phone_no']}',
                       style: const TextStyle(
                         color: Colors.black,
                         fontFamily: 'Gilroy',
@@ -111,8 +134,7 @@ class _SignupVerifyState extends State<SignupVerify> {
                           ),
                         ),
                         InkWell(
-                          onTap: () async =>
-                              resendCode(screenArguments), // Resend OTP
+                          onTap: () => resendCode(screenArguments),
                           child: Text(
                             AppTextConstants.resendOTP,
                             style: TextStyle(
@@ -124,23 +146,6 @@ class _SignupVerifyState extends State<SignupVerify> {
                           ),
                         ),
                       ],
-                    ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                    Center(
-                      child: SizedBox(
-                        child: incorrectOTP
-                            ? Text(
-                                AppTextConstants.authenticationFailed,
-                                style: const TextStyle(
-                                  fontSize: 17,
-                                  fontFamily: 'Gilroy',
-                                  color: Colors.red,
-                                ),
-                              )
-                            : const Text(''),
-                      ),
                     ),
                     SizedBox(
                       height: 30.h,
@@ -155,8 +160,7 @@ class _SignupVerifyState extends State<SignupVerify> {
                             side: BorderSide(
                               color: AppColors.silver,
                             ),
-                            borderRadius:
-                                BorderRadius.circular(18.r), // <-- Radius
+                            borderRadius: BorderRadius.circular(18.r),
                           ),
                           primary: AppColors.primaryGreen,
                           onPrimary: Colors.white, // <-- Splash color
@@ -168,7 +172,9 @@ class _SignupVerifyState extends State<SignupVerify> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20.h),
+                    SizedBox(
+                      height: 20.h,
+                    ),
                   ],
                 ),
               ),
@@ -177,37 +183,5 @@ class _SignupVerifyState extends State<SignupVerify> {
         ),
       ),
     );
-  }
-
-  /// Method for verifying Code
-  Future<void> verifyCode(Map<String, dynamic> data) async {
-    print(data['phone_number']);
-    final Map<String, dynamic> details = {
-      'phone_number': data['phone_number'],
-      'verifyCode': _verifyCodeController.text
-    };
-    
-    if (_verifyCodeController.text.isNotEmpty) {
-      incorrectOTP = false;
-      await APIServices().request(
-          AppAPIPath.checkVericationCodeSignUpUrl, RequestType.POST,
-          data: details);
-      await Navigator.pushNamed(context, '/sign_up_form',
-          arguments: data);
-    } else {
-      setState(() {
-        incorrectOTP = true;
-      });
-    }
-  }
-
-  /// Method for resending code
-  Future<void> resendCode(Map<String, dynamic> details) async {
-    final Map<String, dynamic> phoneDetails =
-        Map<String, dynamic>.from(details);
-
-    await APIServices().request(
-        AppAPIPath.sendVerificationCodeSignUpUrl, RequestType.POST,
-        data: phoneDetails);
   }
 }

@@ -112,4 +112,11 @@ class AppColors {
 
   /// hex color for snowy mint
   static HexColor snowyMint = HexColor('#CCFFD5');
+
+  /// hex color for honey yellow
+  static HexColor honeyYellow = HexColor('#FDB726');
+
+  /// hex color for cod gray
+  static HexColor codGray = HexColor('#090909');
+
 }

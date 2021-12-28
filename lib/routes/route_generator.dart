@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
+
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/faq/faq.dart';
+
+import 'package:guided/screens/auths/logins/screens/login_screen.dart';
+import 'package:guided/screens/auths/splashes/screens/splash_screen.dart';
+import 'package:guided/screens/auths/splashes/screens/user_on_boarding_screen.dart';
+import 'package:guided/screens/auths/splashes/screens/user_type_screen.dart';
+import 'package:guided/screens/auths/splashes/screens/welcome_screen.dart';
+import 'package:guided/screens/auths/verifications/screens/create_new_password_screen.dart';
+import 'package:guided/screens/auths/verifications/screens/reset_password_screen.dart';
+import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
+
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
 import 'package:guided/screens/home/calendar_availability_screen.dart';
@@ -8,6 +19,7 @@ import 'package:guided/screens/home/set_booking_date_screen.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_view.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_edit.dart';
+import 'package:guided/screens/main_navigation/content/outfitters/outfitters_list.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_view.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
@@ -25,17 +37,13 @@ import 'package:guided/screens/packages/create_package/package_price_screen.dart
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
-import 'package:guided/screens/signin_signup/continue_with_phone.dart';
-import 'package:guided/screens/signin_signup/login_screen.dart';
-import 'package:guided/screens/signin_signup/reset_password_screen.dart';
+import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
-import 'package:guided/screens/signin_signup/splash_screen.dart';
-import 'package:guided/screens/signin_signup/user_on_boarding_screen.dart';
-import 'package:guided/screens/signin_signup/user_type_screen.dart';
-import 'package:guided/screens/signin_signup/welcome_screen.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
+
+import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 
 /// Route generator configuration
 class RouteGenerator {
@@ -94,6 +102,9 @@ class RouteGenerator {
       case '/outfitter_edit':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const OutfitterEdit());
+      case '/outfitter_list':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const OutfitterList());
       case '/package_photo':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PackagePhotosScreen());
@@ -127,9 +138,10 @@ class RouteGenerator {
             builder: (_) => const ResetPasswordScreen());
       case '/continue_with_phone':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const ContinueWithPhone());
+            builder: (_) => const ContinueWithPhone(), settings: settings);
       case '/sign_up_form':
-        return MaterialPageRoute<dynamic>(builder: (_) => const SignupForm());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SignupForm(), settings: settings);
       case '/user_type':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const UserTypeScreen());
@@ -139,6 +151,7 @@ class RouteGenerator {
       case '/user_on_boarding':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const UserOnboardingScreen());
+
       case '/terms_and_condition':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TermsAndCondition());
@@ -151,6 +164,18 @@ class RouteGenerator {
       case '/waiver_form':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TravelerReleaseAndWaiverForm());
+
+      case '/verification_code':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ResetVerifyPhone(), settings: settings);
+      case '/create_new_password':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CreateNewPasswordScreen(),
+            settings: settings);
+      case '/sign_up_verify':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SignupVerify(), settings: settings);
+
       default:
         return _errorRoute();
     }

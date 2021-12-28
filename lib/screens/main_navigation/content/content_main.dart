@@ -11,7 +11,6 @@ import 'package:guided/screens/main_navigation/content/outfitters/outfitters_lis
 
 /// Main Content Screen
 class MainContent extends StatefulWidget {
-
   /// Constructor
   const MainContent({Key? key, required this.initIndex}) : super(key: key);
 
@@ -22,7 +21,6 @@ class MainContent extends StatefulWidget {
 }
 
 class _MainContentState extends State<MainContent> {
-
   _MainContentState(this.initIndex);
 
   int initIndex;
@@ -37,8 +35,8 @@ class _MainContentState extends State<MainContent> {
     super.initState();
   }
 
-  void setTitle(int initIndex){
-    switch(initIndex){
+  void setTitle(int initIndex) {
+    switch (initIndex) {
       case 0:
         return setState(() {
           title = AppTextConstants.myPackage;
@@ -65,64 +63,72 @@ class _MainContentState extends State<MainContent> {
   /// Custom tab bar view
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(builder: () =>
-        Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: Text(
-              title,
-              style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 24.sp,
-                  color: Colors.black,
-                  fontFamily: AppTextConstants.fontGilroy
-              ),
-            ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            centerTitle: false,
-          ),
-          body: Container(
-            padding: const EdgeInsets.all(15),
-            color: Colors.white,
-            // width: 370,
-            // height: 300,
-            child: ContainedTabBarView(
-              tabs: <Widget>[
-                Text(AppTextConstants.package, style: title == AppTextConstants.myPackage ? AppTextStyle.defaultStyle : AppTextStyle.inactive),
-                Text(AppTextConstants.event, style: title == AppTextConstants.myEvent ? AppTextStyle.defaultStyle : AppTextStyle.inactive),
-                Text(AppTextConstants.outfitter, style: title == AppTextConstants.myOutfitter ? AppTextStyle.defaultStyle : AppTextStyle.inactive),
-                Text(AppTextConstants.myads, style: title == AppTextConstants.myAds ? AppTextStyle.defaultStyle : AppTextStyle.inactive),
-              ],
-              tabBarProperties: const TabBarProperties(
-                height: 42,
-                margin: EdgeInsets.all(8),
-                indicatorColor: Colors.black,
-                indicatorWeight: 2,
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey,
-
-              ),
-              views: const <Widget> [
-                Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text('Package Content'),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text('Event Content'),
-                ),
-                OutfitterList(),
-                AdvertisementList(),
-              ],
-              onChange: setTitle,
-              initialIndex: initIndex,
-            ),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(
+          title,
+          style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 24.sp,
+              color: Colors.black,
+              fontFamily: AppTextConstants.fontGilroy),
         ),
-      designSize: const Size(375, 812),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: false,
+      ),
+      body: Container(
+        padding: const EdgeInsets.all(15),
+        color: Colors.white,
+        // width: 370,
+        // height: 300,
+        child: ContainedTabBarView(
+          tabs: <Widget>[
+            Text(AppTextConstants.package,
+                style: title == AppTextConstants.myPackage
+                    ? AppTextStyle.defaultStyle
+                    : AppTextStyle.inactive),
+            Text(AppTextConstants.event,
+                style: title == AppTextConstants.myEvent
+                    ? AppTextStyle.defaultStyle
+                    : AppTextStyle.inactive),
+            Text(AppTextConstants.outfitter,
+                style: title == AppTextConstants.myOutfitter
+                    ? AppTextStyle.defaultStyle
+                    : AppTextStyle.inactive),
+            Text(AppTextConstants.myads,
+                style: title == AppTextConstants.myAds
+                    ? AppTextStyle.defaultStyle
+                    : AppTextStyle.inactive),
+          ],
+          tabBarProperties: const TabBarProperties(
+            height: 42,
+            margin: EdgeInsets.all(8),
+            indicatorColor: Colors.black,
+            indicatorWeight: 2,
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.grey,
+          ),
+          views: const <Widget>[
+            Padding(
+              padding: EdgeInsets.all(8),
+              child: Text('Package Content'),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8),
+              child: Text('Event Content'),
+            ),
+            OutfitterList(),
+            AdvertisementList(),
+          ],
+          onChange: setTitle,
+          initialIndex: initIndex,
+        ),
+      ),
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
