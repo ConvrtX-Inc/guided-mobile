@@ -464,6 +464,9 @@ class AppTextConstants {
   /// Returns I agree text
   static String iAgree = 'I Agree';
 
+  /// Returns Save text
+  static String save = 'Save';
+
   /// Returns header local laws text
   static String headerLocalLaws = 'Your local laws and taxes';
 
@@ -671,4 +674,7 @@ class AppTextConstants {
 
   /// Returns How can we help you to improve your service text
   static String howCanWeHelp = 'How can we help you to improve your service';
+
+  /// Traveler release & Waiver Form  text
+  static String travelerReleaseAndWaiverForm = 'Traveler release & Waiver Form';
 }

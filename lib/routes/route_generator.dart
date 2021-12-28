@@ -35,6 +35,7 @@ import 'package:guided/screens/signin_signup/user_on_boarding_screen.dart';
 import 'package:guided/screens/signin_signup/user_type_screen.dart';
 import 'package:guided/screens/signin_signup/welcome_screen.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
+import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
 
 /// Route generator configuration
 class RouteGenerator {
@@ -147,6 +148,9 @@ class RouteGenerator {
       case '/cancellation_policy':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const CancellationPolicy());
+      case '/waiver_form':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TravelerReleaseAndWaiverForm());
       default:
         return _errorRoute();
     }
