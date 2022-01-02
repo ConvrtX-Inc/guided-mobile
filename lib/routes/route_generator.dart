@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+
+import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
+import 'package:guided/screens/faq/faq.dart';
+
 import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 import 'package:guided/screens/auths/splashes/screens/splash_screen.dart';
 import 'package:guided/screens/auths/splashes/screens/user_on_boarding_screen.dart';
@@ -7,6 +11,7 @@ import 'package:guided/screens/auths/splashes/screens/welcome_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/create_new_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
+
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
 import 'package:guided/screens/home/calendar_availability_screen.dart';
@@ -35,6 +40,9 @@ import 'package:guided/screens/settings/profile_screen.dart';
 import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
+import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
+import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
+
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 
 /// Route generator configuration
@@ -132,7 +140,8 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ContinueWithPhone(), settings: settings);
       case '/sign_up_form':
-        return MaterialPageRoute<dynamic>(builder: (_) => const SignupForm(), settings: settings);
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SignupForm(), settings: settings);
       case '/user_type':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const UserTypeScreen());
@@ -142,6 +151,20 @@ class RouteGenerator {
       case '/user_on_boarding':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const UserOnboardingScreen());
+
+      case '/terms_and_condition':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TermsAndCondition());
+      case '/faq':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const FrequentlyAskQuestion());
+      case '/cancellation_policy':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CancellationPolicy());
+      case '/waiver_form':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TravelerReleaseAndWaiverForm());
+
       case '/verification_code':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ResetVerifyPhone(), settings: settings);
@@ -152,6 +175,7 @@ class RouteGenerator {
       case '/sign_up_verify':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SignupVerify(), settings: settings);
+
       default:
         return _errorRoute();
     }
