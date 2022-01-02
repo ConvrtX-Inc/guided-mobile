@@ -97,4 +97,12 @@ class AppListConstants {
     '4:00 - 5:00 PM',
     '6:00 - 7:00 PM',
   ];
+
+  /// sample list of card for payment manage card
+  static List<String> cardImage = <String>[
+    'sampleCard',
+    'sampleCard',
+    'sampleCard',
+  ];
+
 }

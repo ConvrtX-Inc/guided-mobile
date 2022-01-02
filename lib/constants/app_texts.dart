@@ -663,6 +663,34 @@ class AppTextConstants {
   /// Returns home text
   static String home = 'Home';
 
+  /// Returns manage cards text
+  static String manageCards = 'Manage Cards';
+
+  /// Returns set as default payment text
+  static String setAsDefaultPayment = 'Set as Default Payment';
+
+  /// Returns remove text
+  static String remove = 'Remove';
+
+  /// Returns payment text
+  static String payment = 'Payment';
+
+  /// Returns booking history text
+  static String bookingHistory = 'Booking History';
+
+  /// Returns setup the time duration for the events text
+  static String setupTheTimeDurationForTheEvents =
+      'Setup the time duration for the events';
+
+  /// Returns start date text
+  static String startDate = 'Start Date';
+
+  /// Returns end date text
+  static String endDate = 'End Date';
+
+  /// Returns amount text
+  static String amount = 'Amount';
+
   /// Returns Terms & Conditions text
   static String termsAndCondidition = 'Terms & Conditions';
 
@@ -707,4 +735,5 @@ class ErrorMessageConstants {
 
   /// Returns 'Password does not match' text
   static String passwordDoesNotMatch = 'Password does not match';
+
 }
