@@ -134,4 +134,10 @@ class AssetsPath {
 
   /// returns setting icon bell
   static String iconBell = 'assets/images/svg/settings_icon_bell.svg';
+
+    /// returns visa image
+  static String visa = 'assets/images/png/visa.png';
+
+    /// returns rounded check
+  static String roundedCheck = 'assets/images/png/rounded_check.png';
 }

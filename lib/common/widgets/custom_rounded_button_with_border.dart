@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:guided/constants/app_colors.dart';
-// import 'package:guided/helpers/constant.dart';
-import 'package:guided/helpers/hexColor.dart';
 
 /// Custom rounded button widget
-class CustomRoundedButton extends StatelessWidget {
+class CustomRoundedButtonWithBorder extends StatelessWidget {
   /// constructor
-  const CustomRoundedButton({required this.title, required this.onpressed, Key? key}) : super(key: key);
+  const CustomRoundedButtonWithBorder({required this.title, required this.onpressed, Key? key}) : super(key: key);
 
   /// button name
   final String title;
@@ -24,12 +22,13 @@ class CustomRoundedButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             side: BorderSide(
+              width: 2,
               color: AppColors.deepGreen,
             ),
             borderRadius: BorderRadius.circular(18),
           ),
-          onPrimary: Colors.white,
-          primary: AppColors.deepGreen,
+          onPrimary: AppColors.deepGreen,
+          primary: Colors.white,
         ),
         child: Text(
           title,

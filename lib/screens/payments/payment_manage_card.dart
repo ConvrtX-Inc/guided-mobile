@@ -3,10 +3,13 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/screens/payments/payment_add_card.dart';
+import 'package:guided/screens/payments/payment_successful.dart';
 
 /// screen for payment manage card
 class PaymentManageCard extends StatefulWidget {
@@ -69,8 +72,12 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
           ],
         ),
         body: buildBody(),
-        bottomNavigationBar:
-            CustomRoundedButton(title: 'Pay P200.00 USD', onpressed: () {}));
+        bottomNavigationBar: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+          child: CustomRoundedButton(
+              title: 'Pay P200.00 USD',
+              onpressed: () => paymentSuccessful(context)),
+        ));
   }
 
   Widget buildBody() => SingleChildScrollView(
@@ -81,7 +88,8 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
               Expanded(
                 child: CarouselSlider.builder(
                     itemCount: _cardImage.length,
-                    itemBuilder: (BuildContext context, int index, int realIndex) {
+                    itemBuilder:
+                        (BuildContext context, int index, int realIndex) {
                       final String cardImage = _cardImage[index];
                       return buildcardImage(cardImage, index);
                     },
@@ -172,7 +180,7 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               InkWell(
-                onTap: (){},
+                onTap: () {},
                 child: Container(
                   height: 45.h,
                   width: MediaQuery.of(context).size.width / 2.5.w,
@@ -192,7 +200,7 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
                 ),
               ),
               InkWell(
-                onTap: (){},
+                onTap: _showRemoveDialog,
                 child: Container(
                   height: 45.h,
                   width: MediaQuery.of(context).size.width / 5.w,
@@ -212,7 +220,7 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
                 ),
               ),
               InkWell(
-                onTap: (){},
+                onTap: () {},
                 child: Container(
                   height: 45.h,
                   width: MediaQuery.of(context).size.width / 5.w,
@@ -290,5 +298,103 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
             )),
       ],
     );
+  }
+
+  void _showRemoveDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(24.r))),
+            title: Text(
+              AppTextConstants.removeCard,
+              style: TextStyle(
+                  fontSize: 20.sp,
+                  fontFamily: 'Gilroy',
+                  fontWeight: FontWeight.w500),
+            ),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 65.h,
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    AppTextConstants.areYouSureYouWantToRemoveCard,
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        fontFamily: 'Gilroy',
+                        fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(height: 20.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Image.asset(AssetsPath.visa),
+                      Text(
+                        'Ending in 0212',
+                        style: TextStyle(
+                            fontSize: 18.sp,
+                            fontFamily: 'Gilroy',
+                            fontWeight: FontWeight.w500),
+                      ),
+                      Text(
+                        '01/23',
+                        style: TextStyle(
+                            fontSize: 18.sp,
+                            fontFamily: 'Gilroy',
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    InkWell(
+                      child: Container(
+                          width: 75.w,
+                          height: 40.h,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: AppColors.deepGreen, width: 1.w),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Center(
+                              child: Text(
+                            AppTextConstants.cancel,
+                            style: TextStyle(
+                                color: AppColors.deepGreen,
+                                fontSize: 12.sp,
+                                fontFamily: 'Gilroy',
+                                fontWeight: FontWeight.w700),
+                          ))),
+                    ),
+                    InkWell(
+                      child: Container(
+                          width: 75.w,
+                          height: 40.h,
+                          decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Center(
+                              child: Text(
+                            AppTextConstants.confirm,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12.sp,
+                                fontFamily: 'Gilroy',
+                                fontWeight: FontWeight.w700),
+                          ))),
+                    ),
+                  ]),
+              SizedBox(
+                height: 20.h,
+              ),
+            ],
+          );
+        });
   }
 }

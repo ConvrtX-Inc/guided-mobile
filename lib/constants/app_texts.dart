@@ -683,6 +683,43 @@ class AppTextConstants {
 
   /// Returns bigger bullet
   static String biggerBullet = '●';
+
+  /// Returns confirm payment
+  static String confirmPayment = 'Confirm Payment';
+
+  /// Returns company
+  static String company = 'Company';
+
+  /// Returns order number
+  static String orderNumber = 'Order Number';
+
+  /// Returns service
+  static String service = 'Service';
+
+  /// Returns payment successful
+  static String paymentSuccessful = 'Payment Successful';
+
+  /// Returns booking date
+  static String bookingDate = 'Booking Date';
+
+  /// Returns slots
+  static String slots = 'Slots';
+
+  /// Returns card
+  static String card = 'Card';
+
+  /// Returns ok
+  static String ok = 'Ok';
+
+  /// Returns remove card
+  static String removeCard = 'Remove Card';
+
+  /// Returns are you sure you want to remove card
+  static String areYouSureYouWantToRemoveCard =
+      'Are you sure you want to remove card';
+
+  /// Returns confirm
+  static String confirm = 'Confirm';
 }
 
 /// Class for error messages text
@@ -707,5 +744,4 @@ class ErrorMessageConstants {
 
   /// Returns 'Password does not match' text
   static String passwordDoesNotMatch = 'Password does not match';
-
 }
