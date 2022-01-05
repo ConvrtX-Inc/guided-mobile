@@ -4,9 +4,8 @@ import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/screens/payments/payment_manage_card.dart';
 
-/// Modal Bottom sheet for finding booking dates with calendar
+/// Modal Bottom sheet for setting date of payment
 Future<dynamic> paymentSetDate(BuildContext context) {
-  // late final DateTime _focusedDay = DateTime.now();
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
