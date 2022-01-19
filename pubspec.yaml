@@ -57,7 +57,6 @@ dependencies:
   pinput: ^1.2.2 #this library is for the 4-digit code
   flutter_slidable: ^1.1.0 #this is for the slidable list item 
   date_time_picker: ^2.1.0
-  http: ^0.13.4
   # flutter_expanded_tile: ^0.3.6
 dev_dependencies:
   flutter_test:
