@@ -56,11 +56,13 @@ dependencies:
   pinput: ^1.2.2 #this library is for the 4-digit code
   flutter_slidable: ^1.1.0 #this is for the slidable list item 
   date_time_picker: ^2.1.0
+  image_picker: ^0.8.4+4
+  modal_bottom_sheet: ^2.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  intl: ^0.17.0
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your

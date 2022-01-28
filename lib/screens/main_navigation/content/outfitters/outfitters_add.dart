@@ -1,17 +1,24 @@
 // ignore_for_file: file_names
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/helpers/form_helper.dart';
-import 'package:guided/models/outfitter.dart';
-import 'package:guided/models/outfitter_model.dart';
+import 'package:guided/models/image_bulk.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Add Outfitter Screen
 class OutfitterAdd extends StatefulWidget {
@@ -25,7 +32,6 @@ class OutfitterAdd extends StatefulWidget {
 class _OutfitterAddState extends State<OutfitterAdd> {
   final SecureStorage secureStorage = SecureStorage();
 
-  String _userId = '';
   final TextEditingController _title = TextEditingController();
   final TextEditingController _price = TextEditingController();
   final TextEditingController _productLink = TextEditingController();
@@ -38,60 +44,435 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   final TextEditingController _date = TextEditingController();
   final TextEditingController _description = TextEditingController();
 
+  // ignore: diagnostic_describe_all_properties
+  File? image1;
+  // ignore: diagnostic_describe_all_properties
+  File? image2;
+  // ignore: diagnostic_describe_all_properties
+  File? image3;
+
+  int _uploadCount = 0;
+  DateTime _selectedDate = DateTime.now();
+
+  bool _enabledImgHolder2 = false;
+
+  @override
+  void dispose() {
+    _title.dispose();
+    _price.dispose();
+    _productLink.dispose();
+    _useCurrentLocation.dispose();
+    _country.dispose();
+    _street.dispose();
+    _city.dispose();
+    _province.dispose();
+    _postalCode.dispose();
+    _date.dispose();
+    _description.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
-    Stack _imagePreview() {
-      return Stack(
-        children: <Widget>[
-          Container(
-            width: 100.w,
-            height: 87.h,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.r),
-              color: AppColors.gallery,
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: AppColors.gallery,
-                  spreadRadius: 3,
+    Widget image1Placeholder(BuildContext context) {
+      return GestureDetector(
+        onTap: () => showMaterialModalBottomSheet(
+            expand: false,
+            context: context,
+            backgroundColor: Colors.transparent,
+            builder: (BuildContext context) => SafeArea(
+                top: false,
+                child: Container(
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      ListTile(
+                          leading: const Icon(Icons.photo_camera),
+                          title: const Text('Camera'),
+                          onTap: () async {
+                            try {
+                              final XFile? image1 = await ImagePicker()
+                                  .pickImage(
+                                      source: ImageSource.camera,
+                                      maxHeight: 480,
+                                      maxWidth: 640,
+                                      imageQuality: 25);
+
+                              if (image1 == null) {
+                                return;
+                              }
+
+                              final File imageTemporary = File(image1.path);
+                              setState(() {
+                                this.image1 = imageTemporary;
+                                _uploadCount += 1;
+                              });
+                            } on PlatformException catch (e) {
+                              // ignore: avoid_print
+                              print('Failed to pick image: $e');
+                            }
+                            Navigator.of(context).pop();
+                          }),
+                      ListTile(
+                          leading: const Icon(Icons.photo_album),
+                          title: const Text('Photo Gallery'),
+                          onTap: () async {
+                            try {
+                              final XFile? image1 = await ImagePicker()
+                                  .pickImage(
+                                      source: ImageSource.gallery,
+                                      maxHeight: 480,
+                                      maxWidth: 640,
+                                      imageQuality: 25);
+
+                              if (image1 == null) {
+                                return;
+                              }
+
+                              final File imageTemporary = File(image1.path);
+                              setState(() {
+                                this.image1 = imageTemporary;
+                                _uploadCount += 1;
+                              });
+                            } on PlatformException catch (e) {
+                              // ignore: avoid_print
+                              print('Failed to pick image: $e');
+                            }
+                            Navigator.of(context).pop();
+                          }),
+                    ],
+                  ),
+                ))),
+        child: image1 != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.file(
+                  image1!,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.fitHeight,
                 ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(25),
-              child: Row(
+              )
+            : Stack(
                 children: <Widget>[
-                  Image.asset(
-                    AssetsPath.imagePrey,
-                    height: 50.h,
+                  Container(
+                    width: 100.w,
+                    height: 87.h,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.r),
+                      color: AppColors.gallery,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: AppColors.gallery,
+                          spreadRadius: 3,
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(25),
+                      child: Row(
+                        children: <Widget>[
+                          Image.asset(
+                            AssetsPath.imagePrey,
+                            height: 50.h,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
+                  Positioned(
+                    right: 3.w,
+                    top: 3.h,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
+                        color: Colors.white,
+                        boxShadow: const <BoxShadow>[
+                          BoxShadow(
+                            color: Colors.white,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  )
                 ],
               ),
-            ),
-          ),
-          Positioned(
-            right: 3.w,
-            top: 3.h,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.r),
-                color: Colors.white,
-                boxShadow: const <BoxShadow>[
-                  BoxShadow(
-                    color: Colors.white,
-                    spreadRadius: 1,
+      );
+    }
+
+    Widget image2Placeholder(BuildContext context) {
+      return GestureDetector(
+        onTap: () => _uploadCount == 1
+            ? showMaterialModalBottomSheet(
+                expand: false,
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (BuildContext context) => SafeArea(
+                    top: false,
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                              leading: const Icon(Icons.photo_camera),
+                              title: const Text('Camera'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image2 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.camera,
+                                          maxHeight: 480,
+                                          maxWidth: 640,
+                                          imageQuality: 25);
+
+                                  if (image2 == null) {
+                                    return;
+                                  }
+
+                                  final File imageTemporary = File(image2.path);
+                                  setState(() {
+                                    this.image2 = imageTemporary;
+                                    _uploadCount += 1;
+                                  });
+                                } on PlatformException catch (e) {
+                                  // ignore: avoid_print
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                          ListTile(
+                              leading: const Icon(Icons.photo_album),
+                              title: const Text('Photo Gallery'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image2 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.gallery,
+                                          maxHeight: 480,
+                                          maxWidth: 640,
+                                          imageQuality: 25);
+                                  if (image2 == null) {
+                                    return;
+                                  }
+
+                                  final File imageTemporary = File(image2.path);
+                                  setState(() {
+                                    this.image2 = imageTemporary;
+                                    _uploadCount += 1;
+                                    _enabledImgHolder2 = true;
+                                  });
+                                } on PlatformException catch (e) {
+                                  // ignore: avoid_print
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                        ],
+                      ),
+                    )))
+            : null,
+        child: image2 != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.file(
+                  image2!,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.fitHeight,
+                ),
+              )
+            : Stack(
+                children: <Widget>[
+                  Container(
+                    width: 100.w,
+                    height: 87.h,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.r),
+                      color: AppColors.gallery,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: AppColors.gallery,
+                          spreadRadius: 3,
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(25),
+                      child: Row(
+                        children: <Widget>[
+                          Image.asset(
+                            AssetsPath.imagePrey,
+                            height: 50.h,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
+                  Positioned(
+                    right: 3.w,
+                    top: 3.h,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
+                        color: Colors.white,
+                        boxShadow: const <BoxShadow>[
+                          BoxShadow(
+                            color: Colors.white,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  )
                 ],
               ),
-              child: const Icon(
-                Icons.add,
-                color: Colors.grey,
+      );
+    }
+
+    Widget image3Placeholder(BuildContext context) {
+      return GestureDetector(
+        onTap: () => _enabledImgHolder2
+            ? showMaterialModalBottomSheet(
+                expand: false,
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (BuildContext context) => SafeArea(
+                    top: false,
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                              leading: const Icon(Icons.photo_camera),
+                              title: const Text('Camera'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image3 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.camera,
+                                          maxHeight: 480,
+                                          maxWidth: 640,
+                                          imageQuality: 25);
+
+                                  if (image3 == null) {
+                                    return;
+                                  }
+                                  final File imageTemporary = File(image3.path);
+                                  setState(() {
+                                    this.image3 = imageTemporary;
+                                    _uploadCount += 1;
+                                  });
+                                } on PlatformException catch (e) {
+                                  // ignore: avoid_print
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                          ListTile(
+                              leading: const Icon(Icons.photo_album),
+                              title: const Text('Photo Gallery'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image3 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.gallery,
+                                          maxHeight: 480,
+                                          maxWidth: 640,
+                                          imageQuality: 25);
+
+                                  if (image3 == null) {
+                                    return;
+                                  }
+
+                                  final File imageTemporary = File(image3.path);
+                                  setState(() {
+                                    this.image3 = imageTemporary;
+                                    _uploadCount += 1;
+                                  });
+                                } on PlatformException catch (e) {
+                                  // ignore: avoid_print
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                        ],
+                      ),
+                    )))
+            : null,
+        child: image3 != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.file(
+                  image3!,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.fitHeight,
+                ),
+              )
+            : Stack(
+                children: <Widget>[
+                  Container(
+                    width: 100.w,
+                    height: 87.h,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.r),
+                      color: AppColors.gallery,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: AppColors.gallery,
+                          spreadRadius: 3,
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(25),
+                      child: Row(
+                        children: <Widget>[
+                          Image.asset(
+                            AssetsPath.imagePrey,
+                            height: 50.h,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 3.w,
+                    top: 3.h,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
+                        color: Colors.white,
+                        boxShadow: const <BoxShadow>[
+                          BoxShadow(
+                            color: Colors.white,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  )
+                ],
               ),
-            ),
-          )
-        ],
       );
     }
 
@@ -124,8 +505,8 @@ class _OutfitterAddState extends State<OutfitterAdd> {
           ),
         ),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
-            color: AppColors.osloGrey,
+          decoration: const BoxDecoration(
+            color: Colors.white,
           ),
         ),
       ),
@@ -152,9 +533,9 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      _imagePreview(),
-                      _imagePreview(),
-                      _imagePreview(),
+                      image1Placeholder(context),
+                      image2Placeholder(context),
+                      image3Placeholder(context),
                     ],
                   ),
                   SizedBox(height: 20.h),
@@ -333,19 +714,25 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                   SizedBox(
                     height: 20.h,
                   ),
-                  TextField(
-                    controller: _date,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.date,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
+                  GestureDetector(
+                    onTap: () => _showDate(context),
+                    child: AbsorbPointer(
+                      child: TextField(
+                        controller: _date,
+                        keyboardType: TextInputType.datetime,
+                        decoration: InputDecoration(
+                          contentPadding:
+                              EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                          hintText: AppTextConstants.date,
+                          hintStyle: TextStyle(
+                            color: AppColors.grey,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14.r),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 0.2.w),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -402,8 +789,94 @@ class _OutfitterAddState extends State<OutfitterAdd> {
     );
   }
 
+  Future<void> _showDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(1901),
+      lastDate: DateTime(2100),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData(
+            primarySwatch: Colors.green,
+            splashColor: AppColors.primaryGreen,
+          ),
+          child: child ?? const Text(''),
+        );
+      },
+    );
+    if (picked != null && picked != _selectedDate) {
+      final String formattedDate = DateFormat('yyyy-MM-dd').format(picked);
+      // ignore: curly_braces_in_flow_control_structures
+      setState(() {
+        _selectedDate = picked;
+        _date.value = TextEditingValue(text: formattedDate.toString());
+      });
+    }
+  }
+
+  Future<void> saveImage() async {
+    final Uint8List image1Bytes = File(image1!.path).readAsBytesSync();
+    final String base64Image1 =
+        'data:image/png;base64, ${base64Encode(image1Bytes)}';
+
+    final Map<String, dynamic> image = {
+      'activity_outfitter_id':
+          await SecureStorage.readValue(key: SecureStorage.userIdKey),
+      'snapshot_img': base64Image1
+    };
+
+    await APIServices().request(AppAPIPath.outfitterImageUrl, RequestType.POST,
+        needAccessToken: true, data: image);
+  }
+
+  Future<void> saveBulkImage() async {
+    /// Image1 base64
+    final Uint8List image1Bytes = File(image1!.path).readAsBytesSync();
+    final String base64Image1 =
+        'data:image/png;base64, ${base64Encode(image1Bytes)}';
+
+    /// Image2 base64
+    final Uint8List image2Bytes = File(image2!.path).readAsBytesSync();
+    final String base64Image2 =
+        'data:image/png;base64, ${base64Encode(image2Bytes)}';
+
+    /// Image3 base64
+    final Uint8List image3Bytes = File(image3!.path).readAsBytesSync();
+    final String base64Image3 =
+        'data:image/png;base64, ${base64Encode(image3Bytes)}';
+
+    final OutfitterImageList objImg1 = OutfitterImageList(
+        id: await SecureStorage.readValue(key: SecureStorage.userIdKey),
+        img: base64Image1);
+    final OutfitterImageList objImg2 = OutfitterImageList(
+        id: await SecureStorage.readValue(key: SecureStorage.userIdKey),
+        img: base64Image2);
+    final OutfitterImageList objImg3 = OutfitterImageList(
+        id: await SecureStorage.readValue(key: SecureStorage.userIdKey),
+        img: base64Image3);
+
+    final List<OutfitterImageList> list = [objImg1, objImg2, objImg3];
+
+    final Map<String, List<dynamic>> finalJson = {
+      'bulk': encodeToJsonOutfitter(list)
+    };
+
+    await APIServices().request(AppAPIPath.outfitterBulkImageUrl, RequestType.POST,
+        needAccessToken: true, data: finalJson);
+  }
+
   /// Methode for caling the API
   Future<void> createOutfitter() async {
+    if (_uploadCount == 1) {
+      await saveImage();
+    } else if (_uploadCount > 1) {
+      await saveBulkImage();
+    }
+    await outfitterDetail();
+  }
+
+  Future<void> outfitterDetail() async {
     final Map<String, dynamic> outfitterDetails = {
       'user_id': await SecureStorage.readValue(key: SecureStorage.userIdKey),
       'title': _title.text,
@@ -423,5 +896,12 @@ class _OutfitterAddState extends State<OutfitterAdd> {
       MaterialPageRoute<dynamic>(
           builder: (BuildContext context) => const MainContent(initIndex: 2)),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(
+        DiagnosticsProperty<SecureStorage>('secureStorage', secureStorage));
   }
 }

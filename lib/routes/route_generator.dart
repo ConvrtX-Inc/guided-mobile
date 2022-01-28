@@ -7,6 +7,7 @@ import 'package:guided/screens/auths/splashes/screens/welcome_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/create_new_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
+import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
 import 'package:guided/screens/home/calendar_availability_screen.dart';
@@ -88,6 +89,9 @@ class RouteGenerator {
       case '/advertisement_edit':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AdvertisementEdit());
+      case '/advertisement_add':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AdvertisementAdd());
       case '/outfitter_view':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const OutfitterView());
@@ -132,7 +136,8 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ContinueWithPhone(), settings: settings);
       case '/sign_up_form':
-        return MaterialPageRoute<dynamic>(builder: (_) => const SignupForm(), settings: settings);
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SignupForm(), settings: settings);
       case '/user_type':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const UserTypeScreen());

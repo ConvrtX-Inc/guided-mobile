@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_view.dart';
+import 'package:http/http.dart' as http;
 
 /// Widget for home features
 class OutfitterFeature extends StatelessWidget {
@@ -167,4 +169,5 @@ class OutfitterFeature extends StatelessWidget {
       ],
     );
   }
+
 }
