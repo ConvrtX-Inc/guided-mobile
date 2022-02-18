@@ -85,7 +85,7 @@ class RouteGenerator {
             builder: (_) => const GuideRulesScreen());
       case '/advertisement_view':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const AdvertisementView());
+            builder: (_) => const AdvertisementView(), settings: settings);
       case '/advertisement_edit':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AdvertisementEdit());
@@ -94,7 +94,7 @@ class RouteGenerator {
             builder: (_) => const AdvertisementAdd());
       case '/outfitter_view':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const OutfitterView());
+            builder: (_) => const OutfitterView(), settings: settings);
       case '/outfitter_edit':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const OutfitterEdit());

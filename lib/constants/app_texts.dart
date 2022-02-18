@@ -655,6 +655,9 @@ class AppTextConstants {
 
   /// Returns bigger bullet
   static String biggerBullet = '●';
+
+  /// Returns 'No Results Found' text
+  static String noResultFound = 'No Results Found';
 }
 
 /// Class for error messages text
@@ -679,4 +682,5 @@ class ErrorMessageConstants {
 
   /// Returns 'Password does not match' text
   static String passwordDoesNotMatch = 'Password does not match';
+
 }

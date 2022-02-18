@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_string_escapes
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -5,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
+import 'package:guided/models/advertisement_model.dart';
+import 'package:guided/models/outfitter_image_model.dart';
+import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -24,7 +29,6 @@ class APIServices {
 
   /// Getting the activity outfitter details
   Future<ActivityOutfitterModel> getActivityOutfitterDetails() async {
-
     final String token =
         await SecureStorage.readValue(key: AppTextConstants.userToken);
     final http.Response response = await http
@@ -61,6 +65,8 @@ class APIServices {
         requestType = 'GET';
         break;
     }
+
+    debugPrint('COMPLETE URI: $completeUri');
     final http.Request request = http.Request(requestType, completeUri);
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -93,5 +99,80 @@ class APIServices {
     }
 
     return body;
+  }
+
+  /// API service for outfitter model
+  Future<OutfitterModelData> getOutfitterData() async {
+    // ignore: unnecessary_nullable_for_final_variable_declarations
+    final String? token =
+        await SecureStorage.readValue(key: AppTextConstants.userToken);
+
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createOutfitterUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final http.Response response2 = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    /// seeding for data summary
+    final OutfitterModelData dataSummary = OutfitterModelData.fromJson(
+        json.decode(response.body), json.decode(response2.body));
+
+    // final OutfitterModelData dataSummary =
+    //     OutfitterModelData.fromJson(json.decode(response.body));
+
+    return OutfitterModelData(
+        outfitterDetails: dataSummary.outfitterDetails,
+        outfitterImageDetails: dataSummary.outfitterImageDetails);
+    // return OutfitterModelData(outfitterDetails: dataSummary.outfitterDetails);
+  }
+
+  /// API service for outfitter image model
+  Future<OutfitterImageModelData> getOutfitterImageData(String id) async {
+    // ignore: unnecessary_nullable_for_final_variable_declarations
+    final String? token =
+        await SecureStorage.readValue(key: AppTextConstants.userToken);
+
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}?s={"activity_outfitter_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    /// seeding for data summary
+    final OutfitterImageModelData dataSummary =
+        OutfitterImageModelData.fromJson(json.decode(response.body));
+
+    return OutfitterImageModelData(
+        outfitterImageDetails: dataSummary.outfitterImageDetails);
+  }
+
+  /// API service for outfitter model
+  Future<AdvertisementModelData> getAdvertisementData() async {
+    // ignore: unnecessary_nullable_for_final_variable_declarations
+    final String? token =
+        await SecureStorage.readValue(key: AppTextConstants.userToken);
+
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createAdvertisementUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    /// seeding for data summary
+    final AdvertisementModelData dataSummary =
+        AdvertisementModelData.fromJson(json.decode(response.body));
+
+    return AdvertisementModelData(
+        advertisementDetails: dataSummary.advertisementDetails);
   }
 }

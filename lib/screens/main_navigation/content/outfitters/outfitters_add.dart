@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -54,8 +55,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   int _uploadCount = 0;
   DateTime _selectedDate = DateTime.now();
 
-  bool _enabledImgHolder2 = false;
-
   @override
   void dispose() {
     _title.dispose();
@@ -98,8 +97,8 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.camera,
-                                      maxHeight: 480,
-                                      maxWidth: 640,
+                                      maxHeight: 202.h,
+                                      maxWidth: 270.w,
                                       imageQuality: 25);
 
                               if (image1 == null) {
@@ -125,8 +124,8 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.gallery,
-                                      maxHeight: 480,
-                                      maxWidth: 640,
+                                      maxHeight: 202.h,
+                                      maxWidth: 270.w,
                                       imageQuality: 25);
 
                               if (image1 == null) {
@@ -148,14 +147,36 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                   ),
                 ))),
         child: image1 != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.file(
-                  image1!,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.fitHeight,
-                ),
+            ? Stack(
+                children: <Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      image1!,
+                      width: 100.w,
+                      height: 100.h,
+                      fit: BoxFit.fitHeight,
+                    ),
+                  ),
+                  Positioned(
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            image1 = null;
+                            _uploadCount -= 1;
+                          });
+                        },
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: CircleAvatar(
+                            radius: 14.r,
+                            backgroundColor: Colors.white,
+                            child: const Icon(Icons.close, color: Colors.black),
+                          ),
+                        ),
+                      ))
+                ],
               )
             : Stack(
                 children: <Widget>[
@@ -231,8 +252,8 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
-                                          maxHeight: 480,
-                                          maxWidth: 640,
+                                          maxHeight: 202.h,
+                                          maxWidth: 270.w,
                                           imageQuality: 25);
 
                                   if (image2 == null) {
@@ -258,8 +279,8 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          maxHeight: 480,
-                                          maxWidth: 640,
+                                          maxHeight: 202.h,
+                                          maxWidth: 270.w,
                                           imageQuality: 25);
                                   if (image2 == null) {
                                     return;
@@ -269,7 +290,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
-                                    _enabledImgHolder2 = true;
                                   });
                                 } on PlatformException catch (e) {
                                   // ignore: avoid_print
@@ -282,14 +302,36 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     )))
             : null,
         child: image2 != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.file(
-                  image2!,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.fitHeight,
-                ),
+            ? Stack(
+                children: <Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      image2!,
+                      width: 100.w,
+                      height: 100.h,
+                      fit: BoxFit.fitHeight,
+                    ),
+                  ),
+                  Positioned(
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            image2 = null;
+                            _uploadCount -= 1;
+                          });
+                        },
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: CircleAvatar(
+                            radius: 14.r,
+                            backgroundColor: Colors.white,
+                            child: const Icon(Icons.close, color: Colors.black),
+                          ),
+                        ),
+                      ))
+                ],
               )
             : Stack(
                 children: <Widget>[
@@ -345,7 +387,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
 
     Widget image3Placeholder(BuildContext context) {
       return GestureDetector(
-        onTap: () => _enabledImgHolder2
+        onTap: () => _uploadCount == 2
             ? showMaterialModalBottomSheet(
                 expand: false,
                 context: context,
@@ -365,8 +407,8 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
-                                          maxHeight: 480,
-                                          maxWidth: 640,
+                                          maxHeight: 202.h,
+                                          maxWidth: 270.w,
                                           imageQuality: 25);
 
                                   if (image3 == null) {
@@ -391,8 +433,8 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          maxHeight: 480,
-                                          maxWidth: 640,
+                                          maxHeight: 202.h,
+                                          maxWidth: 270.w,
                                           imageQuality: 25);
 
                                   if (image3 == null) {
@@ -415,14 +457,36 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     )))
             : null,
         child: image3 != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.file(
-                  image3!,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.fitHeight,
-                ),
+            ? Stack(
+                children: <Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      image3!,
+                      width: 100.w,
+                      height: 100.h,
+                      fit: BoxFit.fitHeight,
+                    ),
+                  ),
+                  Positioned(
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            image3 = null;
+                            _uploadCount -= 1;
+                          });
+                        },
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: CircleAvatar(
+                            radius: 14.r,
+                            backgroundColor: Colors.white,
+                            child: const Icon(Icons.close, color: Colors.black),
+                          ),
+                        ),
+                      ))
+                ],
               )
             : Stack(
                 children: <Widget>[
@@ -768,7 +832,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () async => createOutfitter(),
+            onPressed: () async => outfitterDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -815,14 +879,13 @@ class _OutfitterAddState extends State<OutfitterAdd> {
     }
   }
 
-  Future<void> saveImage() async {
-    final Uint8List image1Bytes = File(image1!.path).readAsBytesSync();
-    final String base64Image1 =
-        'data:image/png;base64, ${base64Encode(image1Bytes)}';
+  Future<void> saveImage(String id) async {
+    
+    final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+    final String base64Image1 = base64Encode(await image1Bytes);
 
     final Map<String, dynamic> image = {
-      'activity_outfitter_id':
-          await SecureStorage.readValue(key: SecureStorage.userIdKey),
+      'activity_outfitter_id': id,
       'snapshot_img': base64Image1
     };
 
@@ -830,31 +893,45 @@ class _OutfitterAddState extends State<OutfitterAdd> {
         needAccessToken: true, data: image);
   }
 
-  Future<void> saveBulkImage() async {
-    /// Image1 base64
-    final Uint8List image1Bytes = File(image1!.path).readAsBytesSync();
-    final String base64Image1 =
-        'data:image/png;base64, ${base64Encode(image1Bytes)}';
+  Future<void> save2Image(String id) async {
+    final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+    final String base64Image1 = base64Encode(await image1Bytes);
 
-    /// Image2 base64
-    final Uint8List image2Bytes = File(image2!.path).readAsBytesSync();
-    final String base64Image2 =
-        'data:image/png;base64, ${base64Encode(image2Bytes)}';
+    final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
+    final String base64Image2 = base64Encode(await image2Bytes);
 
-    /// Image3 base64
-    final Uint8List image3Bytes = File(image3!.path).readAsBytesSync();
-    final String base64Image3 =
-        'data:image/png;base64, ${base64Encode(image3Bytes)}';
+    final OutfitterImageList objImg1 =
+        OutfitterImageList(id: id, img: base64Image1);
+    final OutfitterImageList objImg2 =
+        OutfitterImageList(id: id, img: base64Image2);
 
-    final OutfitterImageList objImg1 = OutfitterImageList(
-        id: await SecureStorage.readValue(key: SecureStorage.userIdKey),
-        img: base64Image1);
-    final OutfitterImageList objImg2 = OutfitterImageList(
-        id: await SecureStorage.readValue(key: SecureStorage.userIdKey),
-        img: base64Image2);
-    final OutfitterImageList objImg3 = OutfitterImageList(
-        id: await SecureStorage.readValue(key: SecureStorage.userIdKey),
-        img: base64Image3);
+    final List<OutfitterImageList> list = [objImg1, objImg2];
+
+    final Map<String, List<dynamic>> finalJson = {
+      'bulk': encodeToJsonOutfitter(list)
+    };
+
+    await APIServices().request(
+        AppAPIPath.outfitterBulkImageUrl, RequestType.POST,
+        needAccessToken: true, data: finalJson);
+  }
+
+  Future<void> saveBulkImage(String id) async {
+    final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+    final String base64Image1 = base64Encode(await image1Bytes);
+
+    final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
+    final String base64Image2 = base64Encode(await image2Bytes);
+
+    final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
+    final String base64Image3 = base64Encode(await image3Bytes);
+
+    final OutfitterImageList objImg1 =
+        OutfitterImageList(id: id, img: base64Image1);
+    final OutfitterImageList objImg2 =
+        OutfitterImageList(id: id, img: base64Image2);
+    final OutfitterImageList objImg3 =
+        OutfitterImageList(id: id, img: base64Image3);
 
     final List<OutfitterImageList> list = [objImg1, objImg2, objImg3];
 
@@ -862,34 +939,40 @@ class _OutfitterAddState extends State<OutfitterAdd> {
       'bulk': encodeToJsonOutfitter(list)
     };
 
-    await APIServices().request(AppAPIPath.outfitterBulkImageUrl, RequestType.POST,
+    await APIServices().request(
+        AppAPIPath.outfitterBulkImageUrl, RequestType.POST,
         needAccessToken: true, data: finalJson);
   }
 
-  /// Methode for caling the API
-  Future<void> createOutfitter() async {
-    if (_uploadCount == 1) {
-      await saveImage();
-    } else if (_uploadCount > 1) {
-      await saveBulkImage();
-    }
-    await outfitterDetail();
-  }
-
   Future<void> outfitterDetail() async {
+    final String userId =
+        await SecureStorage.readValue(key: SecureStorage.userIdKey);
+
     final Map<String, dynamic> outfitterDetails = {
-      'user_id': await SecureStorage.readValue(key: SecureStorage.userIdKey),
+      'user_id': userId,
       'title': _title.text,
       'price': int.parse(_price.text),
       'product_link': _productLink.text,
       'country': _country.text,
       'address': _street.text + _city.text + _province.text + _postalCode.text,
       'availability_date': _date.text,
-      'description': _description.text
+      'description': _description.text,
+      'is_published': false
     };
 
-    await APIServices().request(AppAPIPath.createOutfitterUrl, RequestType.POST,
+    final dynamic response = await APIServices().request(
+        AppAPIPath.createOutfitterUrl, RequestType.POST,
         needAccessToken: true, data: outfitterDetails);
+
+    // ignore: avoid_dynamic_calls
+    final String activityOutfitterId = response['id'];
+    if (_uploadCount == 1) {
+      await saveImage(activityOutfitterId);
+    } else if (_uploadCount == 2) {
+      await save2Image(activityOutfitterId);
+    } else if (_uploadCount == 3) {
+      await saveBulkImage(activityOutfitterId);
+    }
 
     await Navigator.push(
       context,
