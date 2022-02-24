@@ -92,12 +92,12 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
                   width: 150.w,
                   height: 100.h,
                 ) else SizedBox(
-                  width: 150.w,
+                  width: 140.w,
                   height: 100.h,
                   child: _choicesMainActivity(mainActivity),
                 ),
                 SizedBox(
-                  width: 150.w,
+                  width: 110.w,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),

@@ -67,4 +67,7 @@ class AppAPIPath {
 
   /// Returns advertisement image
   static String getAdvertisementImage = 'api/v1/activity-advertisement-image';
+
+  /// Returns profile details
+  static String getProfileDetails = 'api/v1/users';
 }

@@ -229,12 +229,12 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                         width: 150.w,
                         height: 100.h,
                       ) else SizedBox(
-                        width: 150.w,
+                        width: 140.w,
                         height: 100.h,
                         child: _chosenMainActivity(mainActivity),
                       ),
                 SizedBox(
-                  width: 150.w,
+                  width: 110.w,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
@@ -304,9 +304,9 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                               shrinkWrap: true,
                               scrollDirection: Axis.horizontal,
                               children: <Widget>[
-                                _chosenSubActivities(mainActivity),
-                                _chosenSubActivities(mainActivity),
-                                _chosenSubActivities(mainActivity),
+                                // _chosenSubActivities(mainActivity),
+                                // _chosenSubActivities(mainActivity),
+                                // _chosenSubActivities(mainActivity),
                               ]),
                         ),
                       ),
