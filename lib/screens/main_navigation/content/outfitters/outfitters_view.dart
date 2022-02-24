@@ -1,10 +1,10 @@
+// ignore_for_file: always_specify_types, cast_nullable_to_non_nullable,avoid_bool_literals_in_conditional_expressions, avoid_dynamic_calls
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/constants/asset_path.dart';
-import 'package:guided/screens/main_navigation/content/outfitters/outfitters_edit.dart';
 
 /// Outfitter View Screen
 class OutfitterView extends StatefulWidget {
@@ -19,7 +19,6 @@ class _OutfitterViewState extends State<OutfitterView> {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> screenArguments =
-        // ignore: cast_nullable_to_non_nullable
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
@@ -103,7 +102,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                         size: 25,
                       ),
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/outfitter_edit');
+                        navigateEditOutfitterDetails(context, screenArguments);
                       },
                     ),
                   ),
@@ -138,8 +137,8 @@ class _OutfitterViewState extends State<OutfitterView> {
               ),
             ],
           ),
-          flexibleSpace: Image(
-            image: AssetImage(AssetsPath.vest1),
+          flexibleSpace: Image.memory(
+            base64.decode(screenArguments['snapshot_img'].split(',').last),
             fit: BoxFit.fitHeight,
           ),
         ),
@@ -216,7 +215,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                   const Text(''),
                   SizedBox(width: 105.w),
                   Text(
-                    '${AppTextConstants.street} : ${screenArguments['address']}',
+                    '${AppTextConstants.street} : ${screenArguments['street']}',
                     style: AppTextStyle.greyStyle,
                   )
                 ],
@@ -229,7 +228,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                   const Text(''),
                   SizedBox(width: 105.w),
                   Text(
-                    '${AppTextConstants.city} : ${screenArguments['address']}',
+                    '${AppTextConstants.city} : ${screenArguments['city']}',
                     style: AppTextStyle.greyStyle,
                   )
                 ],
@@ -245,7 +244,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                   ),
                   SizedBox(width: 60.w),
                   Text(
-                    screenArguments['address'],
+                    screenArguments['province'],
                     style: AppTextStyle.greyStyle,
                   )
                 ],
@@ -313,5 +312,27 @@ class _OutfitterViewState extends State<OutfitterView> {
         ),
       ),
     );
+  }
+
+  /// Navigate to Outfitter Edit
+  Future<void> navigateEditOutfitterDetails(
+      BuildContext context, Map<String, dynamic> screenArguments) async {
+    final Map<String, dynamic> details = {
+      'id': screenArguments['id'],
+      'title': screenArguments['title'],
+      'price': screenArguments['price'].toString().substring(1),
+      'product_link': screenArguments['product_link'],
+      'country': screenArguments['country'],
+      'description': screenArguments['description'],
+      'date': screenArguments['date'],
+      'availability_date': screenArguments['availability_date'],
+      'address': screenArguments['address'],
+      'street': screenArguments['street'],
+      'city': screenArguments['city'],
+      'province': screenArguments['province'],
+      'zip_code': screenArguments['zip_code']
+    };
+
+    await Navigator.pushNamed(context, '/outfitter_edit', arguments: details);
   }
 }

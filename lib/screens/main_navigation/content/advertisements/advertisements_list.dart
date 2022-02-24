@@ -1,15 +1,13 @@
+// ignore_for_file: no_default_cases
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/constants/asset_path.dart';
-import 'package:guided/models/advertisement.dart';
 import 'package:guided/models/advertisement_model.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/widget/advertisement_features.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
-import 'package:guided/utils/advertisement.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Advertisement List Screen
@@ -39,7 +37,6 @@ class _AdvertisementListState extends State<AdvertisementList> {
                       child: CircularProgressIndicator(),
                     );
                     break;
-                  // ignore: no_default_cases
                   default:
                     if (snapshot.hasError) {
                       _displayWidget = Center(
@@ -88,11 +85,16 @@ class _AdvertisementListState extends State<AdvertisementList> {
       AdvertisementFeature(
         id: details.id,
         title: details.title,
-        imageUrl: AssetsPath.ads1,
         country: details.country,
         address: details.address,
+        street: details.street,
+        city: details.city,
+        province: details.province,
+        zip_code: details.zipCode,
         date:
             '${details.adDate!.month.toString().padLeft(2, '0')}. ${details.adDate!.day.toString().padLeft(2, '0')}. ${details.adDate!.year.toString().padLeft(2, '0')}',
+        availability_date:
+            '${details.adDate!.year.toString().padLeft(2, '0')}-${details.adDate!.month.toString().padLeft(2, '0')}-${details.adDate!.day.toString().padLeft(2, '0')}',
         price: details.price,
         description: details.description,
       );

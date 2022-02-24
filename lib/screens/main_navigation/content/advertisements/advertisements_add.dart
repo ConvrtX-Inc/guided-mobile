@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, unused_element, always_declare_return_types
+// ignore_for_file: file_names, unused_element, always_declare_return_types, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, curly_braces_in_flow_control_structures, always_specify_types, avoid_dynamic_calls
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -41,11 +41,9 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   final TextEditingController _description = TextEditingController();
   final TextEditingController _price = TextEditingController();
 
-  // ignore: diagnostic_describe_all_properties
+  
   File? image1;
-  // ignore: diagnostic_describe_all_properties
   File? image2;
-  // ignore: diagnostic_describe_all_properties
   File? image3;
 
   int _uploadCount = 0;
@@ -107,7 +105,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                 _uploadCount += 1;
                               });
                             } on PlatformException catch (e) {
-                              // ignore: avoid_print
                               print('Failed to pick image: $e');
                             }
                             Navigator.of(context).pop();
@@ -134,7 +131,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                 _uploadCount += 1;
                               });
                             } on PlatformException catch (e) {
-                              // ignore: avoid_print
                               print('Failed to pick image: $e');
                             }
                             Navigator.of(context).pop();
@@ -262,7 +258,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                     _uploadCount += 1;
                                   });
                                 } on PlatformException catch (e) {
-                                  // ignore: avoid_print
                                   print('Failed to pick image: $e');
                                 }
                                 Navigator.of(context).pop();
@@ -289,7 +284,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                     _enabledImgHolder2 = true;
                                   });
                                 } on PlatformException catch (e) {
-                                  // ignore: avoid_print
                                   print('Failed to pick image: $e');
                                 }
                                 Navigator.of(context).pop();
@@ -417,7 +411,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                     _uploadCount += 1;
                                   });
                                 } on PlatformException catch (e) {
-                                  // ignore: avoid_print
                                   print('Failed to pick image: $e');
                                 }
                                 Navigator.of(context).pop();
@@ -444,7 +437,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                     _uploadCount += 1;
                                   });
                                 } on PlatformException catch (e) {
-                                  // ignore: avoid_print
                                   print('Failed to pick image: $e');
                                 }
                                 Navigator.of(context).pop();
@@ -625,24 +617,23 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                   SizedBox(
                     height: 20.h,
                   ),
-                  TextField(
-                    controller: _useCurrentLocation,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(
-                        Icons.pin_drop,
-                        color: Colors.black,
-                      ),
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.useCurrentLocation,
-                      hintStyle: const TextStyle(
-                        color: Colors.black,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      primary: Colors.white,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        const Icon(
+                          Icons.pin_drop,
+                          color: Colors.black,
+                        ),
+                        Text(
+                          AppTextConstants.useCurrentLocation,
+                          style: const TextStyle(color: Colors.black),
+                        )
+                      ],
                     ),
                   ),
                   SizedBox(
@@ -653,7 +644,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.canada,
+                      hintText: AppTextConstants.country,
                       hintStyle: TextStyle(
                         color: AppColors.grey,
                       ),
@@ -857,7 +848,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     );
     if (picked != null && picked != _selectedDate) {
       final String formattedDate = DateFormat('yyyy-MM-dd').format(picked);
-      // ignore: curly_braces_in_flow_control_structures
       setState(() {
         _selectedDate = picked;
         _date.value = TextEditingValue(text: formattedDate.toString());
@@ -869,7 +859,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
     final String base64Image1 = base64Encode(await image1Bytes);
 
-    // ignore: always_specify_types
     final Map<String, dynamic> image = {
       'activity_advertisement_id': id,
       'snapshot_img': base64Image1
@@ -891,7 +880,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     final OutfitterImageList objImg2 =
         OutfitterImageList(id: id, img: base64Image2);
 
-    // ignore: always_specify_types
     final List<OutfitterImageList> list = [objImg1, objImg2];
 
     final Map<String, List<dynamic>> finalJson = {
@@ -933,12 +921,16 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     final String userId =
         await SecureStorage.readValue(key: SecureStorage.userIdKey);
 
-    // ignore: always_specify_types
     final Map<String, dynamic> outfitterDetails = {
       'user_id': userId,
       'title': _title.text,
       'country': _country.text,
-      'address': _street.text + _city.text + _province.text + _postalCode.text,
+      'address':
+          '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}',
+      'street': _street.text,
+      'city': _city.text,
+      'province': _province.text,
+      'zip_code': _postalCode.text,
       'ad_date': _date.text,
       'description': _description.text,
       'price': int.parse(_price.text),
@@ -949,7 +941,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         AppAPIPath.createAdvertisementUrl, RequestType.POST,
         needAccessToken: true, data: outfitterDetails);
 
-    // ignore: avoid_dynamic_calls
     final String activityOutfitterId = response['id'];
     if (_uploadCount == 1) {
       await saveImage(activityOutfitterId);

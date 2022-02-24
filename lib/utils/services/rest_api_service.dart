@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_string_escapes
+// ignore_for_file: unnecessary_string_escapes, unnecessary_nullable_for_final_variable_declarations
 
 import 'dart:convert';
 import 'dart:io';
@@ -7,13 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
+import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-enum RequestType { GET, POST }
+enum RequestType { GET, POST, PATCH }
 
 /// Service for API Calls
 class APIServices {
@@ -64,6 +65,9 @@ class APIServices {
       case RequestType.GET:
         requestType = 'GET';
         break;
+      case RequestType.PATCH:
+        requestType = 'PATCH';
+        break;
     }
 
     debugPrint('COMPLETE URI: $completeUri');
@@ -90,8 +94,22 @@ class APIServices {
     debugPrint(response.statusCode.toString());
     debugPrint(body.toString());
     if (response.statusCode != 200 && response.statusCode != 201) {
-      // ignore: avoid_dynamic_calls
+      switch (response.statusCode) {
+        case 500:
+          {}
+          break;
+        case 401:
+          {
+            // await refreshAccessToken();
+          }
+          break;
+      }
+
       if (body.containsKey('errors')) {}
+    } else {
+      if (body == null) {
+        return response.statusCode;
+      }
     }
 
     if (type == RequestType.GET) {
@@ -103,7 +121,6 @@ class APIServices {
 
   /// API service for outfitter model
   Future<OutfitterModelData> getOutfitterData() async {
-    // ignore: unnecessary_nullable_for_final_variable_declarations
     final String? token =
         await SecureStorage.readValue(key: AppTextConstants.userToken);
 
@@ -121,43 +138,90 @@ class APIServices {
           HttpHeaders.authorizationHeader: 'Bearer $token',
         });
 
-    /// seeding for data summary
-    final OutfitterModelData dataSummary = OutfitterModelData.fromJson(
-        json.decode(response.body), json.decode(response2.body));
+    final OutfitterModelData dataSummary =
+        OutfitterModelData.fromJson(json.decode(response.body));
 
-    // final OutfitterModelData dataSummary =
-    //     OutfitterModelData.fromJson(json.decode(response.body));
-
-    return OutfitterModelData(
-        outfitterDetails: dataSummary.outfitterDetails,
-        outfitterImageDetails: dataSummary.outfitterImageDetails);
-    // return OutfitterModelData(outfitterDetails: dataSummary.outfitterDetails);
+    return OutfitterModelData(outfitterDetails: dataSummary.outfitterDetails);
   }
 
   /// API service for outfitter image model
   Future<OutfitterImageModelData> getOutfitterImageData(String id) async {
-    // ignore: unnecessary_nullable_for_final_variable_declarations
     final String? token =
         await SecureStorage.readValue(key: AppTextConstants.userToken);
 
-    final http.Response response = await http.get(
+    final dynamic response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}?s={"activity_outfitter_id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
         });
 
-    /// seeding for data summary
-    final OutfitterImageModelData dataSummary =
-        OutfitterImageModelData.fromJson(json.decode(response.body));
+    final List<OutfitterImageDetailsModel> details =
+        <OutfitterImageDetailsModel>[];
 
-    return OutfitterImageModelData(
-        outfitterImageDetails: dataSummary.outfitterImageDetails);
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final OutfitterImageDetailsModel imageModel =
+          OutfitterImageDetailsModel.fromJson(data);
+      details.add(imageModel);
+    }
+
+    return OutfitterImageModelData(outfitterImageDetails: details);
+  }
+
+  /// API service for outfitter image model
+  Future<OutfitterImageModelData> getOutfitterImage(String id) async {
+    final String? token =
+        await SecureStorage.readValue(key: AppTextConstants.userToken);
+
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}?s={"id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final List<OutfitterImageDetailsModel> details =
+        <OutfitterImageDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final OutfitterImageDetailsModel imageModel =
+          OutfitterImageDetailsModel.fromJson(data);
+      details.add(imageModel);
+    }
+
+    return OutfitterImageModelData(outfitterImageDetails: details);
+  }
+
+  /// API service for advertisement image model
+  Future<AdvertisementImageModelData> getAdvertisementImageData(
+      String id) async {
+    final String? token =
+        await SecureStorage.readValue(key: AppTextConstants.userToken);
+
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getAdvertisementImage}?s={"activity_advertisement_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final List<AdvertisementImageDetailsModel> details =
+        <AdvertisementImageDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final AdvertisementImageDetailsModel imageModel =
+          AdvertisementImageDetailsModel.fromJson(data);
+      details.add(imageModel);
+    }
+
+    return AdvertisementImageModelData(advertisementImageDetails: details);
   }
 
   /// API service for outfitter model
   Future<AdvertisementModelData> getAdvertisementData() async {
-    // ignore: unnecessary_nullable_for_final_variable_declarations
     final String? token =
         await SecureStorage.readValue(key: AppTextConstants.userToken);
 

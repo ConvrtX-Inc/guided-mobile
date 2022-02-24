@@ -658,6 +658,9 @@ class AppTextConstants {
 
   /// Returns 'No Results Found' text
   static String noResultFound = 'No Results Found';
+
+  /// Returns confirm text
+  static String confirm = 'Confirm';
 }
 
 /// Class for error messages text
@@ -683,4 +686,6 @@ class ErrorMessageConstants {
   /// Returns 'Password does not match' text
   static String passwordDoesNotMatch = 'Password does not match';
 
+  /// Returns 'System failed to update' text
+  static String updateFailed = 'System failed to update';
 }

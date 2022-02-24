@@ -97,8 +97,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.camera,
-                                      maxHeight: 202.h,
-                                      maxWidth: 270.w,
                                       imageQuality: 25);
 
                               if (image1 == null) {
@@ -124,9 +122,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.gallery,
-                                      maxHeight: 202.h,
-                                      maxWidth: 270.w,
-                                      imageQuality: 25);
+                                      imageQuality: 1);
 
                               if (image1 == null) {
                                 return;
@@ -252,8 +248,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
                                           imageQuality: 25);
 
                                   if (image2 == null) {
@@ -279,9 +273,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
-                                          imageQuality: 25);
+                                          imageQuality: 1);
                                   if (image2 == null) {
                                     return;
                                   }
@@ -407,8 +399,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
                                           imageQuality: 25);
 
                                   if (image3 == null) {
@@ -433,9 +423,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
-                                          imageQuality: 25);
+                                          imageQuality: 1);
 
                                   if (image3 == null) {
                                     return;
@@ -657,24 +645,54 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                   SizedBox(
                     height: 20.h,
                   ),
-                  TextField(
-                    controller: _useCurrentLocation,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(
-                        Icons.pin_drop,
-                        color: Colors.black,
-                      ),
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.useCurrentLocation,
-                      hintStyle: const TextStyle(
-                        color: Colors.black,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+                  // TextField(
+                  //   controller: _useCurrentLocation,
+                  //   decoration: InputDecoration(
+                  //     prefixIcon: const Icon(
+                  //       Icons.pin_drop,
+                  //       color: Colors.black,
+                  //     ),
+                  //     contentPadding:
+                  //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                  //     hintText: AppTextConstants.useCurrentLocation,
+                  //     hintStyle: const TextStyle(
+                  //       color: Colors.black,
+                  //     ),
+                  //     enabledBorder: OutlineInputBorder(
+                  //       borderRadius: BorderRadius.circular(14.r),
+                  //       borderSide:
+                  //           BorderSide(color: Colors.grey, width: 0.2.w),
+                  //     ),
+                  //   ),
+                  // ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      primary: Colors.white,
+                    ),
+                    // style: ButtonStyle(
+                    //     foregroundColor:
+                    //         MaterialStateProperty.all<Color>(Colors.red),
+                    //     shape:
+                    //         MaterialStateProperty.all<RoundedRectangleBorder>(
+                    //             RoundedRectangleBorder(
+                    //                 borderRadius: BorderRadius.circular(10.r),
+                    //                 side:
+                    //                     const BorderSide(color: Colors.grey)))),
+
+                    child: Row(
+                      // ignore: prefer_const_literals_to_create_immutables
+                      children: <Widget>[
+                        const Icon(
+                          Icons.pin_drop,
+                          color: Colors.black,
+                        ),
+                        Text(
+                          AppTextConstants.useCurrentLocation,
+                          style: const TextStyle(color: Colors.black),
+                        )
+                      ],
                     ),
                   ),
                   SizedBox(
@@ -685,7 +703,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.canada,
+                      hintText: AppTextConstants.country,
                       hintStyle: TextStyle(
                         color: AppColors.grey,
                       ),
@@ -803,6 +821,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                   SizedBox(height: 20.h),
                   TextField(
                     controller: _description,
+                    maxLines: 5,
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
@@ -880,7 +899,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   }
 
   Future<void> saveImage(String id) async {
-    
     final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
     final String base64Image1 = base64Encode(await image1Bytes);
 
@@ -948,13 +966,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
     final String userId =
         await SecureStorage.readValue(key: SecureStorage.userIdKey);
 
+    String price = _price.text.replaceAll(new RegExp(r'[,]'), '');
+
     final Map<String, dynamic> outfitterDetails = {
       'user_id': userId,
       'title': _title.text,
-      'price': int.parse(_price.text),
+      'price': int.parse(price),
       'product_link': _productLink.text,
       'country': _country.text,
-      'address': _street.text + _city.text + _province.text + _postalCode.text,
+      'address':
+          '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
+      'street': _street.text,
+      'city': _city.text,
+      'province': _province.text,
+      'zip_code': _postalCode.text,
       'availability_date': _date.text,
       'description': _description.text,
       'is_published': false

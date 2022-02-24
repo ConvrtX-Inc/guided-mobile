@@ -1,3 +1,5 @@
+// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -19,7 +21,6 @@ class _AdvertisementViewState extends State<AdvertisementView> {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> screenArguments =
-        // ignore: cast_nullable_to_non_nullable
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
@@ -103,7 +104,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                         size: 25,
                       ),
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/advertisement_edit');
+                       navigateEditAdvertisementDetails(context, screenArguments);
                       },
                     ),
                   ),
@@ -138,9 +139,9 @@ class _AdvertisementViewState extends State<AdvertisementView> {
               ),
             ],
           ),
-          flexibleSpace: Image(
-            image: AssetImage(AssetsPath.ads1),
-            fit: BoxFit.fitWidth,
+          flexibleSpace: Image.memory(
+            base64.decode(screenArguments['snapshot_img'].split(',').last),
+            fit: BoxFit.fitHeight,
           ),
         ),
       ),
@@ -232,7 +233,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                   const Text(''),
                   SizedBox(width: 105.w),
                   Text(
-                    '${AppTextConstants.street} : ${screenArguments['address']}',
+                    '${AppTextConstants.street} : ${screenArguments['street']}',
                     style: AppTextStyle.greyStyle,
                   )
                 ],
@@ -245,7 +246,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                   const Text(''),
                   SizedBox(width: 105.w),
                   Text(
-                    '${AppTextConstants.city} : ${screenArguments['address']}',
+                    '${AppTextConstants.city} : ${screenArguments['city']}',
                     style: AppTextStyle.greyStyle,
                   )
                 ],
@@ -261,7 +262,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                   ),
                   SizedBox(width: 55.w),
                   Text(
-                    screenArguments['address'],
+                    screenArguments['province'],
                     style: AppTextStyle.greyStyle,
                   )
                 ],
@@ -303,5 +304,27 @@ class _AdvertisementViewState extends State<AdvertisementView> {
         ),
       ),
     );
+  }
+
+  /// Navigate to Outfitter Edit
+  Future<void> navigateEditAdvertisementDetails(
+      BuildContext context, Map<String, dynamic> screenArguments) async {
+    final Map<String, dynamic> details = {
+      'id': screenArguments['id'],
+      'title': screenArguments['title'],
+      'price': screenArguments['price'].toString().substring(1),
+      'product_link': screenArguments['product_link'],
+      'country': screenArguments['country'],
+      'description': screenArguments['description'],
+      'date': screenArguments['date'],
+      'availability_date': screenArguments['availability_date'],
+      'address': screenArguments['address'],
+      'street': screenArguments['street'],
+      'city': screenArguments['city'],
+      'province': screenArguments['province'],
+      'zip_code': screenArguments['zip_code']
+    };
+
+    await Navigator.pushNamed(context, '/advertisement_edit', arguments: details);
   }
 }
