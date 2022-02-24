@@ -1,58 +1,75 @@
-/// Model of Outfitter
-class OutfitterModelClass {
+// ignore_for_file: sort_constructors_first, avoid_dynamic_calls, always_specify_types
+/// Outfitter model
+class OutfitterModelData {
   /// Constructor
-  OutfitterModelClass({
-    required this.user_id,
+  OutfitterModelData(
+      {required this.outfitterDetails});
+
+  /// outfitter details
+  late List<OutfitterDetailsModel> outfitterDetails = <OutfitterDetailsModel>[];
+
+  /// mapping
+  OutfitterModelData.fromJson(List<dynamic> parseJson)
+      : outfitterDetails =
+            parseJson.map((i) => OutfitterDetailsModel.fromJson(i)).toList();
+}
+
+/// Outfitter details model
+class OutfitterDetailsModel {
+  /// Constructor
+  OutfitterDetailsModel({
+    this.id = '',
+    this.userId = '',
     this.title = '',
     this.price = '',
-    this.product_link = '',
+    this.productLink = '',
     this.country = '',
     this.address = '',
     this.street = '',
     this.city = '',
     this.province = '',
-    this.currentLocation = '',
-    this.postalCode = '',
-    this.availability_date = '',
+    this.zipCode = '',
+    this.availabilityDate,
     this.description = '',
+    this.isPublished = false,
+    this.createdDate,
   });
 
-  /// Instantiation for user type id
-  final String user_id;
+  /// String property initialization
+  final String id,
+      userId,
+      title,
+      price,
+      productLink,
+      country,
+      address,
+      street,
+      city,
+      province,
+      zipCode,
+      description;
 
-  /// Instantiation for title
-  final String title;
+  /// date time initialization
+  final DateTime? availabilityDate, createdDate;
 
-  /// Instantiation for price
-  final String price;
+  /// boolean initialization
+  final bool isPublished;
 
-  /// Instantiation for productLink
-  final String product_link;
-
-  /// Instantiation for address
-  final String address;
-
-  /// Instantiation for currentLocation
-  final String currentLocation;
-
-  /// Instantiation for country
-  final String country;
-
-  /// Instantiation for street
-  final String street;
-
-  /// Instantiation for city
-  final String city;
-
-  /// Instantiation for province
-  final String province;
-
-  /// Instantiation for postalCode
-  final String postalCode;
-
-  /// Instantiation for date
-  final String availability_date;
-
-  /// Instantiation for description
-  final String description;
+  /// mapping
+  OutfitterDetailsModel.fromJson(Map<String, dynamic> parseJson)
+      : id = parseJson['id'],
+        userId = parseJson['user_id'],
+        title = parseJson['title'],
+        price = parseJson['price'],
+        productLink = parseJson['product_link'],
+        country = parseJson['country'],
+        address = parseJson['address'] ?? '',
+        street = parseJson['street'] ?? '',
+        city = parseJson['city'] ?? '',
+        province = parseJson['province'] ?? '',
+        zipCode = parseJson['zip_code'] ?? '',
+        availabilityDate = DateTime.parse(parseJson['availability_date']),
+        description = parseJson['description'],
+        isPublished = parseJson['is_published'],
+        createdDate = DateTime.parse(parseJson['created_date']);
 }

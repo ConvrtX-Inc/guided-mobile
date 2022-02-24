@@ -712,6 +712,10 @@ class AppTextConstants {
   /// Returns bigger bullet
   static String biggerBullet = '●';
 
+
+  /// Returns 'No Results Found' text
+  static String noResultFound = 'No Results Found';
+
   /// Returns confirm payment
   static String confirmPayment = 'Confirm Payment';
 
@@ -772,4 +776,7 @@ class ErrorMessageConstants {
 
   /// Returns 'Password does not match' text
   static String passwordDoesNotMatch = 'Password does not match';
+
+  /// Returns 'System failed to update' text
+  static String updateFailed = 'System failed to update';
 }

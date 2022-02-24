@@ -74,7 +74,7 @@ class _MainContentState extends State<MainContent> {
               color: Colors.black,
               fontFamily: AppTextConstants.fontGilroy),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
       ),

@@ -40,4 +40,31 @@ class AppAPIPath {
 
   /// Returns create advertisement url
   static String createAdvertisementUrl = 'api/v1/activity-advertisement';
+
+  /// Returns activity advertisement image url
+  static String imageUrl = 'api/v1/activity-advertisement-image';
+
+  /// Returns activity advertisement bulk image url
+  static String bulkImageUrl = 'api/v1/activity-advertisement-image/bulk';
+
+  /// Returns outfitter url
+  static String outfitterUrl = 'api/v1/activity-outfitter';
+
+  /// Returns outfitter image url
+  static String outfitterImageUrl = 'api/v1/activity-outfitter-image';
+
+  /// Returns outfitter bulk image url
+  static String outfitterBulkImageUrl = 'api/v1/activity-outfitter-image/bulk';
+
+  /// Returns outfitter details url
+  static String getOutfitterDetail = 'api/v1/activity-outfitter';
+
+  /// Returns advertisement details
+  static String getAdvertisementDetail = 'api/v1/activity-advertisement';
+
+  /// Returns outfitter image
+  static String getOutfitterImage = 'api/v1/activity-outfitter-image';
+
+  /// Returns advertisement image
+  static String getAdvertisementImage = 'api/v1/activity-advertisement-image';
 }

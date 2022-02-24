@@ -11,7 +11,7 @@ import 'package:guided/screens/auths/splashes/screens/welcome_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/create_new_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
-
+import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
 import 'package:guided/screens/home/calendar_availability_screen.dart';
@@ -92,16 +92,19 @@ class RouteGenerator {
             builder: (_) => const GuideRulesScreen());
       case '/advertisement_view':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const AdvertisementView());
+            builder: (_) => const AdvertisementView(), settings: settings);
       case '/advertisement_edit':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const AdvertisementEdit());
+            builder: (_) => const AdvertisementEdit(), settings: settings);
+      case '/advertisement_add':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AdvertisementAdd());
       case '/outfitter_view':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const OutfitterView());
+            builder: (_) => const OutfitterView(), settings: settings);
       case '/outfitter_edit':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const OutfitterEdit());
+            builder: (_) => const OutfitterEdit(), settings: settings);
       case '/outfitter_list':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const OutfitterList());
