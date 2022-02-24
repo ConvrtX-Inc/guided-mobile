@@ -1,3 +1,4 @@
+// ignore_for_file: no_default_cases
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,20 +6,34 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/settings.dart';
 import 'package:guided/screens/main_navigation/settings/widgets/settings_items.dart';
 import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
+import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
+import 'package:guided/utils/secure_storage.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/settings.dart';
 
 /// Screen for user settings
-class SettingsMain extends StatelessWidget {
+class SettingsMain extends StatefulWidget {
   /// Constructor
   SettingsMain({Key? key}) : super(key: key);
 
+  @override
+  State<SettingsMain> createState() => _SettingsMainState();
+}
+
+class _SettingsMainState extends State<SettingsMain> {
   /// Get settings items mocked data
   final List<SettingsModel> settingsItems =
       SettingsUtils.getMockedDataSettings();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +57,7 @@ class SettingsMain extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).pushNamed('/notification');
                     },
-                    child: SvgPicture.asset(
-                        AssetsPath.iconBell,
+                    child: SvgPicture.asset(AssetsPath.iconBell,
                         fit: BoxFit.scaleDown),
                   ),
                 ],
@@ -63,10 +77,7 @@ class SettingsMain extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: const <BoxShadow>[
                         BoxShadow(
-                            blurRadius: 5,
-                            color: Colors.grey,
-                            spreadRadius: 2
-                        )
+                            blurRadius: 5, color: Colors.grey, spreadRadius: 2)
                       ],
                     ),
                     child: CircleAvatar(
@@ -79,25 +90,37 @@ class SettingsMain extends StatelessWidget {
                     width: 24,
                   ),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        const Text(
-                          'Ethan Hunt', // Will change based on the API
-                          style: TextStyle(
-                              letterSpacing: 1,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 5),
-                        Text('ethan@gmail.com', // Will change based on the API
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: AppColors.grey)),
-                      ],
-                    ),
+                    child: FutureBuilder<ProfileModelData>(
+                        future: APIServices().getProfileData(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          Widget _displayWidget;
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.waiting:
+                              _displayWidget = Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 20.h,
+                                  ),
+                                  const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ],
+                              );
+                              break;
+                            default:
+                              if (snapshot.hasError) {
+                                _displayWidget = Center(
+                                    child: APIMessageDisplay(
+                                  message: 'Result: ${snapshot.error}',
+                                ));
+                              } else {
+                                _displayWidget =
+                                    buildProfileData(snapshot.data!);
+                              }
+                          }
+                          return _displayWidget;
+                        }),
                   ),
                   IconButton(
                     icon: const Icon(Icons.navigate_next),
@@ -169,6 +192,32 @@ class SettingsMain extends StatelessWidget {
       ),
     );
   }
+
+  Widget buildProfileData(ProfileModelData profileData) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            if (profileData.profileDetails.isEmpty)
+              const Text('Unknown User')
+            else
+              for (ProfileDetailsModel detail in profileData.profileDetails)
+                Column(
+                  children: <Widget>[
+                    Text(
+                      '${detail.firstName} ${detail.lastName}',
+                      style: TextStyle(
+                          letterSpacing: 1,
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(detail.email,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.grey))
+                  ],
+                )
+          ]);
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

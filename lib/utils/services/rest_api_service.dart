@@ -11,6 +11,7 @@ import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/outfitter_model.dart';
+import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -220,7 +221,7 @@ class APIServices {
     return AdvertisementImageModelData(advertisementImageDetails: details);
   }
 
-  /// API service for outfitter model
+  /// API service for advertisement model
   Future<AdvertisementModelData> getAdvertisementData() async {
     final String? token =
         await SecureStorage.readValue(key: AppTextConstants.userToken);
@@ -238,5 +239,32 @@ class APIServices {
 
     return AdvertisementModelData(
         advertisementDetails: dataSummary.advertisementDetails);
+  }
+
+  /// API service for profile model
+  Future<ProfileModelData> getProfileData() async {
+    final String? userId =
+        await SecureStorage.readValue(key: SecureStorage.userIdKey);
+    final String? token =
+        await SecureStorage.readValue(key: AppTextConstants.userToken);
+
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}?s={"id": \"$userId\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final List<ProfileDetailsModel> details = <ProfileDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+
+    for (final dynamic data in res) {
+      final ProfileDetailsModel profileModel =
+          ProfileDetailsModel.fromJson(data);
+      details.add(profileModel);
+    }
+
+    return ProfileModelData(profileDetails: details);
   }
 }
