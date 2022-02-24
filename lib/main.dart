@@ -9,6 +9,7 @@ import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/routes/route_generator.dart';
 
 String _defaultHome = '/login';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIOverlays(
@@ -89,6 +90,7 @@ class Splash extends StatelessWidget {
 /// Initialization
 class Init {
   Init._();
+
   /// static final instance
   static final instance = Init._();
 

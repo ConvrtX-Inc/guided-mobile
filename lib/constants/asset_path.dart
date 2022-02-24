@@ -134,4 +134,19 @@ class AssetsPath {
 
   /// returns setting icon bell
   static String iconBell = 'assets/images/svg/settings_icon_bell.svg';
+
+  /// returns visa image
+  static String visa = 'assets/images/png/visa.png';
+
+  /// returns rounded check
+  static String roundedCheck = 'assets/images/png/rounded_check.png';
+
+  /// returns google wallet
+  static String googleWallet = 'assets/images/png/google_wallet.png';
+
+  /// returns wallet app icon
+  static String walletAppIcon = 'assets/images/png/wallet_app_icon.png';
+
+  /// returns bank card icon
+  static String bankCardIcon = 'assets/images/png/bank_card.png';
 }

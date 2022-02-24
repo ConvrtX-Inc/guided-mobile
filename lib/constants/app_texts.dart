@@ -170,6 +170,10 @@ class AppTextConstants {
   static String loremIpsum =
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget nibh quis metus venenatis porta nec eget sem. Pellentesque nec ';
 
+  /// Returns long lorem ipsum sample text
+  static String longLoremIpsum =
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.\n\nIt has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.\n\nIt was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
+
   /// Returns product name text
   static String productName = 'Product Name';
 
@@ -454,6 +458,15 @@ class AppTextConstants {
   /// Returns I agree with local laws
   static String agreeLocalLaws = 'I agree with local laws and taxes terms';
 
+  /// Returns I agree with Terms & Conditions
+  static String agreeWithTermsConditions = 'I Agree With Terms & Conditions';
+
+  /// Returns I agree text
+  static String iAgree = 'I Agree';
+
+  /// Returns Save text
+  static String save = 'Save';
+
   /// Returns header local laws text
   static String headerLocalLaws = 'Your local laws and taxes';
 
@@ -650,16 +663,94 @@ class AppTextConstants {
   /// Returns home text
   static String home = 'Home';
 
+  /// Returns manage cards text
+  static String manageCards = 'Manage Cards';
+
+  /// Returns set as default payment text
+  static String setAsDefaultPayment = 'Set as Default Payment';
+
+  /// Returns remove text
+  static String remove = 'Remove';
+
+  /// Returns payment text
+  static String payment = 'Payment';
+
+  /// Returns booking history text
+  static String bookingHistory = 'Booking History';
+
+  /// Returns setup the time duration for the events text
+  static String setupTheTimeDurationForTheEvents =
+      'Setup the time duration for the events';
+
+  /// Returns start date text
+  static String startDate = 'Start Date';
+
+  /// Returns end date text
+  static String endDate = 'End Date';
+
+  /// Returns amount text
+  static String amount = 'Amount';
+
+  /// Returns Terms & Conditions text
+  static String termsAndCondidition = 'Terms & Conditions';
+
+  /// Returns Cancellation Policy text
+  static String cancellationPolicy = 'Cancellation Policy';
+
+  /// Returns FAQ text
+  static String faq = 'FAQ';
+
+  /// Returns How can we help you to improve your service text
+  static String howCanWeHelp = 'How can we help you to improve your service';
+
+  /// Traveler release & Waiver Form  text
+  static String travelerReleaseAndWaiverForm = 'Traveler release & Waiver Form';
+
   /// Returns token text
   static String userToken = 'user_token';
 
   /// Returns bigger bullet
   static String biggerBullet = '●';
 
+
   /// Returns 'No Results Found' text
   static String noResultFound = 'No Results Found';
 
-  /// Returns confirm text
+  /// Returns confirm payment
+  static String confirmPayment = 'Confirm Payment';
+
+  /// Returns company
+  static String company = 'Company';
+
+  /// Returns order number
+  static String orderNumber = 'Order Number';
+
+  /// Returns service
+  static String service = 'Service';
+
+  /// Returns payment successful
+  static String paymentSuccessful = 'Payment Successful';
+
+  /// Returns booking date
+  static String bookingDate = 'Booking Date';
+
+  /// Returns slots
+  static String slots = 'Slots';
+
+  /// Returns card
+  static String card = 'Card';
+
+  /// Returns ok
+  static String ok = 'Ok';
+
+  /// Returns remove card
+  static String removeCard = 'Remove Card';
+
+  /// Returns are you sure you want to remove card
+  static String areYouSureYouWantToRemoveCard =
+      'Are you sure you want to remove card';
+
+  /// Returns confirm
   static String confirm = 'Confirm';
 }
 
