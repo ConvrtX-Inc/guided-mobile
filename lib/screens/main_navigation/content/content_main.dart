@@ -8,6 +8,7 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_list.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_list.dart';
+import 'package:guided/screens/main_navigation/content/packages/packages_list.dart';
 
 /// Main Content Screen
 class MainContent extends StatefulWidget {
@@ -111,10 +112,7 @@ class _MainContentState extends State<MainContent> {
             unselectedLabelColor: Colors.grey,
           ),
           views: const <Widget>[
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Text('Package Content'),
-            ),
+            PackageList(),
             Padding(
               padding: EdgeInsets.all(8),
               child: Text('Event Content'),

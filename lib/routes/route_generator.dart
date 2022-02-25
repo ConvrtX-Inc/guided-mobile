@@ -121,16 +121,16 @@ class RouteGenerator {
             builder: (_) => const FreeServicesScreen());
       case '/location':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const LocationScreen());
+            builder: (_) => const LocationScreen(), settings: settings);
       case '/number_of_traveler':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const NumberOfTravelersScreen());
+            builder: (_) => const NumberOfTravelersScreen(), settings: settings);
       case '/local_law_taxes':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const LocalLawsTaxesScreen());
       case '/package_info':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const PackageInfoScreen());
+            builder: (_) => const PackageInfoScreen(), settings: settings);
       case '/package_summary':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PackageSummaryScreen());
@@ -167,7 +167,6 @@ class RouteGenerator {
       case '/waiver_form':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TravelerReleaseAndWaiverForm());
-
       case '/verification_code':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ResetVerifyPhone(), settings: settings);
@@ -178,7 +177,6 @@ class RouteGenerator {
       case '/sign_up_verify':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SignupVerify(), settings: settings);
-
       default:
         return _errorRoute();
     }

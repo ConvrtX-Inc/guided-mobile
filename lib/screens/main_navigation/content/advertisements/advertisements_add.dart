@@ -92,8 +92,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.camera,
-                                      maxHeight: 202.h,
-                                      maxWidth: 270.w,
                                       imageQuality: 25);
                               if (image1 == null) {
                                 return;
@@ -117,9 +115,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.gallery,
-                                      maxHeight: 202.h,
-                                      maxWidth: 270.w,
-                                      imageQuality: 25);
+                                      imageQuality: 1);
 
                               if (image1 == null) {
                                 return;
@@ -244,8 +240,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
                                           imageQuality: 25);
 
                                   if (image2 == null) {
@@ -270,9 +264,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
-                                          imageQuality: 25);
+                                          imageQuality: 1);
                                   if (image2 == null) {
                                     return;
                                   }
@@ -398,8 +390,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
                                           imageQuality: 25);
 
                                   if (image3 == null) {
@@ -423,9 +413,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
-                                          imageQuality: 25);
+                                          imageQuality: 1);
 
                                   if (image3 == null) {
                                     return;

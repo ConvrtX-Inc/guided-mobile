@@ -712,7 +712,6 @@ class AppTextConstants {
   /// Returns bigger bullet
   static String biggerBullet = '●';
 
-
   /// Returns 'No Results Found' text
   static String noResultFound = 'No Results Found';
 
@@ -752,6 +751,9 @@ class AppTextConstants {
 
   /// Returns confirm
   static String confirm = 'Confirm';
+
+  /// Returns add a note here
+  static String addANote = 'Add a note here (Optional)';
 }
 
 /// Class for error messages text

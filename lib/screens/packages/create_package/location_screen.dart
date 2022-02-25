@@ -8,7 +8,6 @@ import 'package:guided/screens/packages/create_package/free_service_screen.dart'
 
 /// Location Screen
 class LocationScreen extends StatefulWidget {
-
   /// Constructor
   const LocationScreen({Key? key}) : super(key: key);
 
@@ -50,28 +49,48 @@ class _LocationScreenState extends State<LocationScreen> {
                   SizedBox(
                     height: 30.h,
                   ),
-                  SubHeaderText.subHeaderText(AppTextConstants.subheaderLocation),
+                  SubHeaderText.subHeaderText(
+                      AppTextConstants.subheaderLocation),
                   SizedBox(
                     height: 20.h,
                   ),
-                  TextField(
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      prefixIcon: const Icon(
-                        Icons.location_pin,
-                        color: Colors.black,
-                      ),
-                      hintText: AppTextConstants.useCurrentLocation,
-                      hintStyle: const TextStyle(
-                        color: Colors.black,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide: BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
+                  // TextField(
+                  //   decoration: InputDecoration(
+                  //     contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                  //     prefixIcon: const Icon(
+                  //       Icons.location_pin,
+                  //       color: Colors.black,
+                  //     ),
+                  //     hintText: AppTextConstants.useCurrentLocation,
+                  //     hintStyle: const TextStyle(
+                  //       color: Colors.black,
+                  //     ),
+                  //     enabledBorder: OutlineInputBorder(
+                  //       borderRadius: BorderRadius.circular(14.r),
+                  //       borderSide: BorderSide(
+                  //           color: Colors.grey,
+                  //           width: 0.2.w
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      primary: Colors.white,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        const Icon(
+                          Icons.pin_drop,
+                          color: Colors.black,
                         ),
-                      ),
+                        Text(
+                          AppTextConstants.useCurrentLocation,
+                          style: const TextStyle(color: Colors.black),
+                        )
+                      ],
                     ),
                   ),
                   SizedBox(
@@ -79,7 +98,8 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                   TextField(
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                      contentPadding:
+                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                       prefixIcon: Icon(
                         Icons.location_pin,
                         color: AppColors.grey,
@@ -90,10 +110,8 @@ class _LocationScreenState extends State<LocationScreen> {
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
-                        borderSide: BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                        borderSide:
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -102,17 +120,16 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                   TextField(
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                      contentPadding:
+                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                       hintText: AppTextConstants.street,
                       hintStyle: TextStyle(
                         color: AppColors.grey,
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
-                        borderSide: BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                        borderSide:
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -133,17 +150,16 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                   TextField(
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                      contentPadding:
+                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                       hintText: AppTextConstants.city,
                       hintStyle: TextStyle(
                         color: AppColors.grey,
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
-                        borderSide: BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                        borderSide:
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -152,17 +168,16 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                   TextField(
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                      contentPadding:
+                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                       hintText: AppTextConstants.state,
                       hintStyle: TextStyle(
                         color: AppColors.grey,
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
-                        borderSide: BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                        borderSide:
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -171,17 +186,16 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                   TextField(
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                      contentPadding:
+                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                       hintText: AppTextConstants.zipCode,
                       hintStyle: TextStyle(
                         color: AppColors.grey,
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
-                        borderSide: BorderSide(
-                            color: Colors.grey,
-                            width: 0.2.w
-                        ),
+                        borderSide:
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -212,10 +226,7 @@ class _LocationScreenState extends State<LocationScreen> {
             ),
             child: Text(
               AppTextConstants.next,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
