@@ -38,12 +38,18 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
   dynamic subActivities3;
   int count = 0;
 
+  String mainActivityTxt = '';
+  String subActivities1Txt = '';
+  String subActivities2Txt = '';
+  String subActivities3Txt = '';
+
   final TextEditingController _note = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     mainActivity = widget.mainActivity;
+    mainActivityTxt = widget.mainActivity.title;
   }
 
   GridView _choicesGridMainActivity() {
@@ -128,16 +134,19 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
           switch (count) {
             case 0:
               subActivities1 = badges;
+              subActivities1Txt = badges.title;
               count++;
               showSubActivityChoices = true;
               break;
             case 1:
               subActivities2 = badges;
+              subActivities2Txt = badges.title;
               count++;
               showSubActivityChoices = true;
               break;
             case 2:
               subActivities3 = badges;
+              subActivities3Txt = badges.title;
               count++;
               showSubActivityChoices = false;
               break;
@@ -162,21 +171,28 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
           switch (count) {
             case 0:
               subActivities1 = badges;
+              subActivities1Txt = badges.title;
               count++;
               showSubActivityChoices = true;
+              showLimitNote = false;
               break;
             case 1:
               subActivities2 = badges;
+              subActivities2Txt = badges.title;
               count++;
               showSubActivityChoices = true;
+              showLimitNote = false;
               break;
             case 2:
               subActivities3 = badges;
+              subActivities3Txt = badges.title;
               count++;
               showSubActivityChoices = false;
+              showLimitNote = true;
               break;
             case 3:
               showSubActivityChoices = false;
+              showLimitNote = true;
               break;
             default:
               count = 0;
@@ -217,6 +233,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
           onTap: () {
             setState(() {
               subActivities1 = badges;
+              subActivities1Txt = badges.title;
               count++;
             });
           },
@@ -264,6 +281,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                                   subActivities2 = null;
                                 }
                                 count--;
+                                showLimitNote = false;
                               });
                             },
                             child: const Icon(
@@ -295,6 +313,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
           onTap: () {
             setState(() {
               subActivities2 = badges;
+              subActivities2Txt = badges.title;
               count++;
             });
           },
@@ -336,6 +355,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                                   subActivities2 = null;
                                 }
                                 count--;
+                                showLimitNote = false;
                               });
                             },
                             child: const Icon(
@@ -370,6 +390,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
           onTap: () {
             setState(() {
               subActivities3 = badges;
+              subActivities3Txt = badges.title;
               count++;
             });
           },
@@ -407,6 +428,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                               setState(() {
                                 subActivities3 = null;
                                 count--;
+                                showLimitNote = false;
                               });
                             },
                             child: const Icon(
@@ -437,15 +459,6 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
     return Column(
       children: <Widget>[
         InkWell(
-          // onTap: () {
-          //   setState(() {
-          //     if (showMainActivityChoices) {
-          //       showMainActivityChoices = false;
-          //     } else {
-          //       showMainActivityChoices = true;
-          //     }
-          //   });
-          // },
           child: Container(
             decoration: BoxDecoration(
               color: Colors.transparent,
@@ -640,6 +653,17 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                     ),
                     SizedBox(height: 15.h),
                     _subActivityDropdown(width),
+                    SizedBox(height: 10.h),
+                    if (showLimitNote == true)
+                      Text(
+                        AppTextConstants.maximumActivity,
+                        style: TextStyle(
+                            fontSize: 13.sp,
+                            fontFamily: 'Gilroy',
+                            color: AppColors.osloGrey),
+                      )
+                    else
+                      const Text(''),
                     SizedBox(height: 30.h),
                     TextField(
                       controller: _note,
@@ -692,13 +716,14 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
   /// Navigate to Package Info
   Future<void> navigatePackageInfoScreen(BuildContext context) async {
     final Map<String, dynamic> details = {
-      'main_activity': mainActivity,
-      'sub_activity_1': subActivities1,
-      'sub_activity_2': subActivities2,
-      'sub_activity_3': subActivities3,
+      'main_activity': mainActivityTxt,
+      'sub_activity_1': subActivities1Txt,
+      'sub_activity_2': subActivities2Txt,
+      'sub_activity_3': subActivities3Txt,
       'note': _note.text
     };
 
+    print('Details: $details');
     await Navigator.pushNamed(context, '/package_info', arguments: details);
   }
 

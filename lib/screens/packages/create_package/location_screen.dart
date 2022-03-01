@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, cast_nullable_to_non_nullable
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -16,10 +16,19 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
+  final TextEditingController _country = TextEditingController();
+  final TextEditingController _street = TextEditingController();
+  final TextEditingController _city = TextEditingController();
+  final TextEditingController _state = TextEditingController();
+  final TextEditingController _zipCode = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
       appBar: AppBar(
@@ -54,26 +63,6 @@ class _LocationScreenState extends State<LocationScreen> {
                   SizedBox(
                     height: 20.h,
                   ),
-                  // TextField(
-                  //   decoration: InputDecoration(
-                  //     contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                  //     prefixIcon: const Icon(
-                  //       Icons.location_pin,
-                  //       color: Colors.black,
-                  //     ),
-                  //     hintText: AppTextConstants.useCurrentLocation,
-                  //     hintStyle: const TextStyle(
-                  //       color: Colors.black,
-                  //     ),
-                  //     enabledBorder: OutlineInputBorder(
-                  //       borderRadius: BorderRadius.circular(14.r),
-                  //       borderSide: BorderSide(
-                  //           color: Colors.grey,
-                  //           width: 0.2.w
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
@@ -97,6 +86,7 @@ class _LocationScreenState extends State<LocationScreen> {
                     height: 20.h,
                   ),
                   TextField(
+                    controller: _country,
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
@@ -104,7 +94,7 @@ class _LocationScreenState extends State<LocationScreen> {
                         Icons.location_pin,
                         color: AppColors.grey,
                       ),
-                      hintText: AppTextConstants.canada,
+                      hintText: AppTextConstants.country,
                       hintStyle: TextStyle(
                         color: AppColors.grey,
                       ),
@@ -119,6 +109,7 @@ class _LocationScreenState extends State<LocationScreen> {
                     height: 20.h,
                   ),
                   TextField(
+                    controller: _street,
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
@@ -149,6 +140,7 @@ class _LocationScreenState extends State<LocationScreen> {
                     height: 20.h,
                   ),
                   TextField(
+                    controller: _city,
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
@@ -167,6 +159,7 @@ class _LocationScreenState extends State<LocationScreen> {
                     height: 20.h,
                   ),
                   TextField(
+                    controller: _state,
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
@@ -185,6 +178,7 @@ class _LocationScreenState extends State<LocationScreen> {
                     height: 20.h,
                   ),
                   TextField(
+                    controller: _zipCode,
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
@@ -211,9 +205,8 @@ class _LocationScreenState extends State<LocationScreen> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed('/');
-            },
+            onPressed: () =>
+                navigateFreeServiceScreen(context, screenArguments),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -232,5 +225,17 @@ class _LocationScreenState extends State<LocationScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> navigateFreeServiceScreen(
+      BuildContext context, Map<String, dynamic> data) async {
+    final Map<String, dynamic> details = Map<String, dynamic>.from(data);
+    details['country'] = _country.text;
+    details['street'] = _street.text;
+    details['city'] = _city.text;
+    details['state'] = _state.text;
+    details['zip_code'] = _zipCode.text;
+
+    await Navigator.pushNamed(context, '/free_service', arguments: details);
   }
 }

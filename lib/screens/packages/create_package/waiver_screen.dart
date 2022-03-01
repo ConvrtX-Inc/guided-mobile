@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, cast_nullable_to_non_nullable
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,6 @@ import 'package:guided/screens/packages/create_package/package_summary_screen.da
 
 /// Waiver Screen
 class WaiverScreen extends StatefulWidget {
-
   /// Constructor
   const WaiverScreen({Key? key}) : super(key: key);
 
@@ -19,13 +18,26 @@ class WaiverScreen extends StatefulWidget {
 }
 
 class _WaiverScreenState extends State<WaiverScreen> {
-
   bool isChecked = false;
+  bool _isEnabledEdit = false;
+
+  TextEditingController _waiver = TextEditingController();
+  final FocusNode _waiverFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _waiver = TextEditingController(text: AppTextConstants.loremIpsum);
+  }
 
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
       appBar: AppBar(
@@ -51,9 +63,7 @@ class _WaiverScreenState extends State<WaiverScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  HeaderText.headerText(
-                    AppTextConstants.headerWaiver
-                  ),
+                  HeaderText.headerText(AppTextConstants.headerWaiver),
                   SizedBox(
                     height: 30.h,
                   ),
@@ -70,15 +80,28 @@ class _WaiverScreenState extends State<WaiverScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          Text(
-                            AppTextConstants.edit,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                              decoration: TextDecoration.underline,
-                              color: AppColors.primaryGreen,
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (_isEnabledEdit == false) {
+                                  _isEnabledEdit = true;
+                                } else {
+                                  _isEnabledEdit = false;
+                                }
+                              });
+                            },
+                            child: Text(
+                              _isEnabledEdit
+                                  ? AppTextConstants.done
+                                  : AppTextConstants.edit,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                                decoration: TextDecoration.underline,
+                                color: AppColors.primaryGreen,
+                              ),
+                              textAlign: TextAlign.right,
                             ),
-                            textAlign: TextAlign.right,
                           ),
                           SizedBox(
                             height: 15.h,
@@ -111,7 +134,6 @@ class _WaiverScreenState extends State<WaiverScreen> {
                         borderWidth: 1,
                         checkBoxSize: 22,
                         onChanged: (bool val) {
-                          //do your stuff here
                           setState(() {
                             isChecked = val;
                           });
@@ -141,7 +163,9 @@ class _WaiverScreenState extends State<WaiverScreen> {
           height: 60.h,
           child: ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushNamed('/package_summary');
+              if (isChecked == true) {
+                navigatePackageSummaryScreen(context, screenArguments);
+              }
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -155,16 +179,21 @@ class _WaiverScreenState extends State<WaiverScreen> {
             ),
             child: Text(
               AppTextConstants.next,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
       ),
     );
   }
+
+  Future<void> navigatePackageSummaryScreen(
+      BuildContext context, Map<String, dynamic> data) async {
+    final Map<String, dynamic> details = Map<String, dynamic>.from(data);
+
+    await Navigator.pushNamed(context, '/package_summary', arguments: details);
+  }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);

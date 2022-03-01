@@ -70,4 +70,22 @@ class AppAPIPath {
 
   /// Returns profile details
   static String getProfileDetails = 'api/v1/users';
+
+  /// Returns currencies url
+  static String getCurrencies = 'api/v1/currencies';
+
+  /// Returns activity packages url
+  static String activityPackagesUrl = 'api/v1/activity-packages';
+
+  /// Returns activity destination image url
+  static String activityDestinationImage =
+      'api/v1/activity-package-destination-images';
+
+  /// Returns activity destination image url
+  static String activityDestinationImageBulk =
+      'api/v1/activity-package-destination-images/bulk';
+
+  /// Returns activity packages destinations url
+  static String activityDestinationDetails =
+      'api/v1/activity-package-destinations';
 }

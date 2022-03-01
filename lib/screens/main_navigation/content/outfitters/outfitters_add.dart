@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, unused_element, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -45,11 +44,8 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   final TextEditingController _date = TextEditingController();
   final TextEditingController _description = TextEditingController();
 
-  // ignore: diagnostic_describe_all_properties
   File? image1;
-  // ignore: diagnostic_describe_all_properties
   File? image2;
-  // ignore: diagnostic_describe_all_properties
   File? image3;
 
   int _uploadCount = 0;
@@ -69,6 +65,58 @@ class _OutfitterAddState extends State<OutfitterAdd> {
     _date.dispose();
     _description.dispose();
     super.dispose();
+  }
+
+  Stack _default() {
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: 100.w,
+          height: 87.h,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.r),
+            color: AppColors.gallery,
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: AppColors.gallery,
+                spreadRadius: 3,
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(25),
+            child: Row(
+              children: <Widget>[
+                Image.asset(
+                  AssetsPath.imagePrey,
+                  height: 50.h,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          right: 3.w,
+          top: 3.h,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.r),
+              color: Colors.white,
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Colors.white,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.add,
+              color: Colors.grey,
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   @override
@@ -109,7 +157,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                 _uploadCount += 1;
                               });
                             } on PlatformException catch (e) {
-                              // ignore: avoid_print
                               print('Failed to pick image: $e');
                             }
                             Navigator.of(context).pop();
@@ -134,7 +181,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                 _uploadCount += 1;
                               });
                             } on PlatformException catch (e) {
-                              // ignore: avoid_print
                               print('Failed to pick image: $e');
                             }
                             Navigator.of(context).pop();
@@ -174,55 +220,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                       ))
                 ],
               )
-            : Stack(
-                children: <Widget>[
-                  Container(
-                    width: 100.w,
-                    height: 87.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      color: AppColors.gallery,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: AppColors.gallery,
-                          spreadRadius: 3,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(25),
-                      child: Row(
-                        children: <Widget>[
-                          Image.asset(
-                            AssetsPath.imagePrey,
-                            height: 50.h,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 3.w,
-                    top: 3.h,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.r),
-                        color: Colors.white,
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                            color: Colors.white,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  )
-                ],
-              ),
+            : _default(),
       );
     }
 
@@ -260,7 +258,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                     _uploadCount += 1;
                                   });
                                 } on PlatformException catch (e) {
-                                  // ignore: avoid_print
                                   print('Failed to pick image: $e');
                                 }
                                 Navigator.of(context).pop();
@@ -325,55 +322,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                       ))
                 ],
               )
-            : Stack(
-                children: <Widget>[
-                  Container(
-                    width: 100.w,
-                    height: 87.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      color: AppColors.gallery,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: AppColors.gallery,
-                          spreadRadius: 3,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(25),
-                      child: Row(
-                        children: <Widget>[
-                          Image.asset(
-                            AssetsPath.imagePrey,
-                            height: 50.h,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 3.w,
-                    top: 3.h,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.r),
-                        color: Colors.white,
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                            color: Colors.white,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  )
-                ],
-              ),
+            : _default(),
       );
     }
 
@@ -410,7 +359,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                     _uploadCount += 1;
                                   });
                                 } on PlatformException catch (e) {
-                                  // ignore: avoid_print
                                   print('Failed to pick image: $e');
                                 }
                                 Navigator.of(context).pop();
@@ -435,7 +383,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                     _uploadCount += 1;
                                   });
                                 } on PlatformException catch (e) {
-                                  // ignore: avoid_print
                                   print('Failed to pick image: $e');
                                 }
                                 Navigator.of(context).pop();
@@ -476,55 +423,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                       ))
                 ],
               )
-            : Stack(
-                children: <Widget>[
-                  Container(
-                    width: 100.w,
-                    height: 87.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      color: AppColors.gallery,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: AppColors.gallery,
-                          spreadRadius: 3,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(25),
-                      child: Row(
-                        children: <Widget>[
-                          Image.asset(
-                            AssetsPath.imagePrey,
-                            height: 50.h,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 3.w,
-                    top: 3.h,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.r),
-                        color: Colors.white,
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                            color: Colors.white,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  )
-                ],
-              ),
+            : _default(),
       );
     }
 
@@ -645,44 +544,13 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                   SizedBox(
                     height: 20.h,
                   ),
-                  // TextField(
-                  //   controller: _useCurrentLocation,
-                  //   decoration: InputDecoration(
-                  //     prefixIcon: const Icon(
-                  //       Icons.pin_drop,
-                  //       color: Colors.black,
-                  //     ),
-                  //     contentPadding:
-                  //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                  //     hintText: AppTextConstants.useCurrentLocation,
-                  //     hintStyle: const TextStyle(
-                  //       color: Colors.black,
-                  //     ),
-                  //     enabledBorder: OutlineInputBorder(
-                  //       borderRadius: BorderRadius.circular(14.r),
-                  //       borderSide:
-                  //           BorderSide(color: Colors.grey, width: 0.2.w),
-                  //     ),
-                  //   ),
-                  // ),
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
                       primary: Colors.white,
                     ),
-                    // style: ButtonStyle(
-                    //     foregroundColor:
-                    //         MaterialStateProperty.all<Color>(Colors.red),
-                    //     shape:
-                    //         MaterialStateProperty.all<RoundedRectangleBorder>(
-                    //             RoundedRectangleBorder(
-                    //                 borderRadius: BorderRadius.circular(10.r),
-                    //                 side:
-                    //                     const BorderSide(color: Colors.grey)))),
-
                     child: Row(
-                      // ignore: prefer_const_literals_to_create_immutables
                       children: <Widget>[
                         const Icon(
                           Icons.pin_drop,

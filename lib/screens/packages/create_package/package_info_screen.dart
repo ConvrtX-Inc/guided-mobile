@@ -247,14 +247,20 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
   /// Navigate to Number of Traveler
   Future<void> navigateNumberOfTravelerScreen(
       BuildContext context, Map<String, dynamic> data) async {
-    final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-    final String base64Image1 = base64Encode(await image1Bytes);
+    String base64Image1 = '';
+    if (image1 == null) {
+      base64Image1 = '';
+    } else {
+      final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+      base64Image1 = base64Encode(await image1Bytes);
+    }
 
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
     details['package_name'] = _packageName.text;
     details['description'] = _description.text;
     details['cover_img'] = base64Image1;
 
-    await Navigator.pushNamed(context, '/number_of_traveler', arguments: details);
+    await Navigator.pushNamed(context, '/number_of_traveler',
+        arguments: details);
   }
 }

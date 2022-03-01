@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, cast_nullable_to_non_nullable
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,6 @@ import 'package:guided/screens/packages/create_package/waiver_screen.dart';
 
 /// Local laws taxes screen
 class LocalLawsTaxesScreen extends StatefulWidget {
-
   /// Constructor
   const LocalLawsTaxesScreen({Key? key}) : super(key: key);
 
@@ -20,11 +19,25 @@ class LocalLawsTaxesScreen extends StatefulWidget {
 
 class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
   bool isChecked = false;
+  bool _isEnabledEdit = false;
+
+  TextEditingController _localLawsTaxes = TextEditingController();
+  final FocusNode _localLawsTaxesFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _localLawsTaxes = TextEditingController(text: AppTextConstants.loremIpsum);
+  }
 
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
       appBar: AppBar(
@@ -67,24 +80,42 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          Text(
-                            AppTextConstants.edit,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                              decoration: TextDecoration.underline,
-                              color: AppColors.primaryGreen,
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (_isEnabledEdit == false) {
+                                  _isEnabledEdit = true;
+                                } else {
+                                  _isEnabledEdit = false;
+                                }
+                              });
+                            },
+                            child: Text(
+                              _isEnabledEdit
+                                  ? AppTextConstants.done
+                                  : AppTextConstants.edit,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                                decoration: TextDecoration.underline,
+                                color: AppColors.primaryGreen,
+                              ),
+                              textAlign: TextAlign.right,
                             ),
-                            textAlign: TextAlign.right,
                           ),
                           SizedBox(
                             height: 30.h,
                           ),
-                          Text(
-                            AppTextConstants.loremIpsum,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.dustyGrey,
+                          TextField(
+                            maxLines: null,
+                            enabled: _isEnabledEdit,
+                            controller: _localLawsTaxes,
+                            focusNode: _localLawsTaxesFocus,
+                            decoration: InputDecoration(
+                              hintText: AppTextConstants.loremIpsum,
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade800,
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -108,7 +139,6 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
                         borderWidth: 1.w,
                         checkBoxSize: 22,
                         onChanged: (bool val) {
-                          //do your stuff here
                           setState(() {
                             isChecked = val;
                           });
@@ -138,7 +168,9 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
           height: 60.h,
           child: ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushNamed('/waiver');
+              if (isChecked == true) {
+                navigateWaiverScreen(context, screenArguments);
+              }
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -152,16 +184,22 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
             ),
             child: Text(
               AppTextConstants.next,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
       ),
     );
   }
+
+  Future<void> navigateWaiverScreen(
+      BuildContext context, Map<String, dynamic> data) async {
+    final Map<String, dynamic> details = Map<String, dynamic>.from(data);
+
+    /// Local Laws and taxes Textfield *insert here
+    await Navigator.pushNamed(context, '/waiver', arguments: details);
+  }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);

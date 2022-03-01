@@ -754,6 +754,21 @@ class AppTextConstants {
 
   /// Returns add a note here
   static String addANote = 'Add a note here (Optional)';
+
+  /// Returns maximum activity text
+  static String maximumActivity = '3 activities are maximum';
+
+  /// Returns maximum of 3 images text
+  static String maximumImage = 'Minimum 3 images should be uploaded';
+
+  /// Returns Location Of Package
+  static String locationOfPackage = 'Location Of Package';
+
+  /// Returns Base Price
+  static String basePrice = 'Base Price';
+
+  /// Returns extra cost per person
+  static String extraCost = 'Extra Cost Per Person';
 }
 
 /// Class for error messages text

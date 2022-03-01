@@ -1,7 +1,5 @@
-// ignore_for_file: file_names
-import 'dart:convert';
+// ignore_for_file: file_names, cast_nullable_to_non_nullable
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -105,8 +103,8 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                                   : BorderSide(color: AppColors.primaryGreen),
                             ),
                             padding: const EdgeInsets.all(11),
-                            primary: Colors.white, // <-- Button color
-                            onPrimary: Colors.green, // <-- Splash color
+                            primary: Colors.white,
+                            onPrimary: Colors.green,
                           ),
                           child: Icon(Icons.remove,
                               color: minimum == 1
@@ -160,8 +158,8 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                               side: BorderSide(color: AppColors.primaryGreen),
                             ),
                             padding: const EdgeInsets.all(11),
-                            primary: Colors.white, // <-- Button color
-                            onPrimary: Colors.green, // <-- Splash color
+                            primary: Colors.white,
+                            onPrimary: Colors.green,
                           ),
                           child: Icon(Icons.add, color: AppColors.primaryGreen),
                         ),
@@ -195,8 +193,8 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                                   : BorderSide(color: AppColors.primaryGreen),
                             ),
                             padding: const EdgeInsets.all(11),
-                            primary: Colors.white, // <-- Button color
-                            onPrimary: Colors.green, // <-- Splash color
+                            primary: Colors.white,
+                            onPrimary: Colors.green,
                           ),
                           child: Icon(Icons.remove,
                               color: maximum == 1
@@ -248,8 +246,8 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                               side: BorderSide(color: AppColors.primaryGreen),
                             ),
                             padding: const EdgeInsets.all(11),
-                            primary: Colors.white, // <-- Button color
-                            onPrimary: Colors.green, // <-- Splash color
+                            primary: Colors.white,
+                            onPrimary: Colors.green,
                           ),
                           child: Icon(Icons.add, color: AppColors.primaryGreen),
                         ),
@@ -272,8 +270,6 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
           height: 60,
           child: ElevatedButton(
             onPressed: () => navigateLocationScreen(context, screenArguments),
-            // Navigator.of(context).pushNamed('/location');
-
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -298,8 +294,8 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
   Future<void> navigateLocationScreen(
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
-    details['minimum'] = minimum;
-    details['maximum'] = maximum;
+    details['minimum'] = txtMinimum.text;
+    details['maximum'] = txtMaximum.text;
 
     await Navigator.pushNamed(context, '/location', arguments: details);
   }
@@ -307,11 +303,12 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-        DiagnosticsProperty<TextEditingController>('txtMinimum', txtMinimum));
-    properties.add(
-        DiagnosticsProperty<TextEditingController>('txtMaximum', txtMaximum));
-    properties.add(IntProperty('minimum', minimum));
-    properties.add(IntProperty('maximum', maximum));
+    properties
+      ..add(
+          DiagnosticsProperty<TextEditingController>('txtMinimum', txtMinimum))
+      ..add(
+          DiagnosticsProperty<TextEditingController>('txtMaximum', txtMaximum))
+      ..add(IntProperty('minimum', minimum))
+      ..add(IntProperty('maximum', maximum));
   }
 }
