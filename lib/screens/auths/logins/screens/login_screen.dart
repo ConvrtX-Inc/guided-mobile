@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:advance_notification/advance_notification.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
@@ -7,6 +9,8 @@ import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -50,26 +54,50 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     setState(() => buttonIsLoading = true);
-    final dynamic response = await APIServices()
-        .request(AppAPIPath.loginUrl, RequestType.POST, data: credentials);
+    // final dynamic response = await APIServices()
+    //     .request(AppAPIPath.loginUrl, RequestType.POST, data: credentials);
 
-    if (response is Map) {
-      if (response.containsKey('status')) {
-        if (response['status'] == 422) {
-          AdvanceSnackBar(
-                  message: ErrorMessageConstants.loginWrongEmailorPassword)
-              .show(context);
-        }
+    // if (response is Map) {
+    //   if (response.containsKey('status')) {
+    //     if (response['status'] == 422) {
+    //       AdvanceSnackBar(
+    //               message: ErrorMessageConstants.loginWrongEmailorPassword)
+    //           .show(context);
+    //     }
+    //   } else {
+    //     final UserModel user =
+    //         UserModel.fromJson(json.decode(response.toString()));
+    //     UserSingleton.instance.user = user;
+    //     print(user.user?.isTraveller);
+    //     await SecureStorage.saveValue(
+    //         key: AppTextConstants.userToken, value: response['token']);
+    //     // ignore: avoid_dynamic_calls
+    //     await SecureStorage.saveValue(
+    //         // ignore: avoid_dynamic_calls
+    //         key: SecureStorage.userIdKey,
+    //         value: response['user']['id']);
+    //     await Navigator.of(context).pushNamed('/main_navigation');
+    //   }
+    // }
+
+    await APIServices()
+        .login(credentials)
+        .then((APIStandardReturnFormat response) async {
+      if (response.status == 'error') {
+        AdvanceSnackBar(
+                message: ErrorMessageConstants.loginWrongEmailorPassword)
+            .show(context);
       } else {
-        await SecureStorage.saveValue(
-            key: AppTextConstants.userToken, value: response['token']);
-        // ignore: avoid_dynamic_calls
-        await SecureStorage.saveValue(
-            // ignore: avoid_dynamic_calls
-            key: SecureStorage.userIdKey, value: response['user']['id']);
-        await Navigator.of(context).pushNamed('/main_navigation');
+        final UserModel user =
+            UserModel.fromJson(json.decode(response.successResponse));
+        UserSingleton.instance.user = user;
+        if (user.user?.isTraveller != true) {
+          await Navigator.pushReplacementNamed(context, '/main_navigation');
+        } else {
+          await Navigator.pushReplacementNamed(context, '/traveller_tab');
+        }
       }
-    }
+    });
   }
 
   @override
@@ -88,6 +116,30 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  Container(
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+                    width: 40.w,
+                    height: 40.h,
+                    padding: EdgeInsets.zero,
+                    decoration: BoxDecoration(
+                      color: AppColors.harp,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back_sharp,
+                        color: Colors.black,
+                        size: 25,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.h,
+                  ),
                   Text(
                     AppTextConstants.login,
                     style: const TextStyle(
@@ -284,9 +336,10 @@ class _LoginScreenState extends State<LoginScreen> {
     // ignore: cascade_invocations
     properties.add(DiagnosticsProperty<TextEditingController>(
         'passwordController', _passwordController));
-        // ignore: cascade_invocations
-        properties.add(DiagnosticsProperty<bool>('hidePassword', hidePassword));
-        // ignore: cascade_invocations
-        properties.add(DiagnosticsProperty<bool>('buttonIsLoading', buttonIsLoading));
+    // ignore: cascade_invocations
+    properties.add(DiagnosticsProperty<bool>('hidePassword', hidePassword));
+    // ignore: cascade_invocations
+    properties
+        .add(DiagnosticsProperty<bool>('buttonIsLoading', buttonIsLoading));
   }
 }

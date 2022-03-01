@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:guided/screens/activities/activities.dart';
 
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
+import 'package:guided/screens/dicovery/discovery.dart';
 import 'package:guided/screens/faq/faq.dart';
 
 import 'package:guided/screens/auths/logins/screens/login_screen.dart';
@@ -11,6 +13,7 @@ import 'package:guided/screens/auths/splashes/screens/welcome_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/create_new_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
+import 'package:guided/screens/main_navigation/traveller/traveller_tabbar.dart';
 
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
@@ -175,7 +178,15 @@ class RouteGenerator {
       case '/sign_up_verify':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SignupVerify(), settings: settings);
-
+      case '/discovery':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const DiscoveryScreen(), settings: settings);
+      case '/activities':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ActivitiesScreen(), settings: settings);
+      case '/traveller_tab':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TravellerTabScreen(), settings: settings);
       default:
         return _errorRoute();
     }

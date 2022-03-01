@@ -9,7 +9,6 @@ import 'package:guided/screens/auths/splashes/screens/user_type_screen.dart';
 
 /// Splash screen
 class SplashScreen extends StatelessWidget {
-
   /// Constructor
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -82,10 +81,7 @@ class SplashScreen extends StatelessWidget {
                   onPrimary: Colors.green, // <-- Splash color
                 ),
                 child:
-                const Icon(
-                    Icons.arrow_forward_sharp,
-                    color: Colors.white
-                ),
+                    const Icon(Icons.arrow_forward_sharp, color: Colors.white),
               )
             ],
           ),

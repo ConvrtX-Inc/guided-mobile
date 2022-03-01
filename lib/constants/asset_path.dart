@@ -149,4 +149,50 @@ class AssetsPath {
 
   /// returns bank card icon
   static String bankCardIcon = 'assets/images/png/bank_card.png';
+
+  /// returns discovery background image
+  static String discoveryBackground =
+      'assets/images/png/discovery_background.png';
+
+  /// returns discovery close image
+  static String discoveryClose = 'assets/images/png/close.png';
+
+  /// returns discovery top image
+  static String discoverytopImage = 'assets/images/png/discoverytopImage.png';
+
+  /// returns discovery Tree image
+  static String discoveryTree = 'assets/images/png/discoveryTree.png';
+
+  /// returns camping  image
+  static String camping = 'assets/images/png/activity.png';
+
+  /// returns hiking  image
+  static String hiking = 'assets/images/png/hiking.png';
+
+  /// returns hunt  image
+  static String hunt = 'assets/images/png/hunt.png';
+
+  /// returns fishing  image
+  static String fishing = 'assets/images/png/fishing.png';
+
+  /// returns eco  image
+  static String eco = 'assets/images/png/eco.png';
+
+  /// returns retreat  image
+  static String retreat = 'assets/images/png/retreat.png';
+
+  /// returns retreat  image
+  static String paddle = 'assets/images/png/paddle.png';
+
+  /// returns retreat  image
+  static String discovery = 'assets/images/png/discovery.png';
+
+  /// returns retreat  image
+  static String motor = 'assets/images/png/motor.png';
+
+  /// returns selected activity  image
+  static String selectedActivity = 'assets/images/png/selected_activity.png';
+
+  /// returns horizontal Line  image
+  static String horizontalLine = 'assets/images/png/rectangle.png';
 }
