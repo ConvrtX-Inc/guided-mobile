@@ -43,8 +43,8 @@ class HomeUtils {
         cRFirstName: 'Mark Anthony',
         cRMiddleName: 'Encabo',
         cRLastName: 'Saromines',
-        // cRProfilePic:
-        //     'https://i.pinimg.com/originals/37/70/a7/3770a70e8fc0b3823b79fc7e757b944a.jpg',
+        cRProfilePic:
+            'https://i.pinimg.com/originals/37/70/a7/3770a70e8fc0b3823b79fc7e757b944a.jpg',
       ),
       HomeModel(
         cRFirstName: 'Yoni',
