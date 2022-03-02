@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_string_escapes, unnecessary_nullable_for_final_variable_declarations
+// ignore_for_file: unnecessary_string_escapes, unnecessary_nullable_for_final_variable_declarations, avoid_dynamic_calls
 
 import 'dart:convert';
 import 'dart:io';
@@ -9,6 +9,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
+import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/profile_data_model.dart';
@@ -266,5 +267,29 @@ class APIServices {
     }
 
     return ProfileModelData(profileDetails: details);
+  }
+
+  /// API service for currencies
+  Future<List<Currency>> getCurrencies() async {
+    final String? token =
+        await SecureStorage.readValue(key: AppTextConstants.userToken);
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getCurrencies}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<Currency> currencies = <Currency>[];
+    for (final dynamic uType in jsonData) {
+      final Currency currency = Currency(
+          uType['id'],
+          uType['currency_code'] ?? '',
+          uType['currency_name'] ?? '',
+          uType['currency_symbol'] ?? '');
+      currencies.add(currency);
+    }
+    return currencies;
   }
 }

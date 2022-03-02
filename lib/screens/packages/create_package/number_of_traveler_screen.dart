@@ -1,15 +1,15 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, cast_nullable_to_non_nullable
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/packages/create_package/location_screen.dart';
 
 /// Number of traveler screen
 class NumberOfTravelersScreen extends StatefulWidget {
-
   /// Constructor
   const NumberOfTravelersScreen({Key? key}) : super(key: key);
 
@@ -23,7 +23,9 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
   final TextEditingController txtMaximum = TextEditingController();
 
   int minimum = 1;
-  int maximum = 1;
+  int maximum = 5;
+
+  File? image1;
 
   @override
   void initState() {
@@ -37,6 +39,9 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
       appBar: AppBar(
@@ -62,11 +67,8 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  HeaderText.headerText(
-                      AppTextConstants.headerMinMax),
-                  SizedBox(
-                    height: 30.h
-                  ),
+                  HeaderText.headerText(AppTextConstants.headerMinMax),
+                  SizedBox(height: 30.h),
                   Text(
                     AppTextConstants.addTeam,
                     style: const TextStyle(
@@ -88,24 +90,26 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                         child: ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              minimum = minimum - 1;
-                              txtMinimum.text = minimum.toString();
+                              if (minimum != 1) {
+                                minimum = minimum - 1;
+                                txtMinimum.text = minimum.toString();
+                              }
                             });
                           },
                           style: ElevatedButton.styleFrom(
                             shape: CircleBorder(
-                              side: BorderSide(
-                                  color: AppColors.primaryGreen
-                              ),
+                              side: minimum == 1
+                                  ? BorderSide(color: AppColors.grey)
+                                  : BorderSide(color: AppColors.primaryGreen),
                             ),
                             padding: const EdgeInsets.all(11),
-                            primary: Colors.white, // <-- Button color
-                            onPrimary: Colors.green, // <-- Splash color
+                            primary: Colors.white,
+                            onPrimary: Colors.green,
                           ),
-                          child: Icon(
-                              Icons.remove,
-                              color: AppColors.primaryGreen
-                          ),
+                          child: Icon(Icons.remove,
+                              color: minimum == 1
+                                  ? AppColors.grey
+                                  : AppColors.primaryGreen),
                         ),
                       ),
                       Expanded(
@@ -120,8 +124,7 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(14),
                                   borderSide: const BorderSide(
-                                      color: Colors.grey, width: 0.2
-                                  ),
+                                      color: Colors.grey, width: 0.2),
                                 ),
                               ),
                               textAlign: TextAlign.center,
@@ -144,24 +147,21 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                         child: ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              minimum = minimum + 1;
+                              if (minimum != maximum) {
+                                minimum = minimum + 1;
+                              }
                               txtMinimum.text = minimum.toString();
                             });
                           },
                           style: ElevatedButton.styleFrom(
                             shape: CircleBorder(
-                              side: BorderSide(
-                                  color: AppColors.primaryGreen
-                              ),
+                              side: BorderSide(color: AppColors.primaryGreen),
                             ),
                             padding: const EdgeInsets.all(11),
-                            primary: Colors.white, // <-- Button color
-                            onPrimary: Colors.green, // <-- Splash color
+                            primary: Colors.white,
+                            onPrimary: Colors.green,
                           ),
-                          child: Icon(
-                              Icons.add,
-                              color: AppColors.primaryGreen
-                          ),
+                          child: Icon(Icons.add, color: AppColors.primaryGreen),
                         ),
                       )
                     ],
@@ -178,24 +178,28 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                         child: ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              maximum = maximum - 1;
-                              txtMaximum.text = maximum.toString();
+                              if (maximum != 1) {
+                                if (maximum != minimum) {
+                                  maximum = maximum - 1;
+                                }
+                                txtMaximum.text = maximum.toString();
+                              }
                             });
                           },
                           style: ElevatedButton.styleFrom(
                             shape: CircleBorder(
-                              side: BorderSide(
-                                  color: AppColors.primaryGreen
-                              ),
+                              side: maximum == 1
+                                  ? BorderSide(color: AppColors.grey)
+                                  : BorderSide(color: AppColors.primaryGreen),
                             ),
                             padding: const EdgeInsets.all(11),
-                            primary: Colors.white, // <-- Button color
-                            onPrimary: Colors.green, // <-- Splash color
+                            primary: Colors.white,
+                            onPrimary: Colors.green,
                           ),
-                          child: Icon(
-                              Icons.remove,
-                              color: AppColors.primaryGreen
-                          ),
+                          child: Icon(Icons.remove,
+                              color: maximum == 1
+                                  ? AppColors.grey
+                                  : AppColors.primaryGreen),
                         ),
                       ),
                       Expanded(
@@ -210,9 +214,7 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(14.r),
                                   borderSide: BorderSide(
-                                      color: Colors.grey,
-                                      width: 0.2.w
-                                  ),
+                                      color: Colors.grey, width: 0.2.w),
                                 ),
                               ),
                               textAlign: TextAlign.center,
@@ -241,18 +243,13 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                           },
                           style: ElevatedButton.styleFrom(
                             shape: CircleBorder(
-                              side: BorderSide(
-                                  color: AppColors.primaryGreen
-                              ),
+                              side: BorderSide(color: AppColors.primaryGreen),
                             ),
                             padding: const EdgeInsets.all(11),
-                            primary: Colors.white, // <-- Button color
-                            onPrimary: Colors.green, // <-- Splash color
+                            primary: Colors.white,
+                            onPrimary: Colors.green,
                           ),
-                          child: Icon(
-                              Icons.add,
-                              color: AppColors.primaryGreen
-                          ),
+                          child: Icon(Icons.add, color: AppColors.primaryGreen),
                         ),
                       )
                     ],
@@ -272,9 +269,7 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
           width: width,
           height: 60,
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed('/location');
-            },
+            onPressed: () => navigateLocationScreen(context, screenArguments),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -287,22 +282,33 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
             ),
             child: Text(
               AppTextConstants.next,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
       ),
     );
   }
+
+  /// Navigate to Number of Traveler
+  Future<void> navigateLocationScreen(
+      BuildContext context, Map<String, dynamic> data) async {
+    final Map<String, dynamic> details = Map<String, dynamic>.from(data);
+    details['minimum'] = txtMinimum.text;
+    details['maximum'] = txtMaximum.text;
+
+    await Navigator.pushNamed(context, '/location', arguments: details);
+  }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<TextEditingController>('txtMinimum', txtMinimum));
-    properties.add(DiagnosticsProperty<TextEditingController>('txtMaximum', txtMaximum));
-    properties.add(IntProperty('minimum', minimum));
-    properties.add(IntProperty('maximum', maximum));
+    properties
+      ..add(
+          DiagnosticsProperty<TextEditingController>('txtMinimum', txtMinimum))
+      ..add(
+          DiagnosticsProperty<TextEditingController>('txtMaximum', txtMaximum))
+      ..add(IntProperty('minimum', minimum))
+      ..add(IntProperty('maximum', maximum));
   }
 }

@@ -41,7 +41,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   final TextEditingController _description = TextEditingController();
   final TextEditingController _price = TextEditingController();
 
-  
   File? image1;
   File? image2;
   File? image3;
@@ -64,6 +63,58 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     _description.dispose();
     _price.dispose();
     super.dispose();
+  }
+
+  Stack _default() {
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: 100.w,
+          height: 87.h,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.r),
+            color: AppColors.gallery,
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: AppColors.gallery,
+                spreadRadius: 3,
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(25),
+            child: Row(
+              children: <Widget>[
+                Image.asset(
+                  AssetsPath.imagePrey,
+                  height: 50.h,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          right: 3.w,
+          top: 3.h,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.r),
+              color: Colors.white,
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Colors.white,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.add,
+              color: Colors.grey,
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   @override
@@ -92,8 +143,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.camera,
-                                      maxHeight: 202.h,
-                                      maxWidth: 270.w,
                                       imageQuality: 25);
                               if (image1 == null) {
                                 return;
@@ -117,9 +166,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.gallery,
-                                      maxHeight: 202.h,
-                                      maxWidth: 270.w,
-                                      imageQuality: 25);
+                                      imageQuality: 1);
 
                               if (image1 == null) {
                                 return;
@@ -170,55 +217,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       ))
                 ],
               )
-            : Stack(
-                children: <Widget>[
-                  Container(
-                    width: 100.w,
-                    height: 87.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      color: AppColors.gallery,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: AppColors.gallery,
-                          spreadRadius: 3,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(25),
-                      child: Row(
-                        children: <Widget>[
-                          Image.asset(
-                            AssetsPath.imagePrey,
-                            height: 50.h,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 3.w,
-                    top: 3.h,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.r),
-                        color: Colors.white,
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                            color: Colors.white,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  )
-                ],
-              ),
+            : _default(),
       );
     }
 
@@ -244,8 +243,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
                                           imageQuality: 25);
 
                                   if (image2 == null) {
@@ -270,9 +267,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
-                                          imageQuality: 25);
+                                          imageQuality: 1);
                                   if (image2 == null) {
                                     return;
                                   }
@@ -324,55 +319,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       ))
                 ],
               )
-            : Stack(
-                children: <Widget>[
-                  Container(
-                    width: 100.w,
-                    height: 87.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      color: AppColors.gallery,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: AppColors.gallery,
-                          spreadRadius: 3,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(25),
-                      child: Row(
-                        children: <Widget>[
-                          Image.asset(
-                            AssetsPath.imagePrey,
-                            height: 50.h,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 3.w,
-                    top: 3.h,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.r),
-                        color: Colors.white,
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                            color: Colors.white,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  )
-                ],
-              ),
+            : _default(),
       );
     }
 
@@ -398,8 +345,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
                                           imageQuality: 25);
 
                                   if (image3 == null) {
@@ -423,9 +368,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          maxHeight: 202.h,
-                                          maxWidth: 270.w,
-                                          imageQuality: 25);
+                                          imageQuality: 1);
 
                                   if (image3 == null) {
                                     return;
@@ -477,55 +420,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       ))
                 ],
               )
-            : Stack(
-                children: <Widget>[
-                  Container(
-                    width: 100.w,
-                    height: 87.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      color: AppColors.gallery,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: AppColors.gallery,
-                          spreadRadius: 3,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(25),
-                      child: Row(
-                        children: <Widget>[
-                          Image.asset(
-                            AssetsPath.imagePrey,
-                            height: 50.h,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 3.w,
-                    top: 3.h,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.r),
-                        color: Colors.white,
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                            color: Colors.white,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  )
-                ],
-              ),
+            : _default(),
       );
     }
 
