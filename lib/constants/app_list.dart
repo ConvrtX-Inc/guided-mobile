@@ -112,4 +112,19 @@ class AppListConstants {
     'Completed',
     'Rejected'
   ];
+
+  static List<String> calendarMonths = <String>[
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
 }

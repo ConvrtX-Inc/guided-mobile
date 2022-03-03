@@ -2,11 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/utils/secure_storage.dart';
 
 /// User type screen
 class UserTypeScreen extends StatefulWidget {
-
   ///Constructor
   const UserTypeScreen({Key? key}) : super(key: key);
 
@@ -36,16 +37,25 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
               child: Column(
                 children: <Widget>[
                   InkWell(
-                    onTap: () {
-                      Navigator.of(context).pushNamed('/user_on_boarding');
+                    onTap: () async {
+                      await SecureStorage.saveValue(
+                              key: AppTextConstants.userType,
+                              value: 'traveller')
+                          .then((_) {
+                        Navigator.of(context).pushNamed('/user_on_boarding');
+                      });
                     },
                     child: Image.asset(
                       AssetsPath.touristImage,
                     ),
                   ),
                   InkWell(
-                    onTap: () {
-                      Navigator.of(context).pushNamed('/user_on_boarding');
+                    onTap: () async {
+                      await SecureStorage.saveValue(
+                              key: AppTextConstants.userType, value: 'guide')
+                          .then((_) {
+                        Navigator.of(context).pushNamed('/user_on_boarding');
+                      });
                     },
                     child: Image.asset(
                       AssetsPath.guideImage,

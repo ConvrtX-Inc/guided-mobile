@@ -5,14 +5,15 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/screens/auths/splashes/screens/welcome_screen.dart';
+import 'package:guided/utils/secure_storage.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 /// User on boarding screen
 class UserOnboardingScreen extends StatefulWidget {
-
   /// Constructor
   const UserOnboardingScreen({Key? key}) : super(key: key);
 
@@ -21,9 +22,9 @@ class UserOnboardingScreen extends StatefulWidget {
 }
 
 class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
-
   CarouselController buttonCarouselController = CarouselController();
   double activeIndex = 0;
+  final storage = new FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -74,13 +75,21 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                 height: 50.h,
                 width: 150.w,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (!isLast) {
                       setState(() {
                         activeIndex = activeIndex + 1;
                       });
                     } else {
-                      Navigator.of(context).pushNamed('/welcome');
+                      await SecureStorage.readValue(
+                              key: AppTextConstants.userType)
+                          .then((String value) async {
+                        if (value == 'traveller') {
+                          await Navigator.of(context).pushNamed('/discovery');
+                        } else {
+                          await Navigator.of(context).pushNamed('/welcome');
+                        }
+                      });
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -96,9 +105,7 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                   child: Text(
                     AppTextConstants.skip,
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16
-                    ),
+                        fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
               ),
@@ -106,13 +113,21 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                 height: 50.h,
                 width: 150.w,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (!isLast) {
                       setState(() {
                         activeIndex = activeIndex + 1;
                       });
                     } else {
-                      Navigator.of(context).pushNamed('/welcome');
+                      await SecureStorage.readValue(
+                              key: AppTextConstants.userType)
+                          .then((String value) async {
+                        if (value == 'traveller') {
+                          await Navigator.of(context).pushNamed('/discovery');
+                        } else {
+                          await Navigator.of(context).pushNamed('/welcome');
+                        }
+                      });
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -125,7 +140,9 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                     primary: AppColors.primaryGreen,
                     onPrimary: Colors.white, // <-- Splash color
                   ),
-                  child: isLast ? Text(AppTextConstants.done) : Text(AppTextConstants.next),
+                  child: isLast
+                      ? Text(AppTextConstants.done)
+                      : Text(AppTextConstants.next),
                 ),
               ),
             ],
@@ -144,13 +161,16 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              if (activeIndex == 0) headerImage('Step 1/3', 'assets/images/userOnBoarding1.png') else activeIndex == 1
-                  ? headerImage(
-                  'Step 2/3', 'assets/images/userOnBoarding2.png')
-                  : activeIndex == 2
-                  ? headerImage(
-                  'Step 3/3', 'assets/images/userOnBoarding3.png')
-                  : const SizedBox(),
+              if (activeIndex == 0)
+                headerImage('Step 1/3', 'assets/images/userOnBoarding1.png')
+              else
+                activeIndex == 1
+                    ? headerImage(
+                        'Step 2/3', 'assets/images/userOnBoarding2.png')
+                    : activeIndex == 2
+                        ? headerImage(
+                            'Step 3/3', 'assets/images/userOnBoarding3.png')
+                        : const SizedBox(),
               DotsIndicator(
                 dotsCount: 3,
                 position: activeIndex,
@@ -161,30 +181,35 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                       borderRadius: BorderRadius.circular(5.r)),
                 ),
               ),
-              if (activeIndex == 0) footer(
-                AppTextConstants.footerDescr1,
-                false,
-              ) else activeIndex == 1
-                  ? footer(
-                AppTextConstants.footerDescr2,
-                false,
-              )
-                  : activeIndex == 2
-                  ? footer(
-                AppTextConstants.footerDescr3,
-                true,
-              )
-                  : const SizedBox(),
+              if (activeIndex == 0)
+                footer(
+                  AppTextConstants.footerDescr1,
+                  false,
+                )
+              else
+                activeIndex == 1
+                    ? footer(
+                        AppTextConstants.footerDescr2,
+                        false,
+                      )
+                    : activeIndex == 2
+                        ? footer(
+                            AppTextConstants.footerDescr3,
+                            true,
+                          )
+                        : const SizedBox(),
             ],
           ),
         ),
       ),
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<CarouselController>('buttonCarouselController', buttonCarouselController));
+    properties.add(DiagnosticsProperty<CarouselController>(
+        'buttonCarouselController', buttonCarouselController));
     properties.add(DoubleProperty('activeIndex', activeIndex));
   }
 }

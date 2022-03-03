@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:guided/screens/activities/activities.dart';
+
+import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
+import 'package:guided/screens/dicovery/discovery.dart';
+import 'package:guided/screens/faq/faq.dart';
+
 import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 import 'package:guided/screens/auths/splashes/screens/splash_screen.dart';
 import 'package:guided/screens/auths/splashes/screens/user_on_boarding_screen.dart';
@@ -9,6 +15,13 @@ import 'package:guided/screens/auths/verifications/screens/reset_password_screen
 import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/faq/faq.dart';
+
+import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
+
+import 'package:guided/screens/main_navigation/traveller/traveller_tabbar.dart';
+
+import 'package:guided/screens/message/message_custom_offer_screen.dart';
+import 'package:guided/screens/message/message_individual_screen.dart';
 import 'package:guided/screens/home/calendar_availability_screen.dart';
 import 'package:guided/screens/home/set_booking_date_screen.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
@@ -200,6 +213,16 @@ class RouteGenerator {
       case '/request_view':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RequestViewScreen());
+      case '/discovery':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const DiscoveryScreen(), settings: settings);
+      case '/activities':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ActivitiesScreen(), settings: settings);
+      case '/traveller_tab':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TravellerTabScreen(), settings: settings);
+
       default:
         return _errorRoute();
     }

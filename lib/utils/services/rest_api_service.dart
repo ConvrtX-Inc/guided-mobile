@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:guided/constants/api_path.dart';
+
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/models/advertisement_image_model.dart';
@@ -13,7 +14,11 @@ import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/profile_data_model.dart';
+
+import 'package:guided/models/api/api_standard_return.dart';
+
 import 'package:guided/utils/secure_storage.dart';
+import 'package:guided/utils/services/global_api_service.dart';
 import 'package:http/http.dart' as http;
 
 enum RequestType { GET, POST, PATCH }
@@ -80,7 +85,8 @@ class APIServices {
     };
 
     if (needAccessToken) {
-      token = await SecureStorage.readValue(key: SecureStorage.userTokenKey);
+      token =
+          staticToken; //await SecureStorage.readValue(key: SecureStorage.userTokenKey);
       headers['Authorization'] = 'Bearer $token';
     }
     request.headers.addAll(headers);
@@ -124,7 +130,6 @@ class APIServices {
     return body;
   }
 
-  /// API service for outfitter model
   Future<OutfitterModelData> getOutfitterData() async {
     final String? userId =
         await SecureStorage.readValue(key: SecureStorage.userIdKey);
@@ -298,5 +303,35 @@ class APIServices {
       currencies.add(currency);
     }
     return currencies;
+  }
+
+  /// API service for register
+  Future<APIStandardReturnFormat> register(Map<String, dynamic> data) async {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    };
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.signupUrl}'),
+        body: jsonEncode(data),
+        headers: headers);
+    print(response.request);
+    print(response.body);
+    print(response.statusCode);
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for login
+  Future<APIStandardReturnFormat> login(Map<String, dynamic> data) async {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    };
+    final http.Response response = await http.post(
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.loginUrl}'),
+      body: jsonEncode(data),
+      headers: headers,
+    );
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 }

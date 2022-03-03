@@ -15,6 +15,9 @@ class AppAPIPath {
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
 
+  /// Returns user Type url
+  static String userTpye = 'api/v1/user-types';
+
   /// Returns send verification code for forgot password url
   static String sendVerificationCodeUrl = 'api/v1/auth/forgot/forgot';
 

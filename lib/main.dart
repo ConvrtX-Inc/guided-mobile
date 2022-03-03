@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/routes/route_generator.dart';
@@ -37,22 +38,40 @@ class MyApp extends StatelessWidget {
           return ScreenUtilInit(
             builder: () => KeyboardDismissOnTap(
               child: GetMaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  theme: ThemeData(
-                    fontFamily: 'Gilroy',
-                    backgroundColor: HexColor('#E5E5E5'),
-                    visualDensity: VisualDensity.adaptivePlatformDensity,
-                    textTheme: const TextTheme(
-                      bodyText1: TextStyle(
-                        color: Colors.black,
+                debugShowCheckedModeBanner: false,
+                theme: ThemeData(
+                  fontFamily: 'Gilroy',
+                  backgroundColor: HexColor('#E5E5E5'),
+                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                  textTheme: const TextTheme(
+                    bodyText1: TextStyle(
+                      color: Colors.black,
+                    ),
+                    bodyText2: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ).apply(
+                      // fontFamily: 'Lora',
+                      // bodyColor: Colors.white,
+                      // displayColor: Colors.white,
                       ),
-                      bodyText2: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ).apply(),
-                  ),
-                  initialRoute: _defaultHome,
-                  onGenerateRoute: RouteGenerator.generateRoute),
+                ),
+                initialRoute: _defaultHome,
+                onGenerateRoute: RouteGenerator.generateRoute,
+                localizationsDelegates: const [
+                  FormBuilderLocalizations.delegate,
+                ],
+                supportedLocales: const [
+                  Locale('en', ''),
+                  Locale('es', ''),
+                  Locale('fa', ''),
+                  Locale('fr', ''),
+                  Locale('ja', ''),
+                  Locale('pt', ''),
+                  Locale('sk', ''),
+                  Locale('pl', ''),
+                ],
+              ),
             ),
             designSize: const Size(375, 812),
           );
@@ -71,8 +90,7 @@ class Splash extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Container(
-          ),
+      body: Container(),
     );
   }
 }
