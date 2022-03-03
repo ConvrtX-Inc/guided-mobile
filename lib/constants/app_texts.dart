@@ -344,6 +344,9 @@ class AppTextConstants {
   /// Returns login text
   static String login = 'Login';
 
+  /// Returns Discovery text
+  static String discovery = 'Discovery';
+
   /// Returns login with facebook text
   static String loginWithFacebook = 'Login With Facebook';
 
@@ -709,6 +712,9 @@ class AppTextConstants {
   /// Returns token text
   static String userToken = 'user_token';
 
+  /// Returns user type text
+  static String userType = 'user_type';
+
   /// Returns bigger bullet
   static String biggerBullet = '●';
 
@@ -769,6 +775,15 @@ class AppTextConstants {
 
   /// Returns extra cost per person
   static String extraCost = 'Extra Cost Per Person';
+
+  ///Returns no data available text
+  static String noAvailableData = 'No Available Data Yet';
+
+  ///Returns an error occurred text
+  static String anErrorOccurred = 'An Error Occurred';
+
+  /// Returns already exists text
+  static String alreadyExists = 'already exists!';
 }
 
 /// Class for error messages text
