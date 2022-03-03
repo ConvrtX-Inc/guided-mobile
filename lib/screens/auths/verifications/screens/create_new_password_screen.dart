@@ -157,13 +157,26 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   Future<void> setPasswordAPI(Map<String, dynamic> verificationDetails) async {
     final Map<String, dynamic> passwordDetails = {
       'password': confirmPassword.text,
-      'hash': verificationDetails['hash']
+      'hash': verificationDetails['hash'],
+      'phone': 0,
     };
 
     if (newPassword.text == confirmPassword.text) {
-      await APIServices().request(AppAPIPath.resetPasswordUrl, RequestType.POST,
+      final dynamic response = await APIServices().request(
+          AppAPIPath.resetPasswordUrl, RequestType.POST,
           data: passwordDetails);
-      await Navigator.pushNamed(context, '/login');
+
+      if (response == 200) {
+        await Navigator.pushNamed(context, '/login');
+      } else {
+        final Map<String, dynamic> userDetails = {
+          'email': verificationDetails['email'],
+          'phone_no': verificationDetails['phone_no'],
+        };
+
+        await Navigator.pushNamed(context, '/verification_code',
+            arguments: userDetails);
+      }
     } else {
       AdvanceSnackBar(message: ErrorMessageConstants.passwordDoesNotMatch)
           .show(context);

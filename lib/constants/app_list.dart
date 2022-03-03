@@ -105,4 +105,11 @@ class AppListConstants {
     'sampleCard',
   ];
 
+  /// use in request filter screen
+  static List<String> requestFilterList = <String>[
+    'All',
+    'Pending',
+    'Completed',
+    'Rejected'
+  ];
 }

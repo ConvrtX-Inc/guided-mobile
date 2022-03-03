@@ -3,6 +3,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/requests.dart';
@@ -10,7 +11,6 @@ import 'package:guided/utils/requests.dart';
 
 /// Request Screen
 class RequestsScreen extends StatefulWidget {
-
   /// Constructor
   const RequestsScreen({Key? key}) : super(key: key);
 
@@ -19,7 +19,6 @@ class RequestsScreen extends StatefulWidget {
 }
 
 class _RequestsScreenState extends State<RequestsScreen> {
-
   final List<RequestsScreenModel> requestsItems =
       RequestsScreenUtils.getMockedDataRequestsScreen();
 
@@ -50,17 +49,10 @@ class _RequestsScreenState extends State<RequestsScreen> {
                       ),
                       const Spacer(),
                       InkWell(
-                          onTap: () {},
-                          child: const Icon(Icons.tune
-                          // child: Container(
-                          //   width: 25,
-                          //   height: 25,
-                          //   decoration: const BoxDecoration(
-                          //       image: DecorationImage(
-                          //           fit: BoxFit.cover,
-                          //           image: AssetImage(
-                          //               'assets/images/filter_icon.png'))),
-                          )),
+                          onTap: () {
+                            Navigator.pushNamed(context, '/request_filter');
+                          },
+                          child: const Icon(Icons.tune)),
                       const SizedBox(
                         width: 30,
                       )
@@ -97,7 +89,9 @@ class _RequestsScreenState extends State<RequestsScreen> {
     int index,
   ) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.pushNamed(context, '/request_view');
+      },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         child: Column(
@@ -106,7 +100,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.fromLTRB(30.w, 10.h, 0.w, 0.h),
+                  padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
                   child: Container(
                     width: 55.w,
                     height: 55.h,
@@ -121,8 +115,8 @@ class _RequestsScreenState extends State<RequestsScreen> {
                         color: Colors.white,
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: AssetImage(AssetsPath.noUser))),
+                            fit: BoxFit.fitHeight,
+                            image: AssetImage(requestsItems[index].imgUrl))),
                   ),
                 ),
                 Column(
@@ -132,21 +126,23 @@ class _RequestsScreenState extends State<RequestsScreen> {
                         padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
                         child: Text(
                           requestsItems[index].name,
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: Colors.black,
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold),
+                              fontFamily: 'Gilroy',
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600),
                         )),
                     Padding(
                         padding: EdgeInsets.fromLTRB(12.w, 10.h, 0, 0),
                         child: SizedBox(
-                          width: 270.w,
+                          width: 220.w,
                           child: Text(
                             '${requestsItems[index].name} has requested a new booking for package 3',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 color: Colors.grey,
-                                fontSize: 12
-                            ),
+                                fontFamily: 'Gilroy',
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w400),
                           ),
                         )),
                     SizedBox(
@@ -156,24 +152,31 @@ class _RequestsScreenState extends State<RequestsScreen> {
                       padding: EdgeInsets.only(left: 10.w),
                       child: Container(
                         width: 60.w,
-                        height: 20.h,
+                        height: 30.h,
                         decoration: BoxDecoration(
-                            color: Colors.yellow,
-                            borderRadius: BorderRadius.circular(4.r)
-                        ),
+                            color: AppColors.lightningYellow,
+                            borderRadius: BorderRadius.circular(7.r)),
                         child: Center(
                           child: Text(
                             requestsItems[index].status,
                             style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold),
+                                fontFamily: 'Gilroy',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600),
                           ),
                         ),
                       ),
                     ),
                   ],
                 ),
+                Text(
+                  '16 Sc',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 10.sp,
+                      fontFamily: 'Poppins'),
+                )
               ],
             )
           ],
@@ -181,9 +184,11 @@ class _RequestsScreenState extends State<RequestsScreen> {
       ),
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IterableProperty<RequestsScreenModel>('requestsItems', requestsItems));
+    properties.add(
+        IterableProperty<RequestsScreenModel>('requestsItems', requestsItems));
   }
 }

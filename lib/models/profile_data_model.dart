@@ -27,10 +27,10 @@ class ProfileDetailsModel {
   /// mapping
   ProfileDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
-        firstName = parseJson['first_name'],
-        lastName = parseJson['last_name'],
-        email = parseJson['email'],
-        phoneNumber = parseJson['phone_no'],
-        countryCode = parseJson['country_code'],
-        about = parseJson['about'];
+        firstName = parseJson['first_name'] ?? '',
+        lastName = parseJson['last_name'] ?? '',
+        email = parseJson['email'] ?? '',
+        phoneNumber = parseJson['phone_no'] ?? '',
+        countryCode = parseJson['country_code'] ?? '',
+        about = parseJson['about'] ?? '';
 }

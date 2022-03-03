@@ -97,6 +97,9 @@ class APIServices {
     debugPrint(body.toString());
     if (response.statusCode != 200 && response.statusCode != 201) {
       switch (response.statusCode) {
+        case 422:
+          {}
+          break;
         case 500:
           {}
           break;
@@ -123,12 +126,14 @@ class APIServices {
 
   /// API service for outfitter model
   Future<OutfitterModelData> getOutfitterData() async {
+    final String? userId =
+        await SecureStorage.readValue(key: SecureStorage.userIdKey);
     final String? token =
         await SecureStorage.readValue(key: AppTextConstants.userToken);
 
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createOutfitterUrl}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createOutfitterUrl}?s={"user_id": \"$userId\"}'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
         });
@@ -224,12 +229,14 @@ class APIServices {
 
   /// API service for advertisement model
   Future<AdvertisementModelData> getAdvertisementData() async {
+    final String? userId =
+        await SecureStorage.readValue(key: SecureStorage.userIdKey);
     final String? token =
         await SecureStorage.readValue(key: AppTextConstants.userToken);
 
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createAdvertisementUrl}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createAdvertisementUrl}?s={"user_id": \"$userId\"}'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
         });

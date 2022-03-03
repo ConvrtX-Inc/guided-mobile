@@ -5,6 +5,7 @@ import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/home/screens/home_main.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_main.dart';
 import 'package:guided/screens/message/message_inbox.dart';
+import 'package:guided/screens/requests/ui/requests_screen.dart';
 
 /// Screen for home
 class MainNavigationScreen extends StatefulWidget {
@@ -54,10 +55,7 @@ class _HomeScreenState extends State<MainNavigationScreen> {
   late final List<Widget> _mainNavigationWidgetOptions = <Widget>[
     const HomeScreen(),
     MainContent(initIndex: _selectedContent),
-    const Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+    const RequestsScreen(),
     const MessageInbox(),
     SettingsMain(),
   ];

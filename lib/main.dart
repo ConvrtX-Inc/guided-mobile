@@ -49,11 +49,7 @@ class MyApp extends StatelessWidget {
                       bodyText2: TextStyle(
                         color: Colors.black,
                       ),
-                    ).apply(
-                        // fontFamily: 'Lora',
-                        // bodyColor: Colors.white,
-                        // displayColor: Colors.white,
-                        ),
+                    ).apply(),
                   ),
                   initialRoute: _defaultHome,
                   onGenerateRoute: RouteGenerator.generateRoute),
@@ -76,12 +72,6 @@ class Splash extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
-          // decoration: const BoxDecoration(
-          //   image: DecorationImage(
-          //     image: AssetImage('assets/images/splashImage.png'),
-          //     fit: BoxFit.cover,
-          //   ),
-          // ),
           ),
     );
   }

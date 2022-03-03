@@ -5,15 +5,15 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
 
 /// Notification Screen
-class MessageFilterScreen extends StatefulWidget {
+class RequestFilterScreen extends StatefulWidget {
   /// Constructor
-  const MessageFilterScreen({Key? key}) : super(key: key);
+  const RequestFilterScreen({Key? key}) : super(key: key);
 
   @override
-  _MessageFilterScreenState createState() => _MessageFilterScreenState();
+  _RequestFilterScreenState createState() => _RequestFilterScreenState();
 }
 
-class _MessageFilterScreenState extends State<MessageFilterScreen> {
+class _RequestFilterScreenState extends State<RequestFilterScreen> {
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class _MessageFilterScreenState extends State<MessageFilterScreen> {
               Padding(
                 padding: EdgeInsets.only(left: 8.w),
                 child: Text(
-                  AppTextConstants.messageFilter,
+                  AppTextConstants.requestFilter,
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 24,
@@ -52,19 +52,18 @@ class _MessageFilterScreenState extends State<MessageFilterScreen> {
               ),
               Expanded(
                 child: ListView.separated(
-                  itemCount: AppListConstants.filterList.length,
+                  itemCount: AppListConstants.requestFilterList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
                       title: Text(
-                        AppListConstants.filterList[index].toString(),
+                        AppListConstants.requestFilterList[index].toString(),
                         style: TextStyle(
-                          color: index == _selectedIndex
-                              ? Colors.black
-                              : Colors.grey,
-                          fontWeight: index == _selectedIndex
-                              ? FontWeight.w600
-                              : FontWeight.w400,
-                        ),
+                            color: index == _selectedIndex
+                                ? Colors.black
+                                : Colors.grey,
+                            fontWeight: index == _selectedIndex
+                                ? FontWeight.w600
+                                : FontWeight.w400),
                       ),
                       trailing: Icon(
                         Icons.check,

@@ -118,5 +118,4 @@ class AppColors {
 
   /// hex color for cod gray
   static HexColor codGray = HexColor('#090909');
-
 }

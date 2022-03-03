@@ -51,11 +51,15 @@ class _TravelerReleaseAndWaiverFormState
                           color: Colors.black,
                           fontWeight: FontWeight.w600,
                           fontSize: 24.sp,
+                          fontFamily: 'Gilroy'
                         ),
                       ),
                     ),
                   ],
                 ),
+              ),
+              SizedBox(
+                height: 20.h,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
@@ -66,11 +70,12 @@ class _TravelerReleaseAndWaiverFormState
                     fontWeight: FontWeight.w400,
                     height: 2,
                     fontSize: 16.sp,
+                    fontFamily: 'Gilroy'
                   ),
                 ),
               ),
               SizedBox(
-                height: 20.h,
+                height: 60.h,
               ),
               Center(
                 child: SizedBox(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -28,8 +29,8 @@ class _FrequentlyAskQuestionState extends State<FrequentlyAskQuestion> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
                 child: IconButton(
-                  icon: Image.asset(
-                    '${AssetsPath.assetsPNGPath}/chevron_back_button.png',
+                  icon: SvgPicture.asset(
+                    'assets/images/svg/arrow_back_with_tail.svg',
                   ),
                   iconSize: 44.h,
                   onPressed: () {

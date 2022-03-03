@@ -103,22 +103,31 @@ class _MainContentState extends State<MainContent> {
                     ? AppTextStyle.defaultStyle
                     : AppTextStyle.inactive),
           ],
-          tabBarProperties: const TabBarProperties(
+          tabBarProperties: TabBarProperties(
             height: 42,
-            margin: EdgeInsets.all(8),
-            indicatorColor: Colors.black,
-            indicatorWeight: 2,
+            margin: const EdgeInsets.all(8),
+            indicatorColor: Colors.red,
+            indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(width: 2.w),
+              insets: EdgeInsets.symmetric(horizontal: 18.w)
+            ),
+            indicatorWeight: 1,
             labelColor: Colors.black,
             unselectedLabelColor: Colors.grey,
           ),
-          views: const <Widget>[
-            PackageList(),
+          views: <Widget>[
+            const PackageList(),
             Padding(
-              padding: EdgeInsets.all(8),
-              child: Text('Event Content'),
+              padding: const EdgeInsets.all(8),
+              child: Center(
+                  child: Text('This page is currently under development',
+                      style: TextStyle(
+                          fontFamily: 'Gilroy',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14.sp))),
             ),
-            OutfitterList(),
-            AdvertisementList(),
+            const OutfitterList(),
+            const AdvertisementList(),
           ],
           onChange: setTitle,
           initialIndex: initIndex,

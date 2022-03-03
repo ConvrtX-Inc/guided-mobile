@@ -1,5 +1,6 @@
 // ignore_for_file: always_put_required_named_parameters_first
 
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,17 +23,30 @@ class _ResetVerifyPhoneState extends State<ResetVerifyPhone> {
   final TextEditingController _verifyCodeController = TextEditingController();
 
   /// Method for verifying code
-  Future<void> verifyCode(Map<String, dynamic> userDetails) async {
-    final Map<String, dynamic> verificationDetails =
-        Map<String, dynamic>.from(userDetails);
+  Future<void> verifyCode(Map<String, dynamic> details) async {
+    if (_verifyCodeController.text != '') {
+      final Map<String, dynamic> verificationDetails = {
+        'hash': _verifyCodeController.text
+      };
 
-    verificationDetails['hash'] = _verifyCodeController.text;
+      final dynamic response = await APIServices().request(
+          AppAPIPath.otpUrl, RequestType.POST,
+          data: verificationDetails);
 
-    await APIServices().request(
-        AppAPIPath.checkVerificationCodeUrl, RequestType.POST,
-        data: verificationDetails);
-    await Navigator.pushNamed(context, '/create_new_password',
-        arguments: verificationDetails);
+      if (response['status'] == 200) {
+        final Map<String, dynamic> data = Map<String, dynamic>.from(details);
+        data['hash'] = _verifyCodeController.text;
+
+        await Navigator.pushNamed(context, '/create_new_password',
+            arguments: data);
+      } else {
+        AdvanceSnackBar(message: ErrorMessageConstants.somethingWenWrong)
+            .show(context);
+      }
+    } else {
+      AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
+          .show(context);
+    }
   }
 
   /// Method for resending code

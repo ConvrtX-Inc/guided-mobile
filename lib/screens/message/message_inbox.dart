@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -28,15 +27,6 @@ class _MessageInboxState extends State<MessageInbox> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              // IconButton(
-              //   icon: SvgPicture.asset(
-              //       'assets/images/svg/arrow_back_with_tail.svg',
-              //       height: 40.h,
-              //       width: 40.w),
-              //   onPressed: () {
-              //     Navigator.pop(context);
-              //   },
-              // ),
               SizedBox(
                 height: 15.h,
               ),
@@ -68,7 +58,6 @@ class _MessageInboxState extends State<MessageInbox> {
               ),
               Center(
                 child: Container(
-                  // color: AppColors.champagne,
                   decoration: BoxDecoration(
                       color: AppColors.champagne,
                       border: Border.all(

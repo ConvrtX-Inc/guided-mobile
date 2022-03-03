@@ -152,7 +152,7 @@ class AppTextConstants {
   static String myAds = 'My Advertisements';
 
   /// Returns package text
-  static String package = 'Package';
+  static String package = 'Packages';
 
   /// Returns events text
   static String event = 'Events';
@@ -769,6 +769,28 @@ class AppTextConstants {
 
   /// Returns extra cost per person
   static String extraCost = 'Extra Cost Per Person';
+
+  /// Returns 'GuidED Payment & Payout Terms' text
+  static String guidedPaymentPayoutTerms = 'GuidED Payment & Payout Terms';
+
+  /// Returns 'Local Laws & Taxes' text
+  static String localLawsTaxesForm = 'Local Laws & Taxes';
+
+  /// Returns Request Filter  text
+  static String requestFilter = 'Request Filter';
+
+  /// Returns Request a trip  text
+  static String requestedTrip = 'Request a trip,';
+
+  /// Returns tourist message text
+  static String touristMessage =
+      'Tourist’s message goes here. Tourist’s message goes here.Tourist’s message goes here. Tourist’s message goes here. Tourist’s message goes here.';
+
+  /// Returns accept request text
+  static String acceptRequest = 'Accept Request';
+
+  /// Returns Request a trip  text
+  static String rejectRequest = 'Reject Request';
 }
 
 /// Class for error messages text
@@ -796,4 +818,7 @@ class ErrorMessageConstants {
 
   /// Returns 'System failed to update' text
   static String updateFailed = 'System failed to update';
+
+  /// Returns 'Text Field must be filled up' text
+  static String fieldMustBeFilled = 'Fields must be filled up';
 }

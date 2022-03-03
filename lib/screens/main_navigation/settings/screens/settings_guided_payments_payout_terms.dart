@@ -1,21 +1,20 @@
-import 'package:custom_check_box/custom_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 
-/// Terms and Condition Screen
-class TermsAndCondition extends StatefulWidget {
+/// Guided Payment Payout Terms Screen
+class GuidedPaymentPayoutTerms extends StatefulWidget {
   /// Constructor
-  const TermsAndCondition({Key? key}) : super(key: key);
+  const GuidedPaymentPayoutTerms({Key? key}) : super(key: key);
 
   @override
-  _TermsAndConditionState createState() => _TermsAndConditionState();
+  _GuidedPaymentPayoutTermsState createState() =>
+      _GuidedPaymentPayoutTermsState();
 }
 
-class _TermsAndConditionState extends State<TermsAndCondition> {
+class _GuidedPaymentPayoutTermsState extends State<GuidedPaymentPayoutTerms> {
   bool _isChecked = false;
   @override
   Widget build(BuildContext context) {
@@ -42,7 +41,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                       width: 15.w,
                     ),
                     Text(
-                      AppTextConstants.termsAndCondidition,
+                      AppTextConstants.guidedPaymentPayoutTerms,
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
@@ -51,9 +50,6 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                     ),
                   ],
                 ),
-              ),
-              SizedBox(
-                height: 20.h,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
@@ -64,49 +60,41 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                     fontWeight: FontWeight.w400,
                     height: 2,
                     fontSize: 16.sp,
-                    fontFamily: 'Gilroy'
                   ),
                 ),
               ),
               SizedBox(
-                height: 50.h,
+                height: 60.h,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                child: Row(
-                  children: <Widget>[
-                    CustomCheckBox(
-                      value: _isChecked,
-                      shouldShowBorder: true,
-                      borderColor: AppColors.harp,
-                      checkedFillColor: AppColors.primaryGreen,
-                      borderRadius: 8,
-                      borderWidth: 1,
-                      checkBoxSize: 22,
-                      uncheckedFillColor: AppColors.harp,
-                      uncheckedIconColor: AppColors.harp,
-                      onChanged: (bool val) {
-                        setState(() {
-                          _isChecked = val;
-                        });
-                      },
+              Center(
+                child: SizedBox(
+                  width: 315.w,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                        elevation: MaterialStateProperty.all(0),
+                        padding: MaterialStateProperty.all<EdgeInsets>(
+                            const EdgeInsets.all(20)),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.r),
+                                    side:
+                                        BorderSide(color: AppColors.silver)))),
+                    child: Text(
+                      AppTextConstants.edit,
+                      style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.spruce),
                     ),
-                    Expanded(
-                      child: Text(
-                        AppTextConstants.agreeWithTermsConditions,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15.sp,
-                          fontFamily: 'Gilroy'
-                        ),
-                      ),
-                    ),
-                  ],
+                    onPressed: () {},
+                  ),
                 ),
               ),
               SizedBox(
-                height: 10.h,
+                height: 20.h,
               ),
               Center(
                 child: SizedBox(
@@ -123,7 +111,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                           borderRadius: BorderRadius.circular(18.r),
                         ))),
                     child: Text(
-                      AppTextConstants.iAgree,
+                      AppTextConstants.save,
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w700,

@@ -63,6 +63,13 @@ class SettingsUtils {
           imgUrl: 'assets/images/svg/settings_icon_documents.svg',
           subSettings: []),
       SettingsModel(
+          keyName: 'cancellation_policy',
+          name: 'Cancellation Policy',
+          icon: 'test',
+          color: Colors.black,
+          imgUrl: 'assets/images/svg/settings_icon_documents.svg',
+          subSettings: []),
+      SettingsModel(
           keyName: 'guided_payment_payout_terms',
           name: 'Guided Payment & Payout Terms',
           icon: 'test',

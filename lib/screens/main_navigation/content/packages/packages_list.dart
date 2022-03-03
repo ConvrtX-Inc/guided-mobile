@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
@@ -21,6 +22,7 @@ class _PackageListState extends State<PackageList> {
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             // FutureBuilder<PackageModelData>(
             //   future: APIServices().getPackageData(),
@@ -45,6 +47,15 @@ class _PackageListState extends State<PackageList> {
             //     return _displayWidget;
             //   },
             // )
+            SizedBox(height: 50.h),
+            Center(
+                child: Text(
+              'This page is currently under development',
+              style: TextStyle(
+                  fontFamily: 'Gilroy',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14.sp),
+            ))
           ],
         ),
       ),
@@ -54,7 +65,8 @@ class _PackageListState extends State<PackageList> {
           Navigator.push(
               context,
               MaterialPageRoute<dynamic>(
-                  builder: (BuildContext context) => const CreatePackageScreen()));
+                  builder: (BuildContext context) =>
+                      const CreatePackageScreen()));
         },
         child: const Icon(Icons.add),
       ),

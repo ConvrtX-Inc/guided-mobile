@@ -1,3 +1,4 @@
+import 'package:advance_notification/advance_notification.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -160,14 +161,25 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Future<void> sendVerificationCode() async {
     final Map<String, dynamic> userDetails = {
       'email': emailController.text,
-      'phone_no': _dialCode + phoneController.text
+      'phone_no': _dialCode + phoneController.text,
     };
 
-    await APIServices().request(
-        AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
-        data: userDetails);
-    await Navigator.pushNamed(context, '/verification_code',
-        arguments: userDetails);
+    if (emailController.text != '' && phoneController.text != '') {
+      final dynamic response = await APIServices().request(
+          AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
+          data: userDetails);
+
+      if (response == 200) {
+        await Navigator.pushNamed(context, '/verification_code',
+            arguments: userDetails);
+      } else {
+        AdvanceSnackBar(message: ErrorMessageConstants.somethingWenWrong)
+            .show(context);
+      }
+    } else {
+      AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
+          .show(context);
+    }
   }
 
   @override
