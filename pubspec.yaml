@@ -44,8 +44,8 @@ dependencies:
   custom_check_box: ^0.0.4
   table_calendar: ^3.0.3 #this library is for calendar api
   flutter_screenutil: ^5.0.0+2
-  flutter_svg: ^0.22.0
-  get: ^4.5.1  #this library is for state management
+  flutter_svg: ^1.0.3
+  get: ^4.6.1  #this library is for state management
   flutter_keyboard_visibility: ^5.1.0 #this library is for checking keyboard visibility 
   badges: ^2.0.1 #this library is for badges model
   twilio_flutter: ^0.0.9 #this library is for phone verification using twilio api
@@ -61,12 +61,19 @@ dependencies:
   modal_bottom_sheet: ^2.0.0
   flutter_image_compress: ^1.1.0
   smooth_page_indicator: ^1.0.0+2
+  google_maps_flutter: ^2.1.1
+  custom_marker: ^1.0.0
+  flutter_form_builder: ^7.0.0
+  form_builder_validators: ^7.3.0
+  intl: ^0.17.0
+  syncfusion_flutter_datepicker: ^19.4.53
+  in_date_utils: ^1.0.2
+  card_swiper: ^2.0.1
   # flutter_expanded_tile: ^0.3.6
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  intl: ^0.17.0
+
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
