@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, diagnostic_describe_all_properties, cast_nullable_to_non_nullable
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,6 @@ import 'package:guided/screens/packages/create_package/package_price_screen.dart
 
 /// Guide Rule Screen
 class GuideRulesScreen extends StatefulWidget {
-
   /// Constructor
   const GuideRulesScreen({Key? key}) : super(key: key);
 
@@ -20,11 +19,25 @@ class GuideRulesScreen extends StatefulWidget {
 
 class _GuideRulesScreenState extends State<GuideRulesScreen> {
   bool isChecked = false;
+  bool _isEnabledEdit = false;
+
+  TextEditingController _guideRules = TextEditingController();
+  final FocusNode _guideRulesFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _guideRules = TextEditingController(text: AppTextConstants.loremIpsum);
+  }
 
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
       appBar: AppBar(
@@ -67,36 +80,48 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          Text(
-                            AppTextConstants.edit,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                              decoration: TextDecoration.underline,
-                              color: AppColors.primaryGreen,
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (_isEnabledEdit == false) {
+                                  _isEnabledEdit = true;
+                                } else {
+                                  _isEnabledEdit = false;
+                                }
+                              });
+                            },
+                            child: Text(
+                              _isEnabledEdit
+                                  ? AppTextConstants.done
+                                  : AppTextConstants.edit,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                                decoration: TextDecoration.underline,
+                                color: AppColors.primaryGreen,
+                              ),
+                              textAlign: TextAlign.right,
                             ),
-                            textAlign: TextAlign.right,
                           ),
-                          SizedBox(
-                            height: 15.h
-                          ),
-                          Text(
-                            AppTextConstants.loremIpsum,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.dustyGrey,
+                          SizedBox(height: 15.h),
+                          TextField(
+                            maxLines: null,
+                            enabled: _isEnabledEdit,
+                            controller: _guideRules,
+                            focusNode: _guideRulesFocus,
+                            decoration: InputDecoration(
+                              hintText: AppTextConstants.loremIpsum,
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade800,
+                              ),
                             ),
                           ),
-                          SizedBox(
-                              height: 20.h
-                          ),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(
-                      height: 20.h
-                  ),
+                  SizedBox(height: 20.h),
                   Row(
                     children: <Widget>[
                       CustomCheckBox(
@@ -108,7 +133,6 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
                         borderWidth: 1,
                         checkBoxSize: 22,
                         onChanged: (bool val) {
-                          //do your stuff here
                           setState(() {
                             isChecked = val;
                           });
@@ -138,7 +162,9 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
           height: 60.h,
           child: ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushNamed('/package_price');
+              if (isChecked == true) {
+                navigatePackagePriceScreen(context, screenArguments);
+              }
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -152,16 +178,22 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
             ),
             child: Text(
               AppTextConstants.next,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
       ),
     );
   }
+
+  Future<void> navigatePackagePriceScreen(
+      BuildContext context, Map<String, dynamic> data) async {
+    final Map<String, dynamic> details = Map<String, dynamic>.from(data);
+
+    /// Guided Rules Textfield *insert here
+    await Navigator.pushNamed(context, '/package_price', arguments: details);
+  }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);

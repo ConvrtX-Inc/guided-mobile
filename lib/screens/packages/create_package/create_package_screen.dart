@@ -11,7 +11,6 @@ import 'package:guided/screens/packages/create_package/sub_activities_screen.dar
 
 /// Create Package Screen
 class CreatePackageScreen extends StatefulWidget {
-
   /// Constructor
   const CreatePackageScreen({Key? key}) : super(key: key);
 
@@ -50,6 +49,7 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
       onTap: () {
         setState(() {
           mainActivity = badges;
+          showMainActivityChoices = false;
         });
       },
       minLeadingWidth: 20,
@@ -88,16 +88,19 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                if (mainActivity == null) SizedBox(
-                  width: 150.w,
-                  height: 100.h,
-                ) else SizedBox(
-                  width: 150.w,
-                  height: 100.h,
-                  child: _choicesMainActivity(mainActivity),
-                ),
+                if (mainActivity == null)
+                  SizedBox(
+                    width: 150.w,
+                    height: 100.h,
+                  )
+                else
+                  SizedBox(
+                    width: 140.w,
+                    height: 100.h,
+                    child: _choicesMainActivity(mainActivity),
+                  ),
                 SizedBox(
-                  width: 150.w,
+                  width: 110.w,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
@@ -115,18 +118,21 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
             ),
           ),
         ),
-        if (showMainActivityChoices) Material(
-          elevation: 5,
-          borderRadius: BorderRadius.circular(12.r),
-          child: SizedBox(
-            height: 200.h,
-            width: width,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
-              child: _choicesGridMainActivity(),
+        if (showMainActivityChoices)
+          Material(
+            elevation: 5,
+            borderRadius: BorderRadius.circular(12.r),
+            child: SizedBox(
+              height: 200.h,
+              width: width,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
+                child: _choicesGridMainActivity(),
+              ),
             ),
-          ),
-        ) else const SizedBox(),
+          )
+        else
+          const SizedBox(),
       ],
     );
   }
@@ -169,8 +175,7 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    HeaderText.headerText(
-                        AppTextConstants.packageDescr),
+                    HeaderText.headerText(AppTextConstants.packageDescr),
                     SizedBox(
                       height: 20.h,
                     ),
@@ -219,17 +224,16 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute<dynamic>(
-                                  builder: (BuildContext context) => SubActivitiesScreen(
-                                    mainActivity: mainActivity,
-                                  )),
+                                  builder: (BuildContext context) =>
+                                      SubActivitiesScreen(
+                                        mainActivity: mainActivity,
+                                      )),
                             );
                           }
                         },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                              color: AppColors.silver
-                            ),
+                            side: BorderSide(color: AppColors.silver),
                             borderRadius: BorderRadius.circular(18.r),
                           ),
                           primary: AppColors.primaryGreen,
@@ -238,9 +242,7 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
                         child: Text(
                           AppTextConstants.next,
                           style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16
-                          ),
+                              fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                       ),
                     ),
@@ -256,11 +258,14 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
       ),
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>('showMainActivityChoices', showMainActivityChoices));
-    properties.add(DiagnosticsProperty<bool>('showSubActivityChoices', showSubActivityChoices));
+    properties.add(DiagnosticsProperty<bool>(
+        'showMainActivityChoices', showMainActivityChoices));
+    properties.add(DiagnosticsProperty<bool>(
+        'showSubActivityChoices', showSubActivityChoices));
     properties.add(DiagnosticsProperty('mainActivity', mainActivity));
   }
 }

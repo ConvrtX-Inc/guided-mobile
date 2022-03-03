@@ -1,12 +1,14 @@
+// ignore_for_file: no_default_cases
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
 import 'package:guided/constants/app_colors.dart';
-import 'package:guided/models/advertisement.dart';
+import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/advertisement_model.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/widget/advertisement_features.dart';
-import 'package:guided/utils/advertisement.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Advertisement List Screen
 class AdvertisementList extends StatefulWidget {
@@ -25,15 +27,29 @@ class _AdvertisementListState extends State<AdvertisementList> {
         physics: const ScrollPhysics(),
         child: Column(
           children: <Widget>[
-            ListView.builder(
-                itemCount: features.length,
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (BuildContext ctx, int index) {
-                  return AdvertisementFeature(
-                      title: features[index].featureTitle,
-                      imageUrl: features[index].featureImageUrl);
-                }),
+            FutureBuilder<AdvertisementModelData>(
+              future: APIServices().getAdvertisementData(),
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                Widget _displayWidget;
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    _displayWidget = const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                    break;
+                  default:
+                    if (snapshot.hasError) {
+                      _displayWidget = Center(
+                          child: APIMessageDisplay(
+                        message: 'Result: ${snapshot.error}',
+                      ));
+                    } else {
+                      _displayWidget = buildAdvertisementResult(snapshot.data!);
+                    }
+                }
+                return _displayWidget;
+              },
+            )
           ],
         ),
       ),
@@ -45,8 +61,43 @@ class _AdvertisementListState extends State<AdvertisementList> {
     );
   }
 
-  /// Get features items mocked data
-  List<AdvertisementModel> features = AdvertisementUtil.getMockFeatures();
+  Widget buildAdvertisementResult(AdvertisementModelData advertisementData) =>
+      SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            if (advertisementData.advertisementDetails.isEmpty)
+              Padding(
+                padding: EdgeInsets.only(
+                    top: (MediaQuery.of(context).size.height / 3) - 40),
+                child: APIMessageDisplay(
+                  message: AppTextConstants.noResultFound,
+                ),
+              )
+            else
+              for (AdvertisementDetailsModel detail
+                  in advertisementData.advertisementDetails)
+                buildAdvertisementInfo(detail)
+          ],
+        ),
+      );
+
+  Widget buildAdvertisementInfo(AdvertisementDetailsModel details) =>
+      AdvertisementFeature(
+        id: details.id,
+        title: details.title,
+        country: details.country,
+        address: details.address,
+        street: details.street,
+        city: details.city,
+        province: details.province,
+        zip_code: details.zipCode,
+        date:
+            '${details.adDate!.month.toString().padLeft(2, '0')}. ${details.adDate!.day.toString().padLeft(2, '0')}. ${details.adDate!.year.toString().padLeft(2, '0')}',
+        availability_date:
+            '${details.adDate!.year.toString().padLeft(2, '0')}-${details.adDate!.month.toString().padLeft(2, '0')}-${details.adDate!.day.toString().padLeft(2, '0')}',
+        price: details.price,
+        description: details.description,
+      );
 
   void _settingModalBottomSheet() {
     show_avatar.showAvatarModalBottomSheet(
@@ -55,11 +106,5 @@ class _AdvertisementListState extends State<AdvertisementList> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) => const AdvertisementAdd(),
     );
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(IterableProperty<AdvertisementModel>('features', features));
   }
 }

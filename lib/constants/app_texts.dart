@@ -712,6 +712,9 @@ class AppTextConstants {
   /// Returns bigger bullet
   static String biggerBullet = '●';
 
+  /// Returns 'No Results Found' text
+  static String noResultFound = 'No Results Found';
+
   /// Returns confirm payment
   static String confirmPayment = 'Confirm Payment';
 
@@ -748,6 +751,24 @@ class AppTextConstants {
 
   /// Returns confirm
   static String confirm = 'Confirm';
+
+  /// Returns add a note here
+  static String addANote = 'Add a note here (Optional)';
+
+  /// Returns maximum activity text
+  static String maximumActivity = '3 activities are maximum';
+
+  /// Returns maximum of 3 images text
+  static String maximumImage = 'Minimum 3 images should be uploaded';
+
+  /// Returns Location Of Package
+  static String locationOfPackage = 'Location Of Package';
+
+  /// Returns Base Price
+  static String basePrice = 'Base Price';
+
+  /// Returns extra cost per person
+  static String extraCost = 'Extra Cost Per Person';
 }
 
 /// Class for error messages text
@@ -772,4 +793,7 @@ class ErrorMessageConstants {
 
   /// Returns 'Password does not match' text
   static String passwordDoesNotMatch = 'Password does not match';
+
+  /// Returns 'System failed to update' text
+  static String updateFailed = 'System failed to update';
 }
