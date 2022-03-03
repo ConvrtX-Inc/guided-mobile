@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, use_named_constants
 
 import 'package:badges/badges.dart';
+import 'package:card_swiper/card_swiper.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,8 +16,10 @@ import 'package:guided/controller/traveller_controller.dart';
 import 'dart:async';
 
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/guide.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
+import 'package:guided/utils/services/static_data_services.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// PopularGuides
@@ -34,6 +37,8 @@ class _PopularGuidesState extends State<PopularGuides> {
   final List<Marker> _markers = <Marker>[];
   final ScrollToIndexController _scrollController = ScrollToIndexController();
   final travellerMonthController = Get.put(TravellerMonthController());
+  final SwiperController _cardController = SwiperController();
+  final List<Guide> guides = StaticDataService.getGuideList();
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
   }
@@ -339,7 +344,244 @@ class _PopularGuidesState extends State<PopularGuides> {
                                 width: MediaQuery.of(context).size.width * 0.3,
                                 height: 54.h,
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    showMaterialModalBottomSheet(
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(20),
+                                          ),
+                                        ),
+                                        expand: false,
+                                        context: context,
+                                        backgroundColor: Colors.white,
+                                        builder: (BuildContext context) {
+                                          return SafeArea(
+                                            top: false,
+                                            child: Container(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.5,
+                                              child: Column(
+                                                children: <Widget>[
+                                                  SizedBox(
+                                                    height: 15.h,
+                                                  ),
+                                                  Align(
+                                                    child: Image.asset(
+                                                      AssetsPath.horizontalLine,
+                                                      width: 60.w,
+                                                      height: 5.h,
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            20.w,
+                                                            20.h,
+                                                            20.w,
+                                                            20.h),
+                                                    child: Align(
+                                                      alignment:
+                                                          Alignment.topCenter,
+                                                      child: Text(
+                                                        '16 nearby guides',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 16.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w700),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                      child: Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 20.w,
+                                                        right: 20.w),
+                                                    child: Swiper(
+                                                      controller:
+                                                          _cardController,
+                                                      itemBuilder:
+                                                          (BuildContext context,
+                                                              int index) {
+                                                        return Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: <Widget>[
+                                                            Container(
+                                                              height: 200.h,
+                                                              // width:
+                                                              //     315.w,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: Colors
+                                                                    .transparent,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          15.r),
+                                                                ),
+                                                                image:
+                                                                    DecorationImage(
+                                                                  image: AssetImage(
+                                                                      guides[index]
+                                                                          .featureImage),
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
+                                                              ),
+                                                              child: Stack(
+                                                                children: <
+                                                                    Widget>[
+                                                                  Positioned(
+                                                                    top: 0,
+                                                                    right: 0,
+                                                                    child:
+                                                                        IconButton(
+                                                                      icon: const Icon(
+                                                                          Icons
+                                                                              .favorite_border),
+                                                                      onPressed:
+                                                                          () {},
+                                                                      color: HexColor(
+                                                                          '#ffffff'),
+                                                                    ),
+                                                                  ),
+                                                                  Align(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .centerLeft,
+                                                                    child:
+                                                                        Container(
+                                                                      transform:
+                                                                          Matrix4.translationValues(
+                                                                              -15,
+                                                                              0,
+                                                                              0),
+                                                                      child:
+                                                                          IconButton(
+                                                                        onPressed:
+                                                                            () async {
+                                                                          await _cardController
+                                                                              .previous();
+                                                                        },
+                                                                        icon:
+                                                                            const Icon(
+                                                                          Icons
+                                                                              .chevron_left,
+                                                                          size:
+                                                                              50,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Align(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .centerRight,
+                                                                    child:
+                                                                        IconButton(
+                                                                      onPressed:
+                                                                          () async {
+                                                                        await _cardController
+                                                                            .next();
+                                                                      },
+                                                                      icon:
+                                                                          const Icon(
+                                                                        Icons
+                                                                            .chevron_right,
+                                                                        size:
+                                                                            50,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 4.h,
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Row(
+                                                                children: <
+                                                                    Widget>[
+                                                                  Icon(
+                                                                    Icons.star,
+                                                                    color: HexColor(
+                                                                        '#066028'),
+                                                                    size: 10,
+                                                                  ),
+                                                                  Text(
+                                                                    '16 review',
+                                                                    style: TextStyle(
+                                                                        color: HexColor(
+                                                                            '#979B9B'),
+                                                                        fontSize: 12
+                                                                            .sp,
+                                                                        fontWeight:
+                                                                            FontWeight.normal),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              "St. John's, Newfoundland",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize:
+                                                                      16.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700),
+                                                            ),
+                                                            Text(
+                                                              '\$50/ Person',
+                                                              style: TextStyle(
+                                                                  color: HexColor(
+                                                                      '#3E4242'),
+                                                                  fontSize:
+                                                                      16.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                      autoplay: true,
+                                                      itemCount: guides.length,
+                                                      // pagination: const SwiperPagination(
+                                                      //     builder:
+                                                      //         SwiperPagination
+                                                      //             .fraction),
+                                                      // pagination: SwiperCustomPagination(builder:
+                                                      //     (BuildContext
+                                                      //             context,
+                                                      //         SwiperPluginConfig
+                                                      //             config) {
+                                                      //   return Container();
+                                                      // }),
+                                                      // control: const SwiperControl(
+                                                      //     color: Colors
+                                                      //         .black),
+                                                    ),
+                                                  )),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        });
+                                  },
                                   style: AppTextStyle.activeGreen,
                                   child: const Text(
                                     'Set Filter Date',

@@ -486,21 +486,24 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                                             ),
                                                                             Align(
                                                                               alignment: Alignment.centerLeft,
-                                                                              child: IconButton(
-                                                                                onPressed: () {
-                                                                                  _cardController.previous();
-                                                                                },
-                                                                                icon: const Icon(
-                                                                                  Icons.chevron_left,
-                                                                                  size: 50,
+                                                                              child: Container(
+                                                                                transform: Matrix4.translationValues(-15, 0, 0),
+                                                                                child: IconButton(
+                                                                                  onPressed: () async {
+                                                                                    await _cardController.previous();
+                                                                                  },
+                                                                                  icon: const Icon(
+                                                                                    Icons.chevron_left,
+                                                                                    size: 50,
+                                                                                  ),
                                                                                 ),
                                                                               ),
                                                                             ),
                                                                             Align(
                                                                               alignment: Alignment.centerRight,
                                                                               child: IconButton(
-                                                                                onPressed: () {
-                                                                                  _cardController.next();
+                                                                                onPressed: () async {
+                                                                                  await _cardController.next();
                                                                                 },
                                                                                 icon: const Icon(
                                                                                   Icons.chevron_right,

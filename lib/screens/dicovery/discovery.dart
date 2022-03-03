@@ -96,20 +96,6 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
                       ),
                     ),
                   ),
-                  Positioned(
-                    right: 20,
-                    top: 15,
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(AssetsPath.discoveryClose),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
                   Align(
                     alignment: Alignment.topCenter,
                     child: Column(
@@ -165,7 +151,9 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
                         SizedBox(
                           width: width * 0.4,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.of(context).pushNamed('/sign_up');
+                            },
                             style: AppTextStyle.active,
                             child: const Text(
                               'Subscribe',
