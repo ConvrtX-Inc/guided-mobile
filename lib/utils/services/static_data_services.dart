@@ -3,6 +3,7 @@
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/guide.dart';
+import 'package:guided/models/wishlist_model.dart';
 
 /// Static data service
 class StaticDataService {
@@ -17,8 +18,8 @@ class StaticDataService {
           featureImage: 'assets/images/png/activity3.png'),
       Activity(
           id: '2',
-          name: 'Hiking',
-          path: AssetsPath.hiking,
+          name: 'Paddle',
+          path: AssetsPath.paddle,
           distance: '4.5 hours drive',
           featureImage: 'assets/images/png/activity2.png'),
       Activity(
@@ -81,6 +82,31 @@ class StaticDataService {
           path: AssetsPath.paddle,
           distance: '12 KM  distance',
           featureImage: 'assets/images/png/guide2.png'),
+    ];
+  }
+
+  static List<Wishlist> getWishListData() {
+    return <Wishlist>[
+      Wishlist(
+        id: '1',
+        title: 'St. John\'s, Newfoundland',
+        reviewScore: '16',
+        price: '50',
+        packageCategory: AssetsPath.hunt,
+        featureImage1: 'assets/images/png/activity3.png',
+        featureImage2: 'assets/images/png/activity1.png',
+        featureImage3: 'assets/images/png/activity2.png',
+      ),
+      Wishlist(
+        id: '2',
+        title: 'St. Paul\'s, Oldland',
+        reviewScore: '19',
+        price: '100',
+        packageCategory: AssetsPath.paddle,
+        featureImage1: 'assets/images/png/activity1.png',
+        featureImage2: 'assets/images/png/activity2.png',
+        featureImage3: 'assets/images/png/activity3.png',
+      ),
     ];
   }
 }

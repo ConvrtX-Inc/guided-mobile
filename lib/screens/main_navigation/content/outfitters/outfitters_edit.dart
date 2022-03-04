@@ -6,7 +6,9 @@ import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
+import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:intl/intl.dart';
@@ -67,7 +69,8 @@ class _OutfitterEditState extends State<OutfitterEdit> {
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-      final String removedDollar = screenArguments['price'].toString().substring(0);
+      final String removedDollar =
+          screenArguments['price'].toString().substring(0);
       final String removedDecimal =
           removedDollar.substring(0, removedDollar.indexOf('.'));
       final String price = removedDecimal.replaceAll(RegExp(r'[,]'), '');
@@ -813,8 +816,7 @@ class _OutfitterEditState extends State<OutfitterEdit> {
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-    final String userId =
-        await SecureStorage.readValue(key: SecureStorage.userIdKey);
+    final String? userId = UserSingleton.instance.user.user!.id;
 
     final Map<String, dynamic> outfitterEditDetails = {
       'title': _title.text,
@@ -837,11 +839,13 @@ class _OutfitterEditState extends State<OutfitterEdit> {
         needAccessToken: true,
         data: outfitterEditDetails);
 
-    await Navigator.push(
-      context,
-      MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => const MainContent(initIndex: 2)),
-    );
+    await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => const MainNavigationScreen(
+                  navIndex: 1,
+                  contentIndex: 2,
+                )));
   }
 
   Future<void> _showDate(BuildContext context) async {

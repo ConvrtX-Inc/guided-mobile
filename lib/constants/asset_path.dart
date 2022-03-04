@@ -150,6 +150,12 @@ class AssetsPath {
   /// returns bank card icon
   static String bankCardIcon = 'assets/images/png/bank_card.png';
 
+  /// returns profile photo
+  static String profileIcon = 'assets/images/profile-photos-2.png';
+
+  /// returns customer 2
+  static String customer2 = 'assets/images/customer-2.png';
+
   /// returns discovery background image
   static String discoveryBackground =
       'assets/images/png/discovery_background.png';
@@ -195,4 +201,14 @@ class AssetsPath {
 
   /// returns horizontal Line  image
   static String horizontalLine = 'assets/images/png/rectangle.png';
+
+  /// returns wishlist iamge
+  static String wishlistScreen = 'assets/images/wishlist.png';
+
+  /// returns power button image
+  static String powerButton =
+      'assets/images/svg/settings_icon_power_button.svg';
+
+  /// returns heart image
+  static String heart = 'assets/images/png/heart-image.png';
 }

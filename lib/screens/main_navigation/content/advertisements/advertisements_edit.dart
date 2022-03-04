@@ -7,7 +7,9 @@ import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
+import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:intl/intl.dart';
@@ -748,9 +750,6 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-    final String userId =
-        await SecureStorage.readValue(key: SecureStorage.userIdKey);
-
     final Map<String, dynamic> advertisementEditDetails = {
       'title': _title.text,
       'country': _country.text,
@@ -771,11 +770,13 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
         needAccessToken: true,
         data: advertisementEditDetails);
 
-    await Navigator.push(
-      context,
-      MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => const MainContent(initIndex: 3)),
-    );
+    await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => const MainNavigationScreen(
+                  navIndex: 1,
+                  contentIndex: 3,
+                )));
   }
 
   Future<void> _showDate(BuildContext context) async {

@@ -119,4 +119,9 @@ class AppColors {
   /// hex color for cod gray
   static HexColor codGray = HexColor('#090909');
 
+  /// hex color for aqua haze
+  static HexColor aquaHaze = HexColor('#F7F9FA');
+
+  /// hex color for mint green
+  static HexColor mintGreen = HexColor('#A9FFC0');
 }

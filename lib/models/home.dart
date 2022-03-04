@@ -12,6 +12,8 @@ class HomeModel {
     this.featureStarRating = 0.0,
     this.featureFee = 0.0,
     this.featureNumberOfTourists = 0,
+    this.dateRange = '',
+    this.path = '',
 
     /// Customer Requests
     this.cRFirstName = '',
@@ -40,6 +42,12 @@ class HomeModel {
   /// feature number of tourists
   final int featureNumberOfTourists;
 
+  /// feature date range
+  final String dateRange;
+
+  /// feature hiking
+  final String path;
+  
   /// customer requests first name
   final String cRFirstName;
 

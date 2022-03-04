@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/constants/asset_path.dart';
 
 /// Notification Screen
 class MessageFilterScreen extends StatefulWidget {
@@ -57,8 +55,17 @@ class _MessageFilterScreenState extends State<MessageFilterScreen> {
                   itemCount: AppListConstants.filterList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
-                      title:
-                          Text(AppListConstants.filterList[index].toString()),
+                      title: Text(
+                        AppListConstants.filterList[index].toString(),
+                        style: TextStyle(
+                          color: index == _selectedIndex
+                              ? Colors.black
+                              : Colors.grey,
+                          fontWeight: index == _selectedIndex
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                        ),
+                      ),
                       trailing: Icon(
                         Icons.check,
                         size: 20.h,

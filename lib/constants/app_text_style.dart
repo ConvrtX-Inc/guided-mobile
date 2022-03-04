@@ -76,6 +76,12 @@ class AppTextStyle {
       fontWeight: FontWeight.w600,
       fontFamily: AppTextConstants.fontGilroy);
 
+  /// Returns default styling
+  static TextStyle activeStyle = TextStyle(
+      color: AppColors.deepGreen,
+      fontWeight: FontWeight.w600,
+      fontFamily: AppTextConstants.fontGilroy);
+
   /// Returns style button
   static ButtonStyle style = ElevatedButton.styleFrom(
       primary: Colors.white,

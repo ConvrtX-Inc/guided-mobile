@@ -23,7 +23,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   int _selectedMenuIndex = 0;
   final double _bulletHeight = 50;
   final double _bulletWidth = 50;
@@ -46,18 +45,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
           AppTextConstants.home,
           style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 24,
-            color: Colors.black,
-            fontFamily: 'Gilroy'
-          ),
+              fontWeight: FontWeight.w600,
+              fontSize: 24,
+              color: Colors.black,
+              fontFamily: 'Gilroy'),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -74,67 +71,74 @@ class _HomeScreenState extends State<HomeScreen> {
                     border: Border.all(
                       color: Colors.grey,
                     ),
-                    borderRadius: BorderRadius.all(Radius.circular(10.r))
-                ),
+                    borderRadius: BorderRadius.all(Radius.circular(10.r))),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            width: 2.w
-                          )
+                        decoration: BoxDecoration(
+                          border: Border(bottom: BorderSide(width: 2.w)),
                         ),
-                      ),
                         child: TextButton(
                             onPressed: () {
                               Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute<dynamic>(builder: (BuildContext context) => const MainNavigationScreen(navIndex: 1, contentIndex: 0,))
-                              );},
+                                  MaterialPageRoute<dynamic>(
+                                      builder: (BuildContext context) =>
+                                          const MainNavigationScreen(
+                                            navIndex: 1,
+                                            contentIndex: 0,
+                                          )));
+                            },
                             child: Text(
                               AppTextConstants.packages,
                               style: AppTextStyle.defaultStyle,
-                            )
-                        )
-                    ),
+                            ))),
                     TextButton(
                         onPressed: () {
                           Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute<dynamic>(builder: (BuildContext context) => const MainNavigationScreen(navIndex: 1, contentIndex: 1,))
-                          );
+                              MaterialPageRoute<dynamic>(
+                                  builder: (BuildContext context) =>
+                                      const MainNavigationScreen(
+                                        navIndex: 1,
+                                        contentIndex: 1,
+                                      )));
                         },
                         child: Text(
                           AppTextConstants.event,
                           style: AppTextStyle.inactive,
-                        )
-                    ),
+                        )),
                     TextButton(
                         onPressed: () {
                           Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute<dynamic>(builder: (BuildContext context) => const MainNavigationScreen(navIndex: 1, contentIndex: 2,))
-                          );
+                              MaterialPageRoute<dynamic>(
+                                  builder: (BuildContext context) =>
+                                      const MainNavigationScreen(
+                                        navIndex: 1,
+                                        contentIndex: 2,
+                                      )));
                         },
                         child: Text(
                           AppTextConstants.outfitter,
                           style: AppTextStyle.inactive,
-                        )
-                    ),
+                        )),
                     TextButton(
                         onPressed: () {
                           Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute<dynamic>(builder: (BuildContext context) => const MainNavigationScreen(navIndex: 1, contentIndex: 3,))
-                          );
+                              MaterialPageRoute<dynamic>(
+                                  builder: (BuildContext context) =>
+                                      const MainNavigationScreen(
+                                        navIndex: 1,
+                                        contentIndex: 3,
+                                      )));
                         },
                         child: Text(
                           AppTextConstants.myads,
                           style: AppTextStyle.inactive,
-                        )
-                    ),
+                        )),
                   ],
                 ),
               ),
@@ -173,13 +177,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: features.length,
                         itemBuilder: (BuildContext ctx, int index) {
                           return HomeFeatures(
-                              name: features[index].featureName,
-                              imageUrl: features[index].featureImageUrl,
-                              numberOfTourist:
-                              features[index].featureNumberOfTourists,
-                              starRating:
-                              features[index].featureStarRating,
-                              fee: features[index].featureFee);
+                            name: features[index].featureName,
+                            imageUrl: features[index].featureImageUrl,
+                            numberOfTourist:
+                                features[index].featureNumberOfTourists,
+                            starRating: features[index].featureStarRating,
+                            fee: features[index].featureFee,
+                            dateRange: features[index].dateRange,
+                          );
                         }))
               ],
             ),
@@ -218,8 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           AppTextConstants.homeMainHeader,
                           style: TextStyle(
                               fontWeight: FontWeight.w500,
-                              color: AppColors.grey
-                          ),
+                              color: AppColors.grey),
                         )
                       ],
                     ),
@@ -230,20 +234,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 top: 0,
                 right: 0,
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                      vertical: 5.h,
-                      horizontal: 9.w
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 9.w),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(6.r),
                       color: AppColors.lightningYellow),
-                  child: Text(
-                      '${customerRequests.length} Pending request',
+                  child: Text('${customerRequests.length} Pending request',
                       style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white
-                      )
-                  ),
+                          fontWeight: FontWeight.w600, color: Colors.white)),
                 ),
               )
             ],
@@ -262,11 +259,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(IterableProperty<HomeModel>('features', features));
-    properties.add(IterableProperty<HomeModel>('customerRequests', customerRequests));
+    properties
+        .add(IterableProperty<HomeModel>('customerRequests', customerRequests));
     properties.add(IterableProperty<HomeModel>('earnings', earnings));
   }
 }

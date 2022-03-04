@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/home.dart';
 
 /// Settings items data generator
@@ -7,24 +8,30 @@ class HomeUtils {
     return [
       HomeModel(
         featureName: 'Tour to India',
-        featureImageUrl: 'https://random.imagecdn.app/270/202',
+        featureImageUrl: 'assets/images/png/package1.png',
         featureStarRating: 3.2,
         featureFee: 200,
         featureNumberOfTourists: 5,
+        dateRange: '1-9',
+        path: AssetsPath.hiking
       ),
       HomeModel(
         featureName: 'Cebu is my province',
-        featureImageUrl: 'https://random.imagecdn.app/270/202',
+        featureImageUrl: 'assets/images/png/package2.png',
         featureStarRating: 5.0,
         featureFee: 100,
         featureNumberOfTourists: 2,
+        dateRange: '11-19',
+        path: AssetsPath.hiking
       ),
       HomeModel(
         featureName: 'Welcome to Philippines',
-        featureImageUrl: 'https://random.imagecdn.app/270/202',
+        featureImageUrl: 'assets/images/png/package3.png',
         featureStarRating: 2,
         featureFee: 500,
         featureNumberOfTourists: 100,
+        dateRange: '5-9',
+        path: AssetsPath.hiking
       ),
     ];
   }

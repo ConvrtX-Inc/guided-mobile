@@ -81,10 +81,11 @@ class _SettingsMainState extends State<SettingsMain> {
                       ],
                     ),
                     child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 35.r,
-                        backgroundImage: const NetworkImage(
-                            'https://www.vhv.rs/dpng/d/164-1645859_selfie-clipart-groucho-glass-good-profile-hd-png.png')),
+                      backgroundColor: Colors.white,
+                      radius: 35.r,
+                      backgroundImage: const AssetImage(
+                          '${AssetsPath.assetsPNGPath}/student_profile.png'),
+                    ),
                   ),
                   const SizedBox(
                     width: 24,
@@ -127,12 +128,7 @@ class _SettingsMainState extends State<SettingsMain> {
                     iconSize: 36,
                     color: Colors.black,
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute<dynamic>(
-                            builder: (BuildContext context) =>
-                                const ProfileScreen()),
-                      );
+                      Navigator.pushNamed(context, '/profile');
                     },
                   ),
                 ],

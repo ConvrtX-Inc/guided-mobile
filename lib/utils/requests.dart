@@ -8,19 +8,24 @@ class RequestsScreenUtils {
     return <RequestsScreenModel>[
       RequestsScreenModel(
           id: 1,
-          name: 'John Doe',
+          name: 'Ann Sasha',
           status: 'Pending',
-          imgUrl: 'assets/images/no_user.png'),
+          imgUrl: 'assets/images/profile-photos-2.png'),
       RequestsScreenModel(
           id: 2,
-          name: 'Jane Doe',
+          name: 'David Bill',
           status: 'Pending',
-          imgUrl: 'assets/images/no_user.png'),
+          imgUrl: 'assets/images/customer-2.png'),
       RequestsScreenModel(
           id: 3,
-          name: 'Peter Parker',
+          name: 'Ann Sasha',
           status: 'Pending',
-          imgUrl: 'assets/images/no_user.png'),
+          imgUrl: 'assets/images/profile-photos-2.png'),
+      RequestsScreenModel(
+          id: 3,
+          name: 'Ann Sasha',
+          status: 'Pending',
+          imgUrl: 'assets/images/profile-photos-2.png'),
     ];
   }
 }

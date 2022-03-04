@@ -1,8 +1,9 @@
+// ignore_for_file: implementation_imports
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart';
-import 'package:guided/screens/main_navigation/settings/screens//settings_contact_us.dart';
 import 'package:guided/screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
 
 /// Widgets for displaying list of user settings
@@ -24,20 +25,35 @@ class SettingsItems extends StatelessWidget {
     return ListTile(
       onTap: () {
         switch (_keyName) {
-          case 'contact_us':
-            Navigator.push(
-              context,
-              MaterialPageRoute<dynamic>(
-                  builder: (BuildContext context) => const SettingsContactUs()),
-            );
-            break;
           case 'schedule':
             showAvatarModalBottomSheet(
               expand: true,
               context: context,
               backgroundColor: Colors.transparent,
-              builder: (BuildContext context) => const SettingsCalendarManagement(),
+              builder: (BuildContext context) =>
+                  const SettingsCalendarManagement(),
             );
+            break;
+          case 'contact_us':
+            Navigator.pushNamed(context, '/contact_us');
+            break;
+          case 'faq':
+            Navigator.pushNamed(context, '/faq');
+            break;
+          case 'terms_of_service':
+            Navigator.pushNamed(context, '/terms_and_condition');
+            break;
+          case 'traveler_release_waiver_form':
+            Navigator.pushNamed(context, '/waiver_form');
+            break;
+          case 'cancellation_policy':
+            Navigator.pushNamed(context, '/cancellation_policy');
+            break;
+          case 'guided_payment_payout_terms':
+            Navigator.pushNamed(context, '/guide_payment_payout_terms');
+            break;
+          case 'local_laws_taxes':
+            Navigator.pushNamed(context, '/local_laws_taxes_form');
             break;
         }
       },
