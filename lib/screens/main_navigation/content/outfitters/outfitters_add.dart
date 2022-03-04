@@ -13,6 +13,7 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/image_bulk.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -669,7 +670,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     child: AbsorbPointer(
                       child: TextField(
                         controller: _date,
-                        keyboardType: TextInputType.datetime,
                         decoration: InputDecoration(
                           contentPadding:
                               EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
@@ -756,8 +756,10 @@ class _OutfitterAddState extends State<OutfitterAdd> {
         );
       },
     );
+    debugPrint('PickedDate: $picked');
     if (picked != null && picked != _selectedDate) {
-      final String formattedDate = DateFormat('yyyy-MM-dd').format(picked);
+      final String formattedDate =
+          '${picked.year.toString().padLeft(4, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
       // ignore: curly_braces_in_flow_control_structures
       setState(() {
         _selectedDate = picked;
@@ -831,8 +833,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   }
 
   Future<void> outfitterDetail() async {
-    final String userId =
-        await SecureStorage.readValue(key: SecureStorage.userIdKey);
+    final String? userId = UserSingleton.instance.user.user!.id;
 
     String price = _price.text.replaceAll(new RegExp(r'[,]'), '');
 

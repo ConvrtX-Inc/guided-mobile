@@ -7,6 +7,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/image_bulk_package.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -603,8 +604,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-    final String userId =
-        await SecureStorage.readValue(key: SecureStorage.userIdKey);
+    final String? userId = UserSingleton.instance.user.user!.id;
 
     final Map<String, dynamic> packageDetails = {
       'user_id': userId,

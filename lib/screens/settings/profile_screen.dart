@@ -40,7 +40,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: getBody(context),
       backgroundColor: Colors.white,
-      //resizeToAvoidBottomPadding: false,
     );
   }
 }
@@ -140,8 +139,8 @@ Widget getProfile(BuildContext context, String name) {
     child: Column(
       children: <Widget>[
         Container(
-          width: 101.w,
-          height: 101.h,
+          width: 121.w,
+          height: 121.h,
           decoration: BoxDecoration(
             border: Border.all(
               color: Colors.white,
@@ -156,8 +155,8 @@ Widget getProfile(BuildContext context, String name) {
           child: CircleAvatar(
               backgroundColor: Colors.white,
               radius: 35,
-              backgroundImage: const NetworkImage(
-                  'https://www.vhv.rs/dpng/d/164-1645859_selfie-clipart-groucho-glass-good-profile-hd-png.png'),
+              backgroundImage: const AssetImage(
+                  '${AssetsPath.assetsPNGPath}/student_profile.png'),
               child: Align(
                 alignment: Alignment.topRight,
                 child: Container(

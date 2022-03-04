@@ -52,6 +52,9 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                   ],
                 ),
               ),
+              SizedBox(
+                height: 20.h,
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
                 child: Text(
@@ -61,8 +64,12 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                     fontWeight: FontWeight.w400,
                     height: 2,
                     fontSize: 16.sp,
+                    fontFamily: 'Gilroy'
                   ),
                 ),
+              ),
+              SizedBox(
+                height: 50.h,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
@@ -91,6 +98,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                           fontSize: 15.sp,
+                          fontFamily: 'Gilroy'
                         ),
                       ),
                     ),
@@ -98,7 +106,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                 ),
               ),
               SizedBox(
-                height: 20.h,
+                height: 10.h,
               ),
               Center(
                 child: SizedBox(

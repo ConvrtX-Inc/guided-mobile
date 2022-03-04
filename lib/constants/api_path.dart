@@ -19,7 +19,7 @@ class AppAPIPath {
   static String userTpye = 'api/v1/user-types';
 
   /// Returns send verification code for forgot password url
-  static String sendVerificationCodeUrl = 'api/v1/auth/forgot/password';
+  static String sendVerificationCodeUrl = 'api/v1/auth/forgot/forgot';
 
   /// Returns check verification code url
   static String checkVerificationCodeUrl = 'api/v1/auth/email/confirm';
@@ -91,4 +91,7 @@ class AppAPIPath {
   /// Returns activity packages destinations url
   static String activityDestinationDetails =
       'api/v1/activity-package-destinations';
+
+  /// Returns otp url
+  static String otpUrl = 'api/v1/auth/forgot/confirm/otp';
 }

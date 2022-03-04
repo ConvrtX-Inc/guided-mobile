@@ -13,6 +13,8 @@ import 'package:guided/screens/auths/splashes/screens/welcome_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/create_new_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
+import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
+import 'package:guided/screens/faq/faq.dart';
 
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
 
@@ -22,14 +24,20 @@ import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
 import 'package:guided/screens/home/calendar_availability_screen.dart';
 import 'package:guided/screens/home/set_booking_date_screen.dart';
+import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_view.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_edit.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_list.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_view.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_contact_us.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_guided_payments_payout_terms.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_local_laws_taxes_form.dart';
+import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
+import 'package:guided/screens/message/message_individual_screen.dart';
 import 'package:guided/screens/notification/notification_screen.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
 import 'package:guided/screens/packages/create_package/free_service_screen.dart';
@@ -42,14 +50,16 @@ import 'package:guided/screens/packages/create_package/package_photos_screen.dar
 import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
+import 'package:guided/screens/requests/ui/request_filter_screen.dart';
+import 'package:guided/screens/requests/ui/request_view.dart';
+import 'package:guided/screens/requests/ui/requests_screen.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
 import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
+import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
-
-import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 
 /// Route generator configuration
 class RouteGenerator {
@@ -185,7 +195,24 @@ class RouteGenerator {
       case '/sign_up_verify':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SignupVerify(), settings: settings);
-
+      case '/request_screen':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const RequestsScreen());
+      case '/contact_us':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsContactUs());
+      case '/guide_payment_payout_terms':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const GuidedPaymentPayoutTerms());
+      case '/local_laws_taxes_form':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const LocalLawsTaxesForm());
+      case '/request_filter':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const RequestFilterScreen());
+      case '/request_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const RequestViewScreen());
       case '/discovery':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const DiscoveryScreen(), settings: settings);

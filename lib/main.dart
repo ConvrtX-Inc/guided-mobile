@@ -90,14 +90,7 @@ class Splash extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Container(
-          // decoration: const BoxDecoration(
-          //   image: DecorationImage(
-          //     image: AssetImage('assets/images/splashImage.png'),
-          //     fit: BoxFit.cover,
-          //   ),
-          // ),
-          ),
+      body: Container(),
     );
   }
 }

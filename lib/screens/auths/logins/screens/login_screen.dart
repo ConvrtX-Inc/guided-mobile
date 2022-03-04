@@ -24,13 +24,20 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
 
   bool hidePassword = true;
   bool buttonIsLoading = false;
+
+  @override
+  void initState() {
+    _emailController = TextEditingController(text: 'test1@example.com');
+    _passwordController = TextEditingController(text: 'string');
+    super.initState();
+  }
 
   Future<void> login() async {
     final Map<String, String> credentials = <String, String>{

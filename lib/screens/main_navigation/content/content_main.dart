@@ -7,6 +7,7 @@ import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_properties.dar
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_list.dart';
+import 'package:guided/screens/main_navigation/content/event/event_list.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_list.dart';
 import 'package:guided/screens/main_navigation/content/packages/packages_list.dart';
 
@@ -103,20 +104,20 @@ class _MainContentState extends State<MainContent> {
                     ? AppTextStyle.defaultStyle
                     : AppTextStyle.inactive),
           ],
-          tabBarProperties: const TabBarProperties(
+          tabBarProperties: TabBarProperties(
             height: 42,
-            margin: EdgeInsets.all(8),
-            indicatorColor: Colors.black,
-            indicatorWeight: 2,
+            margin: const EdgeInsets.all(8),
+            indicatorColor: Colors.red,
+            indicator: UnderlineTabIndicator(
+                borderSide: BorderSide(width: 2.w),
+                insets: EdgeInsets.symmetric(horizontal: 18.w)),
+            indicatorWeight: 1,
             labelColor: Colors.black,
             unselectedLabelColor: Colors.grey,
           ),
           views: const <Widget>[
             PackageList(),
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Text('Event Content'),
-            ),
+            EventList(),
             OutfitterList(),
             AdvertisementList(),
           ],
