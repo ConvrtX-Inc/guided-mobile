@@ -806,6 +806,18 @@ class AppTextConstants {
 
   /// Returns already exists text
   static String alreadyExists = 'already exists!';
+
+  /// Returns logout text
+  static String logout = 'Logout';
+
+  /// Returns activity packages text
+  static String activityPackages = 'Activity/ Packages';
+
+  /// Returns guide's profile text
+  static String guideProfile = 'Guide\'s Profile';
+
+  /// Returns first-aid text
+  static String firstaid = 'First Aid';
 }
 
 /// Class for error messages text

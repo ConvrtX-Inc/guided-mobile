@@ -4,26 +4,29 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_properties.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_list.dart';
-import 'package:guided/screens/main_navigation/content/event/event_list.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_list.dart';
 import 'package:guided/screens/main_navigation/content/packages/packages_list.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/activity_packages.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/guide_profile.dart';
 
-/// Main Content Screen
-class MainContent extends StatefulWidget {
+/// Tab Wishlist Screen
+class TabWishlistScreen extends StatefulWidget {
   /// Constructor
-  const MainContent({Key? key, required this.initIndex}) : super(key: key);
+  const TabWishlistScreen({Key? key, required this.initIndex})
+      : super(key: key);
 
   final int initIndex;
 
   @override
-  _MainContentState createState() => _MainContentState(initIndex);
+  _TabWishlistScreenState createState() => _TabWishlistScreenState(initIndex);
 }
 
-class _MainContentState extends State<MainContent> {
-  _MainContentState(this.initIndex);
+class _TabWishlistScreenState extends State<TabWishlistScreen> {
+  _TabWishlistScreenState(this.initIndex);
 
   int initIndex;
   String title = '';
@@ -41,23 +44,15 @@ class _MainContentState extends State<MainContent> {
     switch (initIndex) {
       case 0:
         return setState(() {
-          title = AppTextConstants.myPackage;
+          title = AppTextConstants.activityPackages;
         });
       case 1:
         return setState(() {
-          title = AppTextConstants.myEvent;
-        });
-      case 2:
-        return setState(() {
-          title = AppTextConstants.myOutfitter;
-        });
-      case 3:
-        return setState(() {
-          title = AppTextConstants.myAds;
+          title = AppTextConstants.guideProfile;
         });
       default:
         return setState(() {
-          title = AppTextConstants.myPackage;
+          title = AppTextConstants.activityPackages;
         });
     }
   }
@@ -67,18 +62,36 @@ class _MainContentState extends State<MainContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          title,
-          style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 24.sp,
-              color: Colors.black,
-              fontFamily: AppTextConstants.fontGilroy),
+        title: Column(
+          children: [
+            Text(
+              'Wish List',
+              style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24.sp,
+                  color: Colors.black,
+                  fontFamily: AppTextConstants.fontGilroy),
+            ),
+            if (title == AppTextConstants.guideProfile)
+              SizedBox(
+                height: 15.h,
+              ),
+            if (title == AppTextConstants.guideProfile)
+              Text(
+                'Adventure, Discover, Explore',
+                style: TextStyle(
+                    color: AppColors.lightningYellow,
+                    fontSize: 11.sp,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600),
+              )
+            else
+              const Text(''),
+          ],
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        centerTitle: false,
+        centerTitle: true,
       ),
       body: Container(
         padding: const EdgeInsets.all(15),
@@ -87,39 +100,29 @@ class _MainContentState extends State<MainContent> {
         // height: 300,
         child: ContainedTabBarView(
           tabs: <Widget>[
-            Text(AppTextConstants.package,
-                style: title == AppTextConstants.myPackage
-                    ? AppTextStyle.defaultStyle
+            Text(AppTextConstants.activityPackages,
+                style: title == AppTextConstants.activityPackages
+                    ? AppTextStyle.activeStyle
                     : AppTextStyle.inactive),
-            Text(AppTextConstants.event,
-                style: title == AppTextConstants.myEvent
-                    ? AppTextStyle.defaultStyle
-                    : AppTextStyle.inactive),
-            Text(AppTextConstants.outfitter,
-                style: title == AppTextConstants.myOutfitter
-                    ? AppTextStyle.defaultStyle
-                    : AppTextStyle.inactive),
-            Text(AppTextConstants.myads,
-                style: title == AppTextConstants.myAds
-                    ? AppTextStyle.defaultStyle
+            Text(AppTextConstants.guideProfile,
+                style: title == AppTextConstants.guideProfile
+                    ? AppTextStyle.activeStyle
                     : AppTextStyle.inactive),
           ],
           tabBarProperties: TabBarProperties(
             height: 42,
             margin: const EdgeInsets.all(8),
-            indicatorColor: Colors.red,
+            indicatorColor: AppColors.deepGreen,
             indicator: UnderlineTabIndicator(
-                borderSide: BorderSide(width: 2.w),
+                borderSide: BorderSide(width: 2.w, color: AppColors.deepGreen),
                 insets: EdgeInsets.symmetric(horizontal: 18.w)),
             indicatorWeight: 1,
             labelColor: Colors.black,
             unselectedLabelColor: Colors.grey,
           ),
-          views: const <Widget>[
-            PackageList(),
-            EventList(),
-            OutfitterList(),
-            AdvertisementList(),
+          views: <Widget>[
+            const ActivityPackages(),
+            const GuideProfile(),
           ],
           onChange: setTitle,
           initialIndex: initIndex,

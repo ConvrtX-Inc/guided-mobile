@@ -16,6 +16,7 @@ import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/user_model.dart';
 
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/global_api_service.dart';
@@ -37,11 +38,10 @@ class APIServices {
 
   /// Getting the activity outfitter details
   Future<ActivityOutfitterModel> getActivityOutfitterDetails() async {
-    final String token =
-        await SecureStorage.readValue(key: AppTextConstants.userToken);
     final http.Response response = await http
         .get(Uri.http(apiBaseUrl, AppAPIPath.getOutfitterDetail), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
     });
 
     final ActivityOutfitterModel dataSummary =
@@ -131,23 +131,19 @@ class APIServices {
   }
 
   Future<OutfitterModelData> getOutfitterData() async {
-    final String? userId =
-        await SecureStorage.readValue(key: SecureStorage.userIdKey);
-    final String? token =
-        await SecureStorage.readValue(key: AppTextConstants.userToken);
 
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createOutfitterUrl}?s={"user_id": \"$userId\"}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createOutfitterUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final http.Response response2 = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final OutfitterModelData dataSummary =
@@ -158,14 +154,11 @@ class APIServices {
 
   /// API service for outfitter image model
   Future<OutfitterImageModelData> getOutfitterImageData(String id) async {
-    final String? token =
-        await SecureStorage.readValue(key: AppTextConstants.userToken);
-
     final dynamic response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}?s={"activity_outfitter_id": \"$id\"}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<OutfitterImageDetailsModel> details =
@@ -183,14 +176,12 @@ class APIServices {
 
   /// API service for outfitter image model
   Future<OutfitterImageModelData> getOutfitterImage(String id) async {
-    final String? token =
-        await SecureStorage.readValue(key: AppTextConstants.userToken);
 
     final dynamic response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}?s={"id": \"$id\"}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<OutfitterImageDetailsModel> details =
@@ -209,14 +200,11 @@ class APIServices {
   /// API service for advertisement image model
   Future<AdvertisementImageModelData> getAdvertisementImageData(
       String id) async {
-    final String? token =
-        await SecureStorage.readValue(key: AppTextConstants.userToken);
-
     final dynamic response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getAdvertisementImage}?s={"activity_advertisement_id": \"$id\"}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<AdvertisementImageDetailsModel> details =
@@ -234,16 +222,12 @@ class APIServices {
 
   /// API service for advertisement model
   Future<AdvertisementModelData> getAdvertisementData() async {
-    final String? userId =
-        await SecureStorage.readValue(key: SecureStorage.userIdKey);
-    final String? token =
-        await SecureStorage.readValue(key: AppTextConstants.userToken);
 
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createAdvertisementUrl}?s={"user_id": \"$userId\"}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createAdvertisementUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
         });
 
     /// seeding for data summary
@@ -256,16 +240,12 @@ class APIServices {
 
   /// API service for profile model
   Future<ProfileModelData> getProfileData() async {
-    final String? userId =
-        await SecureStorage.readValue(key: SecureStorage.userIdKey);
-    final String? token =
-        await SecureStorage.readValue(key: AppTextConstants.userToken);
-
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}?s={"id": \"$userId\"}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}?s={"id": \"${UserSingleton.instance.user.user!.id}\"}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<ProfileDetailsModel> details = <ProfileDetailsModel>[];
@@ -283,13 +263,12 @@ class APIServices {
 
   /// API service for currencies
   Future<List<Currency>> getCurrencies() async {
-    final String? token =
-        await SecureStorage.readValue(key: AppTextConstants.userToken);
     final http.Response response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getCurrencies}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final dynamic jsonData = jsonDecode(response.body);

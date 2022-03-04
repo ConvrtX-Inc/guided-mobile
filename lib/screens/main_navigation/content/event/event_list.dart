@@ -4,21 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/models/home.dart';
+import 'package:guided/screens/main_navigation/content/event/widget/event_features.dart';
 import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
-import 'package:guided/utils/home.dart';
+import 'package:guided/utils/event.dart';
 
 /// Package List Screen
-class PackageList extends StatefulWidget {
+class EventList extends StatefulWidget {
   /// Constructor
-  const PackageList({Key? key}) : super(key: key);
+  const EventList({Key? key}) : super(key: key);
 
   @override
-  _PackageListState createState() => _PackageListState();
+  _EventListState createState() => _EventListState();
 }
 
-class _PackageListState extends State<PackageList> {
-  List<HomeModel> features = HomeUtils.getMockFeatures();
+class _EventListState extends State<EventList> {
+  List<HomeModel> features = EventUtils.getMockEventFeatures();
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class _PackageListState extends State<PackageList> {
                 child: ListView.builder(
                     itemCount: features.length,
                     itemBuilder: (BuildContext ctx, int index) {
-                      return PackageFeatures(
+                      return EventFeatures(
                         name: features[index].featureName,
                         imageUrl: features[index].featureImageUrl,
                         numberOfTourist:
@@ -42,6 +43,7 @@ class _PackageListState extends State<PackageList> {
                         starRating: features[index].featureStarRating,
                         fee: features[index].featureFee,
                         dateRange: features[index].dateRange,
+                        path: features[index].path,
                       );
                     }),
               ),
@@ -60,13 +62,7 @@ class _PackageListState extends State<PackageList> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.chateauGreen,
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute<dynamic>(
-                  builder: (BuildContext context) =>
-                      const CreatePackageScreen()));
-        },
+        onPressed: () {},
         child: const Icon(Icons.add),
       ),
     );

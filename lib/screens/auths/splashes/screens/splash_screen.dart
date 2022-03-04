@@ -19,71 +19,73 @@ class SplashScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SizedBox(
-          width: width,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(left: 40.w),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Image.asset(AssetsPath.logoSmall),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: SizedBox(
+            width: width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(left: 40.w),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Image.asset(AssetsPath.logoSmall),
+                  ),
                 ),
-              ),
-              Image.asset(
-                AssetsPath.splashImage,
-                width: 300.w,
-              ),
-              Image.asset(
-                AssetsPath.forThePlanet,
-                width: 80.w,
-                height: 29.h,
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              Text(
-                AppTextConstants.createYourBusiness,
-                style: const TextStyle(
-                  fontFamily: 'Gilroy',
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                Image.asset(
+                  AssetsPath.splashImage,
+                  width: 300.w,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              Text(
-                AppTextConstants.theApplicationWillHelp,
-                style: const TextStyle(
-                  fontFamily: 'Gilroy',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.black54,
+                Image.asset(
+                  AssetsPath.forThePlanet,
+                  width: 80.w,
+                  height: 29.h,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 25.h,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/user_type');
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(20),
-                  primary: AppColors.primaryGreen, // <-- Button color
-                  onPrimary: Colors.green, // <-- Splash color
+                SizedBox(
+                  height: 20.h,
                 ),
-                child:
-                    const Icon(Icons.arrow_forward_sharp, color: Colors.white),
-              )
-            ],
+                Text(
+                  AppTextConstants.createYourBusiness,
+                  style: const TextStyle(
+                    fontFamily: 'Gilroy',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Text(
+                  AppTextConstants.theApplicationWillHelp,
+                  style: const TextStyle(
+                    fontFamily: 'Gilroy',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black54,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 25.h,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/user_type');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.all(20),
+                    primary: AppColors.primaryGreen, // <-- Button color
+                    onPrimary: Colors.green, // <-- Splash color
+                  ),
+                  child: const Icon(Icons.arrow_forward_sharp,
+                      color: Colors.white),
+                )
+              ],
+            ),
           ),
         ),
       ),
