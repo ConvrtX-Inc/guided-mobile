@@ -85,8 +85,8 @@ class APIServices {
     };
 
     if (needAccessToken) {
-      token =
-          staticToken; //await SecureStorage.readValue(key: SecureStorage.userTokenKey);
+      token = UserSingleton.instance.user.token;
+      // staticToken; //await SecureStorage.readValue(key: SecureStorage.userTokenKey);
       headers['Authorization'] = 'Bearer $token';
     }
     request.headers.addAll(headers);
@@ -131,19 +131,20 @@ class APIServices {
   }
 
   Future<OutfitterModelData> getOutfitterData() async {
-
     final http.Response response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createOutfitterUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final http.Response response2 = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}'),
         headers: {
-        HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final OutfitterModelData dataSummary =
@@ -158,7 +159,8 @@ class APIServices {
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}?s={"activity_outfitter_id": \"$id\"}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<OutfitterImageDetailsModel> details =
@@ -176,12 +178,12 @@ class APIServices {
 
   /// API service for outfitter image model
   Future<OutfitterImageModelData> getOutfitterImage(String id) async {
-
     final dynamic response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}?s={"id": \"$id\"}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<OutfitterImageDetailsModel> details =
@@ -204,7 +206,8 @@ class APIServices {
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getAdvertisementImage}?s={"activity_advertisement_id": \"$id\"}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<AdvertisementImageDetailsModel> details =
@@ -222,12 +225,12 @@ class APIServices {
 
   /// API service for advertisement model
   Future<AdvertisementModelData> getAdvertisementData() async {
-
     final http.Response response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createAdvertisementUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
         headers: {
-          HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     /// seeding for data summary
