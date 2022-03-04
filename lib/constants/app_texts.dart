@@ -34,6 +34,9 @@ class AppTextConstants {
   /// Returns Messages  text
   static String messages = 'Messages';
 
+  /// Returns Inbox  text
+  static String inbox = 'Inbox';
+
   /// Returns default country text
   static String defaultCountry = 'US';
 

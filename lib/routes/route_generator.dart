@@ -15,6 +15,8 @@ import 'package:guided/screens/auths/verifications/screens/reset_password_screen
 import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
 
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/tab_inbox.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/tab_map.dart';
 
 import 'package:guided/screens/main_navigation/traveller/traveller_tabbar.dart';
 
@@ -195,7 +197,9 @@ class RouteGenerator {
       case '/traveller_tab':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TravellerTabScreen(), settings: settings);
-
+      case '/traveller_map':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TabMapScreen(), settings: settings);
       default:
         return _errorRoute();
     }
