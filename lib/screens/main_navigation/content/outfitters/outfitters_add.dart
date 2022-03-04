@@ -15,6 +15,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/image_bulk.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
+import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -868,11 +869,13 @@ class _OutfitterAddState extends State<OutfitterAdd> {
       await saveBulkImage(activityOutfitterId);
     }
 
-    await Navigator.push(
-      context,
-      MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => const MainContent(initIndex: 2)),
-    );
+    await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => const MainNavigationScreen(
+                  navIndex: 1,
+                  contentIndex: 2,
+                )));
   }
 
   @override
