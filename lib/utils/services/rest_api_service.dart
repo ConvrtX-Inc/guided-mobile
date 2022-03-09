@@ -8,6 +8,7 @@ import 'package:guided/constants/api_path.dart';
 
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
+import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
 import 'package:guided/models/currencies_model.dart';
@@ -315,5 +316,23 @@ class APIServices {
       headers: headers,
     );
     return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for currencies
+  Future<List<ActivityPackage>> getActivityPackages() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<ActivityPackage> activityPackages = <ActivityPackage>[];
+    final activityPackage =
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+    activityPackages.addAll(activityPackage);
+    return activityPackages;
   }
 }

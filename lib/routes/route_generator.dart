@@ -17,6 +17,7 @@ import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.da
 import 'package:guided/screens/faq/faq.dart';
 
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
+import 'package:guided/screens/main_navigation/traveller/check_availability/check_availability.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_inbox.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_map.dart';
 
@@ -224,9 +225,9 @@ class RouteGenerator {
       case '/traveller_tab':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TravellerTabScreen(), settings: settings);
-      case '/traveller_map':
+      case '/checkAvailability':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TabMapScreen(), settings: settings);
+            builder: (_) => const CheckAvailability(), settings: settings);
       default:
         return _errorRoute();
     }

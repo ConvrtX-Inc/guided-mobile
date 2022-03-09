@@ -57,32 +57,32 @@ class _TabMapScreenState extends State<TabMapScreen> {
         markerId: const MarkerId('marker1'),
         icon: await MarkerIcon.pictureAsset(
             assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
+            width: 90.w,
+            height: 90.h),
         position: const LatLng(32.41466290553936, 53.66990581798554),
       ),
       Marker(
         markerId: const MarkerId('marker2'),
         icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
+            assetPath: 'assets/images/png/paddle_marker.png',
+            width: 120.w,
+            height: 120.h),
         position: const LatLng(32.418354764794636, 53.63271757672727),
       ),
       Marker(
         markerId: const MarkerId('marker3'),
         icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
+            assetPath: 'assets/images/png/eco_marker1.png',
+            width: 120.w,
+            height: 120.h),
         position: const LatLng(32.42270518531192, 53.77571594613791),
       ),
       Marker(
         markerId: const MarkerId('marker4'),
         icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
+            assetPath: 'assets/images/png/eco_marker2.png',
+            width: 120.w,
+            height: 120.h),
         position: const LatLng(32.527346929217615, 53.74507673728466),
       ),
     ];
@@ -101,7 +101,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
           children: <Widget>[
             GoogleMap(
               initialCameraPosition: const CameraPosition(
-                target: LatLng(32.4279, 53.6880),
+                target: LatLng(32.527346929217615, 53.74507673728466),
                 zoom: 10,
               ),
               markers: Set<Marker>.of(_markers),
@@ -109,7 +109,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
               zoomControlsEnabled: false,
             ),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20),
+              margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 color: HexColor('#F8F7F6'),

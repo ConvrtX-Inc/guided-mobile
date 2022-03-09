@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, use_named_constants, diagnostic_describe_all_properties
+// ignore_for_file: public_member_api_docs, use_named_constants, diagnostic_describe_all_properties, no_default_cases
 
 import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
@@ -14,9 +14,11 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/guide.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -64,22 +66,6 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-//     WidgetsBinding.instance?.addPostFrameCallback((_) async {
-//       final int mon = initialDate.month;
-//       listController.selectedDate = 1;
-//       // setState(() {
-//       //   selectedmonth = mon;
-//       // });
-// //       Future.delayed(const Duration(seconds: 2), () {
-// // // Here you can write your code
-
-// //         _scrollController.easyScrollToIndex(index: 7);
-
-// //         setState(() {
-// //           selectedmonth = 7;
-// //         });
-// //       });
-//     });
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -361,10 +347,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         //   height: 20.h,
                                         // ),
                                         SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.3,
+                                          width: 153.w,
                                           height: 54.h,
                                           child: ElevatedButton(
                                             onPressed: () {
@@ -650,90 +633,111 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.26,
-          child: ListView(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            children: List<Widget>.generate(activities.length, (int i) {
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 20.h),
-                height: 180.h,
-                width: 168.w,
-                decoration: const BoxDecoration(
-                  color: Colors.transparent,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      height: 112.h,
-                      width: 168.w,
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(15.r),
-                        ),
-                        image: DecorationImage(
-                          image: AssetImage(activities[i].featureImage),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            bottom: 0,
-                            child: CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              radius: 30,
-                              backgroundImage: AssetImage(activities[i].path),
+          child: FutureBuilder<List<ActivityPackage>>(
+            future: APIServices().getActivityPackages(), // async work
+            builder: (BuildContext context,
+                AsyncSnapshot<List<ActivityPackage>> snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting:
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                default:
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: snapshot.data?.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 5.w, vertical: 20.h),
+                            height: 180.h,
+                            width: 168.w,
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    Text(
-                      activities[i].name,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16.sp,
-                          fontFamily: 'Gilroy',
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          height: 10.h,
-                          width: 10.w,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15.r),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Container(
+                                  height: 112.h,
+                                  width: 168.w,
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(15.r),
+                                    ),
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                          activities[1].featureImage),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  child: Stack(
+                                    children: <Widget>[
+                                      Positioned(
+                                        bottom: 0,
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.transparent,
+                                          radius: 30,
+                                          backgroundImage:
+                                              AssetImage(activities[1].path),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5.h,
+                                ),
+                                Text(
+                                  snapshot.data![index].name!,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16.sp,
+                                      fontFamily: 'Gilroy',
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Container(
+                                      height: 10.h,
+                                      width: 10.w,
+                                      decoration: BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(15.r),
+                                        ),
+                                        image: const DecorationImage(
+                                          image: AssetImage(
+                                              'assets/images/png/clock.png'),
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 2.w,
+                                    ),
+                                    Text(
+                                      activities[1].distance,
+                                      style: TextStyle(
+                                          color: HexColor('#696D6D'),
+                                          fontSize: 11.sp,
+                                          fontFamily: 'Gilroy',
+                                          fontWeight: FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            image: const DecorationImage(
-                              image: AssetImage('assets/images/png/clock.png'),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 2.w,
-                        ),
-                        Text(
-                          activities[i].distance,
-                          style: TextStyle(
-                              color: HexColor('#696D6D'),
-                              fontSize: 11.sp,
-                              fontFamily: 'Gilroy',
-                              fontWeight: FontWeight.normal),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }),
+                          );
+                        });
+                  }
+              }
+            },
           ),
         ),
       ],

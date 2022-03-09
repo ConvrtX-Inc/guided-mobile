@@ -341,7 +341,7 @@ class _PopularGuidesState extends State<PopularGuides> {
                               //   height: 20.h,
                               // ),
                               SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.3,
+                                width: 153.w,
                                 height: 54.h,
                                 child: ElevatedButton(
                                   onPressed: () {
