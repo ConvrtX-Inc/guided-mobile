@@ -61,15 +61,37 @@ class AppListConstants {
     BadgesModel(10, 'Motor', 'assets/images/badge-Motor.png'),
   ];
 
+  // /// Sample only
+  // static List<dynamic> timeList = [
+  //   ['7:00 - 8:00 AM', true],
+  //   ['9:00 - 10:00 AM', false],
+  //   ['11:00 - 12:00 PM', false],
+  //   ['12:00 - 1:00 PM', false],
+  //   ['2:00 - 3:00 PM', false],
+  //   ['4:00 - 5:00 PM', false],
+  //   ['6:00 - 7:00 PM', false],
+  // ];
+
   /// Sample only
   static List<dynamic> timeList = [
-    ['7:00 - 8:00 AM', true],
-    ['9:00 - 10:00 AM', false],
-    ['11:00 - 12:00 PM', false],
-    ['12:00 - 1:00 PM', false],
-    ['2:00 - 3:00 PM', false],
-    ['4:00 - 5:00 PM', false],
-    ['6:00 - 7:00 PM', false],
+    ['7:00 - 8:00 AM'],
+    ['9:00 - 10:00 AM'],
+    ['11:00 - 12:00 PM'],
+    ['12:00 - 1:00 PM'],
+    ['2:00 - 3:00 PM'],
+    ['4:00 - 5:00 PM'],
+    ['6:00 - 7:00 PM'],
+  ];
+
+  /// sample only
+  static List<dynamic> timeListValues = [
+    [false],
+    [false],
+    [false],
+    [false],
+    [false],
+    [false],
+    [false],
   ];
 
   /// [<Month>, <# of Customer>, <hasScheduled>, <isSelected>]
@@ -112,7 +134,7 @@ class AppListConstants {
     'Completed',
     'Rejected'
   ];
-
+///
   static List<String> calendarMonths = <String>[
     'January',
     'February',
@@ -127,4 +149,6 @@ class AppListConstants {
     'November',
     'December'
   ];
+///
+  static List<int> numberList = <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 }

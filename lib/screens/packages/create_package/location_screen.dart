@@ -1,10 +1,10 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/packages/create_package/free_service_screen.dart';
 
 /// Location Screen
 class LocationScreen extends StatefulWidget {
@@ -230,12 +230,22 @@ class _LocationScreenState extends State<LocationScreen> {
   Future<void> navigateFreeServiceScreen(
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
-    details['country'] = _country.text;
-    details['street'] = _street.text;
-    details['city'] = _city.text;
-    details['state'] = _state.text;
-    details['zip_code'] = _zipCode.text;
 
-    await Navigator.pushNamed(context, '/free_service', arguments: details);
+    if (_country.text.isEmpty ||
+        _street.text.isEmpty ||
+        _city.text.isEmpty ||
+        _state.text.isEmpty ||
+        _zipCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
+          .show(context);
+    } else {
+      details['country'] = _country.text;
+      details['street'] = _street.text;
+      details['city'] = _city.text;
+      details['state'] = _state.text;
+      details['zip_code'] = _zipCode.text;
+
+      await Navigator.pushNamed(context, '/free_service', arguments: details);
+    }
   }
 }

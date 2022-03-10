@@ -1,11 +1,11 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/currencies_model.dart';
-import 'package:guided/screens/packages/create_package/local_laws_taxes_screen.dart';
 import 'package:guided/screens/packages/create_package/widget/dropdown_currency.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -228,12 +228,22 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
   Future<void> navigateLocalLawTaxesScreen(
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
-    details['base_price'] = _basePrice.text;
-    details['extra_cost'] = _extraCost.text;
-    details['max_person'] = _maxPerson.text;
-    details['currency_id'] = _currency.id;
-    details['additional_notes'] = _additionalNotes.text;
 
-    await Navigator.pushNamed(context, '/local_law_taxes', arguments: details);
+    if (_basePrice.text.isEmpty ||
+        _extraCost.text.isEmpty ||
+        _maxPerson.text.isEmpty ||
+        _additionalNotes.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
+          .show(context);
+    } else {
+      details['base_price'] = _basePrice.text;
+      details['extra_cost'] = _extraCost.text;
+      details['max_person'] = _maxPerson.text;
+      details['currency_id'] = _currency.id;
+      details['additional_notes'] = _additionalNotes.text;
+
+      await Navigator.pushNamed(context, '/local_law_taxes',
+          arguments: details);
+    }
   }
 }

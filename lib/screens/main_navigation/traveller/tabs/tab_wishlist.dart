@@ -120,9 +120,9 @@ class _TabWishlistScreenState extends State<TabWishlistScreen> {
             labelColor: Colors.black,
             unselectedLabelColor: Colors.grey,
           ),
-          views: <Widget>[
-            const ActivityPackages(),
-            const GuideProfile(),
+          views: const <Widget>[
+            ActivityPackages(),
+            GuideProfile(),
           ],
           onChange: setTitle,
           initialIndex: initIndex,

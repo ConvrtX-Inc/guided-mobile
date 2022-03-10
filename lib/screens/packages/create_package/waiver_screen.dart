@@ -1,4 +1,5 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable
+import 'package:advance_notification/advance_notification.dart';
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 
 /// Waiver Screen
 class WaiverScreen extends StatefulWidget {
@@ -106,11 +106,16 @@ class _WaiverScreenState extends State<WaiverScreen> {
                           SizedBox(
                             height: 15.h,
                           ),
-                          Text(
-                            AppTextConstants.loremIpsum,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.grey,
+                          TextField(
+                            maxLines: null,
+                            enabled: _isEnabledEdit,
+                            controller: _waiver,
+                            focusNode: _waiverFocus,
+                            decoration: InputDecoration(
+                              hintText: AppTextConstants.loremIpsum,
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade800,
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -191,7 +196,14 @@ class _WaiverScreenState extends State<WaiverScreen> {
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
-    await Navigator.pushNamed(context, '/package_summary', arguments: details);
+    if (_waiver.text.isNotEmpty) {
+      details['waiver'] = _waiver.text;
+      await Navigator.pushNamed(context, '/package_summary',
+          arguments: details);
+    } else {
+      AdvanceSnackBar(message: ErrorMessageConstants.emptyWaiver)
+          .show(context);
+    }
   }
 
   @override

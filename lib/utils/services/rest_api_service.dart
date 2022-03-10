@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:guided/constants/api_path.dart';
 
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/activity_destination_model.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
@@ -22,7 +23,7 @@ import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/global_api_service.dart';
 import 'package:http/http.dart' as http;
 
-enum RequestType { GET, POST, PATCH }
+enum RequestType { GET, POST, PATCH, DELETE }
 
 /// Service for API Calls
 class APIServices {
@@ -74,6 +75,9 @@ class APIServices {
         break;
       case RequestType.PATCH:
         requestType = 'PATCH';
+        break;
+      case RequestType.DELETE:
+        requestType = 'DELETE';
         break;
     }
 
@@ -316,4 +320,22 @@ class APIServices {
     );
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
+
+  // /// API service for activity destination
+  // Future<ActivityDestinationModel> getActivityDestinationData(String id) async {
+  //   final http.Response response = await http.get(
+  //       Uri.parse(
+  //           '$apiBaseMode$apiBaseUrl/${AppAPIPath.activityDestinationDetails}?s={"activity_package_id": \"$id\"}'),
+  //       headers: {
+  //         HttpHeaders.authorizationHeader:
+  //             'Bearer ${UserSingleton.instance.user.token}',
+  //       });
+
+  //   /// seeding for data summary
+  //   final ActivityDestinationModel dataSummary =
+  //       ActivityDestinationModel.fromJson(json.decode(response.body));
+
+  //   return ActivityDestinationModel(
+  //       activityDestinationDetails: dataSummary.activityDestinationDetails);
+  // }
 }

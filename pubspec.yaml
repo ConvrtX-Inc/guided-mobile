@@ -42,7 +42,7 @@ dependencies:
   carousel_slider: ^4.0.0 #this library is for the carousel
   country_code_picker: ^2.0.2 #this library is for the list of phone country code
   custom_check_box: ^0.0.4
-  table_calendar: ^3.0.3 #this library is for calendar api
+  table_calendar: ^3.0.4 #this library is for calendar api
   flutter_screenutil: ^5.0.0+2
   flutter_svg: ^1.0.3
   get: ^4.6.1  #this library is for state management

@@ -1,17 +1,16 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, always_specify_types
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/hourly_item.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/packages/create_package/guide_rules_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Set Booking Date Screen
 class SetBookingDateScreen extends StatefulWidget {
-
   /// Constructor
   const SetBookingDateScreen({Key? key}) : super(key: key);
 
@@ -23,12 +22,26 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
   late DateTime _selectedDay = DateTime.now();
   late DateTime _focusedDay = DateTime.now();
   bool isRefreshing = false;
+
+  late List<bool> _isChecked;
+  late List<int> _value;
+  final TextEditingController numberTourist = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _isChecked = List<bool>.filled(AppListConstants.timeList.length, false);
+    _value = List<int>.filled(AppListConstants.timeList.length, 0);
+    numberTourist.text = _value[1].toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(
@@ -48,13 +61,11 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
           height: height,
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
+              padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  HeaderText.headerText(
-                      AppTextConstants.setBookingDates
-                  ),
+                  HeaderText.headerText(AppTextConstants.setBookingDates),
                   SizedBox(
                     height: 30.h,
                   ),
@@ -63,7 +74,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                     height: 45.h,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/guide_rule');
+                        // Navigator.of(context).pushNamed('/guide_rule');
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
@@ -76,10 +87,12 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                         onPrimary: Colors.white,
                       ),
                       child: Text(
-                        '1/March/2021', // Just an example
+                        '${_selectedDay.day}/${AppListConstants.calendarMonths.elementAt(_selectedDay.month - 1)}/ ${_selectedDay.year}', // Just an example
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14.sp,
                           color: AppColors.primaryGreen,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ),
@@ -89,8 +102,22 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                   ),
                   Row(
                     children: [
+                      InkWell(
+                        // inkwell color
+                        child: const Icon(
+                          Icons.arrow_back_ios_sharp,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _focusedDay = _focusedDay.subtract(Duration(days: 7));
+                          });
+                        },
+                      ),
                       Expanded(
                         child: TableCalendar(
+                          locale: 'en',
                           onDaySelected: (selectedDay, focusedDay) {
                             setState(() {
                               setState(() {
@@ -100,16 +127,16 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                               });
 
                               Future.delayed(const Duration(milliseconds: 100),
-                                      () {
-                                    setState(() {
-                                      isRefreshing = false;
-                                    });
-                                  });
+                                  () {
+                                setState(() {
+                                  isRefreshing = false;
+                                });
+                              });
                             });
                           },
                           calendarFormat: CalendarFormat.week,
                           currentDay: _selectedDay,
-                          headerVisible: true,
+                          headerVisible: false,
                           headerStyle: const HeaderStyle(
                             formatButtonVisible: false,
                           ),
@@ -128,35 +155,35 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                           ),
                         ),
                       ),
+                      InkWell( // inkwell color
+                          child: const Icon(
+                            Icons.arrow_forward_ios_sharp,
+                            color: Colors.grey,
+                            size: 20,
+                          ),
+                          onTap: () {
+                            setState(() {
+                            _focusedDay = _focusedDay.add(Duration(days: 7));
+                          });
+                          },
+                        ),
                     ],
                   ),
                   SizedBox(
                     height: 20.h,
                   ),
-                  if (isRefreshing) const SizedBox() else ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: AppListConstants.timeList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        child: CheckboxListTile(
-                          checkColor: Colors.white,
-                          activeColor: AppColors.primaryGreen
-                              .withOpacity(0.9),
-                          title: Text(
-                              AppListConstants.timeList[index][0].toString(),
-                              style: TextStyle(
-                                color: AppColors.primaryGreen,
-                                fontSize: 15,
-                              )),
-                          value: AppListConstants.timeList[index][1],
-                          onChanged: (bool? value) {
-                            setState(() {});
-                          },
-                        ),
-                      );
-                    },
-                  )
+                  if (isRefreshing)
+                    const SizedBox()
+                  else
+                    ListView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        children: List.generate(
+                            AppListConstants.timeList.length,
+                            (i) => HourlyItem(
+                                  title: AppListConstants.timeList[i],
+                                  boolVal: AppListConstants.timeListValues[i],
+                                ))),
                 ],
               ),
             ),
@@ -170,7 +197,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
           height: 60.h,
           child: ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushNamed('/guide_rule');
+              // Navigator.of(context).pushNamed('/guide_rule');
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -183,17 +210,15 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
               onPrimary: Colors.white,
             ),
             child: Text(
-              AppTextConstants.next,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+              AppTextConstants.submit,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
       ),
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
