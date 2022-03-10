@@ -1,4 +1,5 @@
 // ignore_for_file: file_names, diagnostic_describe_all_properties, cast_nullable_to_non_nullable
+import 'package:advance_notification/advance_notification.dart';
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 
 /// Guide Rule Screen
 class GuideRulesScreen extends StatefulWidget {
@@ -190,8 +190,14 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
-    /// Guided Rules Textfield *insert here
-    await Navigator.pushNamed(context, '/package_price', arguments: details);
+    if (_guideRules.text.isNotEmpty) {
+      details['guide_rule'] = _guideRules.text;
+
+      await Navigator.pushNamed(context, '/package_price', arguments: details);
+    } else {
+      AdvanceSnackBar(message: ErrorMessageConstants.emptyGuideRule)
+          .show(context);
+    }
   }
 
   @override

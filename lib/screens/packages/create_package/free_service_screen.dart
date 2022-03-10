@@ -196,6 +196,7 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
   Future<void> navigatePackagePhotoScreen(
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
+
     details['services'] = services;
     details['services_length'] = services.length.toString();
 

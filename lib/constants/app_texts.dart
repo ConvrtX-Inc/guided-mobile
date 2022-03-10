@@ -527,7 +527,7 @@ class AppTextConstants {
   static String placeNameHint = 'Place Name';
 
   /// Returns add new description text
-  static String addNewDescription = 'Add New Destination';
+  static String addNewDestination = 'Add New Destination';
 
   /// Returns header price your package
   static String headerPriceYourPackage = 'Price your package';
@@ -821,6 +821,15 @@ class AppTextConstants {
 
   /// Returns first-aid text
   static String firstaid = 'First Aid';
+
+  /// Returns slots and schedule text
+  static String slotsAndSchedule = 'Slots & Schedules';
+
+  /// Returns Free services text
+  static String freeServices = 'Free Service';
+
+  /// Returns Add schedule text
+  static String addSchedule = 'Add Schedule';
 }
 
 /// Class for error messages text
@@ -851,4 +860,20 @@ class ErrorMessageConstants {
 
   /// Returns 'Text Field must be filled up' text
   static String fieldMustBeFilled = 'Fields must be filled up';
+
+  /// Returns 'Guide Rules and What to bring' is empty text
+  static String emptyGuideRule = 'Guide Rules and What to bring is empty';
+
+  /// Returns 'Local Laws and Taxes is empty' text
+  static String emptyLocalLaw = 'Local Laws and Taxes is empty';
+
+  /// Returns 'Waiver Form is empty' text
+  static String emptyWaiver = 'Waiver Form is empty';
+
+  /// Returns 'Text Field must be filled up' text
+  static String fieldMustBeFilledandImages =
+      'Fields must be filled up and Minimum of 3 Images';
+
+  /// Returns  'Cover image is empty' text
+  static String emptyCoverImg = 'Cover image is empty';
 }

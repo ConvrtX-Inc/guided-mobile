@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,7 +11,6 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/screens/packages/create_package/number_of_traveler_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -249,18 +249,24 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
       BuildContext context, Map<String, dynamic> data) async {
     String base64Image1 = '';
     if (image1 == null) {
-      base64Image1 = '';
+      AdvanceSnackBar(message: ErrorMessageConstants.emptyCoverImg)
+          .show(context);
     } else {
       final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
       base64Image1 = base64Encode(await image1Bytes);
     }
 
-    final Map<String, dynamic> details = Map<String, dynamic>.from(data);
-    details['package_name'] = _packageName.text;
-    details['description'] = _description.text;
-    details['cover_img'] = base64Image1;
+    if (_packageName.text.isEmpty || _description.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
+          .show(context);
+    } else {
+      final Map<String, dynamic> details = Map<String, dynamic>.from(data);
+      details['package_name'] = _packageName.text;
+      details['description'] = _description.text;
+      details['cover_img'] = base64Image1;
 
-    await Navigator.pushNamed(context, '/number_of_traveler',
-        arguments: details);
+      await Navigator.pushNamed(context, '/number_of_traveler',
+          arguments: details);
+    }
   }
 }
