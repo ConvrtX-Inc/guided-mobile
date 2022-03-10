@@ -18,6 +18,8 @@ import 'package:guided/screens/faq/faq.dart';
 
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
 import 'package:guided/screens/main_navigation/content/packages/package_view.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/tab_inbox.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/tab_map.dart';
 
 import 'package:guided/screens/main_navigation/traveller/traveller_tabbar.dart';
 
@@ -229,6 +231,9 @@ class RouteGenerator {
                   initIndex: 0,
                 ),
             settings: settings);
+      case '/traveller_map':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TabMapScreen(), settings: settings);
       default:
         return _errorRoute();
     }

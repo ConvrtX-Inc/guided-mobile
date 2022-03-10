@@ -5,8 +5,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_home.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/tab_inbox.dart';
+
+import 'package:guided/screens/main_navigation/traveller/tabs/tab_map.dart';
+
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_settings_main.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_wishlist.dart';
+
 import 'package:guided/screens/widgets/reusable_widgets/traveller_bottom_navigation.dart';
 
 ///TravellerTabScreen
@@ -31,27 +36,21 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Diamond Bottom Bar',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        body: _selectedWidget,
-        bottomNavigationBar: TravellerBottomNavigation(
-          itemIcons: const <String>[
-            'assets/images/png/home_tab_icon.png',
-            'assets/images/png/wish_tab_icon.png',
-            'assets/images/png/inbox_tab_icon.png',
-            'assets/images/png/profile_tab_icon.png',
-          ],
-          centerIcon: 'assets/images/png/map_tab_icon.png',
-          centerIconSelected: 'assets/images/png/map_tab_selected_icon.png',
-          selectedIndex: _selectedIndex,
-          onItemPressed: onPressed,
-          height: 89,
-        ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: _selectedWidget,
+      bottomNavigationBar: TravellerBottomNavigation(
+        itemIcons: const <String>[
+          'assets/images/png/home_tab_icon.png',
+          'assets/images/png/wish_tab_icon.png',
+          'assets/images/png/inbox_tab_icon.png',
+          'assets/images/png/profile_tab_icon.png',
+        ],
+        centerIcon: 'assets/images/png/map_tab_icon.png',
+        centerIconSelected: 'assets/images/png/map_tab_selected_icon.png',
+        selectedIndex: _selectedIndex,
+        onItemPressed: onPressed,
+        height: 89,
       ),
     );
   }
@@ -81,11 +80,13 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
           onItemPressed: popularGuideds,
         );
       } else if (index == 1) {
-        _selectedWidget = const TabWishlistScreen(initIndex: 0,);
+        _selectedWidget = const TabWishlistScreen(
+          initIndex: 0,
+        );
       } else if (index == 2) {
-        _selectedWidget = const TabLocationScreen();
+        _selectedWidget = const TabMapScreen();
       } else if (index == 3) {
-        _selectedWidget = const TabMessagesScreen();
+        _selectedWidget = const TabInboxScreen();
       } else if (index == 4) {
         _selectedWidget = const TabSettingsMain();
       }

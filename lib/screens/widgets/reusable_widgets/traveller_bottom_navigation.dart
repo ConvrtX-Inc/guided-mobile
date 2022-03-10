@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'dart:io' show Platform;
 
+import 'package:guided/helpers/hexColor.dart';
+
 /// Traveller Bottom Navigation
 class TravellerBottomNavigation extends StatelessWidget {
   final List<String> itemIcons;
@@ -44,8 +46,13 @@ class TravellerBottomNavigation extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(width: 1.5, color: HexColor('#ECEFF0')),
+                ),
+                color: Colors.white,
+              ),
               height: height,
-              color: Colors.white,
               child: Padding(
                 padding:
                     EdgeInsets.symmetric(horizontal: getRelativeWidth(0.02)),

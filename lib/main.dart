@@ -10,7 +10,7 @@ import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/routes/route_generator.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-String _defaultHome = '/login';
+String _defaultHome = '/traveller_tab';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
