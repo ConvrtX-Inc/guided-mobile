@@ -10,8 +10,16 @@ class ActivityDestinationModel {
       this.placeDescription = '',
       this.img1Holder = '',
       this.img2Holder = '',
-      this.img3Holder = ''});
+      this.img3Holder = '',
+      this.latitude = '',
+      this.longitude = ''});
 
   /// String inialization
-  final String placeName, placeDescription, img1Holder, img2Holder, img3Holder;
+  final String placeName,
+      placeDescription,
+      img1Holder,
+      img2Holder,
+      img3Holder,
+      latitude,
+      longitude;
 }

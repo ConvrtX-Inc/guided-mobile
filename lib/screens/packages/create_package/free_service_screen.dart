@@ -1,10 +1,15 @@
-// ignore_for_file: file_names, always_specify_types, non_constant_identifier_names, unnecessary_lambdas, prefer_final_fields, cast_nullable_to_non_nullable
+// ignore_for_file: file_names, always_specify_types, non_constant_identifier_names, unnecessary_lambdas, prefer_final_fields, cast_nullable_to_non_nullable, avoid_dynamic_calls
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/image_bulk_package.dart';
+import 'package:guided/models/services.dart';
 
 /// Free Service Screen
 class FreeServicesScreen extends StatefulWidget {
@@ -17,6 +22,15 @@ class FreeServicesScreen extends StatefulWidget {
 
 class _FreeServicesScreenState extends State<FreeServicesScreen> {
   final List<String> services = ['Transport', 'Breakfast', 'Water', 'Snacks'];
+
+  @override
+  void initState() {
+    super.initState();
+    final service = Services(services: 'Transport');
+
+    final json = service.toJson();
+    print('JSON 1: ${json}');
+  }
 
   FocusNode _keywordFocus = FocusNode();
   TextEditingController _keyword = TextEditingController();
@@ -197,7 +211,7 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
-    details['services'] = services;
+    details['services'] = json;
     details['services_length'] = services.length.toString();
 
     await Navigator.pushNamed(context, '/package_photo', arguments: details);

@@ -26,7 +26,7 @@ class _LocationScreenState extends State<LocationScreen> {
 
   Position? _currentPosition;
   String _currentAddress = '';
-
+  String _countryCode = '';
   @override
   void initState() {
     super.initState();
@@ -276,6 +276,7 @@ class _LocationScreenState extends State<LocationScreen> {
         _city = TextEditingController(text: place.locality);
         _street = TextEditingController(text: place.street);
         _state = TextEditingController(text: place.administrativeArea);
+        _countryCode = place.isoCountryCode!;
       });
     } catch (e) {
       print(e);
@@ -299,7 +300,7 @@ class _LocationScreenState extends State<LocationScreen> {
       details['city'] = _city.text;
       details['state'] = _state.text;
       details['zip_code'] = _zipCode.text;
-
+      details['country_code'] = _countryCode;
       await Navigator.pushNamed(context, '/free_service', arguments: details);
     }
   }

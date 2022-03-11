@@ -256,7 +256,7 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
       base64Image1 = base64Encode(await image1Bytes);
     }
 
-    if (_packageName.text.isEmpty || _description.text.isEmpty) {
+    if (_packageName.text.isEmpty || _description.text.isEmpty || image1 == null) {
       AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
           .show(context);
     } else {
