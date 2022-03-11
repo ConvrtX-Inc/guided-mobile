@@ -28,7 +28,7 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
   void initState() {
     super.initState();
 
-    _guideRules = TextEditingController(text: AppTextConstants.loremIpsum);
+    _guideRules = TextEditingController(text: 'Text');
   }
 
   @override

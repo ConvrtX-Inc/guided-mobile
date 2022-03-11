@@ -1,4 +1,6 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable, unused_local_variable, avoid_dynamic_calls, always_specify_types
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -613,8 +615,13 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
 
     final String? userId = UserSingleton.instance.user.user!.id;
 
+    List<String> list = screenArguments['services'];
+
+
     final Map<String, dynamic> packageDetails = {
       'user_id': userId,
+      'main_badge_id': '07df7984-76b9-4803-bdd5-62bcde9ed5de',
+      'sub_badge_ids': null,
       'package_note': screenArguments['note'],
       'name': screenArguments['package_name'],
       'description': screenArguments['description'],
@@ -650,8 +657,8 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         'activity_package_id': activityPackageId,
         'place_name': item[i].placeName,
         'place_description': item[i].placeDescription,
-        'latitude': '9.300221', //static for now
-        'longitude': '19.670221', //static for now
+        'latitude': item[i].latitude,
+        'longitude': item[i].longitude,
       };
 
       final dynamic response1 = await APIServices().request(

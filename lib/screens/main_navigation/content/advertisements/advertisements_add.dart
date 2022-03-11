@@ -1,12 +1,13 @@
-// ignore_for_file: file_names, unused_element, always_declare_return_types, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, curly_braces_in_flow_control_structures, always_specify_types, avoid_dynamic_calls
+// ignore_for_file: file_names, unused_element, always_declare_return_types, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, curly_braces_in_flow_control_structures, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, avoid_catches_without_on_clauses, unnecessary_lambdas
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -14,12 +15,9 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/image_bulk.dart';
 import 'package:guided/models/user_model.dart';
-import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
-import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Adding Advertisement Screen
@@ -34,11 +32,11 @@ class AdvertisementAdd extends StatefulWidget {
 class _AdvertisementAddState extends State<AdvertisementAdd> {
   final TextEditingController _title = TextEditingController();
   final TextEditingController _useCurrentLocation = TextEditingController();
-  final TextEditingController _country = TextEditingController();
-  final TextEditingController _street = TextEditingController();
-  final TextEditingController _city = TextEditingController();
-  final TextEditingController _province = TextEditingController();
-  final TextEditingController _postalCode = TextEditingController();
+  TextEditingController _country = TextEditingController();
+  TextEditingController _street = TextEditingController();
+  TextEditingController _city = TextEditingController();
+  TextEditingController _province = TextEditingController();
+  TextEditingController _postalCode = TextEditingController();
   final TextEditingController _date = TextEditingController();
   final TextEditingController _description = TextEditingController();
   final TextEditingController _price = TextEditingController();
@@ -51,6 +49,9 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   DateTime _selectedDate = DateTime.now();
 
   bool _enabledImgHolder2 = false;
+
+  Position? _currentPosition;
+  String _currentAddress = '';
 
   @override
   void dispose() {
@@ -515,11 +516,17 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     height: 20.h,
                   ),
                   ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      primary: Colors.white,
-                    ),
+                    onPressed: () => _getCurrentLocation(),
+                    style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              side: BorderSide(color: AppColors.osloGrey)),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                        elevation: MaterialStateProperty.all<double>(0)),
                     child: Row(
                       children: <Widget>[
                         const Icon(
@@ -853,5 +860,42 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                   navIndex: 1,
                   contentIndex: 3,
                 )));
+  }
+
+  _getCurrentLocation() {
+    Geolocator.checkPermission();
+    Geolocator.requestPermission();
+    Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.best,
+            forceAndroidLocationManager: true)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+        _getAddressFromLatLng();
+      });
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  _getAddressFromLatLng() async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          _currentPosition!.latitude, _currentPosition!.longitude);
+      Placemark place = placemarks[0];
+
+      setState(() {
+        _currentAddress =
+            '${place.locality}, ${place.postalCode}, ${place.country}';
+
+        _country = TextEditingController(text: place.country);
+        _postalCode = TextEditingController(text: place.postalCode);
+        _city = TextEditingController(text: place.locality);
+        _street = TextEditingController(text: place.street);
+        _province = TextEditingController(text: place.administrativeArea);
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 }
