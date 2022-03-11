@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -15,6 +16,11 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/activity_destination_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:google_api_headers/google_api_headers.dart';
+import 'package:google_maps_webservice/places.dart';
+
+const kGoogleApiKey = "AIzaSyCPF7ygz63Zj5RWZ_wU4G61JTynfPRjOMg";
 
 /// Package photo screen
 class PackagePhotosScreen extends StatefulWidget {
@@ -93,6 +99,9 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
       ],
     );
   }
+
+  String latitute = '';
+  String longitude = '';
 
   @override
   void initState() {
@@ -471,8 +480,9 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                     const Text(''),
                   SizedBox(height: 20.h),
                   TextField(
+                    onTap: _handlePressButton,
+                    readOnly: true,
                     controller: _placeName,
-                    focusNode: _placeNameFocus,
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
@@ -589,7 +599,9 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         destinationList.add(ActivityDestinationModel(
             placeName: _placeName.text,
             placeDescription: _description.text,
-            img1Holder: base64Image1));
+            img1Holder: base64Image1,
+            latitude: latitute,
+            longitude: longitude));
       } else if (_uploadCount == 2) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -601,7 +613,9 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
             placeName: _placeName.text,
             placeDescription: _description.text,
             img1Holder: base64Image1,
-            img2Holder: base64Image2));
+            img2Holder: base64Image2,
+            latitude: latitute,
+            longitude: longitude));
       } else if (_uploadCount == 3) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -617,7 +631,9 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
             placeDescription: _description.text,
             img1Holder: base64Image1,
             img2Holder: base64Image2,
-            img3Holder: base64Image3));
+            img3Holder: base64Image3,
+            latitude: latitute,
+            longitude: longitude));
       }
       setState(() {
         _placeName = TextEditingController(text: '');
@@ -626,6 +642,8 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         image2 = null;
         image3 = null;
         _uploadCount = 0;
+        latitute = '';
+        longitude = '';
       });
     }
   }
@@ -698,10 +716,11 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
 
         details['snapshot_img_1'] = base64Image1;
         destinationList.add(ActivityDestinationModel(
-          placeName: _placeName.text,
-          placeDescription: _description.text,
-          img1Holder: base64Image1,
-        ));
+            placeName: _placeName.text,
+            placeDescription: _description.text,
+            img1Holder: base64Image1,
+            latitude: latitute,
+            longitude: longitude));
       } else if (_uploadCount == 2) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -713,11 +732,12 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         details['snapshot_img_2'] = base64Image2;
 
         destinationList.add(ActivityDestinationModel(
-          placeName: _placeName.text,
-          placeDescription: _description.text,
-          img1Holder: base64Image1,
-          img2Holder: base64Image2,
-        ));
+            placeName: _placeName.text,
+            placeDescription: _description.text,
+            img1Holder: base64Image1,
+            img2Holder: base64Image2,
+            latitude: latitute,
+            longitude: longitude));
       } else if (_uploadCount == 3) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -736,7 +756,9 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
             placeDescription: _description.text,
             img1Holder: base64Image1,
             img2Holder: base64Image2,
-            img3Holder: base64Image3));
+            img3Holder: base64Image3,
+            latitude: latitute,
+            longitude: longitude));
       }
 
       details['upload_count'] = _uploadCount;
@@ -744,6 +766,55 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
       details['place_description'] = _description.text;
       details['destination_list'] = destinationList;
       await Navigator.pushNamed(context, '/guide_rule', arguments: details);
+    }
+  }
+
+  Future<void> _handlePressButton() async {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    Prediction? p = await PlacesAutocomplete.show(
+      context: context,
+      apiKey: kGoogleApiKey,
+      radius: 10000000,
+      types: [],
+      strictbounds: false,
+      mode: Mode.overlay,
+      language: 'en',
+      decoration: InputDecoration(
+        hintText: 'Search',
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(
+            color: Colors.white,
+          ),
+        ),
+      ),
+      components: [
+        Component(Component.country, screenArguments['country_code'])
+      ],
+    );
+
+    await displayPrediction(p, context);
+  }
+
+  Future<void> displayPrediction(Prediction? p, BuildContext context) async {
+    if (p != null) {
+      // get detail (lat/lng)
+      GoogleMapsPlaces _places = GoogleMapsPlaces(
+        apiKey: kGoogleApiKey,
+        apiHeaders: await const GoogleApiHeaders().getHeaders(),
+      );
+      PlacesDetailsResponse detail =
+          await _places.getDetailsByPlaceId(p.placeId!);
+      final lat = detail.result.geometry!.location.lat;
+      final lng = detail.result.geometry!.location.lng;
+
+      setState(() {
+        _placeName = TextEditingController(text: p.description);
+        latitute = lat.toString();
+        longitude = lng.toString();
+      });
     }
   }
 

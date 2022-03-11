@@ -28,7 +28,7 @@ class _WaiverScreenState extends State<WaiverScreen> {
   void initState() {
     super.initState();
 
-    _waiver = TextEditingController(text: AppTextConstants.loremIpsum);
+    _waiver = TextEditingController(text: 'Text');
   }
 
   @override
@@ -201,8 +201,7 @@ class _WaiverScreenState extends State<WaiverScreen> {
       await Navigator.pushNamed(context, '/package_summary',
           arguments: details);
     } else {
-      AdvanceSnackBar(message: ErrorMessageConstants.emptyWaiver)
-          .show(context);
+      AdvanceSnackBar(message: ErrorMessageConstants.emptyWaiver).show(context);
     }
   }
 
