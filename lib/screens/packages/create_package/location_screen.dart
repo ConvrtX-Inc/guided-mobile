@@ -1,7 +1,9 @@
-// ignore_for_file: file_names, cast_nullable_to_non_nullable
+// ignore_for_file: file_names, cast_nullable_to_non_nullable, unnecessary_lambdas, always_specify_types, avoid_print, always_declare_return_types, avoid_redundant_argument_values, avoid_catches_without_on_clauses, prefer_final_locals
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -16,11 +18,19 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
-  final TextEditingController _country = TextEditingController();
-  final TextEditingController _street = TextEditingController();
-  final TextEditingController _city = TextEditingController();
-  final TextEditingController _state = TextEditingController();
-  final TextEditingController _zipCode = TextEditingController();
+  TextEditingController _country = TextEditingController();
+  TextEditingController _street = TextEditingController();
+  TextEditingController _city = TextEditingController();
+  TextEditingController _state = TextEditingController();
+  TextEditingController _zipCode = TextEditingController();
+
+  Position? _currentPosition;
+  String _currentAddress = '';
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,11 +74,19 @@ class _LocationScreenState extends State<LocationScreen> {
                     height: 20.h,
                   ),
                   ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      primary: Colors.white,
-                    ),
+                    onPressed: () {
+                      _getCurrentLocation();
+                    },
+                    style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              side: BorderSide(color: AppColors.osloGrey)),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                        elevation: MaterialStateProperty.all<double>(0)),
                     child: Row(
                       children: <Widget>[
                         const Icon(
@@ -225,6 +243,43 @@ class _LocationScreenState extends State<LocationScreen> {
         ),
       ),
     );
+  }
+
+  _getCurrentLocation() {
+    Geolocator.checkPermission();
+    Geolocator.requestPermission();
+    Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.best,
+            forceAndroidLocationManager: true)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+        _getAddressFromLatLng();
+      });
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  _getAddressFromLatLng() async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          _currentPosition!.latitude, _currentPosition!.longitude);
+      Placemark place = placemarks[0];
+
+      setState(() {
+        _currentAddress =
+            '${place.locality}, ${place.postalCode}, ${place.country}';
+
+        _country = TextEditingController(text: place.country);
+        _zipCode = TextEditingController(text: place.postalCode);
+        _city = TextEditingController(text: place.locality);
+        _street = TextEditingController(text: place.street);
+        _state = TextEditingController(text: place.administrativeArea);
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> navigateFreeServiceScreen(
