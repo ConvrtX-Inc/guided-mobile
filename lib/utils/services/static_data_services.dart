@@ -82,6 +82,48 @@ class StaticDataService {
           path: AssetsPath.paddle,
           distance: '12 KM  distance',
           featureImage: 'assets/images/png/guide2.png'),
+      Guide(
+          id: '3',
+          name: 'Ottawa, Ontario',
+          path: AssetsPath.paddle,
+          distance: '12 KM  distance',
+          featureImage: 'assets/images/png/guide2.png'),
+      Guide(
+          id: '4',
+          name: 'Ottawa, Ontario',
+          path: AssetsPath.paddle,
+          distance: '12 KM  distance',
+          featureImage: 'assets/images/png/guide2.png'),
+      Guide(
+          id: '5',
+          name: 'Ottawa, Ontario',
+          path: AssetsPath.paddle,
+          distance: '12 KM  distance',
+          featureImage: 'assets/images/png/guide2.png'),
+      Guide(
+          id: '6',
+          name: 'Ottawa, Ontario',
+          path: AssetsPath.paddle,
+          distance: '12 KM  distance',
+          featureImage: 'assets/images/png/guide2.png'),
+      Guide(
+          id: '7',
+          name: 'Ottawa, Ontario',
+          path: AssetsPath.paddle,
+          distance: '12 KM  distance',
+          featureImage: 'assets/images/png/guide2.png'),
+      Guide(
+          id: '8',
+          name: 'Ottawa, Ontario',
+          path: AssetsPath.paddle,
+          distance: '12 KM  distance',
+          featureImage: 'assets/images/png/guide2.png'),
+      Guide(
+          id: '9',
+          name: 'Ottawa, Ontario',
+          path: AssetsPath.paddle,
+          distance: '12 KM  distance',
+          featureImage: 'assets/images/png/guide2.png'),
     ];
   }
 
