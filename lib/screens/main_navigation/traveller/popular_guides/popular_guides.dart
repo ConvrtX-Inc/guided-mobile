@@ -421,45 +421,49 @@ class _PopularGuidesState extends State<PopularGuides> {
                                                                           .start,
                                                                   children: <
                                                                       Widget>[
-                                                                    Container(
-                                                                      height:
-                                                                          200.h,
-                                                                      // width:
-                                                                      //     315.w,
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        color: Colors
-                                                                            .transparent,
-                                                                        borderRadius:
-                                                                            BorderRadius.all(
-                                                                          Radius.circular(
-                                                                              15.r),
-                                                                        ),
-                                                                        image:
-                                                                            DecorationImage(
-                                                                          image:
-                                                                              AssetImage(guides[index].featureImage),
-                                                                          fit: BoxFit
-                                                                              .cover,
-                                                                        ),
-                                                                      ),
+                                                                    GestureDetector(
+                                                                      onTap:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pushNamed('/checkAvailability');
+                                                                      },
                                                                       child:
-                                                                          Stack(
-                                                                        children: <
-                                                                            Widget>[
-                                                                          Positioned(
-                                                                            top:
-                                                                                0,
-                                                                            right:
-                                                                                0,
-                                                                            child:
-                                                                                IconButton(
-                                                                              icon: const Icon(Icons.favorite_border),
-                                                                              onPressed: () {},
-                                                                              color: HexColor('#ffffff'),
-                                                                            ),
+                                                                          Container(
+                                                                        height:
+                                                                            200.h,
+                                                                        // width:
+                                                                        //     315.w,
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          color:
+                                                                              Colors.transparent,
+                                                                          borderRadius:
+                                                                              BorderRadius.all(
+                                                                            Radius.circular(15.r),
                                                                           ),
-                                                                        ],
+                                                                          image:
+                                                                              DecorationImage(
+                                                                            image:
+                                                                                AssetImage(guides[index].featureImage),
+                                                                            fit:
+                                                                                BoxFit.cover,
+                                                                          ),
+                                                                        ),
+                                                                        child:
+                                                                            Stack(
+                                                                          children: <
+                                                                              Widget>[
+                                                                            Positioned(
+                                                                              top: 0,
+                                                                              right: 0,
+                                                                              child: IconButton(
+                                                                                icon: const Icon(Icons.favorite_border),
+                                                                                onPressed: () {},
+                                                                                color: HexColor('#ffffff'),
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
                                                                       ),
                                                                     ),
                                                                     SizedBox(

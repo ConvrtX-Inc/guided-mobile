@@ -14,7 +14,7 @@ class ActivityPackage {
   int? minTraveller;
   String? country;
   String? address;
-  List<String>? services;
+  // List<String>? services;
   String? createdDate;
   String? updatedDate;
   String? basePrice;
@@ -39,7 +39,7 @@ class ActivityPackage {
       this.minTraveller,
       this.country,
       this.address,
-      this.services,
+      // this.services,
       this.createdDate,
       this.updatedDate,
       this.basePrice,
@@ -64,7 +64,7 @@ class ActivityPackage {
     minTraveller = json['min_traveller'];
     country = json['country'];
     address = json['address'];
-    services = json['services'].cast<String>();
+    // services = json['services'].cast<String>();
     createdDate = json['created_date'];
     updatedDate = json['updated_date'];
     basePrice = json['base_price'];
@@ -91,7 +91,7 @@ class ActivityPackage {
     data['min_traveller'] = minTraveller;
     data['country'] = country;
     data['address'] = address;
-    data['services'] = services;
+    // data['services'] = services;
     data['created_date'] = createdDate;
     data['updated_date'] = updatedDate;
     data['base_price'] = basePrice;

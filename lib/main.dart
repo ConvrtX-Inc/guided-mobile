@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/routes/route_generator.dart';
 
-String _defaultHome = '/checkAvailability';
+String _defaultHome = '/login';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

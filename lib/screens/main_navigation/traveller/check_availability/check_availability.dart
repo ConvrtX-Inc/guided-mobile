@@ -5,8 +5,8 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
-import 'package:horizontal_center_date_picker/datepicker_controller.dart';
-import 'package:horizontal_center_date_picker/horizontal_date_picker.dart';
+// import 'package:horizontal_center_date_picker/datepicker_controller.dart';
+// import 'package:horizontal_center_date_picker/horizontal_date_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -45,7 +45,9 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
                       child: const Icon(
                         Icons.keyboard_backspace,
                         size: 30,

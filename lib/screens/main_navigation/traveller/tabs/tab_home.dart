@@ -648,7 +648,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   } else {
                     return ListView.builder(
                         shrinkWrap: true,
-                        itemCount: snapshot.data?.length,
+                        itemCount: activities.length,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
@@ -672,7 +672,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                     ),
                                     image: DecorationImage(
                                       image: AssetImage(
-                                          activities[1].featureImage),
+                                          activities[index].featureImage),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -683,8 +683,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         child: CircleAvatar(
                                           backgroundColor: Colors.transparent,
                                           radius: 30,
-                                          backgroundImage:
-                                              AssetImage(activities[1].path),
+                                          backgroundImage: AssetImage(
+                                              activities[index].path),
                                         ),
                                       ),
                                     ],
@@ -694,7 +694,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                   height: 5.h,
                                 ),
                                 Text(
-                                  snapshot.data![index].name!,
+                                  activities[index].name,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 16.sp,
@@ -722,7 +722,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                       width: 2.w,
                                     ),
                                     Text(
-                                      activities[1].distance,
+                                      activities[index].distance,
                                       style: TextStyle(
                                           color: HexColor('#696D6D'),
                                           fontSize: 11.sp,

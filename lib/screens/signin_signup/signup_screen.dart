@@ -18,6 +18,7 @@ import 'package:guided/models/guide.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/text_service.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 
 /// Sign up screen
 class SignupScreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
-
+  bool buttonIsLoading = false;
   final FocusNode _name = FocusNode();
   final FocusNode _email = FocusNode();
   final FocusNode _password = FocusNode();
@@ -92,54 +93,54 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(
                       height: 20.h,
                     ),
-                    ListTile(
-                      onTap: () {
-                        // Insert here the Sign up to Facebook API
-                      },
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: AppColors.mercury,
-                        ),
-                        borderRadius: BorderRadius.circular(14.r),
-                      ),
-                      leading: Image.asset(
-                        AssetsPath.facebook,
-                        height: 30.h,
-                      ),
-                      title: Text(
-                        AppTextConstants.signupWithFacebook,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15.h,
-                    ),
-                    ListTile(
-                      onTap: () {
-                        // Insert here the Sign up to Google API
-                      },
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: AppColors.mercury,
-                        ),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      leading: Image.asset(
-                        AssetsPath.google,
-                        height: 30,
-                      ),
-                      title: Text(
-                        AppTextConstants.signupWithGoogle,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
+                    // ListTile(
+                    //   onTap: () {
+                    //     // Insert here the Sign up to Facebook API
+                    //   },
+                    //   shape: RoundedRectangleBorder(
+                    //     side: BorderSide(
+                    //       color: AppColors.mercury,
+                    //     ),
+                    //     borderRadius: BorderRadius.circular(14.r),
+                    //   ),
+                    //   leading: Image.asset(
+                    //     AssetsPath.facebook,
+                    //     height: 30.h,
+                    //   ),
+                    //   title: Text(
+                    //     AppTextConstants.signupWithFacebook,
+                    //     style: const TextStyle(
+                    //       fontSize: 16,
+                    //       fontWeight: FontWeight.w600,
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(
+                    //   height: 15.h,
+                    // ),
+                    // ListTile(
+                    //   onTap: () {
+                    //     // Insert here the Sign up to Google API
+                    //   },
+                    //   shape: RoundedRectangleBorder(
+                    //     side: BorderSide(
+                    //       color: AppColors.mercury,
+                    //     ),
+                    //     borderRadius: BorderRadius.circular(14),
+                    //   ),
+                    //   leading: Image.asset(
+                    //     AssetsPath.google,
+                    //     height: 30,
+                    //   ),
+                    //   title: Text(
+                    //     AppTextConstants.signupWithGoogle,
+                    //     style: const TextStyle(
+                    //       fontSize: 16,
+                    //       fontWeight: FontWeight.w600,
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 20.h),
                     Text(
                       AppTextConstants.name,
                       style: const TextStyle(
@@ -225,7 +226,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(
                       width: width,
                       height: 60.h,
-                      child: ElevatedButton(
+                      child: LoadingElevatedButton(
+                        isLoading: buttonIsLoading,
                         onPressed: () async {
                           bool isTraveller = false;
                           await SecureStorage.readValue(
@@ -239,6 +241,9 @@ class _SignupScreenState extends State<SignupScreen> {
                           });
                           _formKey.currentState?.save();
                           if (_formKey.currentState!.validate()) {
+                            setState(() {
+                              buttonIsLoading = true;
+                            });
                             // print(_formKey.currentState?.value['email']);
                             final Map<String, dynamic> details = {
                               'email': _formKey.currentState?.value['email'],
@@ -258,6 +263,9 @@ class _SignupScreenState extends State<SignupScreen> {
                             final APIStandardReturnFormat result =
                                 await APIServices().register(details);
                             if (result.status == 'error') {
+                              setState(() {
+                                buttonIsLoading = false;
+                              });
                               final Map<String, dynamic> decoded =
                                   jsonDecode(result.errorResponse);
                               decoded['errors'].forEach((String k, dynamic v) =>
@@ -266,6 +274,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                       ..add(textServices.filterErrorMessage(v))
                                   });
                             } else {
+                              setState(() {
+                                buttonIsLoading = false;
+                              });
                               await Navigator.of(context)
                                   .pushReplacementNamed('/login');
                             }
@@ -302,6 +313,11 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                           primary: AppColors.primaryGreen,
                           onPrimary: Colors.white, // <-- Splash color
+                        ),
+                        loadingChild: const Text(
+                          'Loading',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         child: Text(
                           AppTextConstants.signup,
