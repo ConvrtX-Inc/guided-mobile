@@ -31,11 +31,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool hidePassword = true;
   bool buttonIsLoading = false;
-
   @override
   void initState() {
-    _emailController = TextEditingController(text: '');
-    _passwordController = TextEditingController(text: '');
+    _emailController = TextEditingController(text: 'test1@example.com');
+    _passwordController = TextEditingController(text: 'string');
     super.initState();
   }
 
@@ -278,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: width,
                     height: 60.h,
                     child: ElevatedButton(
-                      onPressed: () async => login(),
+                      onPressed: () async => buttonIsLoading ? null : login(),
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
@@ -290,11 +289,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         primary: AppColors.primaryGreen,
                         onPrimary: Colors.white, // <-- Splash color
                       ),
-                      child: Text(
-                        AppTextConstants.login,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
+                      child: buttonIsLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : Text(
+                              AppTextConstants.login,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
                     ),
                   ),
                   SizedBox(height: 20.h),

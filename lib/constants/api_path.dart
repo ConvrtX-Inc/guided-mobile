@@ -107,5 +107,4 @@ class AppAPIPath {
   /// Returns waiver url
   static String waiverUrl = 'api/v1/waivers';
 
-  
 }

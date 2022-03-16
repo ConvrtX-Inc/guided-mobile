@@ -4,15 +4,18 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/activity_destination_model.dart';
+import 'package:guided/models/address.dart';
 import 'package:guided/models/image_bulk_package.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/models/services.dart';
 
 /// Package Summary Screen
 class PackageSummaryScreen extends StatefulWidget {
@@ -27,6 +30,26 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
   bool isChecked = false;
   bool _isSubmit = false;
   final TextStyle txtStyle = TextStyle(fontSize: 14.sp, fontFamily: 'Poppins');
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+      List<String> list = screenArguments['services'];
+
+      // final service = Services(
+      //   services: list.join(','),
+      // );
+
+      // serviceData = Services(services: list.join(','));
+
+      // final json = serviceData.toJson();
+      // print('JSON 1: ${json}');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -617,27 +640,24 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
 
     List<String> list = screenArguments['services'];
 
-
-    final Map<String, dynamic> packageDetails = {
+    Map<String, dynamic> packageDetails = {
       'user_id': userId,
-      'main_badge_id': '07df7984-76b9-4803-bdd5-62bcde9ed5de',
-      'sub_badge_ids': null,
-      'package_note': screenArguments['note'],
-      'name': screenArguments['package_name'],
-      'description': screenArguments['description'],
-      'cover_img': screenArguments['cover_img'],
-      'max_traveller': int.parse(screenArguments['maximum']),
-      'min_traveller': int.parse(screenArguments['minimum']),
-      'country': screenArguments['country'],
+      'package_note': screenArguments['note'].toString(),
+      'name': screenArguments['package_name'].toString(),
+      'description': screenArguments['description'].toString(),
+      'cover_img': screenArguments['cover_img'].toString(),
+      'max_traveller': int.parse(screenArguments['maximum'].toString()),
+      'min_traveller': int.parse(screenArguments['minimum'].toString()),
+      'country': screenArguments['country'].toString(),
       'address':
           '${screenArguments['street']}, ${screenArguments['city']}, ${screenArguments['state']}, ${screenArguments['zip_code']}',
-      'services': screenArguments['services'],
-      'base_price': screenArguments['base_price'],
-      'extra_cost_per_person': screenArguments['extra_cost'],
-      'max_extra_person': int.parse(screenArguments['max_person']),
-      'currency_id': screenArguments['currency_id'],
-      'price_note': screenArguments['additional_notes'],
-      'is_published': false
+      'services': list.join(','),
+      'base_price': screenArguments['base_price'].toString(),
+      'extra_cost_per_person': screenArguments['extra_cost'].toString(),
+      'max_extra_person': int.parse(screenArguments['max_person'].toString()),
+      'currency_id': screenArguments['currency_id'].toString(),
+      'price_note': screenArguments['additional_notes'].toString(),
+      'is_published': true
     };
 
     /// Activity Package Details API
