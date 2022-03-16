@@ -4,6 +4,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/message.dart';
 
 /// Notification Screen
 class MessageInbox extends StatefulWidget {
@@ -17,6 +18,7 @@ class MessageInbox extends StatefulWidget {
 class _MessageInboxState extends State<MessageInbox> {
   double _height = 94.h;
   double _width = 309.w;
+  final List<Message> messages = AppListConstants.getMessages();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,7 +151,7 @@ class _MessageInboxState extends State<MessageInbox> {
               ),
               Expanded(
                 child: ListView.separated(
-                  itemCount: AppListConstants.filterList.length,
+                  itemCount: messages.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       margin: EdgeInsets.symmetric(
@@ -162,9 +164,8 @@ class _MessageInboxState extends State<MessageInbox> {
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.white, width: 3),
                               shape: BoxShape.circle,
-                              image: const DecorationImage(
-                                image: AssetImage(
-                                    '${AssetsPath.assetsPNGPath}/student_profile.png'),
+                              image: DecorationImage(
+                                image: AssetImage(messages[index].imgUrl),
                                 fit: BoxFit.contain,
                               ),
                               boxShadow: <BoxShadow>[
@@ -193,7 +194,7 @@ class _MessageInboxState extends State<MessageInbox> {
                                       TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: 'Anne Sasha',
+                                            text: messages[index].name,
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 14.sp,

@@ -1,5 +1,6 @@
 import 'package:guided/models/badgesModel.dart';
 import 'package:guided/models/faq.dart';
+import 'package:guided/models/message.dart';
 
 /// Class for app constant list
 class AppListConstants {
@@ -14,6 +15,42 @@ class AppListConstants {
     'Sent',
     'Archive'
   ];
+
+  /// generate mock data
+  static List<Message> getMessages() {
+    return <Message>[
+      Message(
+          id: 1,
+          name: 'Ann Sasha',
+          message:
+              'Sample tourist text message goes here to receive tourist guide',
+          imgUrl: 'assets/images/png/pmessage1.png'),
+      Message(
+          id: 2,
+          name: 'Mark Henrry',
+          message:
+              'Sample tourist text message goes here to receive tourist guide',
+          imgUrl: 'assets/images/png/pmessage2.png'),
+      Message(
+          id: 3,
+          name: 'David Bill',
+          message:
+              'Sample tourist text message goes here to receive tourist guide',
+          imgUrl: 'assets/images/png/pmessage3.png'),
+      Message(
+          id: 4,
+          name: 'Emilly Jeen',
+          message:
+              'Sample tourist text message goes here to receive tourist guide',
+          imgUrl: 'assets/images/png/pmessage4.png'),
+      Message(
+          id: 5,
+          name: 'Jeorge Widson',
+          message:
+              'Sample tourist text message goes here to receive tourist guide',
+          imgUrl: 'assets/images/png/pmessage5.png'),
+    ];
+  }
 
   /// use in message offer screen
   static List<String> packages = <String>['Basic', 'Premium'];
@@ -134,7 +171,8 @@ class AppListConstants {
     'Completed',
     'Rejected'
   ];
-///
+
+  ///
   static List<String> calendarMonths = <String>[
     'January',
     'February',
@@ -149,6 +187,7 @@ class AppListConstants {
     'November',
     'December'
   ];
-///
+
+  ///
   static List<int> numberList = <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 }
