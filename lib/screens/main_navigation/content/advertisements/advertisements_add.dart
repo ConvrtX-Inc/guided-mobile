@@ -830,6 +830,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
       'country': _country.text,
       'address':
           '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}',
+      'activities': 'Walking, Hiking',
       'street': _street.text,
       'city': _city.text,
       'province': _province.text,

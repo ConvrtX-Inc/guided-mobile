@@ -208,7 +208,7 @@ class _SettingsMainState extends State<SettingsMain>
                 Column(
                   children: <Widget>[
                     Text(
-                      '${detail.firstName} ${detail.lastName}',
+                      '${detail.firstName}',
                       style: TextStyle(
                           letterSpacing: 1,
                           fontSize: 18.sp,
