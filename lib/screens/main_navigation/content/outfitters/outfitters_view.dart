@@ -2,9 +2,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Outfitter View Screen
 class OutfitterView extends StatefulWidget {
@@ -129,7 +132,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                         size: 25,
                       ),
                       onPressed: () {
-                        Navigator.pop(context);
+                        removeOutfitterItem(screenArguments['id']);
                       },
                     ),
                   ),
@@ -335,5 +338,24 @@ class _OutfitterViewState extends State<OutfitterView> {
     };
 
     await Navigator.pushNamed(context, '/outfitter_edit', arguments: details);
+  }
+
+  /// Removed item from outfitter
+  Future<void> removeOutfitterItem(String id) async {
+    final Map<String, dynamic> outfitterDetails = {
+      'is_published': false,
+    };
+
+    final dynamic response = await APIServices().request(
+        '${AppAPIPath.createOutfitterUrl}/$id', RequestType.PATCH,
+        needAccessToken: true, data: outfitterDetails);
+
+    await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => const MainNavigationScreen(
+                  navIndex: 1,
+                  contentIndex: 2,
+                )));
   }
 }

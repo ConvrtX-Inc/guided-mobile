@@ -1,7 +1,6 @@
 // ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings, no_default_cases, sort_constructors_first
 import 'dart:convert';
 
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,7 +10,6 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/home.dart';
 import 'package:guided/models/package_destination_image_model.dart';
 import 'package:guided/models/package_destination_model.dart';
-import 'package:guided/screens/main_navigation/content/packages/widget/package_destination_features.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/utils/home.dart';
 import 'package:guided/utils/services/rest_api_service.dart';

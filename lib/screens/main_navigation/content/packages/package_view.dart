@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_properties.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/screens/main_navigation/content/packages/tab/tab_description.dart';
 import 'package:guided/screens/main_navigation/content/packages/tab/tab_slots_and_schedule.dart';
+import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Advertisement View Screen
 class PackageView extends StatefulWidget {
@@ -164,7 +167,7 @@ class _PackageViewState extends State<PackageView>
                           size: 25,
                         ),
                         onPressed: () {
-                          Navigator.pop(context);
+                          removePackageItem(screenArguments['id']);
                         },
                       ),
                     ),
@@ -240,5 +243,22 @@ class _PackageViewState extends State<PackageView>
         ),
       ),
     );
+  }
+
+  Future<void> removePackageItem(String id) async {
+    final Map<String, dynamic> packageDetails = {
+      'is_published': false,
+    };
+
+    final dynamic response = await APIServices().request(
+        '${AppAPIPath.activityPackagesUrl}/$id', RequestType.PATCH,
+        needAccessToken: true, data: packageDetails);
+    await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => const MainNavigationScreen(
+                  navIndex: 1,
+                  contentIndex: 0,
+                )));
   }
 }

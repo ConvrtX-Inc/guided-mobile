@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -656,7 +657,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       'max_extra_person': int.parse(screenArguments['max_person'].toString()),
       'currency_id': screenArguments['currency_id'].toString(),
       'price_note': screenArguments['additional_notes'].toString(),
-      'is_published': false
+      'is_published': true
     };
 
     /// Activity Package Details API

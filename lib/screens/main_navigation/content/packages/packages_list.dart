@@ -21,16 +21,16 @@ class PackageList extends StatefulWidget {
   _PackageListState createState() => _PackageListState();
 }
 
-class _PackageListState extends State<PackageList> with AutomaticKeepAliveClientMixin<PackageList>{
+class _PackageListState extends State<PackageList>
+    with AutomaticKeepAliveClientMixin<PackageList> {
   @override
   bool get wantKeepAlive => true;
 
   late Future<PackageModelData> _loadingData;
 
   @override
-  void initState(){
-
-  _loadingData = APIServices().getPackageData();  
+  void initState() {
+    _loadingData = APIServices().getPackageData();
   }
 
   @override
@@ -109,14 +109,15 @@ class _PackageListState extends State<PackageList> with AutomaticKeepAliveClient
       );
 
   Widget buildAdvertisementInfo(PackageDetailsModel details) => PackageFeatures(
-      id: details.id,
-      name: details.name,
-      description: details.description,
-      imageUrl: details.coverImg,
-      numberOfTourist: details.maxTraveller,
-      starRating: 4.9,
-      fee: double.parse(details.basePrice),
-      dateRange: '1-9',
-      services: details.services,
+        id: details.id,
+        name: details.name,
+        description: details.description,
+        imageUrl: details.coverImg,
+        numberOfTourist: details.maxTraveller,
+        starRating: 4.9,
+        fee: double.parse(details.basePrice),
+        dateRange: '1-9',
+        services: details.services,
+        isPublished: details.isPublished,
       );
 }

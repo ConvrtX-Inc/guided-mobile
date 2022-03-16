@@ -64,7 +64,8 @@ class APIServices {
 
   /// This this Global function for creating api request
   Future<dynamic> request(String url, RequestType type,
-      {bool needAccessToken = false, Map<String, dynamic>? data}) async {
+      {bool needAccessToken = false,
+      Map<String, dynamic> data = const <String, dynamic>{}}) async {
     final Uri completeUri = Uri.parse('$apiBaseMode$apiBaseUrl/$url');
     String? token;
     dynamic body;

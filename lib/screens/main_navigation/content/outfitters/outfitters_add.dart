@@ -866,7 +866,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
       'zip_code': _postalCode.text,
       'availability_date': _date.text,
       'description': _description.text,
-      'is_published': false
+      'is_published': true
     };
 
     final dynamic response = await APIServices().request(

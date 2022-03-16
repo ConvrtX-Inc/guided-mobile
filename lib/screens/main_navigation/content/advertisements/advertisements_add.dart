@@ -837,7 +837,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
       'ad_date': _date.text,
       'description': _description.text,
       'price': int.parse(_price.text),
-      'is_published': false
+      'is_published': true
     };
 
     final dynamic response = await APIServices().request(

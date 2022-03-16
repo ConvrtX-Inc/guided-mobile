@@ -109,6 +109,7 @@ class _AdvertisementListState extends State<AdvertisementList>
             '${details.adDate!.year.toString().padLeft(2, '0')}-${details.adDate!.month.toString().padLeft(2, '0')}-${details.adDate!.day.toString().padLeft(2, '0')}',
         price: details.price,
         description: details.description,
+        isPublished: details.isPublished,
       );
 
   void _settingModalBottomSheet() {

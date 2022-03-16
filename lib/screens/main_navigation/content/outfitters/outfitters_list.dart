@@ -101,6 +101,7 @@ class _OutfitterListState extends State<OutfitterList>
         city: details.city,
         province: details.province,
         zipCode: details.zipCode,
+        isPublished: details.isPublished,
       );
 
   void _settingModalBottomSheet() {

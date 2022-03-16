@@ -34,6 +34,7 @@ class OutfitterFeature extends StatefulWidget {
     String city = '',
     String province = '',
     String zipCode = '',
+    bool isPublished = false,
     Key? key,
   })  : _id = id,
         _title = title,
@@ -51,6 +52,7 @@ class OutfitterFeature extends StatefulWidget {
         _city = city,
         _province = province,
         _zipCode = zipCode,
+        _isPublished = isPublished,
         super(key: key);
 
   final String _id;
@@ -70,6 +72,7 @@ class OutfitterFeature extends StatefulWidget {
   final String _city;
   final String _province;
   final String _zipCode;
+  final bool _isPublished;
 
   @override
   State<OutfitterFeature> createState() => _OutfitterFeatureState();
@@ -81,84 +84,88 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Container(
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.grey,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(20.r))),
-              child: buildSlider(context)),
-        ),
-        SizedBox(height: 20.h),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return widget._isPublished
+        ? Column(
             children: <Widget>[
-              Text(
-                widget._title,
-                style: AppTextStyle.txtStyle,
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(20.r))),
+                    child: buildSlider(context)),
               ),
-              Text(
-                widget._price,
-                style: AppTextStyle.txtStyle,
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            children: <Widget>[
-              Icon(
-                Icons.calendar_today_outlined,
-                size: 15,
-                color: AppColors.osloGrey,
-              ),
-              SizedBox(width: 5.w),
-              Text(
-                widget._date,
-                style: AppTextStyle.dateStyle,
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Text(
-            widget._description,
-            style: AppTextStyle.descrStyle,
-          ),
-        ),
-        SizedBox(height: 10.h),
-        Row(
-          children: <Widget>[
-            ElevatedButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(AppColors.lightRed),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.r),
-                          side: const BorderSide(color: Colors.red)))),
-              child: Text(
-                AppTextConstants.visitShop,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+              SizedBox(height: 20.h),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      widget._title,
+                      style: AppTextStyle.txtStyle,
+                    ),
+                    Text(
+                      widget._price,
+                      style: AppTextStyle.txtStyle,
+                    ),
+                  ],
                 ),
               ),
-              onPressed: () {},
-            ),
-          ],
-        ),
-      ],
-    );
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: 15,
+                      color: AppColors.osloGrey,
+                    ),
+                    SizedBox(width: 5.w),
+                    Text(
+                      widget._date,
+                      style: AppTextStyle.dateStyle,
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  widget._description,
+                  style: AppTextStyle.descrStyle,
+                ),
+              ),
+              SizedBox(height: 10.h),
+              Row(
+                children: <Widget>[
+                  ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            AppColors.lightRed),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.r),
+                                    side:
+                                        const BorderSide(color: Colors.red)))),
+                    child: Text(
+                      AppTextConstants.visitShop,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ],
+          )
+        : Container();
   }
 
   Widget buildSlider(BuildContext context) =>
