@@ -22,33 +22,18 @@ class AppListConstants {
       Message(
           id: 1,
           name: 'Ann Sasha',
-          message:
-              'Sample tourist text message goes here to receive tourist guide',
+          message: 'Hello, are we good for the hike at 2 pm?',
           imgUrl: 'assets/images/png/pmessage1.png'),
       Message(
           id: 2,
           name: 'Mark Henrry',
-          message:
-              'Sample tourist text message goes here to receive tourist guide',
+          message: "Sounds like fun, can't wait to get out on the lake",
           imgUrl: 'assets/images/png/pmessage2.png'),
       Message(
           id: 3,
           name: 'David Bill',
-          message:
-              'Sample tourist text message goes here to receive tourist guide',
+          message: 'I am happy to give you a discount for 5 or more people',
           imgUrl: 'assets/images/png/pmessage3.png'),
-      Message(
-          id: 4,
-          name: 'Emilly Jeen',
-          message:
-              'Sample tourist text message goes here to receive tourist guide',
-          imgUrl: 'assets/images/png/pmessage4.png'),
-      Message(
-          id: 5,
-          name: 'Jeorge Widson',
-          message:
-              'Sample tourist text message goes here to receive tourist guide',
-          imgUrl: 'assets/images/png/pmessage5.png'),
     ];
   }
 
