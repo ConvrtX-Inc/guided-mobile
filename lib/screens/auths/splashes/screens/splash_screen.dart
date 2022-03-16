@@ -46,25 +46,64 @@ class SplashScreen extends StatelessWidget {
                   height: 20.h,
                 ),
                 Text(
-                  AppTextConstants.createYourBusiness,
-                  style: const TextStyle(
+                  AppTextConstants.adventureDiscoverExplore,
+                  style: TextStyle(
                     fontFamily: 'Gilroy',
-                    fontSize: 24,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
-                  height: 20.h,
+                  height: 10.h,
                 ),
                 Text(
-                  AppTextConstants.theApplicationWillHelp,
-                  style: const TextStyle(
+                  AppTextConstants.bookYourNextAdventure,
+                  style: TextStyle(
                     fontFamily: 'Gilroy',
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black54,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Text(
+                  AppTextConstants.discoverLocalGuidesWhereverYouTravel,
+                  style: TextStyle(
+                    fontFamily: 'Gilroy',
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Text(
+                  AppTextConstants.exploreTheOutdoors,
+                  style: TextStyle(
+                    fontFamily: 'Gilroy',
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Text(
+                  AppTextConstants.aDVENTUREAWAITS,
+                  style: TextStyle(
+                    fontFamily: 'Gilroy',
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
                 ),
