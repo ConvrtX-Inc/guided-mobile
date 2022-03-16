@@ -140,6 +140,7 @@ class _OutfitterViewState extends State<OutfitterView> {
           flexibleSpace: Image.memory(
             base64.decode(screenArguments['snapshot_img'].split(',').last),
             fit: BoxFit.fitHeight,
+            gaplessPlayback: true,
           ),
         ),
       ),

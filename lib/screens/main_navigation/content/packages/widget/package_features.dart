@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -7,44 +9,58 @@ import 'package:guided/constants/asset_path.dart';
 class PackageFeatures extends StatelessWidget {
   /// Constructor
   const PackageFeatures({
+    String id = '',
     String name = '',
+    String description = '',
     String imageUrl = '',
     int numberOfTourist = 0,
     double starRating = 0.0,
     double fee = 0.0,
     String dateRange = '',
+    String services = '',
     Key? key,
-  })  : _name = name,
+  })  : _id = id,
+        _name = name,
+        _description = description,
         _imageUrl = imageUrl,
         _numberOfTourist = numberOfTourist,
         _fee = fee,
         _starRating = starRating,
         _dateRange = dateRange,
+        _services = services,
         super(key: key);
 
+  final String _id;
   final String _name;
+  final String _description;
   final String _imageUrl;
   final int _numberOfTourist;
   final double _starRating;
   final double _fee;
   final String _dateRange;
+  final String _services;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/package_view'),
+      onTap: () {
+        navigatePackageDetails(context);
+      },
       child: Container(
           margin: const EdgeInsets.fromLTRB(0, 16, 16, 16),
           height: 200,
-          width: 290,
+          width: double.infinity,
           child: Stack(
             children: <Widget>[
               Positioned.fill(
                   child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  _imageUrl,
+                child: Image.memory(
+                  base64.decode(
+                    _imageUrl.split(',').last,
+                  ),
                   fit: BoxFit.cover,
+                  gaplessPlayback: true,
                 ),
               )),
               Positioned(
@@ -190,5 +206,22 @@ class PackageFeatures extends StatelessWidget {
             ],
           )),
     );
+  }
+
+  /// Navigate to Advertisement View
+  Future<void> navigatePackageDetails(BuildContext context) async {
+    final Map<String, dynamic> details = {
+      'id': _id,
+      'name': _name,
+      'description': _description,
+      'image_url': _imageUrl,
+      'number_of_tourist': _numberOfTourist,
+      'star_rating': _starRating,
+      'fee': _fee,
+      'date_range': _dateRange,
+      'services': _services,
+    };
+
+    await Navigator.pushNamed(context, '/package_view', arguments: details);
   }
 }

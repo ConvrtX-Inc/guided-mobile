@@ -90,6 +90,7 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
                                 imageDetails.snapshotImg.split(',').last,
                               ),
                               fit: BoxFit.cover,
+                              gaplessPlayback: true,
                             ),
                           )
                         : Container(

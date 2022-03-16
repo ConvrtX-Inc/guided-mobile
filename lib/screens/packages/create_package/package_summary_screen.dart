@@ -639,30 +639,18 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
 
     List<String> list = screenArguments['services'];
 
-    final service = Services(
-      services: list.join(','),
-    );
-
-    final json = service.toJson();
-    print('JSON 1: ${json}');
-
-    final address = Address(
-        address:
-            '${screenArguments['street']}, ${screenArguments['city']}, ${screenArguments['state']}, ${screenArguments['zip_code']}');
-
-    final jsonAddress = address.toJson();
-
     Map<String, dynamic> packageDetails = {
       'user_id': userId,
       'package_note': screenArguments['note'].toString(),
       'name': screenArguments['package_name'].toString(),
       'description': screenArguments['description'].toString(),
-      'cover_img': 'byte64image',
+      'cover_img': screenArguments['cover_img'].toString(),
       'max_traveller': int.parse(screenArguments['maximum'].toString()),
       'min_traveller': int.parse(screenArguments['minimum'].toString()),
       'country': screenArguments['country'].toString(),
-      'address': jsonAddress.toString(),
-      'services': json.toString(),
+      'address':
+          '${screenArguments['street']}, ${screenArguments['city']}, ${screenArguments['state']}, ${screenArguments['zip_code']}',
+      'services': list.join(','),
       'base_price': screenArguments['base_price'].toString(),
       'extra_cost_per_person': screenArguments['extra_cost'].toString(),
       'max_extra_person': int.parse(screenArguments['max_person'].toString()),

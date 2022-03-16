@@ -217,6 +217,7 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
           child: Image.memory(
             base64.decode(imgData.snapshotImg.split(',').last),
             fit: BoxFit.fill,
+            gaplessPlayback: true,
           ),
         ),
       );

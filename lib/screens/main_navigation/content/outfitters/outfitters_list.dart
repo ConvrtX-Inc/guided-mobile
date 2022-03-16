@@ -1,7 +1,5 @@
 // ignore_for_file: unnecessary_nullable_for_final_variable_declarations, no_default_cases
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -20,13 +18,18 @@ class OutfitterList extends StatefulWidget {
   _OutfitterListState createState() => _OutfitterListState();
 }
 
-class _OutfitterListState extends State<OutfitterList> {
+class _OutfitterListState extends State<OutfitterList>
+    with AutomaticKeepAliveClientMixin<OutfitterList> {
+  @override
+  bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             FutureBuilder<OutfitterModelData>(
               future: APIServices().getOutfitterData(),
@@ -34,15 +37,8 @@ class _OutfitterListState extends State<OutfitterList> {
                 Widget _displayWidget;
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
-                    _displayWidget = Column(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 20.h,
-                        ),
-                        const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      ],
+                    _displayWidget = const Center(
+                      child: CircularProgressIndicator(),
                     );
                     break;
                   default:

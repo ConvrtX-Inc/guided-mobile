@@ -19,9 +19,14 @@ class AdvertisementList extends StatefulWidget {
   _AdvertisementListState createState() => _AdvertisementListState();
 }
 
-class _AdvertisementListState extends State<AdvertisementList> {
+class _AdvertisementListState extends State<AdvertisementList>
+    with AutomaticKeepAliveClientMixin<AdvertisementList> {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
@@ -33,8 +38,15 @@ class _AdvertisementListState extends State<AdvertisementList> {
                 Widget _displayWidget;
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
-                    _displayWidget = const Center(
-                      child: CircularProgressIndicator(),
+                    _displayWidget = Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height / 4,
+                        ),
+                        const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ],
                     );
                     break;
                   default:

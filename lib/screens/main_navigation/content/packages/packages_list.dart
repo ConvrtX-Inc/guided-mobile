@@ -1,12 +1,16 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_literals_to_create_immutables, no_default_cases
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/home.dart';
+import 'package:guided/models/package_model.dart';
 import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
+import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/utils/home.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Package List Screen
 class PackageList extends StatefulWidget {
@@ -17,43 +21,56 @@ class PackageList extends StatefulWidget {
   _PackageListState createState() => _PackageListState();
 }
 
-class _PackageListState extends State<PackageList> {
-  List<HomeModel> features = HomeUtils.getMockFeatures();
+class _PackageListState extends State<PackageList> with AutomaticKeepAliveClientMixin<PackageList>{
+  @override
+  bool get wantKeepAlive => true;
+
+  late Future<PackageModelData> _loadingData;
+
+  @override
+  void initState(){
+
+  _loadingData = APIServices().getPackageData();  
+  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: SizedBox(
-          height: 625.h,
+          height: 550.h,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Expanded(
-                child: ListView.builder(
-                    itemCount: features.length,
-                    itemBuilder: (BuildContext ctx, int index) {
-                      return PackageFeatures(
-                        name: features[index].featureName,
-                        imageUrl: features[index].featureImageUrl,
-                        numberOfTourist:
-                            features[index].featureNumberOfTourists,
-                        starRating: features[index].featureStarRating,
-                        fee: features[index].featureFee,
-                        dateRange: features[index].dateRange,
-                      );
-                    }),
-              ),
-              SizedBox(height: 50.h),
-              Center(
-                  child: Text(
-                'This page is currently under development',
-                style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14.sp),
-              ))
+                child: FutureBuilder<PackageModelData>(
+                  future: _loadingData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    Widget _displayWidget;
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        _displayWidget = const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                        break;
+                      default:
+                        if (snapshot.hasError) {
+                          _displayWidget = Center(
+                              child: APIMessageDisplay(
+                            message: 'Result: ${snapshot.error}',
+                          ));
+                        } else {
+                          _displayWidget =
+                              buildAdvertisementResult(snapshot.data!);
+                        }
+                    }
+                    return _displayWidget;
+                  },
+                ),
+              )
             ],
           ),
         ),
@@ -71,4 +88,35 @@ class _PackageListState extends State<PackageList> {
       ),
     );
   }
+
+  Widget buildAdvertisementResult(PackageModelData packageData) =>
+      SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            if (packageData.packageDetails.isEmpty)
+              Padding(
+                padding: EdgeInsets.only(
+                    top: (MediaQuery.of(context).size.height / 3) - 40),
+                child: APIMessageDisplay(
+                  message: AppTextConstants.noResultFound,
+                ),
+              )
+            else
+              for (PackageDetailsModel detail in packageData.packageDetails)
+                buildAdvertisementInfo(detail)
+          ],
+        ),
+      );
+
+  Widget buildAdvertisementInfo(PackageDetailsModel details) => PackageFeatures(
+      id: details.id,
+      name: details.name,
+      description: details.description,
+      imageUrl: details.coverImg,
+      numberOfTourist: details.maxTraveller,
+      starRating: 4.9,
+      fee: double.parse(details.basePrice),
+      dateRange: '1-9',
+      services: details.services,
+      );
 }
