@@ -7,6 +7,7 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/message.dart';
 
 /// TabInboxScreen Screen
 class TabInboxScreen extends StatefulWidget {
@@ -18,6 +19,7 @@ class TabInboxScreen extends StatefulWidget {
 }
 
 class _TabInboxScreenState extends State<TabInboxScreen> {
+  final List<Message> messages = AppListConstants.getMessages();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +88,7 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
               ),
               Expanded(
                 child: ListView.separated(
-                  itemCount: AppListConstants.filterList.length,
+                  itemCount: messages.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Slidable(
                       key: ValueKey<int>(index),
@@ -182,9 +184,8 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
                                 border:
                                     Border.all(color: Colors.white, width: 3),
                                 shape: BoxShape.circle,
-                                image: const DecorationImage(
-                                  image: AssetImage(
-                                      '${AssetsPath.assetsPNGPath}/student_profile.png'),
+                                image: DecorationImage(
+                                  image: AssetImage(messages[index].imgUrl),
                                   fit: BoxFit.contain,
                                 ),
                                 boxShadow: <BoxShadow>[
@@ -213,7 +214,7 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
                                         TextSpan(
                                           children: [
                                             TextSpan(
-                                              text: 'Anne Sasha',
+                                              text: messages[index].name,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 14.sp,
@@ -242,7 +243,7 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
                                             MediaQuery.of(context).size.width *
                                                 0.6,
                                         child: Text(
-                                          'Sample tourist text message goes here to receive tourist guide ',
+                                          messages[index].message,
                                           style: TextStyle(
                                             fontSize: 12.sp,
                                             color: AppColors.dustyGrey,
