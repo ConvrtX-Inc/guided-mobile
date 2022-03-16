@@ -222,7 +222,7 @@ class _MessageInboxState extends State<MessageInbox> {
                                       width: MediaQuery.of(context).size.width *
                                           0.6,
                                       child: Text(
-                                        'Sample tourist text message goes here to receive tourist guide ',
+                                        messages[index].message,
                                         style: TextStyle(
                                           fontSize: 12.sp,
                                           color: AppColors.dustyGrey,
