@@ -10,7 +10,6 @@ import 'package:guided/screens/signin_signup/signup_screen.dart';
 
 /// Welcome screen
 class WelcomeScreen extends StatelessWidget {
-
   /// Constructor
   const WelcomeScreen({Key? key}) : super(key: key);
 
@@ -32,8 +31,7 @@ class WelcomeScreen extends StatelessWidget {
                   style: const TextStyle(
                       fontSize: 20,
                       fontFamily: 'Gilroy',
-                      fontWeight: FontWeight.bold
-                  ),
+                      fontWeight: FontWeight.bold),
                 ),
                 Image.asset(
                   AssetsPath.welcomeToGuideImage,
@@ -41,12 +39,46 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
-                  child: Text(
-                    AppTextConstants.loremIpsum,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        color: AppColors.grey
-                    ),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        'ADVENTURE - DISCOVER - EXPLORE',
+                        style: TextStyle(
+                            color: AppColors.grey, fontWeight: FontWeight.w700),
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      Text(
+                        'Book your next Adventure!',
+                        style: TextStyle(
+                            color: AppColors.grey, fontWeight: FontWeight.w700),
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      Text(
+                        'Discover Local Guides wherever you travel.',
+                        style: TextStyle(
+                            color: AppColors.grey, fontWeight: FontWeight.w700),
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      Text(
+                        'Explore the Outdoors!',
+                        style: TextStyle(
+                            color: AppColors.grey, fontWeight: FontWeight.w700),
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      Text(
+                        'ADVENTURE AWAITS!',
+                        style: TextStyle(
+                            color: AppColors.grey, fontWeight: FontWeight.w700),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(
@@ -72,9 +104,7 @@ class WelcomeScreen extends StatelessWidget {
                     child: Text(
                       AppTextConstants.alreadyHaveAccount,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16
-                      ),
+                          fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                   ),
                 ),
@@ -101,9 +131,7 @@ class WelcomeScreen extends StatelessWidget {
                     child: Text(
                       AppTextConstants.createNewAccount,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16
-                      ),
+                          fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                   ),
                 ),

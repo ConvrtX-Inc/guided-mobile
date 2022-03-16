@@ -16,16 +16,6 @@ class RequestsScreenUtils {
           name: 'David Bill',
           status: 'Pending',
           imgUrl: 'assets/images/customer-2.png'),
-      RequestsScreenModel(
-          id: 3,
-          name: 'Ann Sasha',
-          status: 'Pending',
-          imgUrl: 'assets/images/profile-photos-2.png'),
-      RequestsScreenModel(
-          id: 3,
-          name: 'Ann Sasha',
-          status: 'Pending',
-          imgUrl: 'assets/images/profile-photos-2.png'),
     ];
   }
 }

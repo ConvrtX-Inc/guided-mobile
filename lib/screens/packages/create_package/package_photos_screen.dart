@@ -162,7 +162,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.gallery,
-                                      imageQuality: 1);
+                                      imageQuality: 10);
 
                               if (image1 == null) {
                                 return;
@@ -263,7 +263,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 1);
+                                          imageQuality: 10);
                                   if (image2 == null) {
                                     return;
                                   }
@@ -364,7 +364,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 1);
+                                          imageQuality: 10);
 
                                   if (image3 == null) {
                                     return;

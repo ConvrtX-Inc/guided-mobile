@@ -33,8 +33,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool buttonIsLoading = false;
   @override
   void initState() {
-    _emailController = TextEditingController(text: 'test1@example.com');
-    _passwordController = TextEditingController(text: 'string');
+    // _emailController = TextEditingController(text: 'traveller.convrtx@gmail.com');
+    _emailController = TextEditingController(text: 'touristguide.convrtx@gmail.com');
+    _passwordController = TextEditingController(text: '123xswcde');
     super.initState();
   }
 

@@ -33,37 +33,37 @@ class StaticDataService {
           name: 'Fishing',
           path: AssetsPath.fishing,
           distance: '3.5 hours drive',
-          featureImage: 'assets/images/png/activity1.png'),
+          featureImage: 'assets/images/jpg/fishing.jpg'),
       Activity(
           id: '5',
           name: 'ECO Tour',
           path: AssetsPath.eco,
           distance: '3.5 hours drive',
-          featureImage: 'assets/images/png/activity1.png'),
-      Activity(
-          id: '6',
-          name: 'Retreat',
-          path: AssetsPath.retreat,
-          distance: '3.5 hours drive',
-          featureImage: 'assets/images/png/activity1.png'),
-      Activity(
-          id: '7',
-          name: 'Paddle spot',
-          path: AssetsPath.paddle,
-          distance: '3.5 hours drive',
-          featureImage: 'assets/images/png/activity1.png'),
-      Activity(
-          id: '8',
-          name: 'Discovery',
-          path: AssetsPath.discovery,
-          distance: '3.5 hours drive',
-          featureImage: 'assets/images/png/activity1.png'),
+          featureImage: 'assets/images/jpg/eco_tour.jpg'),
+      // Activity(
+      //     id: '6',
+      //     name: 'Retreat',
+      //     path: AssetsPath.retreat,
+      //     distance: '3.5 hours drive',
+      //     featureImage: 'assets/images/jpg/retreat.jpg'),
+      // Activity(
+      //     id: '7',
+      //     name: 'Paddle spot',
+      //     path: AssetsPath.paddle,
+      //     distance: '3.5 hours drive',
+      //     featureImage: 'assets/images/png/activity1.png'),
+      // Activity(
+      //     id: '8',
+      //     name: 'Discovery',
+      //     path: AssetsPath.discovery,
+      //     distance: '3.5 hours drive',
+      //     featureImage: 'assets/images/png/activity1.png'),
       Activity(
           id: '9',
           name: 'Motor',
           path: AssetsPath.motor,
           distance: '3.5 hours drive',
-          featureImage: 'assets/images/png/activity1.png'),
+          featureImage: 'assets/images/jpg/sport_fishing.jpeg'),
     ];
   }
 
@@ -72,16 +72,16 @@ class StaticDataService {
     return <Guide>[
       Guide(
           id: '1',
-          name: "St. John's, Newfoundland",
+          name: 'John Watson',
           path: AssetsPath.hiking,
           distance: '12 KM  distance',
-          featureImage: 'assets/images/png/guide1.png'),
+          featureImage: 'assets/images/png/student_profile.png'),
       Guide(
           id: '2',
-          name: 'Ottawa, Ontario',
+          name: 'Sasha Cruz',
           path: AssetsPath.paddle,
           distance: '12 KM  distance',
-          featureImage: 'assets/images/png/guide2.png'),
+          featureImage: 'assets/images/png/profile_photo.png'),
     ];
   }
 

@@ -174,7 +174,7 @@ class RouteGenerator {
             builder: (_) => const WelcomeScreen());
       case '/user_on_boarding':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const UserOnboardingScreen());
+            builder: (_) => const UserOnboardingScreen(), settings: settings);
 
       case '/terms_and_condition':
         return MaterialPageRoute<dynamic>(

@@ -435,7 +435,7 @@ class AppTextConstants {
 
   /// Returns package description text
   static String packageDescr =
-      'Hi John,\nLets Get Started To Build Your Tour Package';
+      'Hi Tourist Guide,\nLets Get Started To Build Your Tour Package';
 
   /// Returns select badge text
   static String selectBadge =
