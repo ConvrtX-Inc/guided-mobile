@@ -107,4 +107,9 @@ class AppAPIPath {
   /// Returns waiver url
   static String waiverUrl = 'api/v1/waivers';
 
+  /// Returns activity event
+  static String activityEventUrl = 'api/v1/activity-events';
+
+   /// Returns event image
+  static String getEventImage = 'api/v1/activity-event-image';
 }

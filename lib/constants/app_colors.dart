@@ -124,4 +124,7 @@ class AppColors {
 
   /// hex color for mint green
   static HexColor mintGreen = HexColor('#A9FFC0');
+
+  /// hex color for gallery white
+  static HexColor galleryWhite = HexColor('#EBEBEB');
 }

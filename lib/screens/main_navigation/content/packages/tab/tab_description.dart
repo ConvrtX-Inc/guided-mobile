@@ -615,8 +615,8 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                         return Container(
                           margin: EdgeInsets.symmetric(
                               horizontal: 5.w, vertical: 20.h),
-                          height: 160.h,
-                          width: 300.w,
+                          height: 170.h,
+                          width: 200.w,
                           decoration: const BoxDecoration(
                             color: Colors.transparent,
                           ),
@@ -624,8 +624,8 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Container(
-                                height: 160.h,
-                                width: 300.w,
+                                height: 170.h,
+                                width: 200.w,
                                 decoration: BoxDecoration(
                                   color: Colors.transparent,
                                   borderRadius: BorderRadius.all(

@@ -6,6 +6,8 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/requests.dart';
+import 'package:guided/utils/requests.dart';
 
 /// Notification Screen
 class MessageInbox extends StatefulWidget {
@@ -19,6 +21,9 @@ class MessageInbox extends StatefulWidget {
 class _MessageInboxState extends State<MessageInbox> {
   double _height = 94.h;
   double _width = 309.w;
+
+  final List<RequestsScreenModel> requestsItems =
+      RequestsScreenUtils.getMockedDataRequestsScreen();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -257,9 +262,9 @@ class _MessageInboxState extends State<MessageInbox> {
                                 border:
                                     Border.all(color: Colors.white, width: 3),
                                 shape: BoxShape.circle,
-                                image: const DecorationImage(
-                                  image: AssetImage(
-                                      '${AssetsPath.assetsPNGPath}/student_profile.png'),
+                                image: DecorationImage(
+                                  image:
+                                      AssetImage(requestsItems[index].imgUrl),
                                   fit: BoxFit.contain,
                                 ),
                                 boxShadow: <BoxShadow>[
@@ -288,7 +293,7 @@ class _MessageInboxState extends State<MessageInbox> {
                                         TextSpan(
                                           children: [
                                             TextSpan(
-                                              text: 'Anne Sasha',
+                                              text: requestsItems[index].name,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 14.sp,

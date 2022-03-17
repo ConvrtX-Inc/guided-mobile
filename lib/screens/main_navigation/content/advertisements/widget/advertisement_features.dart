@@ -88,7 +88,7 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
                         onTap: () => navigateAdvertisementDetails(
                             context, imageDetails.snapshotImg),
                         child: ListTile(
-                          title: imageDetails.activityOutfitterId != null
+                          title: imageDetails.activityAdvertisementId != null
                               ? SizedBox(
                                   height: 200.h,
                                   child: Image.memory(

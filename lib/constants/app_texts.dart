@@ -393,6 +393,22 @@ class AppTextConstants {
   /// Returns already have an account text
   static String alreadyHaveAnAccount = 'Already have an account? ';
 
+  /// Returns already have an account text
+  static String adventureDiscoverExplore = 'ADVENTURE - DISCOVER - EXPLORE';
+
+  /// Returns Book your next Adventure! text
+  static String bookYourNextAdventure = 'Book your next Adventure!';
+
+  /// Returns Discover Local Guides wherever you travel. text
+  static String discoverLocalGuidesWhereverYouTravel =
+      'Discover Local Guides wherever you travel.';
+
+  /// Returns Explore the Outdoors! text
+  static String exploreTheOutdoors = 'Explore the Outdoors!';
+
+  /// Returns ADVENTURE AWAITS! text
+  static String aDVENTUREAWAITS = 'ADVENTURE AWAITS!';
+
   /// Returns create your business as a guide text
   static String createYourBusiness = 'Create Your Business\n As A Guide';
 
@@ -435,7 +451,7 @@ class AppTextConstants {
 
   /// Returns package description text
   static String packageDescr =
-      'Hi John,\nLets Get Started To Build Your Tour Package';
+      'Hi Tourist Guide,\nLets Get Started To Build Your Tour Package';
 
   /// Returns select badge text
   static String selectBadge =
@@ -830,6 +846,12 @@ class AppTextConstants {
 
   /// Returns Add schedule text
   static String addSchedule = 'Add Schedule';
+
+  /// Returns Add New Event text
+  static String addNewEvent = 'Add New Event';
+
+  /// Returns Fee text
+  static String fee = 'Fee (if applicable)';
 }
 
 /// Class for error messages text

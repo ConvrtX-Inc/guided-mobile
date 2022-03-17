@@ -12,6 +12,8 @@ import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
 import 'package:guided/models/currencies_model.dart';
+import 'package:guided/models/event_image_model.dart';
+import 'package:guided/models/event_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/package_destination_image_model.dart';
@@ -384,5 +386,44 @@ class APIServices {
 
     return PackageDestinationImageModelData(
         packageDestinationImageDetails: details);
+  }
+
+  /// API service for event model
+  Future<EventModelData> getEventData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityEventUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final EventModelData dataSummary =
+        EventModelData.fromJson(json.decode(response.body));
+
+    return EventModelData(eventDetails: dataSummary.eventDetails);
+  }
+
+  /// API service for event image model
+  Future<EventImageModelData> getEventImageData(String id) async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getEventImage}?s={"activity_event_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<EventImageDetailsModel> details = <EventImageDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final EventImageDetailsModel imageModel =
+          EventImageDetailsModel.fromJson(data);
+      details.add(imageModel);
+    }
+
+    return EventImageModelData(eventImageDetails: details);
   }
 }
