@@ -16,6 +16,7 @@ import 'package:guided/models/user_model.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 /// Login Screen
 class LoginScreen extends StatefulWidget {
@@ -31,14 +32,29 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _passwordController = TextEditingController();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
-
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
   bool hidePassword = true;
   bool buttonIsLoading = false;
   bool facebookLoading = false;
+  bool googleLoading = false;
+  GoogleSignInAuthentication? _signInAuthentication;
   @override
   void initState() {
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
+    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
+      account?.authentication.then((GoogleSignInAuthentication googleKey) {
+        print(googleKey.accessToken);
+
+        setState(() {
+          _signInAuthentication = googleKey;
+          googleLoading = false;
+        });
+      }).catchError((err) {
+        print('inner error');
+      });
+    });
+    _googleSignIn.signInSilently();
     super.initState();
   }
 
@@ -172,7 +188,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       //   facebookLoading = true;
                       // });
                       final fb = FacebookLogin();
-                      final res = await fb.logIn(permissions: [
+                      final res =
+                          await fb.logIn(permissions: <FacebookPermission>[
                         FacebookPermission.publicProfile,
                         FacebookPermission.email,
                       ]);
@@ -261,25 +278,50 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: 15.h,
                   ),
-                  ListTile(
-                    onTap: () {
-                      // Insert here the Google API Integration
-                    },
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(
-                        color: AppColors.mercury,
+                  LoadingElevatedButton(
+                    isLoading: googleLoading,
+                    onPressed: googleSignIn,
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      primary: Colors.transparent,
+                      padding: EdgeInsets.zero,
+                    ),
+                    loadingChild: ListTile(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: AppColors.mercury,
+                        ),
+                        borderRadius: BorderRadius.circular(14.r),
                       ),
-                      borderRadius: BorderRadius.circular(14.r),
+                      leading: Image.asset(
+                        'assets/images/google.png',
+                        height: 30.h,
+                      ),
+                      title: const Text(
+                        'Loading',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                    leading: Image.asset(
-                      'assets/images/google.png',
-                      height: 30.h,
-                    ),
-                    title: Text(
-                      AppTextConstants.loginWithGoogle,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                    child: ListTile(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: AppColors.mercury,
+                        ),
+                        borderRadius: BorderRadius.circular(14.r),
+                      ),
+                      leading: Image.asset(
+                        'assets/images/google.png',
+                        height: 30.h,
+                      ),
+                      title: Text(
+                        AppTextConstants.loginWithGoogle,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -420,6 +462,23 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  void googleSignOut() {
+    _googleSignIn.disconnect();
+  }
+
+  Future<void> googleSignIn() async {
+    setState(() {
+      googleLoading = true;
+    });
+    try {
+      await _googleSignIn.signIn();
+    } catch (e) {
+      print('Error signing in $e');
+      setState(() {
+        googleLoading = false;
+      });
+    }
+  }
   // Future<void> _checkIfIsLogged() async {
   //   final accessToken = await FacebookAuth.instance.accessToken;
   //   setState(() {

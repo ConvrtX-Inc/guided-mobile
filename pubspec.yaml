@@ -71,6 +71,7 @@ dependencies:
   card_swiper: ^2.0.1
   flutter_login_facebook: ^1.4.1
   loading_elevated_button: ^1.0.0+2
+  google_sign_in: ^5.2.4
   # flutter_expanded_tile: ^0.3.6
 dev_dependencies:
   flutter_test:

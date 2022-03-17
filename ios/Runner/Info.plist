@@ -50,9 +50,12 @@
 		<key>CFBundleURLTypes</key>
 		<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 			<string>fb1743111622554201</string>
+			<string>com.googleusercontent.apps.875562076914-95vmr9eavt7il3a8qbkdprl82ogpalj8</string>
 			</array>
 		</dict>
 		</array>
