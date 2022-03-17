@@ -8,6 +8,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/routes/route_generator.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 String _defaultHome = '/login';
 
@@ -16,6 +17,8 @@ void main() {
   SystemChrome.setEnabledSystemUIOverlays(
       [SystemUiOverlay.bottom, SystemUiOverlay.top]);
   runApp(const MyApp());
+
+  initializeDateFormatting().then((_) => runApp(const MyApp()));
 }
 
 /// My App Root

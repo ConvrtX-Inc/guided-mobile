@@ -393,6 +393,22 @@ class AppTextConstants {
   /// Returns already have an account text
   static String alreadyHaveAnAccount = 'Already have an account? ';
 
+  /// Returns already have an account text
+  static String adventureDiscoverExplore = 'ADVENTURE - DISCOVER - EXPLORE';
+
+  /// Returns Book your next Adventure! text
+  static String bookYourNextAdventure = 'Book your next Adventure!';
+
+  /// Returns Discover Local Guides wherever you travel. text
+  static String discoverLocalGuidesWhereverYouTravel =
+      'Discover Local Guides wherever you travel.';
+
+  /// Returns Explore the Outdoors! text
+  static String exploreTheOutdoors = 'Explore the Outdoors!';
+
+  /// Returns ADVENTURE AWAITS! text
+  static String aDVENTUREAWAITS = 'ADVENTURE AWAITS!';
+
   /// Returns create your business as a guide text
   static String createYourBusiness = 'Create Your Business\n As A Guide';
 
@@ -435,7 +451,7 @@ class AppTextConstants {
 
   /// Returns package description text
   static String packageDescr =
-      'Hi John,\nLets Get Started To Build Your Tour Package';
+      'Hi Tourist Guide,\nLets Get Started To Build Your Tour Package';
 
   /// Returns select badge text
   static String selectBadge =
@@ -527,7 +543,7 @@ class AppTextConstants {
   static String placeNameHint = 'Place Name';
 
   /// Returns add new description text
-  static String addNewDescription = 'Add New Destination';
+  static String addNewDestination = 'Add New Destination';
 
   /// Returns header price your package
   static String headerPriceYourPackage = 'Price your package';
@@ -821,6 +837,21 @@ class AppTextConstants {
 
   /// Returns first-aid text
   static String firstaid = 'First Aid';
+
+  /// Returns slots and schedule text
+  static String slotsAndSchedule = 'Slots & Schedules';
+
+  /// Returns Free services text
+  static String freeServices = 'Free Service';
+
+  /// Returns Add schedule text
+  static String addSchedule = 'Add Schedule';
+
+  /// Returns Add New Event text
+  static String addNewEvent = 'Add New Event';
+
+  /// Returns Fee text
+  static String fee = 'Fee (if applicable)';
 }
 
 /// Class for error messages text
@@ -851,4 +882,20 @@ class ErrorMessageConstants {
 
   /// Returns 'Text Field must be filled up' text
   static String fieldMustBeFilled = 'Fields must be filled up';
+
+  /// Returns 'Guide Rules and What to bring' is empty text
+  static String emptyGuideRule = 'Guide Rules and What to bring is empty';
+
+  /// Returns 'Local Laws and Taxes is empty' text
+  static String emptyLocalLaw = 'Local Laws and Taxes is empty';
+
+  /// Returns 'Waiver Form is empty' text
+  static String emptyWaiver = 'Waiver Form is empty';
+
+  /// Returns 'Text Field must be filled up' text
+  static String fieldMustBeFilledandImages =
+      'Fields must be filled up and Minimum of 3 Images';
+
+  /// Returns  'Cover image is empty' text
+  static String emptyCoverImg = 'Cover image is empty';
 }

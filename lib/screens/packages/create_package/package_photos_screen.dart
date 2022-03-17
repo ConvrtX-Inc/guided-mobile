@@ -1,18 +1,26 @@
-// ignore_for_file: file_names, unused_local_variable, cast_nullable_to_non_nullable
+// ignore_for_file: file_names, unused_local_variable, cast_nullable_to_non_nullable, always_specify_types
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/activity_destination_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:google_api_headers/google_api_headers.dart';
+import 'package:google_maps_webservice/places.dart';
+
+const kGoogleApiKey = "AIzaSyCPF7ygz63Zj5RWZ_wU4G61JTynfPRjOMg";
 
 /// Package photo screen
 class PackagePhotosScreen extends StatefulWidget {
@@ -37,6 +45,8 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
 
   FocusNode _placeNameFocus = new FocusNode();
   FocusNode _descriptionFocus = new FocusNode();
+
+  late List<ActivityDestinationModel> destinationList;
 
   Stack _default() {
     return Stack(
@@ -88,6 +98,16 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         )
       ],
     );
+  }
+
+  String latitute = '';
+  String longitude = '';
+
+  @override
+  void initState() {
+    super.initState();
+
+    destinationList = [];
   }
 
   @override
@@ -142,7 +162,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.gallery,
-                                      imageQuality: 1);
+                                      imageQuality: 10);
 
                               if (image1 == null) {
                                 return;
@@ -243,7 +263,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 1);
+                                          imageQuality: 10);
                                   if (image2 == null) {
                                     return;
                                   }
@@ -344,7 +364,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 1);
+                                          imageQuality: 10);
 
                                   if (image3 == null) {
                                     return;
@@ -460,8 +480,9 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                     const Text(''),
                   SizedBox(height: 20.h),
                   TextField(
+                    onTap: _handlePressButton,
+                    readOnly: true,
                     controller: _placeName,
-                    focusNode: _placeNameFocus,
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
@@ -500,7 +521,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                     children: <Widget>[
                       Expanded(
                         child: Text(
-                          AppTextConstants.addNewDescription,
+                          AppTextConstants.addNewDestination,
                           style: const TextStyle(
                             fontWeight: FontWeight.w700,
                           ),
@@ -517,15 +538,22 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 23,
+                        child: GestureDetector(
+                          onTap: addDestination,
+                          child: const Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 23,
+                          ),
                         ),
                       ),
                       SizedBox(height: 20.h),
                     ],
-                  )
+                  ),
+                  if (destinationList.isNotEmpty)
+                    _gridKeyword()
+                  else
+                    const SizedBox(),
                 ],
               ),
             ),
@@ -559,51 +587,243 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
     );
   }
 
+  Future<void> addDestination() async {
+    if (_placeName.text.isEmpty || _description.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
+          .show(context);
+    } else {
+      if (_uploadCount == 1) {
+        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+        final String base64Image1 = base64Encode(await image1Bytes);
+
+        destinationList.add(ActivityDestinationModel(
+            placeName: _placeName.text,
+            placeDescription: _description.text,
+            img1Holder: base64Image1,
+            latitude: latitute,
+            longitude: longitude));
+      } else if (_uploadCount == 2) {
+        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+        final String base64Image1 = base64Encode(await image1Bytes);
+
+        final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
+        final String base64Image2 = base64Encode(await image2Bytes);
+
+        destinationList.add(ActivityDestinationModel(
+            placeName: _placeName.text,
+            placeDescription: _description.text,
+            img1Holder: base64Image1,
+            img2Holder: base64Image2,
+            latitude: latitute,
+            longitude: longitude));
+      } else if (_uploadCount == 3) {
+        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+        final String base64Image1 = base64Encode(await image1Bytes);
+
+        final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
+        final String base64Image2 = base64Encode(await image2Bytes);
+
+        final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
+        final String base64Image3 = base64Encode(await image3Bytes);
+
+        destinationList.add(ActivityDestinationModel(
+            placeName: _placeName.text,
+            placeDescription: _description.text,
+            img1Holder: base64Image1,
+            img2Holder: base64Image2,
+            img3Holder: base64Image3,
+            latitude: latitute,
+            longitude: longitude));
+      }
+      setState(() {
+        _placeName = TextEditingController(text: '');
+        _description = TextEditingController(text: '');
+        image1 = null;
+        image2 = null;
+        image3 = null;
+        _uploadCount = 0;
+        latitute = '';
+        longitude = '';
+      });
+    }
+  }
+
+  GridView _gridKeyword() {
+    return GridView.count(
+      shrinkWrap: true,
+      padding: EdgeInsets.zero,
+      crossAxisCount: 2,
+      childAspectRatio: 2.5,
+      children: List.generate(destinationList.length, (int index) {
+        return Padding(
+          padding:
+              EdgeInsets.only(right: 5.w, left: 5.w, top: 10.h, bottom: 10.h),
+          child: Container(
+            width: 15.w,
+            height: 25.h,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.r),
+              color: Colors.white,
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: AppColors.grey,
+                  spreadRadius: 0.8,
+                ),
+              ],
+            ),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(
+                      destinationList[index].placeName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        destinationList.removeAt(index);
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.close,
+                    ))
+              ],
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
   Future<void> navigateGuideRuleScreen(
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
-    if (_uploadCount == 1) {
-      final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-      final String base64Image1 = base64Encode(await image1Bytes);
+    if (_placeName.text.isEmpty || _description.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
+          .show(context);
+    } else {
+      if (_uploadCount == 1) {
+        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+        final String base64Image1 = base64Encode(await image1Bytes);
 
-      details['snapshot_img_1'] = base64Image1;
-    } else if (_uploadCount == 2) {
-      final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-      final String base64Image1 = base64Encode(await image1Bytes);
+        details['snapshot_img_1'] = base64Image1;
+        destinationList.add(ActivityDestinationModel(
+            placeName: _placeName.text,
+            placeDescription: _description.text,
+            img1Holder: base64Image1,
+            latitude: latitute,
+            longitude: longitude));
+      } else if (_uploadCount == 2) {
+        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+        final String base64Image1 = base64Encode(await image1Bytes);
 
-      final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-      final String base64Image2 = base64Encode(await image2Bytes);
+        final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
+        final String base64Image2 = base64Encode(await image2Bytes);
 
-      details['snapshot_img_1'] = base64Image1;
-      details['snapshot_img_2'] = base64Image2;
-    } else if (_uploadCount == 3) {
-      final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-      final String base64Image1 = base64Encode(await image1Bytes);
+        details['snapshot_img_1'] = base64Image1;
+        details['snapshot_img_2'] = base64Image2;
 
-      final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-      final String base64Image2 = base64Encode(await image2Bytes);
+        destinationList.add(ActivityDestinationModel(
+            placeName: _placeName.text,
+            placeDescription: _description.text,
+            img1Holder: base64Image1,
+            img2Holder: base64Image2,
+            latitude: latitute,
+            longitude: longitude));
+      } else if (_uploadCount == 3) {
+        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+        final String base64Image1 = base64Encode(await image1Bytes);
 
-      final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
-      final String base64Image3 = base64Encode(await image3Bytes);
+        final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
+        final String base64Image2 = base64Encode(await image2Bytes);
 
-      details['snapshot_img_1'] = base64Image1;
-      details['snapshot_img_2'] = base64Image2;
-      details['snapshot_img_3'] = base64Image3;
+        final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
+        final String base64Image3 = base64Encode(await image3Bytes);
+
+        details['snapshot_img_1'] = base64Image1;
+        details['snapshot_img_2'] = base64Image2;
+        details['snapshot_img_3'] = base64Image3;
+        destinationList.add(ActivityDestinationModel(
+            placeName: _placeName.text,
+            placeDescription: _description.text,
+            img1Holder: base64Image1,
+            img2Holder: base64Image2,
+            img3Holder: base64Image3,
+            latitude: latitute,
+            longitude: longitude));
+      }
+
+      details['upload_count'] = _uploadCount;
+      details['place_name'] = _placeName.text;
+      details['place_description'] = _description.text;
+      details['destination_list'] = destinationList;
+      await Navigator.pushNamed(context, '/guide_rule', arguments: details);
     }
-    details['upload_count'] = _uploadCount;
-    details['place_name'] = _placeName.text;
-    details['place_description'] = _description.text;
-
-    await Navigator.pushNamed(context, '/guide_rule', arguments: details);
   }
-  
+
+  Future<void> _handlePressButton() async {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    Prediction? p = await PlacesAutocomplete.show(
+      context: context,
+      apiKey: kGoogleApiKey,
+      radius: 10000000,
+      types: [],
+      strictbounds: false,
+      mode: Mode.overlay,
+      language: 'en',
+      decoration: InputDecoration(
+        hintText: 'Search',
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(
+            color: Colors.white,
+          ),
+        ),
+      ),
+      components: [
+        Component(Component.country, screenArguments['country_code'])
+      ],
+    );
+
+    await displayPrediction(p, context);
+  }
+
+  Future<void> displayPrediction(Prediction? p, BuildContext context) async {
+    if (p != null) {
+      // get detail (lat/lng)
+      GoogleMapsPlaces _places = GoogleMapsPlaces(
+        apiKey: kGoogleApiKey,
+        apiHeaders: await const GoogleApiHeaders().getHeaders(),
+      );
+      PlacesDetailsResponse detail =
+          await _places.getDetailsByPlaceId(p.placeId!);
+      final lat = detail.result.geometry!.location.lat;
+      final lng = detail.result.geometry!.location.lng;
+
+      setState(() {
+        _placeName = TextEditingController(text: p.description);
+        latitute = lat.toString();
+        longitude = lng.toString();
+      });
+    }
+  }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
-    ..add(DiagnosticsProperty<File?>('image2', image2))
-    ..add(DiagnosticsProperty<File?>('image1', image1))
-    ..add(DiagnosticsProperty<File?>('image3', image3));
+      ..add(DiagnosticsProperty<File?>('image2', image2))
+      ..add(DiagnosticsProperty<File?>('image1', image1))
+      ..add(DiagnosticsProperty<File?>('image3', image3));
   }
 }

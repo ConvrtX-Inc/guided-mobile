@@ -102,7 +102,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
           children: <Widget>[
             GoogleMap(
               initialCameraPosition: const CameraPosition(
-                target: LatLng(32.527346929217615, 53.74507673728466),
+                target: LatLng(57.818582, -101.760181),
                 zoom: 10,
               ),
               markers: Set<Marker>.of(_markers),

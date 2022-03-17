@@ -61,7 +61,7 @@ class _PopularGuidesState extends State<PopularGuides> {
             assetPath: 'assets/images/png/hunting_marker.png',
             width: 150.w,
             height: 150.h),
-        position: const LatLng(32.41466290553936, 53.66990581798554),
+        position: const LatLng(57.818582, -101.760181),
       ),
       Marker(
         markerId: const MarkerId('marker2'),
@@ -69,7 +69,7 @@ class _PopularGuidesState extends State<PopularGuides> {
             assetPath: 'assets/images/png/hunting_marker.png',
             width: 150.w,
             height: 150.h),
-        position: const LatLng(32.418354764794636, 53.63271757672727),
+        position: const LatLng(57.874333, -101.725262),
       ),
       Marker(
         markerId: const MarkerId('marker3'),
@@ -77,7 +77,7 @@ class _PopularGuidesState extends State<PopularGuides> {
             assetPath: 'assets/images/png/hunting_marker.png',
             width: 150.w,
             height: 150.h),
-        position: const LatLng(32.42270518531192, 53.77571594613791),
+        position: const LatLng(57.827880, -101.943505),
       ),
       Marker(
         markerId: const MarkerId('marker4'),
@@ -85,7 +85,7 @@ class _PopularGuidesState extends State<PopularGuides> {
             assetPath: 'assets/images/png/hunting_marker.png',
             width: 150.w,
             height: 150.h),
-        position: const LatLng(32.527346929217615, 53.74507673728466),
+        position: const LatLng(57.775161, -101.879487),
       ),
     ];
 
@@ -101,7 +101,7 @@ class _PopularGuidesState extends State<PopularGuides> {
       children: <Widget>[
         GoogleMap(
           initialCameraPosition: const CameraPosition(
-            target: LatLng(32.4279, 53.6880),
+            target: LatLng(57.818582, -101.760181),
             zoom: 10,
           ),
           markers: Set<Marker>.of(_markers),

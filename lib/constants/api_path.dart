@@ -94,4 +94,22 @@ class AppAPIPath {
 
   /// Returns otp url
   static String otpUrl = 'api/v1/auth/forgot/confirm/otp';
+
+  /// Returns contact us url
+  static String contactUsUrl = 'api/v1/contact-us';
+
+  /// Returns guide rules and what to bring url
+  static String guideRules = 'api/v1/rules-what-to-bring';
+
+  /// Returns local laws and taxes url
+  static String localLawandTaxes = 'api/v1/laws-and-taxes';
+
+  /// Returns waiver url
+  static String waiverUrl = 'api/v1/waivers';
+
+  /// Returns activity event
+  static String activityEventUrl = 'api/v1/activity-events';
+
+   /// Returns event image
+  static String getEventImage = 'api/v1/activity-event-image';
 }

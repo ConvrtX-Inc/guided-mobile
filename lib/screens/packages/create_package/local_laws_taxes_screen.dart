@@ -1,4 +1,5 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable
+import 'package:advance_notification/advance_notification.dart';
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/packages/create_package/waiver_screen.dart';
 
 /// Local laws taxes screen
 class LocalLawsTaxesScreen extends StatefulWidget {
@@ -28,7 +28,7 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
   void initState() {
     super.initState();
 
-    _localLawsTaxes = TextEditingController(text: AppTextConstants.loremIpsum);
+    _localLawsTaxes = TextEditingController(text: 'Text');
   }
 
   @override
@@ -196,8 +196,13 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
-    /// Local Laws and taxes Textfield *insert here
-    await Navigator.pushNamed(context, '/waiver', arguments: details);
+    if (_localLawsTaxes.text.isNotEmpty) {
+      details['local_law_and_taxes'] = _localLawsTaxes.text;
+      await Navigator.pushNamed(context, '/waiver', arguments: details);
+    } else {
+      AdvanceSnackBar(message: ErrorMessageConstants.emptyLocalLaw)
+          .show(context);
+    }
   }
 
   @override

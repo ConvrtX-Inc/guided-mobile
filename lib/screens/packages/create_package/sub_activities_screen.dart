@@ -543,7 +543,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
               borderRadius: BorderRadius.circular(16.r),
             ),
             // width: width,
-            height: 120.w,
+            height: 130.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
@@ -720,7 +720,8 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
       'sub_activity_1': subActivities1Txt,
       'sub_activity_2': subActivities2Txt,
       'sub_activity_3': subActivities3Txt,
-      'note': _note.text
+      'note': _note.text,
+      'activity_package_id': ''
     };
 
     print('Details: $details');

@@ -1,5 +1,6 @@
 import 'package:guided/models/badgesModel.dart';
 import 'package:guided/models/faq.dart';
+import 'package:guided/models/message.dart';
 
 /// Class for app constant list
 class AppListConstants {
@@ -14,6 +15,27 @@ class AppListConstants {
     'Sent',
     'Archive'
   ];
+
+  /// generate mock data
+  static List<Message> getMessages() {
+    return <Message>[
+      Message(
+          id: 1,
+          name: 'Ann Sasha',
+          message: 'Hello, are we good for the hike at 2 pm?',
+          imgUrl: 'assets/images/png/pmessage1.png'),
+      Message(
+          id: 2,
+          name: 'Mark Henrry',
+          message: "Sounds like fun, can't wait to get out on the lake",
+          imgUrl: 'assets/images/png/pmessage2.png'),
+      Message(
+          id: 3,
+          name: 'David Bill',
+          message: 'I am happy to give you a discount for 5 or more people',
+          imgUrl: 'assets/images/png/pmessage3.png'),
+    ];
+  }
 
   /// use in message offer screen
   static List<String> packages = <String>['Basic', 'Premium'];
@@ -61,15 +83,37 @@ class AppListConstants {
     BadgesModel(10, 'Motor', 'assets/images/badge-Motor.png'),
   ];
 
+  // /// Sample only
+  // static List<dynamic> timeList = [
+  //   ['7:00 - 8:00 AM', true],
+  //   ['9:00 - 10:00 AM', false],
+  //   ['11:00 - 12:00 PM', false],
+  //   ['12:00 - 1:00 PM', false],
+  //   ['2:00 - 3:00 PM', false],
+  //   ['4:00 - 5:00 PM', false],
+  //   ['6:00 - 7:00 PM', false],
+  // ];
+
   /// Sample only
   static List<dynamic> timeList = [
-    ['7:00 - 8:00 AM', true],
-    ['9:00 - 10:00 AM', false],
-    ['11:00 - 12:00 PM', false],
-    ['12:00 - 1:00 PM', false],
-    ['2:00 - 3:00 PM', false],
-    ['4:00 - 5:00 PM', false],
-    ['6:00 - 7:00 PM', false],
+    ['7:00 - 8:00 AM'],
+    ['9:00 - 10:00 AM'],
+    ['11:00 - 12:00 PM'],
+    ['12:00 - 1:00 PM'],
+    ['2:00 - 3:00 PM'],
+    ['4:00 - 5:00 PM'],
+    ['6:00 - 7:00 PM'],
+  ];
+
+  /// sample only
+  static List<dynamic> timeListValues = [
+    [false],
+    [false],
+    [false],
+    [false],
+    [false],
+    [false],
+    [false],
   ];
 
   /// availavilityTime
@@ -122,6 +166,7 @@ class AppListConstants {
     'Rejected'
   ];
 
+  ///
   static List<String> calendarMonths = <String>[
     'January',
     'February',
@@ -136,7 +181,7 @@ class AppListConstants {
     'November',
     'December'
   ];
-
+  
   /// use in request filter screen
   static List<String> activityIcons = <String>[
     'assets/images/png/activity_icon0.png',
@@ -150,4 +195,7 @@ class AppListConstants {
     'assets/images/png/activity_icon8.png',
     'assets/images/png/activity_icon9.png',
   ];
+
+   ///
+  static List<int> numberList = <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 }

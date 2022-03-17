@@ -755,6 +755,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
       'country': _country.text,
       'address':
           '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
+      'activities': 'Walking, Hiking',
       'street': _street.text,
       'city': _city.text,
       'province': _province.text,

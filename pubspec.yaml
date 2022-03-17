@@ -42,7 +42,7 @@ dependencies:
   carousel_slider: ^4.0.0 #this library is for the carousel
   country_code_picker: ^2.0.2 #this library is for the list of phone country code
   custom_check_box: ^0.0.4
-  table_calendar: ^3.0.3 #this library is for calendar api
+  table_calendar: ^3.0.4 #this library is for calendar api
   flutter_screenutil: ^5.0.0+2
   flutter_svg: ^1.0.3
   get: ^4.6.1  #this library is for state management
@@ -69,13 +69,28 @@ dependencies:
   syncfusion_flutter_datepicker: ^19.4.53
   in_date_utils: ^1.0.2
   card_swiper: ^2.0.1
+<<<<<<< HEAD
   flutter_login_facebook: ^1.4.1
   loading_elevated_button: ^1.0.0+2
   google_sign_in: ^5.2.4
+=======
+  geolocator: ^8.2.0 # for getting the latitude and longitude
+  geocoding: ^2.0.4 # for converting latitude and longitude into address
+  geolocator_web: ^2.1.4
+  flutter_google_places: ^0.3.0
+  google_maps_webservice: ^0.0.20-nullsafety.5
+  google_api_headers: ^1.1.1
+  flutter_dotenv: ^5.0.2
+  json_annotation: ^4.4.0
+>>>>>>> dev_vince_copy
   # flutter_expanded_tile: ^0.3.6
 dev_dependencies:
+  build_runner: ^2.0.0
+  json_serializable: ^6.0.0
+
   flutter_test:
     sdk: flutter
+  
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -103,6 +118,7 @@ flutter:
     - assets/images/2x/
     - assets/images/3x/
     - assets/images/jpg/
+    - ./.env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

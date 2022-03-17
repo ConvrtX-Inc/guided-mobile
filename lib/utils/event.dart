@@ -7,7 +7,7 @@ class EventUtils {
   static List<HomeModel> getMockEventFeatures() {
     return [
       HomeModel(
-        featureName: 'Roving on Blue Sea',
+        featureName: 'Rowing on Blue Lake.',
         featureImageUrl: 'assets/images/png/event1.png',
         featureStarRating: 4.9,
         featureFee: 200,

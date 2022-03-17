@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/utils/secure_storage.dart';
@@ -38,23 +39,58 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                 children: <Widget>[
                   InkWell(
                     onTap: () async {
+                      final Map<String, dynamic> details = {
+                        'user_type': 'traveller'
+                      };
                       await SecureStorage.saveValue(
                               key: AppTextConstants.userType,
                               value: 'traveller')
                           .then((_) {
-                        Navigator.of(context).pushNamed('/user_on_boarding');
+                        Navigator.of(context)
+                            .pushNamed('/user_on_boarding', arguments: details);
                       });
                     },
-                    child: Image.asset(
-                      AssetsPath.touristImage,
+                    child: Container(
+                      width: double.infinity,
+                      height: 200.h,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                          border: Border.all(color: AppColors.galleryWhite)),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            SizedBox(
+                              width: 15.w,
+                            ),
+                            Text(
+                              'I\'m a Traveler',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'Gilroy',
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                            Image.asset(
+                              AssetsPath.rafikiImage,
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ]),
                     ),
+                  ),
+                  SizedBox(
+                    height: 20.h,
                   ),
                   InkWell(
                     onTap: () async {
+                      final Map<String, dynamic> details = {
+                        'user_type': 'guide'
+                      };
                       await SecureStorage.saveValue(
                               key: AppTextConstants.userType, value: 'guide')
                           .then((_) {
-                        Navigator.of(context).pushNamed('/user_on_boarding');
+                        Navigator.of(context)
+                            .pushNamed('/user_on_boarding', arguments: details);
                       });
                     },
                     child: Image.asset(

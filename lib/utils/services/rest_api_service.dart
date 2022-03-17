@@ -7,13 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:guided/constants/api_path.dart';
 
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/activity_destination_model.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
 import 'package:guided/models/currencies_model.dart';
+import 'package:guided/models/event_image_model.dart';
+import 'package:guided/models/event_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/outfitter_model.dart';
+import 'package:guided/models/package_destination_image_model.dart';
+import 'package:guided/models/package_destination_model.dart';
+import 'package:guided/models/package_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
@@ -23,7 +29,7 @@ import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/global_api_service.dart';
 import 'package:http/http.dart' as http;
 
-enum RequestType { GET, POST, PATCH }
+enum RequestType { GET, POST, PATCH, DELETE }
 
 /// Service for API Calls
 class APIServices {
@@ -61,7 +67,8 @@ class APIServices {
 
   /// This this Global function for creating api request
   Future<dynamic> request(String url, RequestType type,
-      {bool needAccessToken = false, Map<String, dynamic>? data}) async {
+      {bool needAccessToken = false,
+      Map<String, dynamic> data = const <String, dynamic>{}}) async {
     final Uri completeUri = Uri.parse('$apiBaseMode$apiBaseUrl/$url');
     String? token;
     dynamic body;
@@ -75,6 +82,9 @@ class APIServices {
         break;
       case RequestType.PATCH:
         requestType = 'PATCH';
+        break;
+      case RequestType.DELETE:
+        requestType = 'DELETE';
         break;
     }
 
@@ -318,7 +328,7 @@ class APIServices {
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
-  /// API service for currencies
+   /// API service for currencies
   Future<List<ActivityPackage>> getActivityPackages() async {
     final http.Response response = await http.get(
         Uri.parse(
@@ -334,5 +344,105 @@ class APIServices {
         (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
+  }
+
+  /// API service for advertisement model
+  Future<PackageModelData> getPackageData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final PackageModelData dataSummary =
+        PackageModelData.fromJson(json.decode(response.body));
+
+    return PackageModelData(packageDetails: dataSummary.packageDetails);
+  }
+
+  /// API service for package destination model
+  Future<PackageDestinationModelData> getPackageDestinationData(
+      String id) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityDestinationDetails}?s={"activity_package_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final PackageDestinationModelData dataSummary =
+        PackageDestinationModelData.fromJson(json.decode(response.body));
+
+    return PackageDestinationModelData(
+        packageDestinationDetails: dataSummary.packageDestinationDetails);
+  }
+
+  /// API service for package destination image model
+  Future<PackageDestinationImageModelData> getPackageDestinationImageData(
+      String id) async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityDestinationImage}?s={"activity_package_destination_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<PackageDestinationImageDetailsModel> details =
+        <PackageDestinationImageDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final PackageDestinationImageDetailsModel imageModel =
+          PackageDestinationImageDetailsModel.fromJson(data);
+      details.add(imageModel);
+    }
+
+    return PackageDestinationImageModelData(
+        packageDestinationImageDetails: details);
+  }
+
+  /// API service for event model
+  Future<EventModelData> getEventData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityEventUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final EventModelData dataSummary =
+        EventModelData.fromJson(json.decode(response.body));
+
+    return EventModelData(eventDetails: dataSummary.eventDetails);
+  }
+
+  /// API service for event image model
+  Future<EventImageModelData> getEventImageData(String id) async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getEventImage}?s={"activity_event_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<EventImageDetailsModel> details = <EventImageDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final EventImageDetailsModel imageModel =
+          EventImageDetailsModel.fromJson(data);
+      details.add(imageModel);
+    }
+
+    return EventImageModelData(eventImageDetails: details);
   }
 }

@@ -1,10 +1,12 @@
-// ignore_for_file: file_names, always_specify_types, non_constant_identifier_names, unnecessary_lambdas, prefer_final_fields, cast_nullable_to_non_nullable
+// ignore_for_file: file_names, always_specify_types, non_constant_identifier_names, unnecessary_lambdas, prefer_final_fields, cast_nullable_to_non_nullable, avoid_dynamic_calls
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+
 
 /// Free Service Screen
 class FreeServicesScreen extends StatefulWidget {
@@ -196,6 +198,7 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
   Future<void> navigatePackagePhotoScreen(
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
+
     details['services'] = services;
     details['services_length'] = services.length.toString();
 

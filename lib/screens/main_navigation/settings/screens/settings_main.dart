@@ -25,18 +25,26 @@ class SettingsMain extends StatefulWidget {
   State<SettingsMain> createState() => _SettingsMainState();
 }
 
-class _SettingsMainState extends State<SettingsMain> {
+class _SettingsMainState extends State<SettingsMain>
+    with AutomaticKeepAliveClientMixin<SettingsMain> {
+  @override
+  bool get wantKeepAlive => true;
+
   /// Get settings items mocked data
   final List<SettingsModel> settingsItems =
       SettingsUtils.getMockedDataSettings();
 
+  late Future<ProfileModelData> _loadingData;
+
   @override
   void initState() {
+    _loadingData = APIServices().getProfileData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -92,7 +100,7 @@ class _SettingsMainState extends State<SettingsMain> {
                   ),
                   Expanded(
                     child: FutureBuilder<ProfileModelData>(
-                        future: APIServices().getProfileData(),
+                        future: _loadingData,
                         builder: (BuildContext context,
                             AsyncSnapshot<dynamic> snapshot) {
                           Widget _displayWidget;
@@ -200,7 +208,7 @@ class _SettingsMainState extends State<SettingsMain> {
                 Column(
                   children: <Widget>[
                     Text(
-                      '${detail.firstName} ${detail.lastName}',
+                      '${detail.firstName}',
                       style: TextStyle(
                           letterSpacing: 1,
                           fontSize: 18.sp,
