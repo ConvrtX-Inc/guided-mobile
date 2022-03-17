@@ -42,39 +42,7 @@ class WelcomeScreen extends StatelessWidget {
                   child: Column(
                     children: <Widget>[
                       Text(
-                        'ADVENTURE - DISCOVER - EXPLORE',
-                        style: TextStyle(
-                            color: AppColors.grey, fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(
-                        height: 2.h,
-                      ),
-                      Text(
-                        'Book your next Adventure!',
-                        style: TextStyle(
-                            color: AppColors.grey, fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(
-                        height: 2.h,
-                      ),
-                      Text(
-                        'Discover Local Guides wherever you travel.',
-                        style: TextStyle(
-                            color: AppColors.grey, fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(
-                        height: 2.h,
-                      ),
-                      Text(
-                        'Explore the Outdoors!',
-                        style: TextStyle(
-                            color: AppColors.grey, fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(
-                        height: 2.h,
-                      ),
-                      Text(
-                        'ADVENTURE AWAITS!',
+                        AppTextConstants.loremIpsum,
                         style: TextStyle(
                             color: AppColors.grey, fontWeight: FontWeight.w700),
                       ),

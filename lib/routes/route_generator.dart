@@ -17,6 +17,7 @@ import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.da
 import 'package:guided/screens/faq/faq.dart';
 
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
+import 'package:guided/screens/main_navigation/content/event/event_add.dart';
 import 'package:guided/screens/main_navigation/content/packages/package_view.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_inbox.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_map.dart';

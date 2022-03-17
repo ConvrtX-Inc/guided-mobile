@@ -49,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _emailFocus.requestFocus();
       AdvanceSnackBar(message: ErrorMessageConstants.emailInvalidorEmpty)
           .show(context);
+      setState(() => buttonIsLoading = false);
       return;
     }
 
@@ -56,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _passwordFocus.requestFocus();
       AdvanceSnackBar(message: ErrorMessageConstants.emptyPassword)
           .show(context);
+      setState(() => buttonIsLoading = false);
       return;
     }
     setState(() => buttonIsLoading = true);
@@ -92,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
         AdvanceSnackBar(
                 message: ErrorMessageConstants.loginWrongEmailorPassword)
             .show(context);
+        setState(() => buttonIsLoading = false);
       } else {
         final UserModel user =
             UserModel.fromJson(json.decode(response.successResponse));

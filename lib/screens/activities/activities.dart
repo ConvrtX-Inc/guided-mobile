@@ -61,7 +61,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Select Your Prefered Activities.',
+                      'Select Your Preferred Activities.',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 25.sp,

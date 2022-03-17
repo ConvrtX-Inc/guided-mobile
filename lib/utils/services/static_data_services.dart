@@ -18,10 +18,10 @@ class StaticDataService {
           featureImage: 'assets/images/png/activity3.png'),
       Activity(
           id: '2',
-          name: 'Paddle',
-          path: AssetsPath.paddle,
-          distance: '4.5 hours drive',
-          featureImage: 'assets/images/png/activity2.png'),
+          name: 'Hiking',
+          path: AssetsPath.hiking,
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/jpg/hiking.jpg'),
       Activity(
           id: '3',
           name: 'Hunt',
@@ -40,24 +40,24 @@ class StaticDataService {
           path: AssetsPath.eco,
           distance: '3.5 hours drive',
           featureImage: 'assets/images/jpg/eco_tour.jpg'),
-      // Activity(
-      //     id: '6',
-      //     name: 'Retreat',
-      //     path: AssetsPath.retreat,
-      //     distance: '3.5 hours drive',
-      //     featureImage: 'assets/images/jpg/retreat.jpg'),
-      // Activity(
-      //     id: '7',
-      //     name: 'Paddle spot',
-      //     path: AssetsPath.paddle,
-      //     distance: '3.5 hours drive',
-      //     featureImage: 'assets/images/png/activity1.png'),
-      // Activity(
-      //     id: '8',
-      //     name: 'Discovery',
-      //     path: AssetsPath.discovery,
-      //     distance: '3.5 hours drive',
-      //     featureImage: 'assets/images/png/activity1.png'),
+      Activity(
+          id: '6',
+          name: 'Retreat',
+          path: AssetsPath.retreat,
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/jpg/retreat.jpg'),
+      Activity(
+          id: '7',
+          name: 'Paddle Spot',
+          path: AssetsPath.paddle,
+          distance: '4.5 hours drive',
+          featureImage: 'assets/images/png/activity2.png'),
+      Activity(
+          id: '8',
+          name: 'Discovery',
+          path: AssetsPath.discovery,
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/png/activity1.png'),
       Activity(
           id: '9',
           name: 'Motor',

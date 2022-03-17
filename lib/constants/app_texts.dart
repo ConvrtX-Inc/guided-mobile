@@ -846,6 +846,12 @@ class AppTextConstants {
 
   /// Returns Add schedule text
   static String addSchedule = 'Add Schedule';
+
+  /// Returns Add New Event text
+  static String addNewEvent = 'Add New Event';
+
+  /// Returns Fee text
+  static String fee = 'Fee (if applicable)';
 }
 
 /// Class for error messages text
