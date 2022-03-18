@@ -5,8 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/models/discovery_hub.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/widget/tab_discovery_hub_features.dart';
+import 'package:guided/screens/main_navigation/traveller/traveller_tabbar.dart';
 import 'package:guided/utils/event.dart';
-
 
 class TabDiscoveryHub extends StatefulWidget {
   const TabDiscoveryHub({Key? key}) : super(key: key);
@@ -32,25 +32,33 @@ class _TabDiscoveryHubState extends State<TabDiscoveryHub> {
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
-                      child: Container(
-                        height: 60.h,
-                        width: 58.w,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(15.r),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const TravellerTabScreen()));
+                        },
+                        child: Container(
+                          height: 60.h,
+                          width: 58.w,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
+                            ),
                           ),
-                        ),
-                        child: Center(
-                          child: Container(
-                            height: 20.h,
-                            width: 20.w,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(
-                                    'assets/images/png/green_house_outlined.png'),
-                                fit: BoxFit.contain,
+                          child: Center(
+                            child: Container(
+                              height: 20.h,
+                              width: 20.w,
+                              decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                      'assets/images/png/green_house_outlined.png'),
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
                           ),

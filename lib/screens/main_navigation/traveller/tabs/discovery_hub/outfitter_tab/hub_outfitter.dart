@@ -22,6 +22,7 @@ import 'package:guided/models/hub_outfitter.dart';
 import 'package:guided/screens/main_navigation/content/event/widget/event_features.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/widget/hub_outfitter_features.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/widget/tab_discovery_hub_features.dart';
+import 'package:guided/screens/main_navigation/traveller/traveller_tabbar.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/utils/event.dart';
@@ -55,25 +56,33 @@ class _TabDiscoveryHubOutfitterState extends State<TabDiscoveryHubOutfitter> {
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 20.h),
-                      child: Container(
-                        height: 60.h,
-                        width: 58.w,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(15.r),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const TravellerTabScreen()));
+                        },
+                        child: Container(
+                          height: 60.h,
+                          width: 58.w,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
+                            ),
                           ),
-                        ),
-                        child: Center(
-                          child: Container(
-                            height: 20.h,
-                            width: 20.w,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(
-                                    'assets/images/png/green_house_outlined.png'),
-                                fit: BoxFit.contain,
+                          child: Center(
+                            child: Container(
+                              height: 20.h,
+                              width: 20.w,
+                              decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                      'assets/images/png/green_house_outlined.png'),
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
                           ),
@@ -125,7 +134,9 @@ class _TabDiscoveryHubOutfitterState extends State<TabDiscoveryHubOutfitter> {
                           Icons.arrow_back,
                           size: 20,
                         ),
-                        SizedBox(width: 5.w,),
+                        SizedBox(
+                          width: 5.w,
+                        ),
                         Text(
                           'Back To Category',
                           style: TextStyle(
