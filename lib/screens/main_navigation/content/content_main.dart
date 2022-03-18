@@ -22,7 +22,11 @@ class MainContent extends StatefulWidget {
   _MainContentState createState() => _MainContentState(initIndex);
 }
 
-class _MainContentState extends State<MainContent> {
+class _MainContentState extends State<MainContent>
+    with AutomaticKeepAliveClientMixin<MainContent> {
+  @override
+  bool get wantKeepAlive => true;
+
   _MainContentState(this.initIndex);
 
   int initIndex;
@@ -65,6 +69,8 @@ class _MainContentState extends State<MainContent> {
   /// Custom tab bar view
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    SystemChrome.setEnabledSystemUIOverlays([]);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,

@@ -166,7 +166,7 @@ class _ActivityPackagesState extends State<ActivityPackages> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'St. John\'s, Newfoundland',
+                'Wilderness Adventure Co.',
                 style: TextStyle(
                     fontFamily: 'Gilroy',
                     fontSize: 20.sp,

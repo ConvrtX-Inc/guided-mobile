@@ -169,7 +169,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.gallery,
-                                      imageQuality: 1);
+                                      imageQuality: 10);
 
                               if (image1 == null) {
                                 return;
@@ -270,7 +270,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 1);
+                                          imageQuality: 10);
                                   if (image2 == null) {
                                     return;
                                   }
@@ -371,7 +371,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 1);
+                                          imageQuality: 10);
 
                                   if (image3 == null) {
                                     return;
@@ -830,6 +830,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
       'country': _country.text,
       'address':
           '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}',
+      'activities': 'Walking, Hiking',
       'street': _street.text,
       'city': _city.text,
       'province': _province.text,
@@ -837,7 +838,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
       'ad_date': _date.text,
       'description': _description.text,
       'price': int.parse(_price.text),
-      'is_published': false
+      'is_published': true
     };
 
     final dynamic response = await APIServices().request(

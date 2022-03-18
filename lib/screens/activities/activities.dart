@@ -61,7 +61,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Select Your Prefered Activities.',
+                      'Select Your Preferred Activities.',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 25.sp,
@@ -168,7 +168,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         // margin: const EdgeInsets.all(20),
         child: Container(
           transform: Matrix4.translationValues(-6, 10, 0),
-          height: 121.h,
+          height: 150.h,
           width: 97.w,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

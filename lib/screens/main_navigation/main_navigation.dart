@@ -24,7 +24,10 @@ class MainNavigationScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState(navIndex, contentIndex);
 }
 
-class _HomeScreenState extends State<MainNavigationScreen> {
+class _HomeScreenState extends State<MainNavigationScreen>
+    with AutomaticKeepAliveClientMixin<MainNavigationScreen> {
+  @override
+  bool get wantKeepAlive => true;
   int _selectedIndex = 0;
   int _selectedContent = 0;
 
@@ -62,8 +65,13 @@ class _HomeScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
-        body: _mainNavigationWidgetOptions.elementAt(_selectedIndex),
+        // body: _mainNavigationWidgetOptions.elementAt(_selectedIndex),
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _mainNavigationWidgetOptions,
+        ),
         bottomNavigationBar: GuidedBottomNavigationBar(
             selectedIndex: _selectedIndex,
             setBottomNavigationIndex: setBottomNavigationIndexHandler));

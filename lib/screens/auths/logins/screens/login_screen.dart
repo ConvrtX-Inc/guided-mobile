@@ -31,9 +31,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool hidePassword = true;
   bool buttonIsLoading = false;
-
   @override
   void initState() {
+    // _emailController = TextEditingController(text: 'traveller.convrtx@gmail.com');
     _emailController = TextEditingController(text: '');
     _passwordController = TextEditingController(text: '');
     super.initState();
@@ -49,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _emailFocus.requestFocus();
       AdvanceSnackBar(message: ErrorMessageConstants.emailInvalidorEmpty)
           .show(context);
+      setState(() => buttonIsLoading = false);
       return;
     }
 
@@ -56,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _passwordFocus.requestFocus();
       AdvanceSnackBar(message: ErrorMessageConstants.emptyPassword)
           .show(context);
+      setState(() => buttonIsLoading = false);
       return;
     }
     setState(() => buttonIsLoading = true);
@@ -92,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
         AdvanceSnackBar(
                 message: ErrorMessageConstants.loginWrongEmailorPassword)
             .show(context);
+        setState(() => buttonIsLoading = false);
       } else {
         final UserModel user =
             UserModel.fromJson(json.decode(response.successResponse));
@@ -278,7 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: width,
                     height: 60.h,
                     child: ElevatedButton(
-                      onPressed: () async => login(),
+                      onPressed: () async => buttonIsLoading ? null : login(),
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
@@ -290,11 +293,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         primary: AppColors.primaryGreen,
                         onPrimary: Colors.white, // <-- Splash color
                       ),
-                      child: Text(
-                        AppTextConstants.login,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
+                      child: buttonIsLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : Text(
+                              AppTextConstants.login,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
                     ),
                   ),
                   SizedBox(height: 20.h),

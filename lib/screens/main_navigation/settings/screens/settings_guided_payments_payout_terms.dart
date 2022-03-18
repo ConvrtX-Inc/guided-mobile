@@ -40,12 +40,14 @@ class _GuidedPaymentPayoutTermsState extends State<GuidedPaymentPayoutTerms> {
                     SizedBox(
                       width: 15.w,
                     ),
-                    Text(
-                      AppTextConstants.guidedPaymentPayoutTerms,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 24.sp,
+                    Expanded(
+                      child: Text(
+                        AppTextConstants.guidedPaymentPayoutTerms,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24.sp,
+                        ),
                       ),
                     ),
                   ],

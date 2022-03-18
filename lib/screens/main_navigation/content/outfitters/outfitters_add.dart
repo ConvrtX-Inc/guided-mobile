@@ -179,7 +179,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.gallery,
-                                      imageQuality: 1);
+                                      imageQuality: 10);
 
                               if (image1 == null) {
                                 return;
@@ -280,7 +280,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 1);
+                                          imageQuality: 10);
                                   if (image2 == null) {
                                     return;
                                   }
@@ -381,7 +381,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 1);
+                                          imageQuality: 10);
 
                                   if (image3 == null) {
                                     return;
@@ -866,7 +866,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
       'zip_code': _postalCode.text,
       'availability_date': _date.text,
       'description': _description.text,
-      'is_published': false
+      'is_published': true
     };
 
     final dynamic response = await APIServices().request(

@@ -1,47 +1,104 @@
-// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings
+// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings, no_default_cases, sort_constructors_first
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/home.dart';
-import 'package:guided/screens/main_navigation/content/packages/widget/package_destination_features.dart';
+import 'package:guided/models/package_destination_image_model.dart';
+import 'package:guided/models/package_destination_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/utils/home.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Advertisement View Screen
 class TabDescriptionView extends StatefulWidget {
+  final String id;
+  final String name;
+  final double fee;
+  final String description;
+  final int numberOfTourist;
+  final String services;
+  final double starRating;
+
   /// Constructor
-  const TabDescriptionView({Key? key}) : super(key: key);
+  const TabDescriptionView(
+      {Key? key,
+      required this.id,
+      required this.name,
+      required this.fee,
+      required this.description,
+      required this.numberOfTourist,
+      required this.services,
+      required this.starRating})
+      : super(key: key);
 
   @override
-  _TabDescriptionViewState createState() => _TabDescriptionViewState();
+  _TabDescriptionViewState createState() => _TabDescriptionViewState(
+      id, name, fee, description, numberOfTourist, services, starRating);
 }
 
-class _TabDescriptionViewState extends State<TabDescriptionView> {
+class _TabDescriptionViewState extends State<TabDescriptionView>
+    with AutomaticKeepAliveClientMixin<TabDescriptionView> {
+  @override
+  bool get wantKeepAlive => true;
+
+  _TabDescriptionViewState(
+      String id,
+      String name,
+      double fee,
+      String description,
+      int numberOfTourist,
+      String services,
+      double starRating);
+
   List<HomeModel> features = HomeUtils.getMockFeatures();
+  late Map<dynamic, String> value;
+  int activeIndex = 0;
+  late Future<PackageDestinationModelData> _loadingData;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final split = widget.services.split(',');
+    value = {for (int i = 0; i < split.length; i++) i: split[i]};
+
+    _loadingData = APIServices().getPackageDestinationData(widget.id);
+  }
 
   @override
   Widget build(BuildContext context) {
-    
+    super.build(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Ohaio Tour', style: AppTextStyle.txtStyle),
-                  Text('\$200', style: AppTextStyle.txtStyle)
+                  Text(widget.name, style: AppTextStyle.txtStyle),
+                  Text('\$${widget.fee}', style: AppTextStyle.txtStyle)
                 ],
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 25.w, top: 15.h, right: 25.w),
-              child: const Text(
-                  'Sample description goes here to explain about your package details.'),
+              padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
+              child: Text(
+                widget.description,
+                style: TextStyle(
+                    fontFamily: 'Gilroy',
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.doveGrey),
+              ),
             ),
             Padding(
               padding: EdgeInsets.only(top: 20.h, left: 25.w),
@@ -49,7 +106,14 @@ class _TabDescriptionViewState extends State<TabDescriptionView> {
                 children: <Widget>[
                   Text('Team', style: AppTextStyle.semiBoldStyle),
                   SizedBox(width: 55.w),
-                  const Text('5 Tourists'),
+                  Text(
+                    '${widget.numberOfTourist} Tourists',
+                    style: TextStyle(
+                        fontFamily: 'Gilroy',
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.doveGrey),
+                  ),
                 ],
               ),
             ),
@@ -102,179 +166,76 @@ class _TabDescriptionViewState extends State<TabDescriptionView> {
             ),
             Padding(
               padding: EdgeInsets.only(top: 20.h, left: 25.w),
-              child: Row(
-                children: <Widget>[
-                  Text(AppTextConstants.freeServices,
-                      style: AppTextStyle.semiBoldStyle),
-                  SizedBox(width: 5.w),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: AppColors.harp,
-                        border: Border.all(color: AppColors.harp),
-                        borderRadius: BorderRadius.all(Radius.circular(5.r))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(AppTextConstants.transport,
-                          style: TextStyle(color: AppColors.nobel)),
-                    ),
-                  ),
-                  SizedBox(width: 5.w),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: AppColors.harp,
-                        border: Border.all(color: AppColors.harp),
-                        borderRadius: BorderRadius.all(Radius.circular(5.r))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(AppTextConstants.breakfast,
-                          style: TextStyle(color: AppColors.nobel)),
-                    ),
-                  ),
-                  SizedBox(width: 5.w),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: AppColors.harp,
-                        border: Border.all(color: AppColors.harp),
-                        borderRadius: BorderRadius.all(Radius.circular(5.r))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(AppTextConstants.water,
-                          style: TextStyle(color: AppColors.nobel)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text('Name of Place No. 1', style: AppTextStyle.txtStyle),
-                  Transform.scale(
-                    scale: 0.8,
-                    child: Padding(
-                      padding: EdgeInsets.zero,
-                      child: Container(
-                        width: 50.w,
-                        height: 50.h,
-                        padding: EdgeInsets.zero,
-                        decoration: BoxDecoration(
-                            color: AppColors.tealGreen, shape: BoxShape.circle),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                            size: 15,
-                          ),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 15.w, right: 15.w),
               child: SizedBox(
-                height: 190.h,
-                child: Column(
+                height: 50.h,
+                child: Row(
                   children: <Widget>[
+                    Text(AppTextConstants.freeServices,
+                        style: AppTextStyle.semiBoldStyle),
+                    SizedBox(width: 5.w),
                     Expanded(
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: features.length,
-                            itemBuilder: (BuildContext ctx, int index) {
-                              return PackageDestinationFeatures(
-                                name: features[index].featureName,
-                                imageUrl: features[index].featureImageUrl,
-                                numberOfTourist:
-                                    features[index].featureNumberOfTourists,
-                                starRating: features[index].featureStarRating,
-                                fee: features[index].featureFee,
-                                dateRange: features[index].dateRange,
-                              );
-                            }))
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: value.length,
+                          itemBuilder: (BuildContext ctx, int index) {
+                            return Row(
+                              children: <Widget>[
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: AppColors.harp,
+                                      border: Border.all(color: AppColors.harp),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(5.r))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(value[index].toString(),
+                                        style:
+                                            TextStyle(color: AppColors.nobel)),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 5.w,
+                                )
+                              ],
+                            );
+                          }),
+                    )
                   ],
                 ),
               ),
             ),
-            Padding(
-                padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-                child: Text(
-                  AppTextConstants.loremIpsum,
-                  style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 14.sp,
-                      color: AppColors.osloGrey,
-                      fontWeight: FontWeight.w400),
-                )),
-            Padding(
-              padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text('Name of Place No. 2', style: AppTextStyle.txtStyle),
-                  Transform.scale(
-                    scale: 0.8,
-                    child: Padding(
-                      padding: EdgeInsets.zero,
-                      child: Container(
-                        width: 50.w,
-                        height: 50.h,
-                        padding: EdgeInsets.zero,
-                        decoration: BoxDecoration(
-                            color: AppColors.tealGreen, shape: BoxShape.circle),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                            size: 15,
-                          ),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            SizedBox(
+              height: 10.h,
             ),
-            Padding(
-              padding: EdgeInsets.only(left: 15.w, right: 15.w),
-              child: SizedBox(
-                height: 190.h,
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: features.length,
-                            itemBuilder: (BuildContext ctx, int index) {
-                              return PackageDestinationFeatures(
-                                name: features[index].featureName,
-                                imageUrl: features[index].featureImageUrl,
-                                numberOfTourist:
-                                    features[index].featureNumberOfTourists,
-                                starRating: features[index].featureStarRating,
-                                fee: features[index].featureFee,
-                                dateRange: features[index].dateRange,
-                              );
-                            }))
-                  ],
-                ),
-              ),
+            Column(
+              children: <Widget>[
+                FutureBuilder<PackageDestinationModelData>(
+                  future: _loadingData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    Widget _displayWidget;
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        _displayWidget = const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                        break;
+                      default:
+                        if (snapshot.hasError) {
+                          _displayWidget = Center(
+                              child: APIMessageDisplay(
+                            message: 'Result: ${snapshot.error}',
+                          ));
+                        } else {
+                          _displayWidget =
+                              buildPackageDestinationResult(snapshot.data!);
+                        }
+                    }
+                    return _displayWidget;
+                  },
+                )
+              ],
             ),
-            Padding(
-                padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-                child: Text(
-                  AppTextConstants.loremIpsum,
-                  style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 14.sp,
-                      color: AppColors.osloGrey,
-                      fontWeight: FontWeight.w400),
-                )),
             Padding(
               padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
               child: Row(
@@ -572,4 +533,149 @@ class _TabDescriptionViewState extends State<TabDescriptionView> {
       ),
     );
   }
+
+  Widget buildPackageDestinationResult(
+          PackageDestinationModelData packageDestinationData) =>
+      SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            if (packageDestinationData.packageDestinationDetails.isEmpty)
+              Padding(
+                padding: EdgeInsets.only(
+                    top: (MediaQuery.of(context).size.height / 3) - 40),
+                child: APIMessageDisplay(
+                  message: AppTextConstants.noResultFound,
+                ),
+              )
+            else
+              for (PackageDestinationDetailsModel detail
+                  in packageDestinationData.packageDestinationDetails)
+                buildPackageDestinationInfo(detail)
+          ],
+        ),
+      );
+
+  Widget buildPackageDestinationInfo(PackageDestinationDetailsModel details) =>
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    details.name,
+                    style: TextStyle(
+                        fontFamily: 'Gilroy',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16.sp),
+                  ),
+                ),
+                Transform.scale(
+                  scale: 0.8,
+                  child: Padding(
+                    padding: EdgeInsets.zero,
+                    child: Container(
+                      width: 50.w,
+                      height: 50.h,
+                      padding: EdgeInsets.zero,
+                      decoration: BoxDecoration(
+                          color: AppColors.tealGreen, shape: BoxShape.circle),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                          size: 15,
+                        ),
+                        onPressed: () {},
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          FutureBuilder<PackageDestinationImageModelData>(
+            future: APIServices().getPackageDestinationImageData(details.id),
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasData) {
+                final PackageDestinationImageModelData packageDestinationImage =
+                    snapshot.data;
+                final int length = packageDestinationImage
+                    .packageDestinationImageDetails.length;
+                return Center(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.26,
+                    child: ListView(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      children: List<Widget>.generate(length, (int i) {
+                        return Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 5.w, vertical: 20.h),
+                          height: 170.h,
+                          width: 200.w,
+                          decoration: const BoxDecoration(
+                            color: Colors.transparent,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                height: 170.h,
+                                width: 200.w,
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.r),
+                                  ),
+                                  image: DecorationImage(
+                                      image: Image.memory(
+                                    base64.decode(packageDestinationImage
+                                        .packageDestinationImageDetails[i]
+                                        .snapshotImg
+                                        .split(',')
+                                        .last),
+                                    fit: BoxFit.cover,
+                                    gaplessPlayback: true,
+                                  ).image),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                );
+              }
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return Container();
+            },
+          ),
+          Text(
+            details.description,
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400,
+                fontSize: 14.sp,
+                color: AppColors.osloGrey),
+          )
+        ],
+      );
+
+  Widget buildImage(PackageDestinationImageDetailsModel imgData, int index) =>
+      Container(
+        // margin: EdgeInsets.symmetric(horizontal: 1.w),
+        color: Colors.white,
+        child: Image.memory(
+          base64.decode(imgData.snapshotImg.split(',').last),
+          fit: BoxFit.fitWidth,
+          gaplessPlayback: true,
+        ),
+      );
 }

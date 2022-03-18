@@ -300,7 +300,11 @@ class _LocationScreenState extends State<LocationScreen> {
       details['city'] = _city.text;
       details['state'] = _state.text;
       details['zip_code'] = _zipCode.text;
-      details['country_code'] = _countryCode;
+      if (_countryCode == '') {
+        details['country_code'] = 'ca';
+      } else {
+        details['country_code'] = _countryCode;
+      }
       await Navigator.pushNamed(context, '/free_service', arguments: details);
     }
   }

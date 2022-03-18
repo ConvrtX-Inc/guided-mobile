@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 
@@ -17,7 +18,7 @@ class AppTextStyle {
     color: Colors.black,
     fontFamily: AppTextConstants.fontGilroy,
     fontWeight: FontWeight.w600,
-    fontSize: 18,
+    fontSize: 18.sp,
   );
 
   /// Returns a black semi bold text style

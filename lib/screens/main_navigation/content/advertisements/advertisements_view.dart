@@ -2,11 +2,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
+import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Advertisement View Screen
 class AdvertisementView extends StatefulWidget {
@@ -104,7 +107,8 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                         size: 25,
                       ),
                       onPressed: () {
-                       navigateEditAdvertisementDetails(context, screenArguments);
+                        navigateEditAdvertisementDetails(
+                            context, screenArguments);
                       },
                     ),
                   ),
@@ -131,7 +135,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                         size: 25,
                       ),
                       onPressed: () {
-                        Navigator.pop(context);
+                        removeAdvertisementItem(screenArguments['id']);
                       },
                     ),
                   ),
@@ -142,6 +146,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
           flexibleSpace: Image.memory(
             base64.decode(screenArguments['snapshot_img'].split(',').last),
             fit: BoxFit.fitHeight,
+            gaplessPlayback: true,
           ),
         ),
       ),
@@ -153,8 +158,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(screenArguments['title'],
-                      style: AppTextStyle.txtStyle),
+                  Text(screenArguments['title'], style: AppTextStyle.txtStyle),
                 ],
               ),
             ),
@@ -325,6 +329,26 @@ class _AdvertisementViewState extends State<AdvertisementView> {
       'zip_code': screenArguments['zip_code']
     };
 
-    await Navigator.pushNamed(context, '/advertisement_edit', arguments: details);
+    await Navigator.pushNamed(context, '/advertisement_edit',
+        arguments: details);
+  }
+
+  /// Removed item from advertisement
+  Future<void> removeAdvertisementItem(String id) async {
+    final Map<String, dynamic> advertisementDetails = {
+      'is_published': false,
+    };
+
+    final dynamic response = await APIServices().request(
+        '${AppAPIPath.createAdvertisementUrl}/$id', RequestType.PATCH,
+        needAccessToken: true, data: advertisementDetails);
+
+    await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => const MainNavigationScreen(
+                  navIndex: 1,
+                  contentIndex: 3,
+                )));
   }
 }

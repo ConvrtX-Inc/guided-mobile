@@ -28,6 +28,9 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
     Widget _buildImage(String image, [double width = 350]) {
       return Image.asset(
         image,
@@ -161,18 +164,54 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              if (activeIndex == 0)
-                headerImage('Step 1/3', 'assets/images/userOnBoarding1.png')
-              else
-                activeIndex == 1
-                    ? headerImage(
-                        'Step 2/3', 'assets/images/userOnBoarding2.png')
-                    : activeIndex == 2
-                        ? headerImage(
-                            'Step 3/3', 'assets/images/userOnBoarding3.png')
-                        : const SizedBox(),
+              if (screenArguments['user_type'] == 'traveller')
+                if (activeIndex == 0)
+                  headerImage('Step 1/2', 'assets/images/userOnBoarding2.png')
+                else
+                  activeIndex == 1
+                      ? headerImage(
+                          'Step 2/2', 'assets/images/userOnBoarding3.png')
+                      : const SizedBox(),
+
+              if (screenArguments['user_type'] == 'traveller')
+                if (activeIndex == 0)
+                  footer(
+                    AppTextConstants.footerDescr2,
+                    false,
+                  )
+                else
+                  activeIndex == 1
+                      ? footer(
+                          AppTextConstants.footerDescr3,
+                          true,
+                        )
+                      : const SizedBox(),
+
+              if (screenArguments['user_type'] == 'guide')
+                if (activeIndex == 0)
+                  headerImage('Step 1/2', 'assets/images/userOnBoarding1.png')
+                else
+                  activeIndex == 1
+                      ? headerImage(
+                          'Step 2/2', 'assets/images/userOnBoarding3.png')
+                      : const SizedBox(),
+
+              if (screenArguments['user_type'] == 'guide')
+                if (activeIndex == 0)
+                  footer(
+                    AppTextConstants.footerDescr1,
+                    false,
+                  )
+                else
+                  activeIndex == 1
+                      ? footer(
+                          AppTextConstants.footerDescr3,
+                          true,
+                        )
+                      : const SizedBox(),
+
               DotsIndicator(
-                dotsCount: 3,
+                dotsCount: 2,
                 position: activeIndex,
                 decorator: DotsDecorator(
                   activeColor: Colors.black,
@@ -181,23 +220,6 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                       borderRadius: BorderRadius.circular(5.r)),
                 ),
               ),
-              if (activeIndex == 0)
-                footer(
-                  AppTextConstants.footerDescr1,
-                  false,
-                )
-              else
-                activeIndex == 1
-                    ? footer(
-                        AppTextConstants.footerDescr2,
-                        false,
-                      )
-                    : activeIndex == 2
-                        ? footer(
-                            AppTextConstants.footerDescr3,
-                            true,
-                          )
-                        : const SizedBox(),
             ],
           ),
         ),

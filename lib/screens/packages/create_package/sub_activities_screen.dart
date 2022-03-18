@@ -543,7 +543,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
               borderRadius: BorderRadius.circular(16.r),
             ),
             // width: width,
-            height: 120.w,
+            height: 130.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
