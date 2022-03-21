@@ -1,24 +1,15 @@
 // ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
-import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/controller/traveller_controller.dart';
-import 'package:guided/helpers/hexColor.dart';
-import 'package:guided/models/home.dart';
-import 'package:guided/screens/main_navigation/content/packages/widget/package_destination_features.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
-import 'package:guided/utils/home.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 /// Advertisement View Screen
 class TabSlotsAndScheduleView extends StatefulWidget {

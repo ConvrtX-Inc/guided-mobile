@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_home.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_inbox.dart';
 
@@ -65,9 +66,7 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
         );
       } else {
         _selectedIndex = 0;
-        _selectedWidget = TabHomeScreen(
-          onItemPressed: popularGuideds,
-        );
+        _selectedWidget = const TabDiscoveryHub();
       }
     });
   }
@@ -76,9 +75,7 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        _selectedWidget = TabHomeScreen(
-          onItemPressed: popularGuideds,
-        );
+        _selectedWidget = const TabDiscoveryHub();
       } else if (index == 1) {
         _selectedWidget = const TabWishlistScreen(
           initIndex: 0,

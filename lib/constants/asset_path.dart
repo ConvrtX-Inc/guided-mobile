@@ -214,4 +214,7 @@ class AssetsPath {
 
   /// returns i'm a traveler image
   static String rafikiImage = 'assets/images/png/rafiki.png';
+
+  /// returns heart outlined image
+  static String heartOutlined = 'assets/images/png/heart_outlined.png';
 }
