@@ -116,6 +116,15 @@ class AppListConstants {
     [false],
   ];
 
+  /// availavilityTime
+  static List<dynamic> availavilityTime = <String>[
+    '7:00 - 9:00',
+    '10:00 - 12:00',
+    '13:00 - 15:00',
+    '16:00 - 18:00',
+    '18:30 - 20:00',
+  ];
+
   /// [<Month>, <# of Customer>, <hasScheduled>, <isSelected>]
   static List<dynamic> monthList = [
     ['January', '', false, false],
@@ -172,7 +181,21 @@ class AppListConstants {
     'November',
     'December'
   ];
+  
+  /// use in request filter screen
+  static List<String> activityIcons = <String>[
+    'assets/images/png/activity_icon0.png',
+    'assets/images/png/activity_icon1.png',
+    'assets/images/png/activity_icon2.png',
+    'assets/images/png/activity_icon3.png',
+    'assets/images/png/activity_icon4.png',
+    'assets/images/png/activity_icon5.png',
+    'assets/images/png/activity_icon6.png',
+    'assets/images/png/activity_icon7.png',
+    'assets/images/png/activity_icon8.png',
+    'assets/images/png/activity_icon9.png',
+  ];
 
-  ///
+   ///
   static List<int> numberList = <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 }
