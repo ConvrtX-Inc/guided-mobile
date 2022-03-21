@@ -110,6 +110,9 @@ class AppAPIPath {
   /// Returns activity event
   static String activityEventUrl = 'api/v1/activity-events';
 
-   /// Returns event image
+  /// Returns event image
   static String getEventImage = 'api/v1/activity-event-image';
+
+  /// Returns terms and condition url
+  static String getTermsAndCondtion = 'api/v1/terms-and-conditons';
 }

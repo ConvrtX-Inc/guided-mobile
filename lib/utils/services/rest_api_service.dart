@@ -426,4 +426,33 @@ class APIServices {
 
     return EventImageModelData(eventImageDetails: details);
   }
+
+  // /// API service for countries
+  // Future<List<CountryModel>> getTermsAndCondition() async {
+  //   // final http.Response response =
+  //   //     await http.get(Uri.http(apiBaseUrl, '/api/v1/countries'), headers: {
+  //   //   HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
+  //   // });
+
+  //   final dynamic response = await http.get(
+  //       Uri.parse(
+  //           '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTermsAndCondtion}?s={"activity_event_id": \"$id\"}'),
+  //       headers: {
+  //         HttpHeaders.authorizationHeader:
+  //             'Bearer ${UserSingleton.instance.user.token}',
+  //       });
+  //   /*final http.Response response =
+  //       await http.get(Uri.http(apiBaseUrl, '/api/v1/countries'));*/
+  //   final Map<String, dynamic> jsonData = jsonDecode(response.body);
+  //   debugPrint('$jsonData - countries');
+  //   final List<dynamic> res = jsonData['response'];
+  //   final List<CountryModel> countries = <CountryModel>[];
+
+  //   for (final dynamic data in res) {
+  //     final CountryModel country = CountryModel.fromJson(data);
+  //     countries.add(country);
+  //   }
+
+  //   return countries;
+  // }
 }
