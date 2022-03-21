@@ -19,6 +19,10 @@ import 'package:guided/screens/faq/faq.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
 import 'package:guided/screens/main_navigation/content/event/event_add.dart';
 import 'package:guided/screens/main_navigation/content/packages/package_view.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_view.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub_view.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_inbox.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_map.dart';
 
@@ -235,6 +239,18 @@ class RouteGenerator {
       case '/traveller_map':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TabMapScreen(), settings: settings);
+      case '/discovery_hub':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TabDiscoveryHub());
+      case '/discovery_hub_outfitter':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TabDiscoveryHubOutfitter());
+      case '/discovery_hub_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TabDiscoveryHubView(), settings: settings);
+      case '/discovery_hub_outfitter_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const HubOutfitterView(), settings: settings);
       default:
         return _errorRoute();
     }

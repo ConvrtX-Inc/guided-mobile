@@ -852,6 +852,9 @@ class AppTextConstants {
 
   /// Returns Fee text
   static String fee = 'Fee (if applicable)';
+
+  /// Returns visit site text
+  static String visitSite = 'Visit Site';
 }
 
 /// Class for error messages text

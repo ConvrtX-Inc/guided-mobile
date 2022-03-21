@@ -1,36 +1,53 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/models/home.dart';
 import 'package:guided/utils/home.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Settings Calendar Management Schedule Screen
 class SettingsCalendarManagementSchedule extends StatefulWidget {
-
   /// Constructor
-  const SettingsCalendarManagementSchedule({Key? key}) : super(key: key);
+  const SettingsCalendarManagementSchedule({Key? key, required this.date})
+      : super(key: key);
 
+  final DateTime date;
   @override
-  _SettingsCalendarManagementScheduleState createState() => _SettingsCalendarManagementScheduleState();
+  _SettingsCalendarManagementScheduleState createState() =>
+      _SettingsCalendarManagementScheduleState();
 }
 
-class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarManagementSchedule> {
+class _SettingsCalendarManagementScheduleState
+    extends State<SettingsCalendarManagementSchedule> {
   late DateTime _selectedDay = DateTime.now();
   late DateTime _focusedDay = DateTime.now();
   bool isRefreshing = false;
+  int monthID = 0;
+  DateTime plustMonth = DateTime.now();
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      _selectedDay = widget.date;
+      _focusedDay = widget.date;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
-    final List<HomeModel> customerRequests = HomeUtils.getMockCustomerRequests();
+    final List<HomeModel> customerRequests =
+        HomeUtils.getMockCustomerRequests();
 
     return Scaffold(
       appBar: AppBar(
@@ -97,10 +114,9 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                     height: 45.h,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        // Navigator.of(context).pushNamed('/guide_rule');
                       },
                       style: ElevatedButton.styleFrom(
-                        elevation: 0,
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
                             color: AppColors.primaryGreen,
@@ -111,10 +127,12 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                         onPrimary: Colors.white,
                       ),
                       child: Text(
-                        AppTextConstants.fullDateSample,
+                        '${_selectedDay.day}/${AppListConstants.calendarMonths.elementAt(_selectedDay.month - 1)}/ ${_selectedDay.year}', // Just an example
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14.sp,
                           color: AppColors.primaryGreen,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ),
@@ -123,10 +141,25 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                     height: 20.h,
                   ),
                   Row(
-                    children: <Widget>[
+                    children: [
+                      InkWell(
+                        // inkwell color
+                        child: const Icon(
+                          Icons.arrow_back_ios_sharp,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _focusedDay =
+                                _focusedDay.subtract(Duration(days: 7));
+                          });
+                        },
+                      ),
                       Expanded(
                         child: TableCalendar(
-                          onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
+                          locale: 'en',
+                          onDaySelected: (selectedDay, focusedDay) {
                             setState(() {
                               setState(() {
                                 _selectedDay = selectedDay;
@@ -135,11 +168,11 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                               });
 
                               Future.delayed(const Duration(milliseconds: 100),
-                                      () {
-                                    setState(() {
-                                      isRefreshing = false;
-                                    });
-                                  });
+                                  () {
+                                setState(() {
+                                  isRefreshing = false;
+                                });
+                              });
                             });
                           },
                           calendarFormat: CalendarFormat.week,
@@ -163,12 +196,27 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                           ),
                         ),
                       ),
+                      InkWell(
+                        // inkwell color
+                        child: const Icon(
+                          Icons.arrow_forward_ios_sharp,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _focusedDay = _focusedDay.add(Duration(days: 7));
+                          });
+                        },
+                      ),
                     ],
                   ),
                   SizedBox(
                     height: 20.h,
                   ),
-                  if (isRefreshing) const SizedBox() else
+                  if (isRefreshing)
+                    const SizedBox()
+                  else
                     ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -183,8 +231,7 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                                 style: TextStyle(
                                     color: AppColors.primaryGreen,
                                     fontSize: 15,
-                                    fontWeight: FontWeight.w600
-                                ),
+                                    fontWeight: FontWeight.w600),
                               ),
                               Container(
                                 padding: const EdgeInsets.all(24),
@@ -199,7 +246,8 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                                         boxShadow: <BoxShadow>[
                                           BoxShadow(
                                               blurRadius: 5,
-                                              color: Colors.black.withOpacity(0.3),
+                                              color:
+                                                  Colors.black.withOpacity(0.3),
                                               spreadRadius: 3)
                                         ],
                                       ),
@@ -208,8 +256,8 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                                         child: CircleAvatar(
                                           radius: 18.r,
                                           backgroundColor: Colors.red,
-                                          backgroundImage:
-                                          NetworkImage(customerRequests[0].cRProfilePic),
+                                          backgroundImage: NetworkImage(
+                                              customerRequests[0].cRProfilePic),
                                         ),
                                       ),
                                     ),
@@ -222,7 +270,8 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                                           boxShadow: <BoxShadow>[
                                             BoxShadow(
                                                 blurRadius: 5,
-                                                color: Colors.black.withOpacity(0.3),
+                                                color: Colors.black
+                                                    .withOpacity(0.3),
                                                 spreadRadius: 3)
                                           ],
                                         ),
@@ -231,8 +280,9 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                                           child: CircleAvatar(
                                             radius: 18.r,
                                             backgroundColor: Colors.red,
-                                            backgroundImage:
-                                            NetworkImage(customerRequests[1].cRProfilePic),
+                                            backgroundImage: NetworkImage(
+                                                customerRequests[1]
+                                                    .cRProfilePic),
                                           ),
                                         ),
                                       ),
@@ -246,7 +296,8 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                                           boxShadow: <BoxShadow>[
                                             BoxShadow(
                                                 blurRadius: 5,
-                                                color: Colors.black.withOpacity(0.3),
+                                                color: Colors.black
+                                                    .withOpacity(0.3),
                                                 spreadRadius: 3)
                                           ],
                                         ),
@@ -255,8 +306,9 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
                                           child: CircleAvatar(
                                             radius: 18.r,
                                             backgroundColor: Colors.red,
-                                            backgroundImage:
-                                            NetworkImage(customerRequests[2].cRProfilePic),
+                                            backgroundImage: NetworkImage(
+                                                customerRequests[2]
+                                                    .cRProfilePic),
                                           ),
                                         ),
                                       ),
@@ -281,8 +333,7 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () {
-            },
+            onPressed: () {},
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -295,16 +346,14 @@ class _SettingsCalendarManagementScheduleState extends State<SettingsCalendarMan
             ),
             child: Text(
               AppTextConstants.viewSchedule,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
       ),
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
