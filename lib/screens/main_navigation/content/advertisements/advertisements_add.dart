@@ -10,9 +10,11 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/badgesModel.dart';
 import 'package:guided/models/image_bulk.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
@@ -49,9 +51,17 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   DateTime _selectedDate = DateTime.now();
 
   bool _enabledImgHolder2 = false;
-
+  bool showSubActivityChoices = false;
+  dynamic subActivities1;
+  dynamic subActivities2;
+  dynamic subActivities3;
+  String subActivities1Txt = '';
+  String subActivities2Txt = '';
+  String subActivities3Txt = '';
   Position? _currentPosition;
   String _currentAddress = '';
+  bool showLimitNote = false;
+  int count = 0;
 
   @override
   void dispose() {
@@ -683,6 +693,16 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                   SizedBox(
                     height: 20.h,
                   ),
+                  Text(
+                    AppTextConstants.addMultipleSubActivities,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w600, fontSize: 15),
+                  ),
+                  SizedBox(height: 15.h),
+                  _subActivityDropdown(width),
+                  SizedBox(
+                    height: 20.h,
+                  ),
                   TextField(
                     controller: _price,
                     decoration: InputDecoration(
@@ -699,7 +719,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20.h)
+                  SizedBox(height: 20.h),
                 ],
               ),
             ),
@@ -730,6 +750,432 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
           ),
         ),
       ),
+    );
+  }
+
+  Column _subActivityDropdown(double width) {
+    return Column(
+      children: <Widget>[
+        InkWell(
+          onTap: () {
+            setState(() {
+              if (showSubActivityChoices) {
+                showSubActivityChoices = false;
+              } else {
+                showSubActivityChoices = true;
+              }
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(
+                color: Colors.grey.shade300,
+                // width: 1.w,
+              ),
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            // width: width,
+            height: 130.w,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Align(
+                      child: SizedBox(
+                        width: 340,
+                        height: 50.h,
+                        child: ListView(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            children: <Widget>[
+                              if (subActivities1 == null)
+                                SizedBox(
+                                  height: 100.h,
+                                )
+                              else
+                                _chosenSubActivities1(subActivities1),
+                              if (subActivities2 == null)
+                                SizedBox(
+                                  height: 100.h,
+                                )
+                              else
+                                _chosenSubActivities2(subActivities2),
+                            ]),
+                      ),
+                    ),
+                  ],
+                ),
+                if (subActivities3 == null)
+                  SizedBox(
+                    height: 100.h,
+                  )
+                else
+                  _chosenSubActivities3(subActivities3),
+              ],
+            ),
+          ),
+        ),
+        if (showSubActivityChoices)
+          Material(
+            elevation: 5,
+            borderRadius: BorderRadius.circular(12.r),
+            child: SizedBox(
+              height: 200.h,
+              width: width,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
+                child: _choicesGridSubActivity(),
+              ),
+            ),
+          )
+        else
+          const SizedBox(),
+      ],
+    );
+  }
+
+  Padding _chosenSubActivities1(BadgesModel badges) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Align(
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              subActivities1 = badges;
+              subActivities1Txt = badges.title;
+              count++;
+            });
+          },
+          child: Container(
+            height: 42.h,
+            decoration: BoxDecoration(
+                color: AppColors.platinum.withOpacity(0.8),
+                border: Border.all(
+                  color: AppColors.platinum.withOpacity(0.8),
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(20.r))),
+            child: Align(
+              child: Stack(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        child: SizedBox(
+                          width: 70.w,
+                          height: 30.h,
+                          child: Align(
+                            child: Text(
+                              badges.title,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 10.w),
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (subActivities2 != null) {
+                                  subActivities1 = subActivities2;
+                                } else {
+                                  subActivities1 = null;
+                                }
+
+                                if (subActivities3 != null) {
+                                  subActivities2 = subActivities3;
+                                  subActivities3 = null;
+                                } else {
+                                  subActivities2 = null;
+                                }
+                                count--;
+                                showLimitNote = false;
+                              });
+                            },
+                            child: const Icon(
+                              Icons.close_rounded,
+                            )),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    left: 0,
+                    bottom: 2.h,
+                    child:
+                        Image.asset(badges.imageUrl, width: 28.w, height: 28.h),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding _chosenSubActivities2(BadgesModel badges) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Align(
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              subActivities2 = badges;
+              subActivities2Txt = badges.title;
+              count++;
+            });
+          },
+          child: Container(
+            height: 40.h,
+            decoration: BoxDecoration(
+                color: AppColors.platinum.withOpacity(0.8),
+                border: Border.all(
+                  color: AppColors.platinum.withOpacity(0.8),
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(20.r))),
+            child: Align(
+              child: Stack(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        child: SizedBox(
+                          width: 70.w,
+                          height: 30.h,
+                          child: Align(
+                            child: Text(
+                              badges.title,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 10.w),
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (subActivities3 != null) {
+                                  subActivities2 = subActivities3;
+                                  subActivities3 = null;
+                                } else {
+                                  subActivities2 = null;
+                                }
+                                count--;
+                                showLimitNote = false;
+                              });
+                            },
+                            child: const Icon(
+                              Icons.close_rounded,
+                            )),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    left: 0,
+                    bottom: 2.h,
+                    child: Image.asset(
+                      badges.imageUrl,
+                      width: 28.w,
+                      height: 28.h,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding _chosenSubActivities3(BadgesModel badges) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Align(
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              subActivities3 = badges;
+              subActivities3Txt = badges.title;
+              count++;
+            });
+          },
+          child: Container(
+            height: 40.h,
+            width: 140.w,
+            decoration: BoxDecoration(
+                color: AppColors.platinum.withOpacity(0.8),
+                border: Border.all(
+                  color: AppColors.platinum.withOpacity(0.8),
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(20.r))),
+            child: Align(
+              child: Stack(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        child: SizedBox(
+                          width: 70.w,
+                          height: 30.h,
+                          child: Align(
+                            child: Text(
+                              badges.title,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 10.w),
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                subActivities3 = null;
+                                count--;
+                                showLimitNote = false;
+                              });
+                            },
+                            child: const Icon(
+                              Icons.close_rounded,
+                            )),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    left: 0,
+                    bottom: 2.h,
+                    child: Image.asset(
+                      badges.imageUrl,
+                      width: 28.w,
+                      height: 28.h,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  GridView _choicesGridSubActivity() {
+    return GridView.count(
+      shrinkWrap: true,
+      padding: EdgeInsets.zero,
+      crossAxisCount: 2,
+      childAspectRatio: 2.5,
+      children: List.generate(AppListConstants.badges.length, (int index) {
+        return SizedBox(
+          height: 10.h,
+          width: 100.w,
+          child: _choicesSubActivities(AppListConstants.badges[index]),
+        );
+      }),
+    );
+  }
+
+  ListTile _choicesSubActivities(BadgesModel badges) {
+    if (subActivities1 == badges) {
+      return _disabledSubActivities(badges);
+    }
+    if (subActivities2 == badges) {
+      return _disabledSubActivities(badges);
+    }
+    if (subActivities3 == badges) {
+      return _disabledSubActivities(badges);
+    }
+
+    return _enabledSubActivities(badges);
+  }
+
+  ListTile _enabledSubActivities(BadgesModel badges) {
+    return ListTile(
+      onTap: () {
+        setState(() {
+          switch (count) {
+            case 0:
+              subActivities1 = badges;
+              subActivities1Txt = badges.title;
+              count++;
+              showSubActivityChoices = true;
+              showLimitNote = false;
+              break;
+            case 1:
+              subActivities2 = badges;
+              subActivities2Txt = badges.title;
+              count++;
+              showSubActivityChoices = true;
+              showLimitNote = false;
+              break;
+            case 2:
+              subActivities3 = badges;
+              subActivities3Txt = badges.title;
+              count++;
+              showSubActivityChoices = false;
+              showLimitNote = true;
+              break;
+            case 3:
+              showSubActivityChoices = false;
+              showLimitNote = true;
+              break;
+            default:
+              count = 0;
+          }
+        });
+      },
+      minLeadingWidth: 20,
+      leading: Image.asset(
+        badges.imageUrl,
+        width: 25.w,
+      ),
+      title: Text(badges.title),
+    );
+  }
+
+  ListTile _disabledSubActivities(BadgesModel badges) {
+    return ListTile(
+      enabled: false,
+      onTap: () {
+        setState(() {
+          switch (count) {
+            case 0:
+              subActivities1 = badges;
+              subActivities1Txt = badges.title;
+              count++;
+              showSubActivityChoices = true;
+              break;
+            case 1:
+              subActivities2 = badges;
+              subActivities2Txt = badges.title;
+              count++;
+              showSubActivityChoices = true;
+              break;
+            case 2:
+              subActivities3 = badges;
+              subActivities3Txt = badges.title;
+              count++;
+              showSubActivityChoices = false;
+              break;
+            default:
+              count = 0;
+          }
+        });
+      },
+      minLeadingWidth: 20,
+      leading: Image.asset(
+        badges.imageUrl,
+        width: 25.w,
+      ),
+      title: Text(badges.title),
     );
   }
 
@@ -823,14 +1269,25 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
 
   Future<void> advertisementDetail() async {
     final String? userId = UserSingleton.instance.user.user!.id;
+    String activities = '';
+
+    if (subActivities1Txt != '') {
+      activities = subActivities1Txt;
+    }
+    if (subActivities2Txt != '') {
+      activities = '$activities, $subActivities2Txt';
+    }
+    if (subActivities3Txt != '') {
+      activities = '$activities, $subActivities3Txt';
+    }
 
     final Map<String, dynamic> outfitterDetails = {
       'user_id': userId,
       'title': _title.text,
-      'country': _country.text,
+      'country': 'USA', //_country.text,
       'address':
           '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}',
-      'activities': 'Walking, Hiking',
+      'activities': activities,
       'street': _street.text,
       'city': _city.text,
       'province': _province.text,
