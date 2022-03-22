@@ -41,6 +41,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
   final SwiperController _cardController = SwiperController();
   final List<Guide> guides = StaticDataService.getGuideList();
   final List<Activity> activities = StaticDataService.getActivityList();
+  int _selectedActivity = -1;
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
   }
@@ -57,33 +58,33 @@ class _TabMapScreenState extends State<TabMapScreen> {
         markerId: const MarkerId('marker1'),
         icon: await MarkerIcon.pictureAsset(
             assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
-        position: const LatLng(57.818582, -101.760181),
+            width: 90.w,
+            height: 90.h),
+        position: const LatLng(32.41466290553936, 53.66990581798554),
       ),
       Marker(
         markerId: const MarkerId('marker2'),
         icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
-        position: const LatLng(57.874333, -101.725262),
+            assetPath: 'assets/images/png/paddle_marker.png',
+            width: 120.w,
+            height: 120.h),
+        position: const LatLng(32.418354764794636, 53.63271757672727),
       ),
       Marker(
         markerId: const MarkerId('marker3'),
         icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
-        position: const LatLng(57.827880, -101.943505),
+            assetPath: 'assets/images/png/eco_marker1.png',
+            width: 120.w,
+            height: 120.h),
+        position: const LatLng(32.42270518531192, 53.77571594613791),
       ),
       Marker(
         markerId: const MarkerId('marker4'),
         icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
-        position: const LatLng(57.775161, -101.879487),
+            assetPath: 'assets/images/png/eco_marker2.png',
+            width: 120.w,
+            height: 120.h),
+        position: const LatLng(32.527346929217615, 53.74507673728466),
       ),
     ];
 
@@ -109,12 +110,12 @@ class _TabMapScreenState extends State<TabMapScreen> {
               zoomControlsEnabled: false,
             ),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20),
+              margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 color: HexColor('#F8F7F6'),
               ),
-              height: MediaQuery.of(context).size.height * 0.32,
+              height: MediaQuery.of(context).size.height * 0.35,
               width: MediaQuery.of(context).size.width,
               child: Column(
                 children: <Widget>[
@@ -247,27 +248,31 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   SizedBox(
                     height: 40.h,
                   ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
-                    height: 50,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: List.generate(activities.length, (int index) {
-                        return Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: AssetImage(activities[index].path),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
+                  // Container(
+                  //   margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
+                  //   height: 50,
+                  //   child: ListView(
+                  //     scrollDirection: Axis.horizontal,
+                  //     children: List.generate(activities.length, (int index) {
+                  //       return Container(
+                  //         height: 40,
+                  //         width: 40,
+                  //         decoration: BoxDecoration(
+                  //           color: Colors.transparent,
+                  //           shape: BoxShape.circle,
+                  //           image: DecorationImage(
+                  //             image: AssetImage(activities[index].path),
+                  //             fit: BoxFit.cover,
+                  //           ),
+                  //         ),
+                  //       );
+                  //     }),
+                  //   ),
+                  // ),
+                  SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: 70,
+                      child: overlapped(activities)),
                   const Spacer(),
                   const Align(
                     child: Icon(
@@ -367,41 +372,192 @@ class _TabMapScreenState extends State<TabMapScreen> {
   }
 
   Widget overlapped(List<Activity> activities) {
-    final overlap = 27.0;
+    final overlap = 30.0;
     final r = 15;
     final items = <Widget>[];
     double minus = 0;
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < AppListConstants.activityIcons.length; i++) {
       if (i < 5) {
         items.add(
-          CircleAvatar(
-            child: FittedBox(
-              child: Image.asset(activities[i].path),
-              fit: BoxFit.cover,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedActivity = i;
+              });
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 20,
+                    offset: Offset(0, 8), // changes position of shadow
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedActivity == i
+                            ? Colors.black
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: r.toDouble() + i.toDouble() + 5,
+                      backgroundImage:
+                          ExactAssetImage(AppListConstants.activityIcons[i]),
+                    ),
+                  ),
+                  Positioned(
+                      top: 2,
+                      right: 8,
+                      child: _selectedActivity == i
+                          ? Container(
+                              padding: EdgeInsets.all(1),
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 2,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.check,
+                                size: 10.h,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const SizedBox()),
+                ],
+              ),
             ),
-            radius: r.toDouble() + i.toDouble() + 5,
           ),
         );
         minus = r.toDouble() + i.toDouble() + 5;
       } else {
         items.add(
-          CircleAvatar(
-            child: Text(i.toString()),
-            backgroundColor:
-                Colors.primaries[Random().nextInt(Colors.primaries.length)],
-            radius: minus - i.toDouble() + 5,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedActivity = i;
+              });
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 20,
+                    offset: Offset(0, 8), // changes position of shadow
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedActivity == i
+                            ? Colors.black
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      // backgroundColor:
+                      //     Colors.primaries[Random().nextInt(Colors.primaries.length)],
+                      radius: minus - i.toDouble() + 4,
+                      backgroundImage:
+                          ExactAssetImage(AppListConstants.activityIcons[i]),
+                    ),
+                  ),
+                  Positioned(
+                    top: 2,
+                    right: 8,
+                    child: _selectedActivity == i
+                        ? Container(
+                            padding: EdgeInsets.all(1),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 2,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.check,
+                              size: 10.h,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const SizedBox(),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       }
     }
 
-    List<Widget> stackLayers = List<Widget>.generate(items.length, (index) {
+    List<Widget> stackLayersLeft =
+        List<Widget>.generate(items.getRange(0, 4).length, (index) {
       return Padding(
         padding: EdgeInsets.fromLTRB(index.toDouble() * overlap, 0, 0, 0),
         child: items[index],
       );
     });
-
-    return Stack(children: stackLayers);
+    List<Widget> stackLayersRight =
+        List<Widget>.generate(items.getRange(5, 9).length, (index) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(index.toDouble() * overlap, 0, 0, 0),
+        child: items[5 + index],
+      );
+    });
+    List<Widget> stackLayersCenter =
+        List<Widget>.generate(items.getRange(5, 5).length, (index) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(index.toDouble() * overlap, 0, 0, 0),
+        child: items[5],
+      );
+    });
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Positioned(
+          left: MediaQuery.of(context).size.width * 0.1,
+          child: Stack(
+            children: stackLayersLeft,
+          ),
+        ),
+        Positioned(
+          right: MediaQuery.of(context).size.width * 0.1,
+          child: Stack(
+            children: stackLayersRight,
+          ),
+        ),
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment.center,
+            child: items[4],
+          ),
+        ),
+        // Positioned(child: items[4]),
+      ],
+    );
   }
 }

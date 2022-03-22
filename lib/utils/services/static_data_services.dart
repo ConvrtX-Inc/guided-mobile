@@ -81,7 +81,7 @@ class StaticDataService {
           name: 'Sasha Cruz',
           path: AssetsPath.paddle,
           distance: '12 KM  distance',
-          featureImage: 'assets/images/png/profile_photo.png'),
+          featureImage: 'assets/images/png/guide2.png'),
     ];
   }
 

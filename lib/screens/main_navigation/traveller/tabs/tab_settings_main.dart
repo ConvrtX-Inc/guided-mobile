@@ -167,31 +167,18 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                                 side: BorderSide(color: AppColors.silver),
                                 borderRadius: BorderRadius.circular(18.r),
                               ),
-                              primary: AppColors.aquaHaze,
+                              primary: AppColors.lightRed,
                               onPrimary: Colors.black,
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                IconButton(
-                                  icon: SvgPicture.asset(
-                                      'assets/images/svg/settings_icon_power_button.svg',
-                                      height: 40.h,
-                                      width: 40.w),
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute<dynamic>(
-                                          builder: (BuildContext context) =>
-                                              const LoginScreen(),
-                                        ));
-                                  },
-                                ),
                                 Text(
                                   AppTextConstants.logout,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16.sp),
+                                      fontSize: 16.sp,
+                                      color: Colors.white),
                                 ),
                               ],
                             ),

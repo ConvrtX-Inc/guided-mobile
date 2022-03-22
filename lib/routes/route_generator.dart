@@ -21,6 +21,7 @@ import 'package:guided/screens/main_navigation/content/event/event_add.dart';
 import 'package:guided/screens/main_navigation/content/event/event_edit.dart';
 import 'package:guided/screens/main_navigation/content/event/event_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/package_view.dart';
+import 'package:guided/screens/main_navigation/traveller/check_availability/check_availability.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_view.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
@@ -238,9 +239,9 @@ class RouteGenerator {
                   initIndex: 0,
                 ),
             settings: settings);
-      case '/traveller_map':
+      case '/checkAvailability':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TabMapScreen(), settings: settings);
+            builder: (_) => const CheckAvailability(), settings: settings);
       case '/discovery_hub':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TabDiscoveryHub());
@@ -253,7 +254,7 @@ class RouteGenerator {
       case '/discovery_hub_outfitter_view':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const HubOutfitterView(), settings: settings);
-      case '/event_add':
+        case '/event_add':
         return MaterialPageRoute<dynamic>(builder: (_) => const EventAdd());
       case '/event_view':
         return MaterialPageRoute<dynamic>(
@@ -261,7 +262,7 @@ class RouteGenerator {
       case '/event_edit':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const EventEdit(), settings: settings);
-      default:
+	default:
         return _errorRoute();
     }
   }

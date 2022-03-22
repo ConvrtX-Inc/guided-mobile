@@ -57,7 +57,7 @@ dependencies:
   pinput: ^1.2.2 #this library is for the 4-digit code
   flutter_slidable: ^1.1.0 #this is for the slidable list item 
   date_time_picker: ^2.1.0
-  image_picker: ^0.8.4+4
+  image_picker: ^0.8.4+11
   modal_bottom_sheet: ^2.0.0
   flutter_image_compress: ^1.1.0
   smooth_page_indicator: ^1.0.0+2
@@ -69,6 +69,9 @@ dependencies:
   syncfusion_flutter_datepicker: ^19.4.53
   in_date_utils: ^1.0.2
   card_swiper: ^2.0.1
+  flutter_login_facebook: ^1.4.1
+  loading_elevated_button: ^1.0.0+2
+  google_sign_in: ^5.2.4
   geolocator: ^8.2.0 # for getting the latitude and longitude
   geocoding: ^2.0.4 # for converting latitude and longitude into address
   geolocator_web: ^2.1.4
