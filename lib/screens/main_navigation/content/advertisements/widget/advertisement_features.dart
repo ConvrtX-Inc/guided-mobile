@@ -15,6 +15,7 @@ class AdvertisementFeature extends StatefulWidget {
     String description = '',
     String country = '',
     String address = '',
+    String activities = '',
     String street = '',
     String city = '',
     String province = '',
@@ -29,6 +30,7 @@ class AdvertisementFeature extends StatefulWidget {
         _description = description,
         _country = country,
         _address = address,
+        _activities = activities,
         _street = street,
         _city = city,
         _province = province,
@@ -44,6 +46,7 @@ class AdvertisementFeature extends StatefulWidget {
   final String _description;
   final String _country;
   final String _address;
+  final String _activities;
   final String _street;
   final String _city;
   final String _province;
@@ -58,6 +61,13 @@ class AdvertisementFeature extends StatefulWidget {
 }
 
 class _AdvertisementFeatureState extends State<AdvertisementFeature> {
+  late Map<dynamic, String> value;
+  @override
+  void initState() {
+    final split = widget._activities.split(',');
+    value = {for (int i = 0; i < split.length; i++) i: split[i]};
+  }
+
   @override
   Widget build(BuildContext context) {
     return widget._isPublished
@@ -139,6 +149,7 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
       'title': widget._title,
       'country': widget._country,
       'address': widget._address,
+      'activities': value,
       'street': widget._street,
       'city': widget._city,
       'province': widget._province,

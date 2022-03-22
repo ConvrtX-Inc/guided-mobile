@@ -18,6 +18,8 @@ import 'package:guided/screens/faq/faq.dart';
 
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
 import 'package:guided/screens/main_navigation/content/event/event_add.dart';
+import 'package:guided/screens/main_navigation/content/event/event_edit.dart';
+import 'package:guided/screens/main_navigation/content/event/event_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/package_view.dart';
 import 'package:guided/screens/main_navigation/traveller/check_availability/check_availability.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter.dart';
@@ -251,7 +253,15 @@ class RouteGenerator {
             builder: (_) => const TabDiscoveryHubView(), settings: settings);
       case '/discovery_hub_outfitter_view':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const HubOutfitterView(), settings: settings);      
+            builder: (_) => const HubOutfitterView(), settings: settings);
+        case '/event_add':
+        return MaterialPageRoute<dynamic>(builder: (_) => const EventAdd());
+      case '/event_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const EventView(), settings: settings);
+      case '/event_edit':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const EventEdit(), settings: settings);
 	default:
         return _errorRoute();
     }
