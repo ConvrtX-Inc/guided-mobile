@@ -16,6 +16,7 @@ import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/guide.dart';
+import 'package:guided/models/popular_guide.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -619,8 +620,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
     );
   }
 
-  void onSubmit() {}
   Widget nearbyActivities(BuildContext context, List<Activity> activities) {
+    //////
+    ///
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -634,7 +636,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.26,
           child: FutureBuilder<List<ActivityPackage>>(
-            future: APIServices().getActivityPackages(), // async work
+            future: APIServices().getClosestActivity(), // async work
             builder: (BuildContext context,
                 AsyncSnapshot<List<ActivityPackage>> snapshot) {
               switch (snapshot.connectionState) {
@@ -648,7 +650,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   } else {
                     return ListView.builder(
                         shrinkWrap: true,
-                        itemCount: activities.length,
+                        itemCount: snapshot.data!.length,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
@@ -694,7 +696,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                   height: 5.h,
                                 ),
                                 Text(
-                                  activities[index].name,
+                                  snapshot.data![index].name!,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 16.sp,
@@ -722,7 +724,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                       width: 2.w,
                                     ),
                                     Text(
-                                      activities[index].distance,
+                                      snapshot.data![index].timeToTravel!,
                                       style: TextStyle(
                                           color: HexColor('#696D6D'),
                                           fontSize: 11.sp,
@@ -778,91 +780,110 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.25,
-          child: ListView(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            children: List<Widget>.generate(guides.length, (int i) {
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 20.h),
-                height: 180.h,
-                width: 220.w,
-                decoration: const BoxDecoration(
-                  color: Colors.transparent,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      height: 112.h,
-                      width: 220.w,
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(15.r),
-                        ),
-                        image: DecorationImage(
-                          image: AssetImage(guides[i].featureImage),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            bottom: 0,
-                            child: CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              radius: 30,
-                              backgroundImage: AssetImage(guides[i].path),
+          child: FutureBuilder<List<PopularGuide>>(
+              future: APIServices().getPopularGuides(), // async work
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<PopularGuide>> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  default:
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else {
+                      return ListView(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        children: List<Widget>.generate(2, (int i) {
+                          return Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 5.w, vertical: 20.h),
+                            height: 180.h,
+                            width: 220.w,
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    Text(
-                      guides[i].name,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16.sp,
-                          fontFamily: 'Gilroy',
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          height: 10.h,
-                          width: 10.w,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15.r),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Container(
+                                  height: 112.h,
+                                  width: 220.w,
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(15.r),
+                                    ),
+                                    image: DecorationImage(
+                                      image: AssetImage(guides[i].featureImage),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  child: Stack(
+                                    children: <Widget>[
+                                      Positioned(
+                                        bottom: 0,
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.transparent,
+                                          radius: 30,
+                                          backgroundImage:
+                                              AssetImage(guides[i].path),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5.h,
+                                ),
+                                Text(
+                                  guides[i].name,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16.sp,
+                                      fontFamily: 'Gilroy',
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Container(
+                                      height: 10.h,
+                                      width: 10.w,
+                                      decoration: BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(15.r),
+                                        ),
+                                        image: const DecorationImage(
+                                          image: AssetImage(
+                                              'assets/images/png/marker.png'),
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 2.w,
+                                    ),
+                                    Text(
+                                      guides[i].distance,
+                                      style: TextStyle(
+                                          color: HexColor('#696D6D'),
+                                          fontSize: 11.sp,
+                                          fontFamily: 'Gilroy',
+                                          fontWeight: FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            image: const DecorationImage(
-                              image: AssetImage('assets/images/png/marker.png'),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 2.w,
-                        ),
-                        Text(
-                          guides[i].distance,
-                          style: TextStyle(
-                              color: HexColor('#696D6D'),
-                              fontSize: 11.sp,
-                              fontFamily: 'Gilroy',
-                              fontWeight: FontWeight.normal),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }),
-          ),
+                          );
+                        }),
+                      );
+                    }
+                }
+              }),
         ),
       ],
     );

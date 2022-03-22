@@ -1,3 +1,5 @@
+// ignore_for_file: unawaited_futures
+
 import 'dart:convert';
 
 import 'package:advance_notification/advance_notification.dart';
@@ -40,12 +42,31 @@ class _LoginScreenState extends State<LoginScreen> {
   GoogleSignInAuthentication? _signInAuthentication;
   @override
   void initState() {
+    _googleSignIn.signOut();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       account?.authentication.then((GoogleSignInAuthentication googleKey) {
         print(googleKey.accessToken);
-
+        APIServices()
+            .loginFacebook(googleKey.accessToken!)
+            .then((APIStandardReturnFormat response) async {
+          if (response.status == 'error') {
+            AdvanceSnackBar(
+                    message: ErrorMessageConstants.loginWrongEmailorPassword)
+                .show(context);
+            setState(() => buttonIsLoading = false);
+          } else {
+            final UserModel user =
+                UserModel.fromJson(json.decode(response.successResponse));
+            UserSingleton.instance.user = user;
+            if (user.user?.isTraveller != true) {
+              await Navigator.pushReplacementNamed(context, '/main_navigation');
+            } else {
+              await Navigator.pushReplacementNamed(context, '/traveller_tab');
+            }
+          }
+        });
         setState(() {
           _signInAuthentication = googleKey;
           googleLoading = false;
@@ -54,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
         print('inner error');
       });
     });
-    _googleSignIn.signInSilently();
+    // _googleSignIn.signInSilently();
     super.initState();
   }
 
@@ -187,9 +208,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     disabledWhileLoading: false,
                     isLoading: facebookLoading,
                     onPressed: () async {
-                      // setState(() {
-                      //   facebookLoading = true;
-                      // });
+                      setState(() {
+                        facebookLoading = true;
+                      });
                       final fb = FacebookLogin();
                       final res =
                           await fb.logIn(permissions: <FacebookPermission>[
@@ -199,34 +220,62 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       switch (res.status) {
                         case FacebookLoginStatus.success:
-                          // Logged in
+                          setState(() {
+                            facebookLoading = false;
+                          });
 
                           // Send access token to server for validation and auth
                           final FacebookAccessToken? accessToken =
                               res.accessToken;
-                          print('Access token: ${accessToken?.token}');
+                          APIServices()
+                              .loginFacebook(accessToken!.token)
+                              .then((APIStandardReturnFormat response) async {
+                            if (response.status == 'error') {
+                              AdvanceSnackBar(
+                                      message: ErrorMessageConstants
+                                          .loginWrongEmailorPassword)
+                                  .show(context);
+                              setState(() => buttonIsLoading = false);
+                            } else {
+                              final UserModel user = UserModel.fromJson(
+                                  json.decode(response.successResponse));
+                              UserSingleton.instance.user = user;
+                              if (user.user?.isTraveller != true) {
+                                await Navigator.pushReplacementNamed(
+                                    context, '/main_navigation');
+                              } else {
+                                await Navigator.pushReplacementNamed(
+                                    context, '/traveller_tab');
+                              }
+                            }
+                          });
+                          // print('Access token: ${accessToken?.token}');
 
-                          // Get profile data
-                          final profile = await fb.getUserProfile();
-                          print(
-                              'Hello, ${profile?.name}! You ID: ${profile?.userId}');
+                          // // Get profile data
+                          // final profile = await fb.getUserProfile();
+                          // print(
+                          //     'Hello, ${profile?.name}! You ID: ${profile?.userId}');
 
-                          // Get user profile image url
-                          final imageUrl =
-                              await fb.getProfileImageUrl(width: 100);
-                          print('Your profile image: $imageUrl');
+                          // // Get user profile image url
+                          // final imageUrl =
+                          //     await fb.getProfileImageUrl(width: 100);
+                          // print('Your profile image: $imageUrl');
 
-                          // Get email (since we request email permission)
-                          final email = await fb.getUserEmail();
-                          // But user can decline permission
-                          if (email != null) print('And your email is $email');
+                          // // Get email (since we request email permission)
+                          // final email = await fb.getUserEmail();
+                          // // But user can decline permission
+                          // if (email != null) print('And your email is $email');
 
                           break;
                         case FacebookLoginStatus.cancel:
-                          // User cancel log in
+                          setState(() {
+                            facebookLoading = false;
+                          });
                           break;
                         case FacebookLoginStatus.error:
-                          // Log in failed
+                          setState(() {
+                            facebookLoading = false;
+                          });
                           print('Error while log in: ${res.error}');
                           break;
                       }

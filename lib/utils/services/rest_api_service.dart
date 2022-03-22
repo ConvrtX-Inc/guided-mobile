@@ -20,6 +20,7 @@ import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/package_destination_image_model.dart';
 import 'package:guided/models/package_destination_model.dart';
 import 'package:guided/models/package_model.dart';
+import 'package:guided/models/popular_guide.dart';
 import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
@@ -328,7 +329,37 @@ class APIServices {
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
-   /// API service for currencies
+  /// API service for login
+  Future<APIStandardReturnFormat> loginFacebook(String fbToken) async {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    };
+    final http.Response response = await http.post(
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.facebookLogin}'),
+      body: jsonEncode({'accessToken': fbToken}),
+      headers: headers,
+    );
+    print(response.body);
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for login
+  Future<APIStandardReturnFormat> loginGoogle(String idToken) async {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    };
+    final http.Response response = await http.post(
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.facebookLogin}'),
+      body: jsonEncode({'idToken': idToken}),
+      headers: headers,
+    );
+    print(response.body);
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for currencies
   Future<List<ActivityPackage>> getActivityPackages() async {
     final http.Response response = await http.get(
         Uri.parse(
@@ -444,5 +475,49 @@ class APIServices {
     }
 
     return EventImageModelData(eventImageDetails: details);
+  }
+
+  /// API service for getClosestActivity
+  Future<List<ActivityPackage>> getClosestActivity() async {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': '*/*',
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+    };
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
+        body: jsonEncode(
+            {'latitude': '9.30', 'longitude': '19.67', 'distance': '20'}),
+        headers: headers);
+
+    final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData['response']['data']['details']);
+    final List<ActivityPackage> activityPackages = <ActivityPackage>[];
+    final activityPackage = (jsonData['response']['data']['details'] as List)
+        .map((i) => ActivityPackage.fromJson(i))
+        .toList();
+    activityPackages.addAll(activityPackage);
+    return activityPackages;
+  }
+
+  /// API service for get Popular guides
+
+  Future<List<PopularGuide>> getPopularGuides() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.popularGuides}/9.30/19.67/20'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
+    final List<PopularGuide> popularGuides = <PopularGuide>[];
+    final activityPackage =
+        (jsonData as List).map((i) => PopularGuide.fromJson(i)).toList();
+    popularGuides.addAll(activityPackage);
+    print(popularGuides.length);
+    return popularGuides;
   }
 }
