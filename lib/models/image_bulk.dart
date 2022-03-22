@@ -4,6 +4,7 @@
 class ImageList {
   /// Id variable
   String id;
+
   /// image variable
   String img;
 
@@ -12,7 +13,8 @@ class ImageList {
   ImageList({required this.id, required this.img});
 
   // ignore: public_member_api_docs
-  Map<String, dynamic> toJson() => {'activity_advertisement_id': id, 'snapshot_img': img};
+  Map<String, dynamic> toJson() =>
+      {'activity_advertisement_id': id, 'snapshot_img': img};
 }
 
 // ignore: public_member_api_docs,
@@ -35,14 +37,38 @@ class OutfitterImageList {
   OutfitterImageList({required this.id, required this.img});
 
   // ignore: public_member_api_docs
-  Map<String, dynamic> toJsonOutfitter() => {'activity_outfitter_id': id, 'snapshot_img': img};
+  Map<String, dynamic> toJsonOutfitter() =>
+      {'activity_outfitter_id': id, 'snapshot_img': img};
 }
 
 // ignore: public_member_api_docs
-List encodeToJsonOutfitter(List<OutfitterImageList> list){
+List encodeToJsonOutfitter(List<OutfitterImageList> list) {
   // ignore: prefer_final_locals
   List jsonListOutfitter = [];
   list.map((item) => jsonListOutfitter.add(item.toJsonOutfitter())).toList();
   return jsonListOutfitter;
 }
 
+/// Outfitter Image list
+class EventImageList {
+  // ignore: public_member_api_docs
+  String id;
+  // ignore: public_member_api_docs
+  String img;
+
+  /// Constructor
+  // ignore: sort_constructors_first
+  EventImageList({required this.id, required this.img});
+
+  // ignore: public_member_api_docs
+  Map<String, dynamic> toJsonOutfitter() =>
+      {'activity_event_id': id, 'snapshot_img': img};
+}
+
+// ignore: public_member_api_docs
+List encodeToJsonEvent(List<EventImageList> list) {
+  // ignore: prefer_final_locals
+  List jsonListEvent = [];
+  list.map((item) => jsonListEvent.add(item.toJsonOutfitter())).toList();
+  return jsonListEvent;
+}

@@ -152,6 +152,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(left: 25.w, top: 10.h),
@@ -171,49 +172,44 @@ class _AdvertisementViewState extends State<AdvertisementView> {
             ),
             Padding(
               padding: EdgeInsets.only(top: 20.h, left: 25.w),
-              child: Row(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(right: 40.w),
-                    child: Text(AppTextConstants.activities,
+              child: SizedBox(
+                height: 50.h,
+                child: Row(
+                  children: <Widget>[
+                    Text(AppTextConstants.activities,
                         style: AppTextStyle.semiBoldStyle),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: AppColors.harp,
-                        border: Border.all(color: AppColors.harp),
-                        borderRadius: BorderRadius.all(Radius.circular(5.r))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(AppTextConstants.camping,
-                          style: TextStyle(color: AppColors.nobel)),
-                    ),
-                  ),
-                  SizedBox(width: 10.w),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: AppColors.harp,
-                        border: Border.all(color: AppColors.harp),
-                        borderRadius: BorderRadius.all(Radius.circular(5.r))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(AppTextConstants.hiking,
-                          style: TextStyle(color: AppColors.nobel)),
-                    ),
-                  ),
-                  SizedBox(width: 10.w),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: AppColors.harp,
-                        border: Border.all(color: AppColors.harp),
-                        borderRadius: BorderRadius.all(Radius.circular(5.r))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(AppTextConstants.hunt,
-                          style: TextStyle(color: AppColors.nobel)),
-                    ),
-                  ),
-                ],
+                    SizedBox(width: 20.w),
+                    Expanded(
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: screenArguments['activities'].length,
+                          itemBuilder: (BuildContext ctx, int index) {
+                            return Row(
+                              children: <Widget>[
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: AppColors.harp,
+                                      border: Border.all(color: AppColors.harp),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(5.r))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(
+                                        screenArguments['activities'][index]
+                                            .toString(),
+                                        style:
+                                            TextStyle(color: AppColors.nobel)),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 5.w,
+                                )
+                              ],
+                            );
+                          }),
+                    )
+                  ],
+                ),
               ),
             ),
             Padding(

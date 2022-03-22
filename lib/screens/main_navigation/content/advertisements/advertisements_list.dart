@@ -99,6 +99,7 @@ class _AdvertisementListState extends State<AdvertisementList>
         title: details.title,
         country: details.country,
         address: details.address,
+        activities: details.activities,
         street: details.street,
         city: details.city,
         province: details.province,

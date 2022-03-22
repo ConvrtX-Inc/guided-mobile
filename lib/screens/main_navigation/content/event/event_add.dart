@@ -836,7 +836,7 @@ class _EventAddState extends State<EventAdd> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () async => advertisementDetail(),
+            onPressed: () async => eventsDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -848,7 +848,7 @@ class _EventAddState extends State<EventAdd> {
               onPrimary: Colors.white,
             ),
             child: Text(
-              AppTextConstants.createAdvertisement,
+              AppTextConstants.createEvent,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
@@ -888,11 +888,11 @@ class _EventAddState extends State<EventAdd> {
     final String base64Image1 = base64Encode(await image1Bytes);
 
     final Map<String, dynamic> image = {
-      'activity_advertisement_id': id,
+      'activity_event_id': id,
       'snapshot_img': base64Image1
     };
 
-    await APIServices().request(AppAPIPath.imageUrl, RequestType.POST,
+    await APIServices().request(AppAPIPath.eventImageUrl, RequestType.POST,
         needAccessToken: true, data: image);
   }
 
@@ -903,15 +903,13 @@ class _EventAddState extends State<EventAdd> {
     final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
     final String base64Image2 = base64Encode(await image2Bytes);
 
-    final OutfitterImageList objImg1 =
-        OutfitterImageList(id: id, img: base64Image1);
-    final OutfitterImageList objImg2 =
-        OutfitterImageList(id: id, img: base64Image2);
+    final EventImageList objImg1 = EventImageList(id: id, img: base64Image1);
+    final EventImageList objImg2 = EventImageList(id: id, img: base64Image2);
 
-    final List<OutfitterImageList> list = [objImg1, objImg2];
+    final List<EventImageList> list = [objImg1, objImg2];
 
     final Map<String, List<dynamic>> finalJson = {
-      'bulk': encodeToJsonOutfitter(list)
+      'bulk': encodeToJsonEvent(list)
     };
 
     await APIServices().request(AppAPIPath.bulkImageUrl, RequestType.POST,
@@ -928,24 +926,21 @@ class _EventAddState extends State<EventAdd> {
     final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
     final String base64Image3 = base64Encode(await image3Bytes);
 
-    final OutfitterImageList objImg1 =
-        OutfitterImageList(id: id, img: base64Image1);
-    final OutfitterImageList objImg2 =
-        OutfitterImageList(id: id, img: base64Image2);
-    final OutfitterImageList objImg3 =
-        OutfitterImageList(id: id, img: base64Image3);
+    final EventImageList objImg1 = EventImageList(id: id, img: base64Image1);
+    final EventImageList objImg2 = EventImageList(id: id, img: base64Image2);
+    final EventImageList objImg3 = EventImageList(id: id, img: base64Image3);
 
-    final List<OutfitterImageList> list = [objImg1, objImg2, objImg3];
+    final List<EventImageList> list = [objImg1, objImg2, objImg3];
 
     final Map<String, List<dynamic>> finalJson = {
-      'bulk': encodeToJsonOutfitter(list)
+      'bulk': encodeToJsonEvent(list)
     };
 
     await APIServices().request(AppAPIPath.bulkImageUrl, RequestType.POST,
         needAccessToken: true, data: finalJson);
   }
 
-  Future<void> advertisementDetail() async {
+  Future<void> eventsDetail() async {
     final String? userId = UserSingleton.instance.user.user!.id;
 
     final Map<String, dynamic> eventDetails = {

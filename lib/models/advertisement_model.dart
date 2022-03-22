@@ -10,7 +10,7 @@ class AdvertisementModelData {
       <AdvertisementDetailsModel>[];
 
   /// mapping
-  
+
   AdvertisementModelData.fromJson(List<dynamic> parseJson)
       : advertisementDetails = parseJson
             .map((i) => AdvertisementDetailsModel.fromJson(i))
@@ -26,6 +26,7 @@ class AdvertisementDetailsModel {
       this.title = '',
       this.country = '',
       this.address = '',
+      this.activities = '',
       this.street = '',
       this.city = '',
       this.province = '',
@@ -42,6 +43,7 @@ class AdvertisementDetailsModel {
       title,
       country,
       address,
+      activities,
       description,
       price,
       street,
@@ -61,6 +63,7 @@ class AdvertisementDetailsModel {
         title = parseJson['title'],
         country = parseJson['country'],
         address = parseJson['address'],
+        activities = parseJson['activities'],
         street = parseJson['street'],
         city = parseJson['city'],
         province = parseJson['province'],

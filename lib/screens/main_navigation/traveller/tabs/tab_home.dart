@@ -176,7 +176,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                           child: Align(
                                             alignment: Alignment.topLeft,
                                             child: Text(
-                                              'Select datesss',
+                                              'Select date',
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 24.sp,
