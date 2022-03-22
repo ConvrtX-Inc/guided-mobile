@@ -27,11 +27,14 @@ class EventDetailsModel {
     this.address = '',
     this.description = '',
     this.fee = '',
+    this.eventDate,
     this.isPublished = false,
   });
 
   /// String property initialization
   final String id, userId, badgeId, title, country, address, description, fee;
+
+  final DateTime? eventDate;
 
   /// boolean initialization
   final bool isPublished;
@@ -45,5 +48,6 @@ class EventDetailsModel {
         address = parseJson['address'],
         description = parseJson['description'],
         fee = parseJson['price'],
+        eventDate = DateTime.parse(parseJson['event_date']),
         isPublished = parseJson['is_published'];
 }

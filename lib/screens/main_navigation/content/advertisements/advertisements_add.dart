@@ -1225,15 +1225,15 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
     final String base64Image2 = base64Encode(await image2Bytes);
 
-    final OutfitterImageList objImg1 =
-        OutfitterImageList(id: id, img: base64Image1);
-    final OutfitterImageList objImg2 =
-        OutfitterImageList(id: id, img: base64Image2);
+    final ImageList objImg1 =
+        ImageList(id: id, img: base64Image1);
+    final ImageList objImg2 =
+        ImageList(id: id, img: base64Image2);
 
-    final List<OutfitterImageList> list = [objImg1, objImg2];
+    final List<ImageList> list = [objImg1, objImg2];
 
     final Map<String, List<dynamic>> finalJson = {
-      'bulk': encodeToJsonOutfitter(list)
+      'bulk': encondeToJson(list)
     };
 
     await APIServices().request(AppAPIPath.bulkImageUrl, RequestType.POST,
@@ -1250,17 +1250,17 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
     final String base64Image3 = base64Encode(await image3Bytes);
 
-    final OutfitterImageList objImg1 =
-        OutfitterImageList(id: id, img: base64Image1);
-    final OutfitterImageList objImg2 =
-        OutfitterImageList(id: id, img: base64Image2);
-    final OutfitterImageList objImg3 =
-        OutfitterImageList(id: id, img: base64Image3);
+    final ImageList objImg1 =
+        ImageList(id: id, img: base64Image1);
+    final ImageList objImg2 =
+        ImageList(id: id, img: base64Image2);
+    final ImageList objImg3 =
+        ImageList(id: id, img: base64Image3);
 
-    final List<OutfitterImageList> list = [objImg1, objImg2, objImg3];
+    final List<ImageList> list = [objImg1, objImg2, objImg3];
 
     final Map<String, List<dynamic>> finalJson = {
-      'bulk': encodeToJsonOutfitter(list)
+      'bulk': encondeToJson(list)
     };
 
     await APIServices().request(AppAPIPath.bulkImageUrl, RequestType.POST,
@@ -1284,7 +1284,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     final Map<String, dynamic> outfitterDetails = {
       'user_id': userId,
       'title': _title.text,
-      'country': 'USA', //_country.text,
+      'country': _country.text,
       'address':
           '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}',
       'activities': activities,

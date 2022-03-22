@@ -149,6 +149,7 @@ class _OutfitterViewState extends State<OutfitterView> {
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(25),
