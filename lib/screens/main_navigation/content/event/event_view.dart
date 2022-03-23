@@ -149,7 +149,7 @@ class _EventViewState extends State<EventView> {
                   bottom: 5,
                   child: ClipOval(
                     child: Image.asset(
-                      screenArguments['main_activity'],
+                      screenArguments['path'],
                       width: 60,
                       height: 60,
                     ),
@@ -349,7 +349,7 @@ class _EventViewState extends State<EventView> {
                   ),
                   SizedBox(width: 75.w),
                   Text(
-                    screenArguments['date'],
+                    screenArguments['event_date'],
                     style: AppTextStyle.greyStyle,
                   )
                 ],
@@ -573,6 +573,9 @@ class _EventViewState extends State<EventView> {
   /// Navigate to Event Edit
   Future<void> navigateEditEventDetails(
       BuildContext context, Map<String, dynamic> screenArguments) async {
+    final List<String> subactivity = screenArguments['sub_activity'];
+    final List<String> service = screenArguments['services'];
+
     final Map<String, dynamic> details = {
       'id': screenArguments['id'],
       'title': screenArguments['title'],
@@ -581,14 +584,17 @@ class _EventViewState extends State<EventView> {
           .substring(0, screenArguments['price'].toString().indexOf('.')),
       'country': screenArguments['country'],
       'description': screenArguments['description'],
-      'date': screenArguments['date'],
+      'event_date': screenArguments['event_date'],
       'address':
           '${screenArguments['street']},${screenArguments['city']},${screenArguments['province']},${screenArguments['zip_code']}',
       'street': screenArguments['street'],
       'city': screenArguments['city'],
       'province': screenArguments['province'],
       'zip_code': screenArguments['zip_code'],
-      'main_activity': screenArguments['sub_activity'][0],
+      'main_activity': screenArguments['main_activity'],
+      'services': service.join(', '),
+      'sub_activity': subactivity.join(', '),
+      'date_format': screenArguments['date_format'],
       'is_published': true
     };
 

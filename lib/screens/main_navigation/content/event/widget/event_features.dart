@@ -28,6 +28,8 @@ class EventFeatures extends StatefulWidget {
     String subactivities = '',
     String services = '',
     String eventDate = '',
+    String path = '',
+    String dateFormat = '',
     bool isPublished = false,
     Key? key,
   })  : _id = id,
@@ -42,6 +44,8 @@ class EventFeatures extends StatefulWidget {
         _subactivities = subactivities,
         _services = services,
         _eventDate = eventDate,
+        _path = path,
+        _dateFormat = dateFormat,
         _isPublished = isPublished,
         super(key: key);
 
@@ -57,6 +61,8 @@ class EventFeatures extends StatefulWidget {
   final String _subactivities;
   final String _services;
   final String _eventDate;
+  final String _path;
+  final String _dateFormat;
   final bool _isPublished;
 
   @override
@@ -183,7 +189,7 @@ class _EventFeaturesState extends State<EventFeatures> {
                               bottom: 65,
                               child: ClipOval(
                                 child: Image.asset(
-                                  widget._mainActivity,
+                                  widget._path,
                                   width: 60,
                                   height: 60,
                                 ),
@@ -273,9 +279,11 @@ class _EventFeaturesState extends State<EventFeatures> {
       'city': splitAddress[1],
       'province': splitAddress[2],
       'zip_code': splitAddress[3],
-      'date': widget._eventDate,
+      'event_date': widget._eventDate,
       'price': widget._fee,
       'star_rating': widget._starRating,
+      'path': widget._path,
+      'date_format': widget._dateFormat,
       'snapshot_img': snapshotImg
     };
 
