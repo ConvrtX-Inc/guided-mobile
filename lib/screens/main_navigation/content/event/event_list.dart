@@ -127,14 +127,17 @@ class _EventListState extends State<EventList>
         description: details.description,
         starRating: 4.9,
         fee: double.parse(details.fee),
-        mainActivity: AssetsPath.paddle,
+        path: AssetsPath.paddle,
         dateRange: '1-9',
         country: details.country,
-        subactivities: 'Camping, Hiking, Fishing',
-        services: 'Transport, Breakfast, Water',
+        mainActivity: details.mainActivities,
+        subactivities: details.subActivities,
+        services: details.freeService,
         address: details.address,
         eventDate:
             '${details.eventDate!.month.toString().padLeft(2, '0')}. ${details.eventDate!.day.toString().padLeft(2, '0')}. ${details.eventDate!.year.toString().padLeft(2, '0')}',
+        dateFormat:
+            '${details.eventDate!.year.toString().padLeft(4, '0')}-${details.eventDate!.month.toString().padLeft(2, '0')}. ${details.eventDate!.day.toString().padLeft(2, '0')}',
         isPublished: details.isPublished,
       );
 }

@@ -76,7 +76,7 @@ class PackageDetailsModel {
         minTraveller = parseJson['min_traveller'],
         country = parseJson['country'],
         address = parseJson['address'],
-        services = parseJson['services'],
+        services = parseJson['services'] ?? '',
         basePrice = parseJson['base_price'],
         extraCostPerPerson = parseJson['extra_cost_per_person'],
         maxExtraPerson = parseJson['max_extra_person'],

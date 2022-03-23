@@ -15,6 +15,7 @@ import 'package:guided/screens/auths/verifications/screens/reset_password_screen
 import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/faq/faq.dart';
+import 'package:guided/screens/home/availability_booking_dates.dart';
 
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
 import 'package:guided/screens/main_navigation/content/event/event_add.dart';
@@ -254,7 +255,7 @@ class RouteGenerator {
       case '/discovery_hub_outfitter_view':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const HubOutfitterView(), settings: settings);
-        case '/event_add':
+      case '/event_add':
         return MaterialPageRoute<dynamic>(builder: (_) => const EventAdd());
       case '/event_view':
         return MaterialPageRoute<dynamic>(
@@ -262,7 +263,10 @@ class RouteGenerator {
       case '/event_edit':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const EventEdit(), settings: settings);
-	default:
+      case '/availability_booking_dates':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AvailabilityBookingDateScreen());
+      default:
         return _errorRoute();
     }
   }

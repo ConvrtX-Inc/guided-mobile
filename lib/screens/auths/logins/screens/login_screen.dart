@@ -40,8 +40,8 @@ class _LoginScreenState extends State<LoginScreen> {
   GoogleSignInAuthentication? _signInAuthentication;
   @override
   void initState() {
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
+    _emailController = TextEditingController(text: 'test1@example.com');
+    _passwordController = TextEditingController(text: 'string');
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       account?.authentication.then((GoogleSignInAuthentication googleKey) {
         print(googleKey.accessToken);
