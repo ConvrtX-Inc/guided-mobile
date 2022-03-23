@@ -214,8 +214,8 @@ class _EventFeaturesState extends State<EventFeatures> {
                                       children: <Widget>[
                                         SvgPicture.asset(
                                           AssetsPath.homeFeatureCalendarIcon,
-                                          height: 20,
-                                          width: 20,
+                                          height: 15,
+                                          width: 15,
                                         ),
                                         const SizedBox(
                                           width: 5,
@@ -226,7 +226,7 @@ class _EventFeaturesState extends State<EventFeatures> {
                                               fontWeight: FontWeight.w500,
                                               color:
                                                   AppColors.tropicalRainForest,
-                                              fontSize: 16),
+                                              fontSize: 12),
                                         ),
                                       ],
                                     ),
@@ -244,7 +244,7 @@ class _EventFeaturesState extends State<EventFeatures> {
                                             Colors.grey, // <-- Splash color
                                       ),
                                       child: Icon(Icons.edit,
-                                          size: 20,
+                                          size: 15,
                                           color: AppColors.tropicalRainForest),
                                     ),
                                   )
