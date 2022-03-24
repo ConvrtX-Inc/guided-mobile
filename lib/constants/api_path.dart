@@ -87,7 +87,7 @@ class AppAPIPath {
   static String closestActivity = 'api/v1/activity-packages/closest-activity';
 
   /// Returns popular guides url
-  static String popularGuides = 'api/v1/nearby-activities/popular-guides-home';
+  static String popularGuides = 'api/v1/nearby-activities/popular-guides-list';
 
   /// Returns activity destination image url
   static String activityDestinationImage =

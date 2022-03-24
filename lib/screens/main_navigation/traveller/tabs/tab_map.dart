@@ -41,6 +41,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
   final SwiperController _cardController = SwiperController();
   final List<Guide> guides = StaticDataService.getGuideList();
   final List<Activity> activities = StaticDataService.getActivityList();
+  final List<Activity> tourList = StaticDataService.getTourList();
   int _selectedActivity = -1;
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
@@ -60,7 +61,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
             assetPath: 'assets/images/png/hunting_marker.png',
             width: 90.w,
             height: 90.h),
-        position: const LatLng(32.41466290553936, 53.66990581798554),
+        position: const LatLng(57.82224878819442, -101.7932965373715),
       ),
       Marker(
         markerId: const MarkerId('marker2'),
@@ -68,7 +69,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
             assetPath: 'assets/images/png/paddle_marker.png',
             width: 120.w,
             height: 120.h),
-        position: const LatLng(32.418354764794636, 53.63271757672727),
+        position: const LatLng(57.82402988598948, -101.79746701615878),
       ),
       Marker(
         markerId: const MarkerId('marker3'),
@@ -76,7 +77,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
             assetPath: 'assets/images/png/eco_marker1.png',
             width: 120.w,
             height: 120.h),
-        position: const LatLng(32.42270518531192, 53.77571594613791),
+        position: const LatLng(57.82263910866079, -101.78955246695332),
       ),
       Marker(
         markerId: const MarkerId('marker4'),
@@ -84,7 +85,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
             assetPath: 'assets/images/png/eco_marker2.png',
             width: 120.w,
             height: 120.h),
-        position: const LatLng(32.527346929217615, 53.74507673728466),
+        position: const LatLng(57.82432951675727, -101.7936172499416),
       ),
     ];
 
@@ -102,8 +103,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
           children: <Widget>[
             GoogleMap(
               initialCameraPosition: const CameraPosition(
-                target: LatLng(57.818582, -101.760181),
-                zoom: 10,
+                target: LatLng(57.82288338460806, -101.78925425979324),
+                zoom: 12,
               ),
               markers: Set<Marker>.of(_markers),
               onMapCreated: _onMapCreated,
@@ -305,7 +306,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
                           children:
-                              List<Widget>.generate(activities.length, (int i) {
+                              List<Widget>.generate(tourList.length, (int i) {
                             return Container(
                               margin: EdgeInsets.symmetric(
                                   horizontal: 5.w, vertical: 20.h),
@@ -318,7 +319,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    'Guided News Feed',
+                                    tourList[i].name,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w700,
                                       fontSize: 12.sp,
@@ -338,7 +339,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                       ),
                                       image: DecorationImage(
                                         image: AssetImage(
-                                            activities[i].featureImage),
+                                            tourList[i].featureImage),
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -350,7 +351,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                             backgroundColor: Colors.transparent,
                                             radius: 17,
                                             backgroundImage:
-                                                AssetImage(activities[i].path),
+                                                AssetImage(tourList[i].path),
                                           ),
                                         ),
                                       ],

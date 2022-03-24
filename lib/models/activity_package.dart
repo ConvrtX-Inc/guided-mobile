@@ -70,7 +70,9 @@ class ActivityPackage {
     minTraveller = json['min_traveller'];
     country = json['country'];
     address = json['address'];
-    services = json['services'].cast<String>();
+    services = json['services'] != null
+        ? json['services'].cast<String>()
+        : [''].cast<String>();
     createdDate = json['created_date'];
     updatedDate = json['updated_date'];
     basePrice = json['base_price'];

@@ -67,6 +67,48 @@ class StaticDataService {
     ];
   }
 
+  /// returns tour list
+  static List<Activity> getTourList() {
+    return <Activity>[
+      Activity(
+          id: '1',
+          name: 'Green Lake 4 Night Camp',
+          path: AssetsPath.camping,
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/png/activity3.png'),
+      Activity(
+          id: '2',
+          name: 'Clear Lake Day Paddle',
+          path: AssetsPath.paddle,
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/jpg/hiking.jpg'),
+      Activity(
+          id: '3',
+          name: 'Water Foul Hunt',
+          path: AssetsPath.hunt,
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/png/activity1.png'),
+      Activity(
+          id: '4',
+          name: 'River Fly Fishing',
+          path: AssetsPath.fishing,
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/jpg/fishing.jpg'),
+      Activity(
+          id: '5',
+          name: 'Botanical Garden Tour.',
+          path: AssetsPath.eco,
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/jpg/eco_tour.jpg'),
+      Activity(
+          id: '6',
+          name: 'Great Lakes Fishing',
+          path: AssetsPath.fishing,
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/jpg/sport_fishing.jpeg'),
+    ];
+  }
+
   /// returns guide list
   static List<Guide> getGuideList() {
     return <Guide>[

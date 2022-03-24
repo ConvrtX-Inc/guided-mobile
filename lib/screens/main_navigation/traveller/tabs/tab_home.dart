@@ -839,7 +839,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                   height: 5.h,
                                 ),
                                 Text(
-                                  guides[i].name,
+                                  snapshot.data![i].userFirstName!,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 16.sp,

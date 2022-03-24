@@ -1,5 +1,12 @@
 ////
 class PopularGuide {
+  String? userId;
+  String? userFirstName;
+  String? userLastName;
+  String? userEmail;
+  Null? userPhoneNo;
+  bool? userIsForThePlanet;
+  bool? userIsFirstAidTrained;
   String? activityId;
   String? activityUserId;
   String? activityMainBadgeId;
@@ -11,7 +18,7 @@ class PopularGuide {
   int? activityMinTraveller;
   String? activityCountry;
   String? activityAddress;
-  String? activityServices;
+  Null? activityServices;
   String? activityCreatedDate;
   String? activityUpdatedDate;
   String? activityBasePrice;
@@ -32,7 +39,14 @@ class PopularGuide {
   double? distance;
 
   PopularGuide(
-      {this.activityId,
+      {this.userId,
+      this.userFirstName,
+      this.userLastName,
+      this.userEmail,
+      this.userPhoneNo,
+      this.userIsForThePlanet,
+      this.userIsFirstAidTrained,
+      this.activityId,
       this.activityUserId,
       this.activityMainBadgeId,
       this.activitySubBadgeIds,
@@ -64,6 +78,13 @@ class PopularGuide {
       this.distance});
 
   PopularGuide.fromJson(Map<String, dynamic> json) {
+    userId = json['user_id'];
+    userFirstName = json['user_first_name'];
+    userLastName = json['user_last_name'];
+    userEmail = json['user_email'];
+    userPhoneNo = json['user_phone_no'];
+    userIsForThePlanet = json['user_is_for_the_planet'];
+    userIsFirstAidTrained = json['user_is_first_aid_trained'];
     activityId = json['activity_id'];
     activityUserId = json['activity_user_id'];
     activityMainBadgeId = json['activity_main_badge_id'];
@@ -71,6 +92,7 @@ class PopularGuide {
     activityPackageNote = json['activity_package_note'];
     activityName = json['activity_name'];
     activityDescription = json['activity_description'];
+
     activityMaxTraveller = json['activity_max_traveller'];
     activityMinTraveller = json['activity_min_traveller'];
     activityCountry = json['activity_country'];
@@ -98,6 +120,13 @@ class PopularGuide {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['user_id'] = this.userId;
+    data['user_first_name'] = this.userFirstName;
+    data['user_last_name'] = this.userLastName;
+    data['user_email'] = this.userEmail;
+    data['user_phone_no'] = this.userPhoneNo;
+    data['user_is_for_the_planet'] = this.userIsForThePlanet;
+    data['user_is_first_aid_trained'] = this.userIsFirstAidTrained;
     data['activity_id'] = this.activityId;
     data['activity_user_id'] = this.activityUserId;
     data['activity_main_badge_id'] = this.activityMainBadgeId;
