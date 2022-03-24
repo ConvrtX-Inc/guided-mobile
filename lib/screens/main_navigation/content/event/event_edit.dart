@@ -36,7 +36,9 @@ class _EventEditState extends State<EventEdit> {
   bool _isEnabledDate = false;
   bool _isEnabledDescription = false;
   bool _isEnabledPrice = false;
-  bool _isEnabledActivity = false;
+  bool _isEnabledMainActivity = false;
+  bool _isEnabledSubActivity = false;
+  bool _isEnabledServices = false;
 
   TextEditingController _title = TextEditingController();
   TextEditingController _country = TextEditingController();
@@ -44,10 +46,12 @@ class _EventEditState extends State<EventEdit> {
   TextEditingController _city = TextEditingController();
   TextEditingController _province = TextEditingController();
   TextEditingController _postalCode = TextEditingController();
-  TextEditingController _date = TextEditingController();
+  TextEditingController _eventDate = TextEditingController();
   TextEditingController _description = TextEditingController();
   TextEditingController _price = TextEditingController();
-  TextEditingController _activity = TextEditingController();
+  TextEditingController _mainactivity = TextEditingController();
+  TextEditingController _subactivity = TextEditingController();
+  TextEditingController _services = TextEditingController();
 
   final FocusNode _titleFocus = FocusNode();
   final FocusNode _countryFocus = FocusNode();
@@ -55,14 +59,16 @@ class _EventEditState extends State<EventEdit> {
   final FocusNode _cityFocus = FocusNode();
   final FocusNode _provinceFocus = FocusNode();
   final FocusNode _postalCodeFocus = FocusNode();
-  final FocusNode _dateFocus = FocusNode();
+  final FocusNode _eventDateFocus = FocusNode();
   final FocusNode _descriptionFocus = FocusNode();
   final FocusNode _priceFocus = FocusNode();
-  final FocusNode _activityFocus = FocusNode();
+  final FocusNode _mainactivityFocus = FocusNode();
+  final FocusNode _subactivityFocus = FocusNode();
+  final FocusNode _servicesFocus = FocusNode();
 
   DateTime _selectedDate = DateTime.now();
   final TextStyle txtStyle = TextStyle(fontSize: 14.sp, fontFamily: 'Poppins');
-
+  bool isNewDate = false;
   @override
   void initState() {
     super.initState();
@@ -76,13 +82,17 @@ class _EventEditState extends State<EventEdit> {
       _country = TextEditingController(text: screenArguments['country']);
       _description =
           TextEditingController(text: screenArguments['description']);
-      _date = TextEditingController(text: screenArguments['date']);
+      _eventDate = TextEditingController(text: screenArguments['event_date']);
       _street = TextEditingController(text: screenArguments['street']);
       _city = TextEditingController(text: screenArguments['city']);
       _province = TextEditingController(text: screenArguments['province']);
       _postalCode = TextEditingController(text: screenArguments['zip_code']);
 
-      _activity = TextEditingController(text: screenArguments['main_activity']);
+      _mainactivity =
+          TextEditingController(text: screenArguments['main_activity']);
+      _subactivity =
+          TextEditingController(text: screenArguments['sub_activity']);
+      _services = TextEditingController(text: screenArguments['services']);
     });
   }
 
@@ -175,15 +185,15 @@ class _EventEditState extends State<EventEdit> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledActivity == false) {
-                            _isEnabledActivity = true;
+                          if (_isEnabledMainActivity == false) {
+                            _isEnabledMainActivity = true;
                           } else {
-                            _isEnabledActivity = false;
+                            _isEnabledMainActivity = false;
                           }
                         });
                       },
                       child: Text(
-                        _isEnabledActivity
+                        _isEnabledMainActivity
                             ? AppTextConstants.done
                             : AppTextConstants.edit,
                         style: TextStyle(
@@ -204,11 +214,141 @@ class _EventEditState extends State<EventEdit> {
                       height: 5.h,
                     ),
                     TextField(
-                      enabled: _isEnabledActivity,
-                      controller: _activity,
-                      focusNode: _activityFocus,
+                      enabled: _isEnabledMainActivity,
+                      controller: _mainactivity,
+                      focusNode: _mainactivityFocus,
                       decoration: InputDecoration(
                         hintText: screenArguments['main_activity'],
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade800,
+                        ),
+                      ),
+                      style: txtStyle,
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+
+    /// Activity card widget
+    Card _widgetSubActivity() => Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: Row(
+                  children: <Widget>[
+                    Expanded(
+                        child: Text(
+                      AppTextConstants.subActivities,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (_isEnabledSubActivity == false) {
+                            _isEnabledSubActivity = true;
+                          } else {
+                            _isEnabledSubActivity = false;
+                          }
+                        });
+                      },
+                      child: Text(
+                        _isEnabledSubActivity
+                            ? AppTextConstants.done
+                            : AppTextConstants.edit,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          decoration: TextDecoration.underline,
+                          color: AppColors.primaryGreen,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    TextField(
+                      enabled: _isEnabledSubActivity,
+                      controller: _subactivity,
+                      focusNode: _subactivityFocus,
+                      decoration: InputDecoration(
+                        hintText: screenArguments['sub_activity'],
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade800,
+                        ),
+                      ),
+                      style: txtStyle,
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+
+    /// Activity card widget
+    Card _widgetServices() => Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: Row(
+                  children: <Widget>[
+                    Expanded(
+                        child: Text(
+                      AppTextConstants.freeServices,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (_isEnabledServices == false) {
+                            _isEnabledServices = true;
+                          } else {
+                            _isEnabledServices = false;
+                          }
+                        });
+                      },
+                      child: Text(
+                        _isEnabledServices
+                            ? AppTextConstants.done
+                            : AppTextConstants.edit,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          decoration: TextDecoration.underline,
+                          color: AppColors.primaryGreen,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    TextField(
+                      enabled: _isEnabledServices,
+                      controller: _services,
+                      focusNode: _servicesFocus,
+                      decoration: InputDecoration(
+                        hintText: screenArguments['services'],
                         hintStyle: TextStyle(
                           color: Colors.grey.shade800,
                         ),
@@ -700,10 +840,10 @@ class _EventEditState extends State<EventEdit> {
                         child: TextField(
                           enabled: _isEnabledDate,
                           keyboardType: TextInputType.datetime,
-                          controller: _date,
-                          focusNode: _dateFocus,
+                          controller: _eventDate,
+                          focusNode: _eventDateFocus,
                           decoration: InputDecoration(
-                            hintText: screenArguments['date'],
+                            hintText: screenArguments['event_date'],
                             hintStyle: TextStyle(
                               color: Colors.grey.shade800,
                             ),
@@ -769,6 +909,8 @@ class _EventEditState extends State<EventEdit> {
                     height: 30.h,
                   ),
                   _widgetActivity(),
+                  _widgetSubActivity(),
+                  _widgetServices(),
                   _widgetImagesList(),
                   _widgetTitle(),
                   _widgetFee(),
@@ -817,13 +959,18 @@ class _EventEditState extends State<EventEdit> {
 
     final Map<String, dynamic> eventEditDetails = {
       'user_id': userId,
-      'badge_id': 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae',
+      'badge_id': '764f32ae-7f8c-4d3c-b948-d7b93eaed436',
       'title': _title.text,
+      'free_service': _services.text,
+      'main_activities': _mainactivity.text,
+      'sub_activities': _subactivity.text,
       'country': _country.text,
       'address':
           '${_street.text}, ${_city.text}, ${_province.text}, ${_country.text}, ${_postalCode.text}',
       'description': _description.text,
       'price': int.parse(_price.text),
+      'event_date':
+          isNewDate ? _eventDate.text : screenArguments['date_format'],
       'is_published': true,
     };
 
@@ -862,7 +1009,8 @@ class _EventEditState extends State<EventEdit> {
       final String formattedDate = DateFormat('yyyy-MM-dd').format(picked);
       setState(() {
         _selectedDate = picked;
-        _date = TextEditingController(text: formattedDate.toString());
+        _eventDate = TextEditingController(text: formattedDate.toString());
+        isNewDate = true;
       });
     }
   }

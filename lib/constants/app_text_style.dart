@@ -147,8 +147,9 @@ class HeaderText {
       child: Text(
         text,
         style: const TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 25,
+          fontWeight: FontWeight.w600,
+          fontSize: 24,
+          fontFamily: 'Gilroy'
           // fontFamily: 'GilRoy',
         ),
       ),
