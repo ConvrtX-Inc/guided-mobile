@@ -867,6 +867,15 @@ class AppTextConstants {
 
   /// Returns post event text
   static String postEvent1 = 'Post Event';
+
+  /// Returns remove current location text
+  static String removeCurrentLocation = 'Remove Current Location';
+
+  /// Returns I agree with Guide Rules
+  static String agreeWithGuideRules = 'I Agree With Guide Rules & What To Bring';
+
+  /// Returns I agree with Terms & Conditions
+  static String agreeWithWaiver = 'I Agree With the Waiver';
 }
 
 /// Class for error messages text

@@ -28,7 +28,7 @@ class _WaiverScreenState extends State<WaiverScreen> {
   void initState() {
     super.initState();
 
-    _waiver = TextEditingController(text: 'Text');
+    _waiver = TextEditingController(text: AppTextConstants.loremIpsum);
   }
 
   @override
@@ -146,7 +146,7 @@ class _WaiverScreenState extends State<WaiverScreen> {
                       ),
                       Expanded(
                         child: Text(
-                          AppTextConstants.agreeLocalLaws,
+                          AppTextConstants.agreeWithWaiver,
                           style: TextStyle(
                             color: AppColors.grey,
                             fontSize: 15,

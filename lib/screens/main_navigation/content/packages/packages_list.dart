@@ -108,6 +108,8 @@ class _PackageListState extends State<PackageList>
   Widget buildPackageInfo(PackageDetailsModel details) => PackageFeatures(
         id: details.id,
         name: details.name,
+        mainBadgeId: details.mainBadgeId,
+        subBadgeId: details.subBadgeId,
         description: details.description,
         imageUrl: details.coverImg,
         numberOfTourist: details.maxTraveller,

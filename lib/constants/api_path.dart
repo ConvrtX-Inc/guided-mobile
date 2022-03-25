@@ -118,4 +118,7 @@ class AppAPIPath {
 
   /// Returns activity advertisement image url
   static String eventImageUrl = 'api/v1/activity-event-image';
+
+  /// Returns badges url
+  static String badgesUrl = 'api/v1/badges';
 }

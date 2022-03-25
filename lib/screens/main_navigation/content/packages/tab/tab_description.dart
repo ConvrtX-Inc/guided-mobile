@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/home.dart';
 import 'package:guided/models/package_destination_image_model.dart';
 import 'package:guided/models/package_destination_model.dart';
@@ -18,6 +19,7 @@ import 'package:guided/utils/services/rest_api_service.dart';
 class TabDescriptionView extends StatefulWidget {
   final String id;
   final String name;
+  final List<String> subActivityId;
   final double fee;
   final String description;
   final int numberOfTourist;
@@ -29,6 +31,7 @@ class TabDescriptionView extends StatefulWidget {
       {Key? key,
       required this.id,
       required this.name,
+      required this.subActivityId,
       required this.fee,
       required this.description,
       required this.numberOfTourist,
@@ -37,8 +40,8 @@ class TabDescriptionView extends StatefulWidget {
       : super(key: key);
 
   @override
-  _TabDescriptionViewState createState() => _TabDescriptionViewState(
-      id, name, fee, description, numberOfTourist, services, starRating);
+  _TabDescriptionViewState createState() => _TabDescriptionViewState(id, name,
+      subActivityId, fee, description, numberOfTourist, services, starRating);
 }
 
 class _TabDescriptionViewState extends State<TabDescriptionView>
@@ -49,6 +52,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
   _TabDescriptionViewState(
       String id,
       String name,
+      List<String> subActivityId,
       double fee,
       String description,
       int numberOfTourist,
@@ -119,49 +123,73 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
             ),
             Padding(
               padding: EdgeInsets.only(top: 20.h, left: 25.w),
-              child: Row(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(right: 40.w),
-                    child: Text(AppTextConstants.activities,
+              child: SizedBox(
+                height: 50.h,
+                child: Row(
+                  children: <Widget>[
+                    Text(AppTextConstants.activities,
                         style: AppTextStyle.semiBoldStyle),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: AppColors.harp,
-                        border: Border.all(color: AppColors.harp),
-                        borderRadius: BorderRadius.all(Radius.circular(5.r))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(AppTextConstants.camping,
-                          style: TextStyle(color: AppColors.nobel)),
-                    ),
-                  ),
-                  SizedBox(width: 5.w),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: AppColors.harp,
-                        border: Border.all(color: AppColors.harp),
-                        borderRadius: BorderRadius.all(Radius.circular(5.r))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(AppTextConstants.hiking,
-                          style: TextStyle(color: AppColors.nobel)),
-                    ),
-                  ),
-                  SizedBox(width: 5.w),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: AppColors.harp,
-                        border: Border.all(color: AppColors.harp),
-                        borderRadius: BorderRadius.all(Radius.circular(5.r))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(AppTextConstants.hunt,
-                          style: TextStyle(color: AppColors.nobel)),
-                    ),
-                  ),
-                ],
+                    SizedBox(width: 20.w),
+                    Expanded(
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: widget.subActivityId.length,
+                          itemBuilder: (BuildContext ctx, int index) {
+                            return FutureBuilder<BadgeModelData>(
+                              future: APIServices().getBadgesModelById(
+                                  widget.subActivityId[index]),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<dynamic> snapshot) {
+                                if (snapshot.hasData) {
+                                  final BadgeModelData badgeData =
+                                      snapshot.data;
+                                  final int length =
+                                      badgeData.badgeDetails.length;
+                                  return Row(
+                                    children: <Widget>[
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            color: AppColors.harp,
+                                            border: Border.all(
+                                                color: AppColors.harp),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5.r))),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                              badgeData.badgeDetails[0].name
+                                                  .toString(),
+                                              style: TextStyle(
+                                                  color: AppColors.nobel)),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5.w,
+                                      )
+                                    ],
+                                  );
+                                }
+                                if (snapshot.connectionState !=
+                                    ConnectionState.done) {
+                                  return Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Row(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          width: 10.w,
+                                        ),
+                                        const CircularProgressIndicator(),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                return Container();
+                              },
+                            );
+                          }),
+                    )
+                  ],
+                ),
               ),
             ),
             Padding(
