@@ -12,6 +12,8 @@ import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
+import 'package:guided/models/badge_model.dart';
+import 'package:guided/models/country_model.dart';
 import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/event_image_model.dart';
 import 'package:guided/models/event_model.dart';
@@ -501,6 +503,26 @@ class APIServices {
     return activityPackages;
   }
 
+  /// API service for badges model
+  Future<BadgeModelData> getBadgesModel() async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.badgesUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<BadgeDetailsModel> details = <BadgeDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final BadgeDetailsModel badgeModel = BadgeDetailsModel.fromJson(data);
+      details.add(badgeModel);
+    }
+
+    return BadgeModelData(badgeDetails: details);
+  }
   /// API service for get Popular guides
 
   Future<List<PopularGuide>> getPopularGuides() async {
@@ -519,5 +541,42 @@ class APIServices {
     popularGuides.addAll(activityPackage);
     print(popularGuides.length);
     return popularGuides;
+  }
+ /// API service for outfitter image model
+  Future<BadgeModelData> getBadgesModelById(String id) async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.badgesUrl}?s={"id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<BadgeDetailsModel> details = <BadgeDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final BadgeDetailsModel badgeModel = BadgeDetailsModel.fromJson(data);
+      details.add(badgeModel);
+    }
+
+    return BadgeModelData(badgeDetails: details);
+  }
+ /// API service for countries
+  Future<List<CountryModel>> getCountries() async {
+    final http.Response response =
+        await http.get(Uri.http(apiBaseUrl, '/api/v1/countries'), headers: {
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+    });
+    final List<dynamic> res = jsonDecode(response.body);
+    final List<CountryModel> countries = <CountryModel>[];
+
+    for (final dynamic data in res) {
+      final CountryModel country = CountryModel.fromJson(data);
+      countries.add(country);
+    }
+
+    return countries;
   }
 }

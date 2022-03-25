@@ -30,6 +30,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
   bool isChecked = false;
   bool _isSubmit = false;
   final TextStyle txtStyle = TextStyle(fontSize: 14.sp, fontFamily: 'Poppins');
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +40,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
       List<String> list = screenArguments['services'];
-
       // final service = Services(
       //   services: list.join(','),
       // );
@@ -58,6 +58,10 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
 
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    dynamic mainActivityName = screenArguments['main_activity'];
+    dynamic subActivityName1 = screenArguments['sub_activity_1'];
+    dynamic subActivityName2 = screenArguments['sub_activity_2'];
+    dynamic subActivityName3 = screenArguments['sub_activity_3'];
 
     Card _widgetMainActivity() {
       return Card(
@@ -93,7 +97,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                     height: 5.h,
                   ),
                   Text(
-                    screenArguments['main_activity'],
+                    mainActivityName.name,
                     style: txtStyle,
                   ),
                   SizedBox(
@@ -141,21 +145,21 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                     height: 5.h,
                   ),
                   Text(
-                    screenArguments['sub_activity_1'],
+                    subActivityName1.name,
                     style: txtStyle,
                   ),
                   SizedBox(
                     height: 5.h,
                   ),
                   Text(
-                    screenArguments['sub_activity_2'],
+                    subActivityName2.name,
                     style: txtStyle,
                   ),
                   SizedBox(
                     height: 5.h,
                   ),
                   Text(
-                    screenArguments['sub_activity_3'],
+                    subActivityName3.name,
                     style: txtStyle,
                   ),
                 ],
@@ -639,9 +643,15 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     final String? userId = UserSingleton.instance.user.user!.id;
 
     List<String> list = screenArguments['services'];
+    dynamic mainBadgeId = screenArguments['main_activity'];
+    dynamic subBadgeId1 = screenArguments['sub_activity_1'];
+    dynamic subBadgeId2 = screenArguments['sub_activity_2'];
+    dynamic subBadgeId3 = screenArguments['sub_activity_3'];
 
     Map<String, dynamic> packageDetails = {
       'user_id': userId,
+      'main_badge_id': mainBadgeId.id,
+      'sub_badge_ids': '${subBadgeId1.id},${subBadgeId2.id},${subBadgeId3.id}',
       'package_note': screenArguments['note'].toString(),
       'name': screenArguments['package_name'].toString(),
       'description': screenArguments['description'].toString(),

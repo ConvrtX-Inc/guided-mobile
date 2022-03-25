@@ -28,7 +28,7 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
   void initState() {
     super.initState();
 
-    _localLawsTaxes = TextEditingController(text: 'Text');
+    _localLawsTaxes = TextEditingController(text: AppTextConstants.loremIpsum);
   }
 
   @override

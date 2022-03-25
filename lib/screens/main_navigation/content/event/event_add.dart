@@ -8,13 +8,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:guided/common/widgets/country_dropdown.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/badgesModel.dart';
+import 'package:guided/models/country_model.dart';
 import 'package:guided/models/image_bulk.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
@@ -71,6 +74,36 @@ class _EventAddState extends State<EventAdd> {
   final List<String> services = ['Transport', 'Breakfast', 'Water', 'Snacks'];
   FocusNode _keywordFocus = FocusNode();
   TextEditingController _keyword = TextEditingController();
+
+  late Future<BadgeModelData> _loadingData;
+  late List<CountryModel> listCountry;
+  late CountryModel _countryDropdown;
+  bool isLocationBtnClicked = false;
+  @override
+  void initState() {
+    super.initState();
+    _loadingData = APIServices().getBadgesModel();
+    listCountry = <CountryModel>[CountryModel()];
+    _countryDropdown = listCountry[0];
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final List<CountryModel> resCountries =
+          await APIServices().getCountries();
+
+      setState(() {
+        listCountry = resCountries;
+        _countryDropdown = listCountry[38];
+      });
+    });
+  }
+
+  void setCountry(dynamic value) {
+    setState(() {
+      _countryDropdown = value;
+      debugPrint(_countryDropdown.id);
+    });
+  }
+
   @override
   void dispose() {
     _title.dispose();
@@ -138,13 +171,13 @@ class _EventAddState extends State<EventAdd> {
     );
   }
 
-  ListTile _choicesMainActivity(BadgesModel badges) {
+  ListTile _choicesMainActivity(BadgeDetailsModel badges) {
     return ListTile(
       onTap: () {
         setState(() {
           mainActivity = badges;
           showMainActivityChoices = false;
-          mainActivityTitle = badges.title;
+          mainActivityTitle = badges.name;
           subActivities1 = null;
           subActivities2 = null;
           subActivities3 = null;
@@ -155,27 +188,13 @@ class _EventAddState extends State<EventAdd> {
         });
       },
       minLeadingWidth: 20,
-      leading: Image.asset(
-        badges.imageUrl,
-        width: 30.w,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
       ),
-      title: Text(badges.title),
-    );
-  }
-
-  GridView _choicesGridMainActivity() {
-    return GridView.count(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      crossAxisCount: 2,
-      childAspectRatio: 2.5,
-      children: List.generate(AppListConstants.badges.length, (int index) {
-        return SizedBox(
-          height: 10.h,
-          width: 100.w,
-          child: _choicesMainActivity(AppListConstants.badges[index]),
-        );
-      }),
+      title: Text(badges.name),
     );
   }
 
@@ -213,7 +232,7 @@ class _EventAddState extends State<EventAdd> {
                   )
                 else
                   SizedBox(
-                    width: 140.w,
+                    width: 160.w,
                     height: 100.h,
                     child: _choicesMainActivity(mainActivity),
                   ),
@@ -255,7 +274,35 @@ class _EventAddState extends State<EventAdd> {
               width: width,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
-                child: _choicesGridMainActivity(),
+                child: FutureBuilder<BadgeModelData>(
+                  future: _loadingData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasData) {
+                      final BadgeModelData badgeData = snapshot.data;
+                      final int length = badgeData.badgeDetails.length;
+                      return GridView.count(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        crossAxisCount: 2,
+                        childAspectRatio: 2.5,
+                        children: List.generate(length, (int index) {
+                          final BadgeDetailsModel badgeDetails =
+                              badgeData.badgeDetails[index];
+                          return SizedBox(
+                            height: 10.h,
+                            width: 100.w,
+                            child: _choicesMainActivity(badgeDetails),
+                          );
+                        }),
+                      );
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Container();
+                  },
+                ),
               ),
             ),
           )
@@ -341,7 +388,35 @@ class _EventAddState extends State<EventAdd> {
               width: width,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
-                child: _choicesGridSubActivity(),
+                child: FutureBuilder<BadgeModelData>(
+                  future: _loadingData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasData) {
+                      final BadgeModelData badgeData = snapshot.data;
+                      final int length = badgeData.badgeDetails.length;
+                      return GridView.count(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        crossAxisCount: 2,
+                        childAspectRatio: 2.5,
+                        children: List.generate(length, (int index) {
+                          final BadgeDetailsModel badgeDetails =
+                              badgeData.badgeDetails[index];
+                          return SizedBox(
+                            height: 10.h,
+                            width: 100.w,
+                            child: _choicesSubActivities(badgeDetails),
+                          );
+                        }),
+                      );
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Container();
+                  },
+                ),
               ),
             ),
           )
@@ -351,7 +426,7 @@ class _EventAddState extends State<EventAdd> {
     );
   }
 
-  Padding _chosenSubActivities1(BadgesModel badges) {
+  Padding _chosenSubActivities1(BadgeDetailsModel badges) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Align(
@@ -359,7 +434,7 @@ class _EventAddState extends State<EventAdd> {
           onTap: () {
             setState(() {
               subActivities1 = badges;
-              subActivities1Txt = badges.title;
+              subActivities1Txt = badges.name;
               count++;
             });
           },
@@ -383,8 +458,9 @@ class _EventAddState extends State<EventAdd> {
                           height: 30.h,
                           child: Align(
                             child: Text(
-                              badges.title,
+                              badges.name,
                               textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 13.sp),
                             ),
                           ),
                         ),
@@ -417,10 +493,14 @@ class _EventAddState extends State<EventAdd> {
                     ],
                   ),
                   Positioned(
-                    left: 0,
-                    bottom: 2.h,
-                    child:
-                        Image.asset(badges.imageUrl, width: 28.w, height: 28.h),
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
+                    ),
                   ),
                 ],
               ),
@@ -431,7 +511,7 @@ class _EventAddState extends State<EventAdd> {
     );
   }
 
-  Padding _chosenSubActivities2(BadgesModel badges) {
+  Padding _chosenSubActivities2(BadgeDetailsModel badges) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Align(
@@ -439,7 +519,7 @@ class _EventAddState extends State<EventAdd> {
           onTap: () {
             setState(() {
               subActivities2 = badges;
-              subActivities2Txt = badges.title;
+              subActivities2Txt = badges.name;
               count++;
             });
           },
@@ -463,8 +543,9 @@ class _EventAddState extends State<EventAdd> {
                           height: 30.h,
                           child: Align(
                             child: Text(
-                              badges.title,
+                              badges.name,
                               textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 13.sp),
                             ),
                           ),
                         ),
@@ -491,12 +572,13 @@ class _EventAddState extends State<EventAdd> {
                     ],
                   ),
                   Positioned(
-                    left: 0,
-                    bottom: 2.h,
-                    child: Image.asset(
-                      badges.imageUrl,
-                      width: 28.w,
-                      height: 28.h,
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
                     ),
                   ),
                 ],
@@ -508,7 +590,7 @@ class _EventAddState extends State<EventAdd> {
     );
   }
 
-  Padding _chosenSubActivities3(BadgesModel badges) {
+  Padding _chosenSubActivities3(BadgeDetailsModel badges) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Align(
@@ -516,7 +598,7 @@ class _EventAddState extends State<EventAdd> {
           onTap: () {
             setState(() {
               subActivities3 = badges;
-              subActivities3Txt = badges.title;
+              subActivities3Txt = badges.name;
               count++;
             });
           },
@@ -541,8 +623,9 @@ class _EventAddState extends State<EventAdd> {
                           height: 30.h,
                           child: Align(
                             child: Text(
-                              badges.title,
+                              badges.name,
                               textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 13.sp),
                             ),
                           ),
                         ),
@@ -564,12 +647,13 @@ class _EventAddState extends State<EventAdd> {
                     ],
                   ),
                   Positioned(
-                    left: 0,
-                    bottom: 2.h,
-                    child: Image.asset(
-                      badges.imageUrl,
-                      width: 28.w,
-                      height: 28.h,
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
                     ),
                   ),
                 ],
@@ -581,24 +665,8 @@ class _EventAddState extends State<EventAdd> {
     );
   }
 
-  GridView _choicesGridSubActivity() {
-    return GridView.count(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      crossAxisCount: 2,
-      childAspectRatio: 2.5,
-      children: List.generate(AppListConstants.badges.length, (int index) {
-        return SizedBox(
-          height: 10.h,
-          width: 100.w,
-          child: _choicesSubActivities(AppListConstants.badges[index]),
-        );
-      }),
-    );
-  }
-
-  ListTile _choicesSubActivities(BadgesModel badges) {
-    if (badges.title == mainActivity.title) {
+  ListTile _choicesSubActivities(BadgeDetailsModel badges) {
+    if (badges.name == mainActivity.name) {
       return _disabledSubActivities(badges);
     }
     if (subActivities1 == badges) {
@@ -614,7 +682,7 @@ class _EventAddState extends State<EventAdd> {
     return _enabledSubActivities(badges);
   }
 
-  ListTile _disabledSubActivities(BadgesModel badges) {
+  ListTile _disabledSubActivities(BadgeDetailsModel badges) {
     return ListTile(
       enabled: false,
       onTap: () {
@@ -622,19 +690,19 @@ class _EventAddState extends State<EventAdd> {
           switch (count) {
             case 0:
               subActivities1 = badges;
-              subActivities1Txt = badges.title;
+              subActivities1Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               break;
             case 1:
               subActivities2 = badges;
-              subActivities2Txt = badges.title;
+              subActivities2Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               break;
             case 2:
               subActivities3 = badges;
-              subActivities3Txt = badges.title;
+              subActivities3Txt = badges.name;
               count++;
               showSubActivityChoices = false;
               break;
@@ -644,36 +712,38 @@ class _EventAddState extends State<EventAdd> {
         });
       },
       minLeadingWidth: 20,
-      leading: Image.asset(
-        badges.imageUrl,
-        width: 25.w,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
       ),
-      title: Text(badges.title),
+      title: Text(badges.name),
     );
   }
 
-  ListTile _enabledSubActivities(BadgesModel badges) {
+  ListTile _enabledSubActivities(BadgeDetailsModel badges) {
     return ListTile(
       onTap: () {
         setState(() {
           switch (count) {
             case 0:
               subActivities1 = badges;
-              subActivities1Txt = badges.title;
+              subActivities1Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               showLimitNote = false;
               break;
             case 1:
               subActivities2 = badges;
-              subActivities2Txt = badges.title;
+              subActivities2Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               showLimitNote = false;
               break;
             case 2:
               subActivities3 = badges;
-              subActivities3Txt = badges.title;
+              subActivities3Txt = badges.name;
               count++;
               showSubActivityChoices = false;
               showLimitNote = true;
@@ -688,11 +758,13 @@ class _EventAddState extends State<EventAdd> {
         });
       },
       minLeadingWidth: 20,
-      leading: Image.asset(
-        badges.imageUrl,
-        width: 25.w,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
       ),
-      title: Text(badges.title),
+      title: Text(badges.name),
     );
   }
 
@@ -1195,32 +1267,46 @@ class _EventAddState extends State<EventAdd> {
                           Icons.pin_drop,
                           color: Colors.black,
                         ),
-                        Text(
-                          AppTextConstants.useCurrentLocation,
-                          style: const TextStyle(color: Colors.black),
-                        )
+                        if (isLocationBtnClicked)
+                          Text(
+                            AppTextConstants.removeCurrentLocation,
+                            style: const TextStyle(color: Colors.black),
+                          )
+                        else
+                          Text(
+                            AppTextConstants.useCurrentLocation,
+                            style: const TextStyle(color: Colors.black),
+                          )
                       ],
                     ),
                   ),
                   SizedBox(
                     height: 20.h,
                   ),
-                  TextField(
-                    controller: _country,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.country,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
+                  if (isLocationBtnClicked)
+                    TextField(
+                      controller: _country,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.country,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+                    )
+                  else
+                    DropDownCountry(
+                      value: _countryDropdown,
+                      setCountry: setCountry,
+                      list: listCountry,
                     ),
-                  ),
                   SizedBox(
                     height: 20.h,
                   ),
@@ -1495,15 +1581,23 @@ class _EventAddState extends State<EventAdd> {
   Future<void> eventsDetail() async {
     final String? userId = UserSingleton.instance.user.user!.id;
 
+    String countryFinal = '';
+
+    if (isLocationBtnClicked) {
+      countryFinal = _country.text;
+    } else {
+      countryFinal = _countryDropdown.name;
+    }
+
     final Map<String, dynamic> eventDetails = {
       'user_id': userId,
-      'badge_id': '764f32ae-7f8c-4d3c-b948-d7b93eaed436',
+      'badge_id': mainActivity.id,
       'title': _title.text,
       'free_service': services.join(','),
-      'main_activities': mainActivityTitle,
+      'main_activities': mainActivity.name,
       'sub_activities':
-          '${subActivities1Txt}, ${subActivities2Txt}, ${subActivities3Txt}',
-      'country': _country.text,
+          '${subActivities1.id},${subActivities2.id},${subActivities3.id}',
+      'country': countryFinal,
       'address':
           '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
       'description': _description.text,
@@ -1557,14 +1651,26 @@ class _EventAddState extends State<EventAdd> {
       Placemark place = placemarks[0];
 
       setState(() {
-        _currentAddress =
-            '${place.locality}, ${place.postalCode}, ${place.country}';
+        if (isLocationBtnClicked) {
+          isLocationBtnClicked = false;
+          _currentAddress = '';
 
-        _country = TextEditingController(text: place.country);
-        _postalCode = TextEditingController(text: place.postalCode);
-        _city = TextEditingController(text: place.locality);
-        _street = TextEditingController(text: place.street);
-        _province = TextEditingController(text: place.administrativeArea);
+          _country = TextEditingController(text: '');
+          _postalCode = TextEditingController(text: '');
+          _city = TextEditingController(text: '');
+          _street = TextEditingController(text: '');
+          _province = TextEditingController(text: '');
+        } else {
+          isLocationBtnClicked = true;
+          _currentAddress =
+              '${place.locality}, ${place.postalCode}, ${place.country}';
+
+          _country = TextEditingController(text: place.country);
+          _postalCode = TextEditingController(text: place.postalCode);
+          _city = TextEditingController(text: place.locality);
+          _street = TextEditingController(text: place.street);
+          _province = TextEditingController(text: place.administrativeArea);
+        }
       });
     } catch (e) {
       print(e);

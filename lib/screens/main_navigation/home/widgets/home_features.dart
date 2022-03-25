@@ -46,26 +46,26 @@ class _HomeFeaturesState extends State<HomeFeatures> {
         width: 290,
         child: Stack(
           children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute<dynamic>(
-                        builder: (BuildContext context) =>
-                            const MainNavigationScreen(
-                              navIndex: 1,
-                              contentIndex: 0,
-                            )));
-              },
-              child: Positioned.fill(
-                  child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+            Positioned.fill(
+                child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute<dynamic>(
+                          builder: (BuildContext context) =>
+                              const MainNavigationScreen(
+                                navIndex: 1,
+                                contentIndex: 0,
+                              )));
+                },
                 child: Image.asset(
                   widget._imageUrl,
                   fit: BoxFit.cover,
                 ),
-              )),
-            ),
+              ),
+            )),
             Positioned(
                 bottom: 0,
                 left: 0,

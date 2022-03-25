@@ -7,6 +7,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -184,27 +185,56 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                           scrollDirection: Axis.horizontal,
                           itemCount: screenArguments['activities'].length,
                           itemBuilder: (BuildContext ctx, int index) {
-                            return Row(
-                              children: <Widget>[
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: AppColors.harp,
-                                      border: Border.all(color: AppColors.harp),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(5.r))),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: Text(
-                                        screenArguments['activities'][index]
-                                            .toString(),
-                                        style:
-                                            TextStyle(color: AppColors.nobel)),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 5.w,
-                                )
-                              ],
+                            return FutureBuilder<BadgeModelData>(
+                              future: APIServices().getBadgesModelById(
+                                  screenArguments['activities'][index]),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<dynamic> snapshot) {
+                                if (snapshot.hasData) {
+                                  final BadgeModelData badgeData =
+                                      snapshot.data;
+                                  final int length =
+                                      badgeData.badgeDetails.length;
+                                  return Row(
+                                    children: <Widget>[
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            color: AppColors.harp,
+                                            border: Border.all(
+                                                color: AppColors.harp),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5.r))),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                              badgeData.badgeDetails[0].name
+                                                  .toString(),
+                                              style: TextStyle(
+                                                  color: AppColors.nobel)),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5.w,
+                                      )
+                                    ],
+                                  );
+                                }
+                                if (snapshot.connectionState !=
+                                    ConnectionState.done) {
+                                  return Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Row(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          width: 10.w,
+                                        ),
+                                        const CircularProgressIndicator(),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                return Container();
+                              },
                             );
                           }),
                     )

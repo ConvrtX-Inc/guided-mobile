@@ -9,11 +9,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:guided/common/widgets/country_dropdown.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/country_model.dart';
 import 'package:guided/models/image_bulk.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
@@ -56,9 +58,32 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   Position? _currentPosition;
   String _currentAddress = '';
 
+  late List<CountryModel> listCountry;
+  late CountryModel _countryDropdown;
+  bool isLocationBtnClicked = false;
+
   @override
   void initState() {
     super.initState();
+    listCountry = <CountryModel>[CountryModel()];
+    _countryDropdown = listCountry[0];
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final List<CountryModel> resCountries =
+          await APIServices().getCountries();
+
+      setState(() {
+        listCountry = resCountries;
+        _countryDropdown = listCountry[38];
+      });
+    });
+  }
+
+  void setCountry(dynamic value) {
+    setState(() {
+      _countryDropdown = value;
+      debugPrint(_countryDropdown.id);
+    });
   }
 
   @override
@@ -572,32 +597,46 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                           Icons.pin_drop,
                           color: Colors.black,
                         ),
-                        Text(
-                          AppTextConstants.useCurrentLocation,
-                          style: const TextStyle(color: Colors.black),
-                        )
+                        if (isLocationBtnClicked)
+                          Text(
+                            AppTextConstants.removeCurrentLocation,
+                            style: const TextStyle(color: Colors.black),
+                          )
+                        else
+                          Text(
+                            AppTextConstants.useCurrentLocation,
+                            style: const TextStyle(color: Colors.black),
+                          )
                       ],
                     ),
                   ),
                   SizedBox(
                     height: 20.h,
                   ),
-                  TextField(
-                    controller: _country,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.country,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
+                  if (isLocationBtnClicked)
+                    TextField(
+                      controller: _country,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.country,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+                    )
+                  else
+                    DropDownCountry(
+                      value: _countryDropdown,
+                      setCountry: setCountry,
+                      list: listCountry,
                     ),
-                  ),
                   SizedBox(height: 20.h),
                   TextField(
                     controller: _street,
@@ -852,14 +891,22 @@ class _OutfitterAddState extends State<OutfitterAdd> {
 
     String price = _price.text.replaceAll(new RegExp(r'[,]'), '');
 
+    String countryFinal = '';
+
+    if (isLocationBtnClicked) {
+      countryFinal = _country.text;
+    } else {
+      countryFinal = _countryDropdown.name;
+    }
+
     final Map<String, dynamic> outfitterDetails = {
       'user_id': userId,
       'title': _title.text,
       'price': int.parse(price),
       'product_link': _productLink.text,
-      'country': _country.text,
+      'country': countryFinal,
       'address':
-          '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
+          '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, $countryFinal',
       'street': _street.text,
       'city': _city.text,
       'province': _province.text,
@@ -916,14 +963,26 @@ class _OutfitterAddState extends State<OutfitterAdd> {
       Placemark place = placemarks[0];
 
       setState(() {
-        _currentAddress =
-            '${place.locality}, ${place.postalCode}, ${place.country}';
+        if (isLocationBtnClicked) {
+          isLocationBtnClicked = false;
+          _currentAddress = '';
 
-        _country = TextEditingController(text: place.country);
-        _postalCode = TextEditingController(text: place.postalCode);
-        _city = TextEditingController(text: place.locality);
-        _street = TextEditingController(text: place.street);
-        _province = TextEditingController(text: place.administrativeArea);
+          _country = TextEditingController(text: '');
+          _postalCode = TextEditingController(text: '');
+          _city = TextEditingController(text: '');
+          _street = TextEditingController(text: '');
+          _province = TextEditingController(text: '');
+        } else {
+          isLocationBtnClicked = true;
+          _currentAddress =
+              '${place.locality}, ${place.postalCode}, ${place.country}';
+
+          _country = TextEditingController(text: place.country);
+          _postalCode = TextEditingController(text: place.postalCode);
+          _city = TextEditingController(text: place.locality);
+          _street = TextEditingController(text: place.street);
+          _province = TextEditingController(text: place.administrativeArea);
+        }
       });
     } catch (e) {
       print(e);
