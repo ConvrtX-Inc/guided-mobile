@@ -28,7 +28,7 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
   void initState() {
     super.initState();
 
-    _guideRules = TextEditingController(text: 'Text');
+    _guideRules = TextEditingController(text: AppTextConstants.loremIpsum);
   }
 
   @override
@@ -140,7 +140,7 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
                       ),
                       Expanded(
                         child: Text(
-                          AppTextConstants.agreeLocalLaws,
+                          AppTextConstants.agreeWithGuideRules,
                           style: TextStyle(
                             color: AppColors.grey,
                             fontSize: 15,

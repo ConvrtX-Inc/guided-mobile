@@ -47,10 +47,13 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
 
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final List<Currency> resCurrency = await APIServices().getCurrencies();
-
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       setState(() {
         listCurrency = resCurrency;
-        _currency = listCurrency[0];
+        _currency = listCurrency[8];
+
+        _maxPerson = TextEditingController(text: screenArguments['maximum']);
       });
     });
   }

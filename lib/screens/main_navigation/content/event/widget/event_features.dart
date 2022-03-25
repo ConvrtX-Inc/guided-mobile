@@ -9,6 +9,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/event_image_model.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -18,6 +19,7 @@ class EventFeatures extends StatefulWidget {
   const EventFeatures({
     String id = '',
     String name = '',
+    String badgeId = '',
     String description = '',
     double starRating = 0.0,
     double fee = 0.0,
@@ -34,6 +36,7 @@ class EventFeatures extends StatefulWidget {
     Key? key,
   })  : _id = id,
         _name = name,
+        _badgeId = badgeId,
         _description = description,
         _fee = fee,
         _starRating = starRating,
@@ -51,6 +54,7 @@ class EventFeatures extends StatefulWidget {
 
   final String _id;
   final String _name;
+  final String _badgeId;
   final String _description;
   final double _starRating;
   final double _fee;
@@ -184,16 +188,58 @@ class _EventFeaturesState extends State<EventFeatures> {
                                 ],
                               ),
                             ),
-                            Positioned(
-                              left: 15,
-                              bottom: 65,
-                              child: ClipOval(
-                                child: Image.asset(
-                                  widget._path,
-                                  width: 60,
-                                  height: 60,
-                                ),
-                              ),
+                            FutureBuilder<BadgeModelData>(
+                              future: APIServices()
+                                  .getBadgesModelById(widget._badgeId),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<dynamic> snapshot) {
+                                if (snapshot.hasData) {
+                                  final BadgeModelData badgeData =
+                                      snapshot.data;
+                                  final int length =
+                                      badgeData.badgeDetails.length;
+                                  return Column(
+                                    children: <Widget>[
+                                      SizedBox(
+                                        height: 150.h,
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          SizedBox(
+                                            width: 30.w,
+                                          ),
+                                          Image.memory(
+                                            base64.decode(badgeData
+                                                .badgeDetails[0].imgIcon
+                                                .split(',')
+                                                .last),
+                                            gaplessPlayback: true,
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                }
+                                if (snapshot.connectionState !=
+                                    ConnectionState.done) {
+                                  return Column(
+                                    children: <Widget>[
+                                      SizedBox(
+                                        height: 150.h,
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          SizedBox(
+                                            width: 30.w,
+                                          ),
+                                          const CircularProgressIndicator()
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                }
+                                return Container();
+                              },
                             ),
                             Positioned(
                               top: 10,
@@ -270,6 +316,7 @@ class _EventFeaturesState extends State<EventFeatures> {
     final Map<String, dynamic> details = {
       'id': widget._id,
       'title': widget._name,
+      'badge_id': widget._badgeId,
       'description': widget._description,
       'main_activity': widget._mainActivity,
       'sub_activity': splitSubActivities,

@@ -1,16 +1,21 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/badge_model.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Widget for home features
-class PackageFeatures extends StatelessWidget {
+class PackageFeatures extends StatefulWidget {
   /// Constructor
   const PackageFeatures({
     String id = '',
     String name = '',
+    String mainBadgeId = '',
+    String subBadgeId = '',
     String description = '',
     String imageUrl = '',
     int numberOfTourist = 0,
@@ -22,6 +27,8 @@ class PackageFeatures extends StatelessWidget {
     Key? key,
   })  : _id = id,
         _name = name,
+        _mainBadgeId = mainBadgeId,
+        _subBadgeId = subBadgeId,
         _description = description,
         _imageUrl = imageUrl,
         _numberOfTourist = numberOfTourist,
@@ -34,6 +41,8 @@ class PackageFeatures extends StatelessWidget {
 
   final String _id;
   final String _name;
+  final String _mainBadgeId;
+  final String _subBadgeId;
   final String _description;
   final String _imageUrl;
   final int _numberOfTourist;
@@ -44,8 +53,22 @@ class PackageFeatures extends StatelessWidget {
   final bool _isPublished;
 
   @override
+  State<PackageFeatures> createState() => _PackageFeaturesState();
+}
+
+class _PackageFeaturesState extends State<PackageFeatures> {
+  bool isDateRangeClicked = false;
+  late List<String> splitSubActivitiesId;
+
+  @override
+  void initState() {
+    super.initState();
+    splitSubActivitiesId = widget._subBadgeId.split(',');
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return _isPublished
+    return widget._isPublished
         ? GestureDetector(
             onTap: () {
               navigatePackageDetails(context);
@@ -61,7 +84,7 @@ class PackageFeatures extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       child: Image.memory(
                         base64.decode(
-                          _imageUrl.split(',').last,
+                          widget._imageUrl.split(',').last,
                         ),
                         fit: BoxFit.cover,
                         gaplessPlayback: true,
@@ -102,13 +125,13 @@ class PackageFeatures extends StatelessWidget {
                                 children: <Widget>[
                                   Expanded(
                                     child: Text(
-                                      _name,
+                                      widget._name,
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 14),
                                     ),
                                   ),
-                                  Text('$_numberOfTourist Tourists')
+                                  Text('${widget._numberOfTourist} Tourists')
                                 ],
                               ),
                             ),
@@ -128,14 +151,14 @@ class PackageFeatures extends StatelessWidget {
                                   const Icon(Icons.star_rate, size: 18),
                                   Expanded(
                                     child: Text(
-                                      _starRating.toString(),
+                                      widget._starRating.toString(),
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 14),
                                     ),
                                   ),
                                   Text(
-                                    '\$$_fee',
+                                    '\$${widget._fee}',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 14),
@@ -147,50 +170,94 @@ class PackageFeatures extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Positioned(
-                      left: 15,
-                      top: 70,
-                      child: ClipOval(
-                        child: Container(
-                          color: Colors.white,
-                          padding: const EdgeInsets.all(3),
-                          child: Image.asset(AssetsPath.homeFeatureHikingIcon),
-                        ),
-                      ),
+                    FutureBuilder<BadgeModelData>(
+                      future:
+                          APIServices().getBadgesModelById(widget._mainBadgeId),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<dynamic> snapshot) {
+                        if (snapshot.hasData) {
+                          final BadgeModelData badgeData = snapshot.data;
+                          final int length = badgeData.badgeDetails.length;
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              children: <Widget>[
+                                SizedBox(
+                                  width: 10.w,
+                                ),
+                                Image.memory(
+                                  base64.decode(badgeData
+                                      .badgeDetails[0].imgIcon
+                                      .split(',')
+                                      .last),
+                                  gaplessPlayback: true,
+                                )
+                              ],
+                            ),
+                          );
+                        }
+                        if (snapshot.connectionState != ConnectionState.done) {
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              children: <Widget>[
+                                SizedBox(
+                                  width: 10.w,
+                                ),
+                                const CircularProgressIndicator(),
+                              ],
+                            ),
+                          );
+                        }
+                        return Container();
+                      },
                     ),
                     Positioned(
                       top: 10,
                       right: 0,
                       child: Row(
                         children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(
-                              color: AppColors.duckEggBlue,
-                              border: Border.all(
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (isDateRangeClicked) {
+                                  setState(() {
+                                    isDateRangeClicked = false;
+                                  });
+                                } else {
+                                  isDateRangeClicked = true;
+                                }
+                              });
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
                                 color: AppColors.duckEggBlue,
+                                border: Border.all(
+                                  color: AppColors.duckEggBlue,
+                                ),
+                                borderRadius: BorderRadius.circular(18),
                               ),
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            child: Row(
-                              children: <Widget>[
-                                SvgPicture.asset(
-                                  AssetsPath.homeFeatureCalendarIcon,
-                                  height: 15,
-                                  width: 15,
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  _dateRange,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.tropicalRainForest,
-                                      fontSize: 12),
-                                ),
-                              ],
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 10),
+                              child: Row(
+                                children: <Widget>[
+                                  SvgPicture.asset(
+                                    AssetsPath.homeFeatureCalendarIcon,
+                                    height: 15,
+                                    width: 15,
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    widget._dateRange,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.tropicalRainForest,
+                                        fontSize: 12),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -210,7 +277,46 @@ class PackageFeatures extends StatelessWidget {
                           )
                         ],
                       ),
-                    )
+                    ),
+                    if (isDateRangeClicked)
+                      Positioned(
+                        top: 50,
+                        right: 20,
+                        child: Row(
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, '/calendar_availability');
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 10),
+                                child: Row(
+                                  children: const <Widget>[
+                                    Text(
+                                      'Edit Availability',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                          fontSize: 11),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Container(),
                   ],
                 )),
           )
@@ -220,15 +326,17 @@ class PackageFeatures extends StatelessWidget {
   /// Navigate to Advertisement View
   Future<void> navigatePackageDetails(BuildContext context) async {
     final Map<String, dynamic> details = {
-      'id': _id,
-      'name': _name,
-      'description': _description,
-      'image_url': _imageUrl,
-      'number_of_tourist': _numberOfTourist,
-      'star_rating': _starRating,
-      'fee': _fee,
-      'date_range': _dateRange,
-      'services': _services,
+      'id': widget._id,
+      'name': widget._name,
+      'main_badge_id': widget._mainBadgeId,
+      'sub_badge_id': splitSubActivitiesId,
+      'description': widget._description,
+      'image_url': widget._imageUrl,
+      'number_of_tourist': widget._numberOfTourist,
+      'star_rating': widget._starRating,
+      'fee': widget._fee,
+      'date_range': widget._dateRange,
+      'services': widget._services,
     };
 
     await Navigator.pushNamed(context, '/package_view', arguments: details);

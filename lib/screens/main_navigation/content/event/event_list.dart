@@ -8,8 +8,6 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/event_model.dart';
 import 'package:guided/models/home.dart';
 import 'package:guided/screens/main_navigation/content/event/widget/event_features.dart';
-import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
-import 'package:guided/screens/packages/create_package/create_package_screen.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/utils/event.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -50,20 +48,6 @@ class _EventListState extends State<EventList>
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Expanded(
-                // child: ListView.builder(
-                //     itemCount: features.length,
-                //     itemBuilder: (BuildContext ctx, int index) {
-                //       return EventFeatures(
-                //         name: features[index].featureName,
-                //         imageUrl: features[index].featureImageUrl,
-                //         numberOfTourist:
-                //             features[index].featureNumberOfTourists,
-                //         starRating: features[index].featureStarRating,
-                //         fee: features[index].featureFee,
-                //         dateRange: features[index].dateRange,
-                //         path: features[index].path,
-                //       );
-                //     }),
                 child: FutureBuilder<EventModelData>(
                   future: _loadingData,
                   builder:
@@ -124,6 +108,7 @@ class _EventListState extends State<EventList>
   Widget buildEventInfo(EventDetailsModel details) => EventFeatures(
         id: details.id,
         name: details.title,
+        badgeId: details.badgeId,
         description: details.description,
         starRating: 4.9,
         fee: double.parse(details.fee),

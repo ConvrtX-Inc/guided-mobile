@@ -7,6 +7,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -144,17 +145,44 @@ class _EventViewState extends State<EventView> {
                   fit: BoxFit.cover,
                   gaplessPlayback: true,
                 ),
-                Positioned(
-                  left: 5,
-                  bottom: 5,
-                  child: ClipOval(
-                    child: Image.asset(
-                      screenArguments['path'],
-                      width: 60,
-                      height: 60,
-                    ),
-                  ),
-                ),
+                FutureBuilder<BadgeModelData>(
+                  future: APIServices()
+                      .getBadgesModelById(screenArguments['badge_id']),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasData) {
+                      final BadgeModelData badgeData = snapshot.data;
+                      final int length = badgeData.badgeDetails.length;
+                      return Padding(
+                        padding: EdgeInsets.only(left: 10.w),
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: 140.h,
+                            ),
+                            Image.memory(
+                              base64.decode(badgeData.badgeDetails[0].imgIcon
+                                  .split(',')
+                                  .last),
+                              gaplessPlayback: true,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: 140.h,
+                          ),
+                          const CircularProgressIndicator(),
+                        ],
+                      );
+                    }
+                    return Container();
+                  },
+                )
               ],
             ),
           ),
@@ -213,27 +241,56 @@ class _EventViewState extends State<EventView> {
                           scrollDirection: Axis.horizontal,
                           itemCount: screenArguments['sub_activity'].length,
                           itemBuilder: (BuildContext ctx, int index) {
-                            return Row(
-                              children: <Widget>[
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: AppColors.harp,
-                                      border: Border.all(color: AppColors.harp),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(5.r))),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: Text(
-                                        screenArguments['sub_activity'][index]
-                                            .toString(),
-                                        style:
-                                            TextStyle(color: AppColors.nobel)),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 5.w,
-                                )
-                              ],
+                            return FutureBuilder<BadgeModelData>(
+                              future: APIServices().getBadgesModelById(
+                                  screenArguments['sub_activity'][index]),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<dynamic> snapshot) {
+                                if (snapshot.hasData) {
+                                  final BadgeModelData badgeData =
+                                      snapshot.data;
+                                  final int length =
+                                      badgeData.badgeDetails.length;
+                                  return Row(
+                                    children: <Widget>[
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            color: AppColors.harp,
+                                            border: Border.all(
+                                                color: AppColors.harp),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5.r))),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                              badgeData.badgeDetails[0].name
+                                                  .toString(),
+                                              style: TextStyle(
+                                                  color: AppColors.nobel)),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5.w,
+                                      )
+                                    ],
+                                  );
+                                }
+                                if (snapshot.connectionState !=
+                                    ConnectionState.done) {
+                                  return Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Row(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          width: 10.w,
+                                        ),
+                                        const CircularProgressIndicator(),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                return Container();
+                              },
                             );
                           }),
                     )

@@ -8,13 +8,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:guided/common/widgets/country_dropdown.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/badgesModel.dart';
+import 'package:guided/models/country_model.dart';
 import 'package:guided/models/image_bulk.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
@@ -62,6 +65,35 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   String _currentAddress = '';
   bool showLimitNote = false;
   int count = 0;
+  late List<CountryModel> listCountry;
+  late CountryModel _countryDropdown;
+  bool isLocationBtnClicked = false;
+  late Future<BadgeModelData> _loadingData;
+
+  @override
+  void initState() {
+    super.initState();
+    listCountry = <CountryModel>[CountryModel()];
+    _countryDropdown = listCountry[0];
+    _loadingData = APIServices().getBadgesModel();
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final List<CountryModel> resCountries =
+          await APIServices().getCountries();
+
+      setState(() {
+        listCountry = resCountries;
+        _countryDropdown = listCountry[38];
+      });
+    });
+  }
+
+  void setCountry(dynamic value) {
+    setState(() {
+      _countryDropdown = value;
+      debugPrint(_countryDropdown.id);
+    });
+  }
 
   @override
   void dispose() {
@@ -543,32 +575,46 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                           Icons.pin_drop,
                           color: Colors.black,
                         ),
-                        Text(
-                          AppTextConstants.useCurrentLocation,
-                          style: const TextStyle(color: Colors.black),
-                        )
+                        if (isLocationBtnClicked)
+                          Text(
+                            AppTextConstants.removeCurrentLocation,
+                            style: const TextStyle(color: Colors.black),
+                          )
+                        else
+                          Text(
+                            AppTextConstants.useCurrentLocation,
+                            style: const TextStyle(color: Colors.black),
+                          )
                       ],
                     ),
                   ),
                   SizedBox(
                     height: 20.h,
                   ),
-                  TextField(
-                    controller: _country,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.country,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
+                  if (isLocationBtnClicked)
+                    TextField(
+                      controller: _country,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.country,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+                    )
+                  else
+                    DropDownCountry(
+                      value: _countryDropdown,
+                      setCountry: setCountry,
+                      list: listCountry,
                     ),
-                  ),
                   SizedBox(
                     height: 20.h,
                   ),
@@ -768,9 +814,9 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
           },
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.transparent,
               border: Border.all(
-                color: Colors.grey.shade300,
+                color: AppColors.grey,
                 // width: 1.w,
               ),
               borderRadius: BorderRadius.circular(16.r),
@@ -827,7 +873,36 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
               width: width,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
-                child: _choicesGridSubActivity(),
+                // child: _choicesGridSubActivity(),
+                child: FutureBuilder<BadgeModelData>(
+                  future: _loadingData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasData) {
+                      final BadgeModelData badgeData = snapshot.data;
+                      final int length = badgeData.badgeDetails.length;
+                      return GridView.count(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        crossAxisCount: 2,
+                        childAspectRatio: 2.5,
+                        children: List.generate(length, (int index) {
+                          final BadgeDetailsModel badgeDetails =
+                              badgeData.badgeDetails[index];
+                          return SizedBox(
+                            height: 10.h,
+                            width: 100.w,
+                            child: _choicesSubActivities(badgeDetails),
+                          );
+                        }),
+                      );
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Container();
+                  },
+                ),
               ),
             ),
           )
@@ -837,7 +912,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     );
   }
 
-  Padding _chosenSubActivities1(BadgesModel badges) {
+  Padding _chosenSubActivities1(BadgeDetailsModel badges) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Align(
@@ -845,7 +920,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
           onTap: () {
             setState(() {
               subActivities1 = badges;
-              subActivities1Txt = badges.title;
+              subActivities1Txt = badges.name;
               count++;
             });
           },
@@ -869,7 +944,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                           height: 30.h,
                           child: Align(
                             child: Text(
-                              badges.title,
+                              badges.name,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -903,10 +978,14 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     ],
                   ),
                   Positioned(
-                    left: 0,
-                    bottom: 2.h,
-                    child:
-                        Image.asset(badges.imageUrl, width: 28.w, height: 28.h),
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
+                    ),
                   ),
                 ],
               ),
@@ -917,7 +996,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     );
   }
 
-  Padding _chosenSubActivities2(BadgesModel badges) {
+  Padding _chosenSubActivities2(BadgeDetailsModel badges) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Align(
@@ -925,7 +1004,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
           onTap: () {
             setState(() {
               subActivities2 = badges;
-              subActivities2Txt = badges.title;
+              subActivities2Txt = badges.name;
               count++;
             });
           },
@@ -949,7 +1028,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                           height: 30.h,
                           child: Align(
                             child: Text(
-                              badges.title,
+                              badges.name,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -977,12 +1056,13 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     ],
                   ),
                   Positioned(
-                    left: 0,
-                    bottom: 2.h,
-                    child: Image.asset(
-                      badges.imageUrl,
-                      width: 28.w,
-                      height: 28.h,
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
                     ),
                   ),
                 ],
@@ -994,7 +1074,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     );
   }
 
-  Padding _chosenSubActivities3(BadgesModel badges) {
+  Padding _chosenSubActivities3(BadgeDetailsModel badges) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Align(
@@ -1002,7 +1082,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
           onTap: () {
             setState(() {
               subActivities3 = badges;
-              subActivities3Txt = badges.title;
+              subActivities3Txt = badges.name;
               count++;
             });
           },
@@ -1027,7 +1107,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                           height: 30.h,
                           child: Align(
                             child: Text(
-                              badges.title,
+                              badges.name,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -1050,12 +1130,13 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     ],
                   ),
                   Positioned(
-                    left: 0,
-                    bottom: 2.h,
-                    child: Image.asset(
-                      badges.imageUrl,
-                      width: 28.w,
-                      height: 28.h,
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
                     ),
                   ),
                 ],
@@ -1067,23 +1148,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     );
   }
 
-  GridView _choicesGridSubActivity() {
-    return GridView.count(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      crossAxisCount: 2,
-      childAspectRatio: 2.5,
-      children: List.generate(AppListConstants.badges.length, (int index) {
-        return SizedBox(
-          height: 10.h,
-          width: 100.w,
-          child: _choicesSubActivities(AppListConstants.badges[index]),
-        );
-      }),
-    );
-  }
-
-  ListTile _choicesSubActivities(BadgesModel badges) {
+  ListTile _choicesSubActivities(BadgeDetailsModel badges) {
     if (subActivities1 == badges) {
       return _disabledSubActivities(badges);
     }
@@ -1097,28 +1162,28 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     return _enabledSubActivities(badges);
   }
 
-  ListTile _enabledSubActivities(BadgesModel badges) {
+  ListTile _enabledSubActivities(BadgeDetailsModel badges) {
     return ListTile(
       onTap: () {
         setState(() {
           switch (count) {
             case 0:
               subActivities1 = badges;
-              subActivities1Txt = badges.title;
+              subActivities1Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               showLimitNote = false;
               break;
             case 1:
               subActivities2 = badges;
-              subActivities2Txt = badges.title;
+              subActivities2Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               showLimitNote = false;
               break;
             case 2:
               subActivities3 = badges;
-              subActivities3Txt = badges.title;
+              subActivities3Txt = badges.name;
               count++;
               showSubActivityChoices = false;
               showLimitNote = true;
@@ -1133,15 +1198,17 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         });
       },
       minLeadingWidth: 20,
-      leading: Image.asset(
-        badges.imageUrl,
-        width: 25.w,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
       ),
-      title: Text(badges.title),
+      title: Text(badges.name),
     );
   }
 
-  ListTile _disabledSubActivities(BadgesModel badges) {
+  ListTile _disabledSubActivities(BadgeDetailsModel badges) {
     return ListTile(
       enabled: false,
       onTap: () {
@@ -1149,19 +1216,19 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
           switch (count) {
             case 0:
               subActivities1 = badges;
-              subActivities1Txt = badges.title;
+              subActivities1Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               break;
             case 1:
               subActivities2 = badges;
-              subActivities2Txt = badges.title;
+              subActivities2Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               break;
             case 2:
               subActivities3 = badges;
-              subActivities3Txt = badges.title;
+              subActivities3Txt = badges.name;
               count++;
               showSubActivityChoices = false;
               break;
@@ -1171,11 +1238,13 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         });
       },
       minLeadingWidth: 20,
-      leading: Image.asset(
-        badges.imageUrl,
-        width: 25.w,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
       ),
-      title: Text(badges.title),
+      title: Text(badges.name),
     );
   }
 
@@ -1225,16 +1294,12 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
     final String base64Image2 = base64Encode(await image2Bytes);
 
-    final ImageList objImg1 =
-        ImageList(id: id, img: base64Image1);
-    final ImageList objImg2 =
-        ImageList(id: id, img: base64Image2);
+    final ImageList objImg1 = ImageList(id: id, img: base64Image1);
+    final ImageList objImg2 = ImageList(id: id, img: base64Image2);
 
     final List<ImageList> list = [objImg1, objImg2];
 
-    final Map<String, List<dynamic>> finalJson = {
-      'bulk': encondeToJson(list)
-    };
+    final Map<String, List<dynamic>> finalJson = {'bulk': encondeToJson(list)};
 
     await APIServices().request(AppAPIPath.bulkImageUrl, RequestType.POST,
         needAccessToken: true, data: finalJson);
@@ -1250,18 +1315,13 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
     final String base64Image3 = base64Encode(await image3Bytes);
 
-    final ImageList objImg1 =
-        ImageList(id: id, img: base64Image1);
-    final ImageList objImg2 =
-        ImageList(id: id, img: base64Image2);
-    final ImageList objImg3 =
-        ImageList(id: id, img: base64Image3);
+    final ImageList objImg1 = ImageList(id: id, img: base64Image1);
+    final ImageList objImg2 = ImageList(id: id, img: base64Image2);
+    final ImageList objImg3 = ImageList(id: id, img: base64Image3);
 
     final List<ImageList> list = [objImg1, objImg2, objImg3];
 
-    final Map<String, List<dynamic>> finalJson = {
-      'bulk': encondeToJson(list)
-    };
+    final Map<String, List<dynamic>> finalJson = {'bulk': encondeToJson(list)};
 
     await APIServices().request(AppAPIPath.bulkImageUrl, RequestType.POST,
         needAccessToken: true, data: finalJson);
@@ -1271,20 +1331,28 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     final String? userId = UserSingleton.instance.user.user!.id;
     String activities = '';
 
-    if (subActivities1Txt != '') {
-      activities = subActivities1Txt;
+    if (subActivities1 != null) {
+      activities = subActivities1.id;
     }
-    if (subActivities2Txt != '') {
-      activities = '$activities, $subActivities2Txt';
+    if (subActivities2 != null) {
+      activities = '$activities,${subActivities2.id}';
     }
-    if (subActivities3Txt != '') {
-      activities = '$activities, $subActivities3Txt';
+    if (subActivities3 != null) {
+      activities = '$activities,${subActivities3.id}';
+    }
+
+    String countryFinal = '';
+
+    if (isLocationBtnClicked) {
+      countryFinal = _country.text;
+    } else {
+      countryFinal = _countryDropdown.name;
     }
 
     final Map<String, dynamic> outfitterDetails = {
       'user_id': userId,
       'title': _title.text,
-      'country': _country.text,
+      'country': countryFinal,
       'address':
           '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}',
       'activities': activities,
@@ -1343,14 +1411,26 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
       Placemark place = placemarks[0];
 
       setState(() {
-        _currentAddress =
-            '${place.locality}, ${place.postalCode}, ${place.country}';
+        if (isLocationBtnClicked) {
+          isLocationBtnClicked = false;
+          _currentAddress = '';
 
-        _country = TextEditingController(text: place.country);
-        _postalCode = TextEditingController(text: place.postalCode);
-        _city = TextEditingController(text: place.locality);
-        _street = TextEditingController(text: place.street);
-        _province = TextEditingController(text: place.administrativeArea);
+          _country = TextEditingController(text: '');
+          _postalCode = TextEditingController(text: '');
+          _city = TextEditingController(text: '');
+          _street = TextEditingController(text: '');
+          _province = TextEditingController(text: '');
+        } else {
+          isLocationBtnClicked = true;
+          _currentAddress =
+              '${place.locality}, ${place.postalCode}, ${place.country}';
+
+          _country = TextEditingController(text: place.country);
+          _postalCode = TextEditingController(text: place.postalCode);
+          _city = TextEditingController(text: place.locality);
+          _street = TextEditingController(text: place.street);
+          _province = TextEditingController(text: place.administrativeArea);
+        }
       });
     } catch (e) {
       print(e);
