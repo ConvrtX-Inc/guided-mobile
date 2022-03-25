@@ -19,6 +19,7 @@ import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 /// Login Screen
 class LoginScreen extends StatefulWidget {
@@ -39,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool buttonIsLoading = false;
   bool facebookLoading = false;
   bool googleLoading = false;
+  bool appleLoading = false;
   GoogleSignInAuthentication? _signInAuthentication;
   @override
   void initState() {
@@ -378,6 +380,56 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   SizedBox(
+                    height: 15.h,
+                  ),
+                  LoadingElevatedButton(
+                    isLoading: appleLoading,
+                    onPressed: appleLogin,
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      primary: Colors.transparent,
+                      padding: EdgeInsets.zero,
+                    ),
+                    loadingChild: ListTile(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: AppColors.mercury,
+                        ),
+                        borderRadius: BorderRadius.circular(14.r),
+                      ),
+                      leading: Icon(
+                        Icons.apple,
+                        size: 30.h,
+                      ),
+                      title: const Text(
+                        'Loading',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    child: ListTile(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: AppColors.mercury,
+                        ),
+                        borderRadius: BorderRadius.circular(14.r),
+                      ),
+                      leading: Icon(
+                        Icons.apple,
+                        size: 30.h,
+                      ),
+                      title: Text(
+                        'Sign in with Apple',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
                     height: 20.h,
                   ),
                   Text(
@@ -516,6 +568,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void googleSignOut() {
     _googleSignIn.disconnect();
+  }
+
+  Future<void> appleLogin() async {
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+    print(credential);
   }
 
   Future<void> googleSignIn() async {

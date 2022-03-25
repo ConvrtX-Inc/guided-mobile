@@ -1,4 +1,4 @@
-package com.example.guided
+package com.canada.guided
 
 import io.flutter.embedding.android.FlutterActivity
 
