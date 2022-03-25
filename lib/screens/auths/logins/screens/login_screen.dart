@@ -421,7 +421,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         size: 30.h,
                       ),
                       title: Text(
-                        'Sign in with Apple',
+                        'Login with Apple',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
