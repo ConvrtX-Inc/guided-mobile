@@ -898,4 +898,15 @@ class ErrorMessageConstants {
 
   /// Returns  'Cover image is empty' text
   static String emptyCoverImg = 'Cover image is empty';
+
+}
+
+
+/// Class for transaction history constants
+class TransactionHistoryConstants{
+
+
+  /// Returns  'Transaction History' title text
+  static String transactionHistory = 'Transaction History';
+
 }

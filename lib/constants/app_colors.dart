@@ -127,4 +127,14 @@ class AppColors {
 
   /// hex color for gallery white
   static HexColor galleryWhite = HexColor('#EBEBEB');
+
+  /// hex color for tab border white
+  static HexColor tabBorder = HexColor('#E4E4E4');
+  static HexColor tabFill = HexColor('#FDFDFD');
+  static HexColor tabTextNotSelected = HexColor('#898A8D');
+  static HexColor tabColorSelected = HexColor('#007749');
+  static HexColor rejectedText = HexColor('#FF4848');
+  static HexColor pendingText = HexColor('#FF961A');
+  static HexColor completedText = HexColor('#34A853');
+
 }

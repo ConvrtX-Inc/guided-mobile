@@ -63,6 +63,7 @@ import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
+import 'package:guided/screens/transaction_notifications/transaction_history_main.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
 
 /// Route generator configuration
@@ -235,6 +236,9 @@ class RouteGenerator {
       case '/traveller_map':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TabMapScreen(), settings: settings);
+      case '/transaction_history':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TransactionHistoryMain(), settings: settings);
       default:
         return _errorRoute();
     }
