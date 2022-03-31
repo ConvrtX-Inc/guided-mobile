@@ -144,11 +144,14 @@ class _AdvertisementViewState extends State<AdvertisementView> {
               ),
             ],
           ),
-          flexibleSpace: Image.memory(
-            base64.decode(screenArguments['snapshot_img'].split(',').last),
-            fit: BoxFit.fitHeight,
-            gaplessPlayback: true,
-          ),
+          flexibleSpace: screenArguments['snapshot_img'] != ''
+              ? Image.memory(
+                  base64
+                      .decode(screenArguments['snapshot_img'].split(',').last),
+                  fit: BoxFit.fitHeight,
+                  gaplessPlayback: true,
+                )
+              : Container(),
         ),
       ),
       body: SingleChildScrollView(
@@ -352,7 +355,10 @@ class _AdvertisementViewState extends State<AdvertisementView> {
       'street': screenArguments['street'],
       'city': screenArguments['city'],
       'province': screenArguments['province'],
-      'zip_code': screenArguments['zip_code']
+      'zip_code': screenArguments['zip_code'],
+      'snapshot_img': screenArguments['snapshot_img'],
+      'image_id': screenArguments['image_id'],
+      'activities': screenArguments['activities']
     };
 
     await Navigator.pushNamed(context, '/advertisement_edit',

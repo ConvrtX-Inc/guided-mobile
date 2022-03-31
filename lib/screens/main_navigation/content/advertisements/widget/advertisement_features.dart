@@ -62,10 +62,11 @@ class AdvertisementFeature extends StatefulWidget {
 
 class _AdvertisementFeatureState extends State<AdvertisementFeature> {
   late Map<dynamic, String> value;
+  late List<String> splitActivities;
   @override
   void initState() {
-    final split = widget._activities.split(',');
-    value = {for (int i = 0; i < split.length; i++) i: split[i]};
+    splitActivities = widget._activities.split(',');
+    // value = {for (int i = 0; i < split.length; i++) i: split[i]};
   }
 
   @override
@@ -96,7 +97,7 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
                         in advertisementImage.advertisementImageDetails) {
                       return GestureDetector(
                         onTap: () => navigateAdvertisementDetails(
-                            context, imageDetails.snapshotImg),
+                            context, imageDetails.snapshotImg, imageDetails.id),
                         child: ListTile(
                           title: imageDetails.activityAdvertisementId != null
                               ? SizedBox(
@@ -143,13 +144,14 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
 
   /// Navigate to Advertisement View
   Future<void> navigateAdvertisementDetails(
-      BuildContext context, String snapshotImg) async {
+      BuildContext context, String snapshotImg, String imgId) async {
     final Map<String, dynamic> details = {
       'id': widget._id,
       'title': widget._title,
       'country': widget._country,
       'address': widget._address,
-      'activities': value,
+      // 'activities': value,
+      'activities': splitActivities,
       'street': widget._street,
       'city': widget._city,
       'province': widget._province,
@@ -158,7 +160,8 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
       'availability_date': widget._availability_date,
       'price': widget._price,
       'description': widget._description,
-      'snapshot_img': snapshotImg
+      'snapshot_img': snapshotImg,
+      'image_id': imgId
     };
 
     await Navigator.pushNamed(context, '/advertisement_view',

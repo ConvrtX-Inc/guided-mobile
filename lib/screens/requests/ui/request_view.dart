@@ -174,7 +174,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                   children: <Widget>[
                                     const Icon(Icons.star_rate, size: 18),
                                     Text(
-                                      '4.9',
+                                      '0',
                                       style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 14.sp),

@@ -111,12 +111,12 @@ class _EventFeaturesState extends State<EventFeatures> {
 
                     for (EventImageDetailsModel imageDetails
                         in eventImage.eventImageDetails) {
-                      return GestureDetector(
-                        onTap: () => navigateEventDetails(
-                            context, imageDetails.snapshotImg),
-                        child: Stack(
-                          children: <Widget>[
-                            ListTile(
+                      return Stack(
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () => navigateEventDetails(context,
+                                imageDetails.snapshotImg, imageDetails.id),
+                            child: ListTile(
                               title: imageDetails.activityEventId != null
                                   ? SizedBox(
                                       height: 200.h,
@@ -188,117 +188,117 @@ class _EventFeaturesState extends State<EventFeatures> {
                                 ],
                               ),
                             ),
-                            FutureBuilder<BadgeModelData>(
-                              future: APIServices()
-                                  .getBadgesModelById(widget._badgeId),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<dynamic> snapshot) {
-                                if (snapshot.hasData) {
-                                  final BadgeModelData badgeData =
-                                      snapshot.data;
-                                  final int length =
-                                      badgeData.badgeDetails.length;
-                                  return Column(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        height: 150.h,
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          SizedBox(
-                                            width: 30.w,
-                                          ),
-                                          Image.memory(
-                                            base64.decode(badgeData
-                                                .badgeDetails[0].imgIcon
-                                                .split(',')
-                                                .last),
-                                            gaplessPlayback: true,
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                }
-                                if (snapshot.connectionState !=
-                                    ConnectionState.done) {
-                                  return Column(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        height: 150.h,
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          SizedBox(
-                                            width: 30.w,
-                                          ),
-                                          const CircularProgressIndicator()
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                }
-                                return Container();
-                              },
-                            ),
-                            Positioned(
-                              top: 10,
-                              right: 15,
-                              child: Row(
-                                children: <Widget>[
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: AppColors.duckEggBlue,
-                                      border: Border.all(
-                                        color: AppColors.duckEggBlue,
-                                      ),
-                                      borderRadius: BorderRadius.circular(18),
+                          ),
+                          FutureBuilder<BadgeModelData>(
+                            future: APIServices()
+                                .getBadgesModelById(widget._badgeId),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<dynamic> snapshot) {
+                              if (snapshot.hasData) {
+                                final BadgeModelData badgeData = snapshot.data;
+                                final int length =
+                                    badgeData.badgeDetails.length;
+                                return Column(
+                                  children: <Widget>[
+                                    SizedBox(
+                                      height: 150.h,
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 10),
-                                    child: Row(
+                                    Row(
                                       children: <Widget>[
-                                        SvgPicture.asset(
-                                          AssetsPath.homeFeatureCalendarIcon,
-                                          height: 15,
-                                          width: 15,
+                                        SizedBox(
+                                          width: 30.w,
                                         ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          widget._dateRange,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              color:
-                                                  AppColors.tropicalRainForest,
-                                              fontSize: 12),
-                                        ),
+                                        Image.memory(
+                                          base64.decode(badgeData
+                                              .badgeDetails[0].imgIcon
+                                              .split(',')
+                                              .last),
+                                          gaplessPlayback: true,
+                                        )
                                       ],
                                     ),
+                                  ],
+                                );
+                              }
+                              if (snapshot.connectionState !=
+                                  ConnectionState.done) {
+                                return Column(
+                                  children: <Widget>[
+                                    SizedBox(
+                                      height: 150.h,
+                                    ),
+                                    Row(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          width: 30.w,
+                                        ),
+                                        const CircularProgressIndicator()
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              }
+                              return Container();
+                            },
+                          ),
+                          Positioned(
+                            top: 10,
+                            right: 15,
+                            child: Row(
+                              children: <Widget>[
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.duckEggBlue,
+                                    border: Border.all(
+                                      color: AppColors.duckEggBlue,
+                                    ),
+                                    borderRadius: BorderRadius.circular(18),
                                   ),
-                                  SizedBox(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 10),
+                                  child: Row(
+                                    children: <Widget>[
+                                      SvgPicture.asset(
+                                        AssetsPath.homeFeatureCalendarIcon,
+                                        height: 15,
+                                        width: 15,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        widget._dateRange,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.tropicalRainForest,
+                                            fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () => navigateEventDetailsEdit(
+                                      context,
+                                      imageDetails.snapshotImg,
+                                      imageDetails.id),
+                                  child: SizedBox(
                                     width: 50,
                                     height: 30,
-                                    child: ElevatedButton(
-                                      onPressed: () {},
-                                      style: ElevatedButton.styleFrom(
-                                        shape: const CircleBorder(),
-                                        primary:
-                                            Colors.white, // <-- Button color
-                                        onPrimary:
-                                            Colors.grey, // <-- Splash color
-                                      ),
+                                    child: Container(
+                                      width: 30.w,
+                                      decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white),
                                       child: Icon(Icons.edit,
                                           size: 15,
                                           color: AppColors.tropicalRainForest),
                                     ),
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
                       );
                     }
                     return _displayWidget = Container();
@@ -310,9 +310,9 @@ class _EventFeaturesState extends State<EventFeatures> {
         : Container();
   }
 
-  /// Navigate to Advertisement View
+  /// Navigate to Event View
   Future<void> navigateEventDetails(
-      BuildContext context, String snapshotImg) async {
+      BuildContext context, String snapshotImg, String imgId) async {
     final Map<String, dynamic> details = {
       'id': widget._id,
       'title': widget._name,
@@ -331,9 +331,40 @@ class _EventFeaturesState extends State<EventFeatures> {
       'star_rating': widget._starRating,
       'path': widget._path,
       'date_format': widget._dateFormat,
-      'snapshot_img': snapshotImg
+      'snapshot_img': snapshotImg,
+      'image_id': imgId
     };
 
     await Navigator.pushNamed(context, '/event_view', arguments: details);
+  }
+
+  /// Navigate to Edit Event
+  Future<void> navigateEventDetailsEdit(
+      BuildContext context, String snapshotImg, String imgId) async {
+    final Map<String, dynamic> details = {
+      'id': widget._id,
+      'title': widget._name,
+      'badge_id': widget._badgeId,
+      'description': widget._description,
+      'main_activity': widget._mainActivity,
+      'sub_activity': splitSubActivities,
+      'services': splitServices.join(','),
+      'country': widget._country,
+      'street': splitAddress[0],
+      'city': splitAddress[1],
+      'province': splitAddress[2],
+      'zip_code': splitAddress[3],
+      'event_date': widget._eventDate,
+      'price': widget._fee
+          .toString()
+          .substring(0, widget._fee.toString().indexOf('.')),
+      'star_rating': widget._starRating,
+      'path': widget._path,
+      'date_format': widget._dateFormat,
+      'snapshot_img': snapshotImg,
+      'image_id': imgId
+    };
+
+    await Navigator.pushNamed(context, '/event_edit', arguments: details);
   }
 }

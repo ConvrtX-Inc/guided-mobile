@@ -43,7 +43,7 @@ class _EventListState extends State<EventList>
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: SizedBox(
-          height: 625.h,
+          height: 600.h,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -110,7 +110,7 @@ class _EventListState extends State<EventList>
         name: details.title,
         badgeId: details.badgeId,
         description: details.description,
-        starRating: 4.9,
+        starRating: 0,
         fee: double.parse(details.fee),
         path: AssetsPath.paddle,
         dateRange: '1-9',
