@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -79,6 +80,7 @@ class _EventAddState extends State<EventAdd> {
   late List<CountryModel> listCountry;
   late CountryModel _countryDropdown;
   bool isLocationBtnClicked = false;
+  bool _isSubmit = false;
   @override
   void initState() {
     super.initState();
@@ -928,7 +930,9 @@ class _EventAddState extends State<EventAdd> {
 
     Widget image2Placeholder(BuildContext context) {
       return GestureDetector(
-        onTap: () => _uploadCount == 1
+        onTap: () => _uploadCount == 2
+
+            /// changed to 2 to temporary disable the next image.
             ? showMaterialModalBottomSheet(
                 expand: false,
                 context: context,
@@ -1030,7 +1034,9 @@ class _EventAddState extends State<EventAdd> {
 
     Widget image3Placeholder(BuildContext context) {
       return GestureDetector(
-        onTap: () => _uploadCount == 2
+        onTap: () => _uploadCount == 3
+
+            /// changed to 3 to temporary disable the next image.
             ? showMaterialModalBottomSheet(
                 expand: false,
                 context: context,
@@ -1232,6 +1238,9 @@ class _EventAddState extends State<EventAdd> {
                   TextField(
                     controller: _fee,
                     keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
@@ -1474,7 +1483,7 @@ class _EventAddState extends State<EventAdd> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () async => eventsDetail(),
+            onPressed: () async => _isSubmit ? null : eventsDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -1485,10 +1494,13 @@ class _EventAddState extends State<EventAdd> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.createEvent,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.createEvent,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -1499,7 +1511,7 @@ class _EventAddState extends State<EventAdd> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
-      firstDate: DateTime(1901),
+      firstDate: DateTime.now().subtract(Duration(days: 0)),
       lastDate: DateTime(2100),
       builder: (BuildContext context, Widget? child) {
         return Theme(
@@ -1579,53 +1591,92 @@ class _EventAddState extends State<EventAdd> {
   }
 
   Future<void> eventsDetail() async {
-    final String? userId = UserSingleton.instance.user.user!.id;
-
-    String countryFinal = '';
-
-    if (isLocationBtnClicked) {
-      countryFinal = _country.text;
+    if (mainActivity == null) {
+      AdvanceSnackBar(message: ErrorMessageConstants.mainActivityEmpty)
+          .show(context);
+    } else if (subActivities1 == null) {
+      AdvanceSnackBar(message: ErrorMessageConstants.subActivityEmpty)
+          .show(context);
+    } else if (image1 == null) {
+      AdvanceSnackBar(message: ErrorMessageConstants.eventImageEmpty)
+          .show(context);
+    } else if (_title.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.titleEmpty).show(context);
+    } else if (_fee.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.feeEmpty).show(context);
+    } else if (_country.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.countryEmpty)
+          .show(context);
+    } else if (_street.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.streetEmpty).show(context);
+    } else if (_city.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.cityEmpty).show(context);
+    } else if (_province.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.provinceEmpty)
+          .show(context);
+    } else if (_postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.postalCodeEmpty)
+          .show(context);
+    } else if (_date.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
+    } else if (_description.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.descriptionEmpty)
+          .show(context);
+    } else if (services.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.serviceEmpty)
+          .show(context);
     } else {
-      countryFinal = _countryDropdown.name;
+      setState(() {
+        _isSubmit = true;
+      });
+      final String? userId = UserSingleton.instance.user.user!.id;
+
+      String countryFinal = '';
+
+      if (isLocationBtnClicked) {
+        countryFinal = _country.text;
+      } else {
+        countryFinal = _countryDropdown.name;
+      }
+
+      final Map<String, dynamic> eventDetails = {
+        'user_id': userId,
+        'badge_id': mainActivity.id,
+        'title': _title.text,
+        'free_service': services.join(','),
+        'main_activities': mainActivity.name,
+        'sub_activities':
+            '${subActivities1.id},${subActivities2.id},${subActivities3.id}',
+        'country': countryFinal,
+        'address':
+            '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
+        'description': _description.text,
+        'price': int.parse(_fee.text),
+        'event_date': _date.text,
+        'is_published': true
+      };
+
+      final dynamic response = await APIServices().request(
+          AppAPIPath.activityEventUrl, RequestType.POST,
+          needAccessToken: true, data: eventDetails);
+
+      final String activityOutfitterId = response['id'];
+      if (_uploadCount == 1) {
+        await saveImage(activityOutfitterId);
+      } else if (_uploadCount == 2) {
+        await save2Image(activityOutfitterId);
+      } else if (_uploadCount == 3) {
+        await saveBulkImage(activityOutfitterId);
+      }
+
+      await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const MainNavigationScreen(
+                    navIndex: 1,
+                    contentIndex: 1,
+                  )));
     }
-
-    final Map<String, dynamic> eventDetails = {
-      'user_id': userId,
-      'badge_id': mainActivity.id,
-      'title': _title.text,
-      'free_service': services.join(','),
-      'main_activities': mainActivity.name,
-      'sub_activities':
-          '${subActivities1.id},${subActivities2.id},${subActivities3.id}',
-      'country': countryFinal,
-      'address':
-          '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
-      'description': _description.text,
-      'price': int.parse(_fee.text),
-      'event_date': _date.text,
-      'is_published': true
-    };
-
-    final dynamic response = await APIServices().request(
-        AppAPIPath.activityEventUrl, RequestType.POST,
-        needAccessToken: true, data: eventDetails);
-
-    final String activityOutfitterId = response['id'];
-    if (_uploadCount == 1) {
-      await saveImage(activityOutfitterId);
-    } else if (_uploadCount == 2) {
-      await save2Image(activityOutfitterId);
-    } else if (_uploadCount == 3) {
-      await saveBulkImage(activityOutfitterId);
-    }
-
-    await Navigator.pushReplacement(
-        context,
-        MaterialPageRoute<dynamic>(
-            builder: (BuildContext context) => const MainNavigationScreen(
-                  navIndex: 1,
-                  contentIndex: 1,
-                )));
   }
 
   _getCurrentLocation() {

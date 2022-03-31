@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -61,7 +62,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   late List<CountryModel> listCountry;
   late CountryModel _countryDropdown;
   bool isLocationBtnClicked = false;
-
+  bool _isSubmit = false;
   @override
   void initState() {
     super.initState();
@@ -558,6 +559,9 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                       ),
                     ),
                     keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
                   ),
                   SizedBox(height: 20.h),
                   TextField(
@@ -773,7 +777,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () async => outfitterDetail(),
+            onPressed: () async => _isSubmit ? null : outfitterDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -784,10 +788,13 @@ class _OutfitterAddState extends State<OutfitterAdd> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.createOutfitter,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.createOutfitter,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -887,56 +894,89 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   }
 
   Future<void> outfitterDetail() async {
-    final String? userId = UserSingleton.instance.user.user!.id;
-
-    String price = _price.text.replaceAll(new RegExp(r'[,]'), '');
-
-    String countryFinal = '';
-
-    if (isLocationBtnClicked) {
-      countryFinal = _country.text;
+    if (image1 == null) {
+      AdvanceSnackBar(message: ErrorMessageConstants.outfitterImageEmpty)
+          .show(context);
+    } else if (_title.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.titleEmpty).show(context);
+    } else if (_price.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.priceEmpty).show(context);
+    } else if (_productLink.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.productEmpty).show(context);
+    } else if (_country.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.countryEmpty)
+          .show(context);
+    } else if (_street.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.streetEmpty).show(context);
+    } else if (_city.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.cityEmpty).show(context);
+    } else if (_province.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.provinceEmpty)
+          .show(context);
+    } else if (_postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.postalCodeEmpty)
+          .show(context);
+    } else if (_date.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty)
+          .show(context);
+    } else if (_description.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.descriptionEmpty)
+          .show(context);
     } else {
-      countryFinal = _countryDropdown.name;
+      setState(() {
+        _isSubmit = true;
+      });
+      final String? userId = UserSingleton.instance.user.user!.id;
+
+      String price = _price.text.replaceAll(new RegExp(r'[,]'), '');
+
+      String countryFinal = '';
+
+      if (isLocationBtnClicked) {
+        countryFinal = _country.text;
+      } else {
+        countryFinal = _countryDropdown.name;
+      }
+
+      final Map<String, dynamic> outfitterDetails = {
+        'user_id': userId,
+        'title': _title.text,
+        'price': int.parse(price),
+        'product_link': _productLink.text,
+        'country': countryFinal,
+        'address':
+            '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, $countryFinal',
+        'street': _street.text,
+        'city': _city.text,
+        'province': _province.text,
+        'zip_code': _postalCode.text,
+        'availability_date': _date.text,
+        'description': _description.text,
+        'is_published': true
+      };
+
+      final dynamic response = await APIServices().request(
+          AppAPIPath.createOutfitterUrl, RequestType.POST,
+          needAccessToken: true, data: outfitterDetails);
+
+      // ignore: avoid_dynamic_calls
+      final String activityOutfitterId = response['id'];
+      if (_uploadCount == 1) {
+        await saveImage(activityOutfitterId);
+      } else if (_uploadCount == 2) {
+        await save2Image(activityOutfitterId);
+      } else if (_uploadCount == 3) {
+        await saveBulkImage(activityOutfitterId);
+      }
+
+      await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const MainNavigationScreen(
+                    navIndex: 1,
+                    contentIndex: 2,
+                  )));
     }
-
-    final Map<String, dynamic> outfitterDetails = {
-      'user_id': userId,
-      'title': _title.text,
-      'price': int.parse(price),
-      'product_link': _productLink.text,
-      'country': countryFinal,
-      'address':
-          '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, $countryFinal',
-      'street': _street.text,
-      'city': _city.text,
-      'province': _province.text,
-      'zip_code': _postalCode.text,
-      'availability_date': _date.text,
-      'description': _description.text,
-      'is_published': true
-    };
-
-    final dynamic response = await APIServices().request(
-        AppAPIPath.createOutfitterUrl, RequestType.POST,
-        needAccessToken: true, data: outfitterDetails);
-
-    // ignore: avoid_dynamic_calls
-    final String activityOutfitterId = response['id'];
-    if (_uploadCount == 1) {
-      await saveImage(activityOutfitterId);
-    } else if (_uploadCount == 2) {
-      await save2Image(activityOutfitterId);
-    } else if (_uploadCount == 3) {
-      await saveBulkImage(activityOutfitterId);
-    }
-
-    await Navigator.pushReplacement(
-        context,
-        MaterialPageRoute<dynamic>(
-            builder: (BuildContext context) => const MainNavigationScreen(
-                  navIndex: 1,
-                  contentIndex: 2,
-                )));
   }
 
   _getCurrentLocation() {

@@ -35,22 +35,22 @@ class SplashScreen extends StatelessWidget {
                 ),
                 Image.asset(
                   AssetsPath.splashImage,
-                  width: 300.w,
+                  width: 250.w,
                 ),
                 Image.asset(
                   AssetsPath.forThePlanet,
                   width: 80.w,
-                  height: 29.h,
+                  height: 50.h,
                 ),
                 SizedBox(
                   height: 20.h,
                 ),
                 Text(
-                  AppTextConstants.adventureDiscoverExplore,
+                  'The Great Outdoors Just',
                   style: TextStyle(
                     fontFamily: 'Gilroy',
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 30.sp,
+                    fontWeight: FontWeight.w600,
                     color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
@@ -59,11 +59,11 @@ class SplashScreen extends StatelessWidget {
                   height: 10.h,
                 ),
                 Text(
-                  AppTextConstants.bookYourNextAdventure,
+                  'A Few Seconds Away',
                   style: TextStyle(
                     fontFamily: 'Gilroy',
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 30.sp,
+                    fontWeight: FontWeight.w600,
                     color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
@@ -72,12 +72,12 @@ class SplashScreen extends StatelessWidget {
                   height: 10.h,
                 ),
                 Text(
-                  AppTextConstants.discoverLocalGuidesWhereverYouTravel,
+                  'The application will help you find place,',
                   style: TextStyle(
                     fontFamily: 'Gilroy',
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.nobel,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -85,30 +85,17 @@ class SplashScreen extends StatelessWidget {
                   height: 10.h,
                 ),
                 Text(
-                  AppTextConstants.exploreTheOutdoors,
+                  'tour or adventures',
                   style: TextStyle(
                     fontFamily: 'Gilroy',
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.nobel,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
-                  height: 10.h,
-                ),
-                Text(
-                  AppTextConstants.aDVENTUREAWAITS,
-                  style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 25.h,
+                  height: 15.h,
                 ),
                 ElevatedButton(
                   onPressed: () {

@@ -597,11 +597,13 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         final String base64Image1 = base64Encode(await image1Bytes);
 
         destinationList.add(ActivityDestinationModel(
-            placeName: _placeName.text,
-            placeDescription: _description.text,
-            img1Holder: base64Image1,
-            latitude: latitute,
-            longitude: longitude));
+          placeName: _placeName.text,
+          placeDescription: _description.text,
+          img1Holder: base64Image1,
+          latitude: latitute,
+          longitude: longitude,
+          uploadCount: _uploadCount,
+        ));
       } else if (_uploadCount == 2) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -610,12 +612,14 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         final String base64Image2 = base64Encode(await image2Bytes);
 
         destinationList.add(ActivityDestinationModel(
-            placeName: _placeName.text,
-            placeDescription: _description.text,
-            img1Holder: base64Image1,
-            img2Holder: base64Image2,
-            latitude: latitute,
-            longitude: longitude));
+          placeName: _placeName.text,
+          placeDescription: _description.text,
+          img1Holder: base64Image1,
+          img2Holder: base64Image2,
+          latitude: latitute,
+          longitude: longitude,
+          uploadCount: _uploadCount,
+        ));
       } else if (_uploadCount == 3) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -627,13 +631,15 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         final String base64Image3 = base64Encode(await image3Bytes);
 
         destinationList.add(ActivityDestinationModel(
-            placeName: _placeName.text,
-            placeDescription: _description.text,
-            img1Holder: base64Image1,
-            img2Holder: base64Image2,
-            img3Holder: base64Image3,
-            latitude: latitute,
-            longitude: longitude));
+          placeName: _placeName.text,
+          placeDescription: _description.text,
+          img1Holder: base64Image1,
+          img2Holder: base64Image2,
+          img3Holder: base64Image3,
+          latitude: latitute,
+          longitude: longitude,
+          uploadCount: _uploadCount,
+        ));
       }
       setState(() {
         _placeName = TextEditingController(text: '');
@@ -752,13 +758,15 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         details['snapshot_img_2'] = base64Image2;
         details['snapshot_img_3'] = base64Image3;
         destinationList.add(ActivityDestinationModel(
-            placeName: _placeName.text,
-            placeDescription: _description.text,
-            img1Holder: base64Image1,
-            img2Holder: base64Image2,
-            img3Holder: base64Image3,
-            latitude: latitute,
-            longitude: longitude));
+          placeName: _placeName.text,
+          placeDescription: _description.text,
+          img1Holder: base64Image1,
+          img2Holder: base64Image2,
+          img3Holder: base64Image3,
+          latitude: latitute,
+          longitude: longitude,
+          uploadCount: _uploadCount,
+        ));
       }
 
       details['upload_count'] = _uploadCount;
@@ -805,7 +813,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         apiKey: kGoogleApiKey,
         apiHeaders: await const GoogleApiHeaders().getHeaders(),
       );
-      PlacesDetailsResponse detail =
+      final PlacesDetailsResponse detail =
           await _places.getDetailsByPlaceId(p.placeId!);
       final lat = detail.result.geometry!.location.lat;
       final lng = detail.result.geometry!.location.lng;
