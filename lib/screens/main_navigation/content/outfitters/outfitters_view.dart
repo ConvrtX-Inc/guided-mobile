@@ -140,11 +140,14 @@ class _OutfitterViewState extends State<OutfitterView> {
               ),
             ],
           ),
-          flexibleSpace: Image.memory(
-            base64.decode(screenArguments['snapshot_img'].split(',').last),
-            fit: BoxFit.fitHeight,
-            gaplessPlayback: true,
-          ),
+          flexibleSpace: screenArguments['snapshot_img'] != ''
+              ? Image.memory(
+                  base64
+                      .decode(screenArguments['snapshot_img'].split(',').last),
+                  fit: BoxFit.fitHeight,
+                  gaplessPlayback: true,
+                )
+              : Container(),
         ),
       ),
       body: SingleChildScrollView(
@@ -335,7 +338,11 @@ class _OutfitterViewState extends State<OutfitterView> {
       'street': screenArguments['street'],
       'city': screenArguments['city'],
       'province': screenArguments['province'],
-      'zip_code': screenArguments['zip_code']
+      'zip_code': screenArguments['zip_code'],
+      'image_count': screenArguments['image_count'],
+      'snapshot_img': screenArguments['snapshot_img'],
+      'image_list': screenArguments['image_list'],
+      'image_id_list': screenArguments['image_id_list']
     };
 
     await Navigator.pushNamed(context, '/outfitter_edit', arguments: details);

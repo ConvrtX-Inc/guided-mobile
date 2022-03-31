@@ -872,10 +872,14 @@ class AppTextConstants {
   static String removeCurrentLocation = 'Remove Current Location';
 
   /// Returns I agree with Guide Rules
-  static String agreeWithGuideRules = 'I Agree With Guide Rules & What To Bring';
+  static String agreeWithGuideRules =
+      'I Agree With Guide Rules & What To Bring';
 
   /// Returns I agree with Terms & Conditions
   static String agreeWithWaiver = 'I Agree With the Waiver';
+
+  /// Returns new splash screen
+  // static String theGreatOutdoors = 'The Great Outdoors Just';
 }
 
 /// Class for error messages text
@@ -922,4 +926,55 @@ class ErrorMessageConstants {
 
   /// Returns  'Cover image is empty' text
   static String emptyCoverImg = 'Cover image is empty';
+
+  /// Returns 'Main Activity is empty' text
+  static String mainActivityEmpty = 'Main Activity field is empty';
+
+  /// Returns 'Sub Activity is empty' text
+  static String subActivityEmpty = 'Sub Activity field is empty';
+
+  /// Returns 'Title is empty' text
+  static String titleEmpty = 'Title field is empty';
+
+  /// Returns 'Fee is empty' text
+  static String feeEmpty = 'Fee field is empty';
+
+  /// Returns 'Country is empty' text
+  static String countryEmpty = 'Country field is empty';
+
+  /// Returns 'Street is empty' text
+  static String streetEmpty = 'Street field is empty';
+
+  /// Returns 'City is empty' text
+  static String cityEmpty = 'City field is empty';
+
+  /// Returns 'Province is empty' text
+  static String provinceEmpty = 'Province field is empty';
+
+  /// Returns 'Postal Code is empty' text
+  static String postalCodeEmpty = 'Postal Code field is empty';
+
+  /// Returns 'Date is empty' text
+  static String dateEmpty = 'Date field is empty';
+
+  /// Returns 'Description is empty' text
+  static String descriptionEmpty = 'Description field is empty';
+
+  /// Returns 'Service is empty' text
+  static String serviceEmpty = 'Services field is empty';
+
+  /// Returns 'Event Image is empty' text
+  static String eventImageEmpty = 'Event Image is empty';
+
+  /// Returns 'Event Image is empty' text
+  static String outfitterImageEmpty = 'Outfitter Image is empty';
+
+  /// Returns 'Event Image is empty' text
+  static String advertisementImageEmpty = 'Advertisement Image is empty';
+
+  /// Returns 'Price is empty' text
+  static String priceEmpty = 'Price field is empty';
+
+  /// Returns 'Product field is empty' text
+  static String productEmpty = 'Product field is empty';
 }

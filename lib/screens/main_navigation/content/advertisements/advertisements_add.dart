@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -64,6 +65,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   Position? _currentPosition;
   String _currentAddress = '';
   bool showLimitNote = false;
+  bool _isSubmit = false;
   int count = 0;
   late List<CountryModel> listCountry;
   late CountryModel _countryDropdown;
@@ -268,7 +270,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
 
     Widget image2Placeholder(BuildContext context) {
       return GestureDetector(
-        onTap: () => _uploadCount == 1
+        onTap: () => _uploadCount == 2
             ? showMaterialModalBottomSheet(
                 expand: false,
                 context: context,
@@ -370,7 +372,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
 
     Widget image3Placeholder(BuildContext context) {
       return GestureDetector(
-        onTap: () => _uploadCount == 2
+        onTap: () => _uploadCount == 3
             ? showMaterialModalBottomSheet(
                 expand: false,
                 context: context,
@@ -557,6 +559,18 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                   SizedBox(
                     height: 20.h,
                   ),
+                  Text(
+                    AppTextConstants.addMultipleSubActivities,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: Colors.grey),
+                  ),
+                  SizedBox(height: 15.h),
+                  _subActivityDropdown(width),
+                  SizedBox(
+                    height: 20.h,
+                  ),
                   ElevatedButton(
                     onPressed: () => _getCurrentLocation(),
                     style: ButtonStyle(
@@ -739,16 +753,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                   SizedBox(
                     height: 20.h,
                   ),
-                  Text(
-                    AppTextConstants.addMultipleSubActivities,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 15),
-                  ),
-                  SizedBox(height: 15.h),
-                  _subActivityDropdown(width),
-                  SizedBox(
-                    height: 20.h,
-                  ),
                   TextField(
                     controller: _price,
                     decoration: InputDecoration(
@@ -764,6 +768,10 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                             BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
                   ),
                   SizedBox(height: 20.h),
                 ],
@@ -778,7 +786,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () async => advertisementDetail(),
+            onPressed: () async => _isSubmit ? null : advertisementDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -789,10 +797,13 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.createAdvertisement,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.createAdvertisement,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -816,7 +827,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
             decoration: BoxDecoration(
               color: Colors.transparent,
               border: Border.all(
-                color: AppColors.grey,
+                color: Colors.grey.shade300,
                 // width: 1.w,
               ),
               borderRadius: BorderRadius.circular(16.r),
@@ -1328,64 +1339,99 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   }
 
   Future<void> advertisementDetail() async {
-    final String? userId = UserSingleton.instance.user.user!.id;
-    String activities = '';
-
-    if (subActivities1 != null) {
-      activities = subActivities1.id;
-    }
-    if (subActivities2 != null) {
-      activities = '$activities,${subActivities2.id}';
-    }
-    if (subActivities3 != null) {
-      activities = '$activities,${subActivities3.id}';
-    }
-
-    String countryFinal = '';
-
-    if (isLocationBtnClicked) {
-      countryFinal = _country.text;
+    if (image1 == null) {
+      AdvanceSnackBar(message: ErrorMessageConstants.advertisementImageEmpty)
+          .show(context);
+    } else if (_title.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.titleEmpty).show(context);
+    } else if (_country.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.countryEmpty)
+          .show(context);
+    } else if (_street.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.streetEmpty).show(context);
+    } else if (_city.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.cityEmpty).show(context);
+    } else if (_province.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.provinceEmpty)
+          .show(context);
+    } else if (_postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.postalCodeEmpty)
+          .show(context);
+    } else if (_date.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty)
+          .show(context);
+    } else if (_description.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.descriptionEmpty)
+          .show(context);
+    } else if (_price.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.priceEmpty).show(context);
+    } else if (subActivities1 == null) {
+      AdvanceSnackBar(message: ErrorMessageConstants.subActivityEmpty)
+          .show(context);
     } else {
-      countryFinal = _countryDropdown.name;
+      setState(() {
+        _isSubmit = true;
+      });
+
+      final String? userId = UserSingleton.instance.user.user!.id;
+      String activities = '';
+
+      if (subActivities1 != null) {
+        activities = subActivities1.id;
+      }
+      if (subActivities2 != null) {
+        activities = '$activities,${subActivities2.id}';
+      }
+      if (subActivities3 != null) {
+        activities = '$activities,${subActivities3.id}';
+      }
+
+      String countryFinal = '';
+
+      if (isLocationBtnClicked) {
+        countryFinal = _country.text;
+      } else {
+        countryFinal = _countryDropdown.name;
+      }
+
+      final Map<String, dynamic> outfitterDetails = {
+        'user_id': userId,
+        'title': _title.text,
+        'country': countryFinal,
+        'address':
+            '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}',
+        'activities': activities,
+        'street': _street.text,
+        'city': _city.text,
+        'province': _province.text,
+        'zip_code': _postalCode.text,
+        'ad_date': _date.text,
+        'description': _description.text,
+        'price': int.parse(_price.text),
+        'is_published': true
+      };
+
+      final dynamic response = await APIServices().request(
+          AppAPIPath.createAdvertisementUrl, RequestType.POST,
+          needAccessToken: true, data: outfitterDetails);
+
+      final String activityOutfitterId = response['id'];
+      if (_uploadCount == 1) {
+        await saveImage(activityOutfitterId);
+      } else if (_uploadCount == 2) {
+        await save2Image(activityOutfitterId);
+      } else if (_uploadCount == 3) {
+        await saveBulkImage(activityOutfitterId);
+      }
+
+      await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const MainNavigationScreen(
+                    navIndex: 1,
+                    contentIndex: 3,
+                  )));
     }
-
-    final Map<String, dynamic> outfitterDetails = {
-      'user_id': userId,
-      'title': _title.text,
-      'country': countryFinal,
-      'address':
-          '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}',
-      'activities': activities,
-      'street': _street.text,
-      'city': _city.text,
-      'province': _province.text,
-      'zip_code': _postalCode.text,
-      'ad_date': _date.text,
-      'description': _description.text,
-      'price': int.parse(_price.text),
-      'is_published': true
-    };
-
-    final dynamic response = await APIServices().request(
-        AppAPIPath.createAdvertisementUrl, RequestType.POST,
-        needAccessToken: true, data: outfitterDetails);
-
-    final String activityOutfitterId = response['id'];
-    if (_uploadCount == 1) {
-      await saveImage(activityOutfitterId);
-    } else if (_uploadCount == 2) {
-      await save2Image(activityOutfitterId);
-    } else if (_uploadCount == 3) {
-      await saveBulkImage(activityOutfitterId);
-    }
-
-    await Navigator.pushReplacement(
-        context,
-        MaterialPageRoute<dynamic>(
-            builder: (BuildContext context) => const MainNavigationScreen(
-                  navIndex: 1,
-                  contentIndex: 3,
-                )));
   }
 
   _getCurrentLocation() {

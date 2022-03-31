@@ -699,7 +699,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       final String activityPackageDestinationId = response1['id'];
 
       /// Destination Image API
-      if (screenArguments['upload_count'] == 1) {
+      if (item[i].uploadCount == 1) {
         final Map<String, dynamic> image = {
           'activity_package_destination_id': activityPackageDestinationId,
           'snapshot_img': item[i].img1Holder,
@@ -709,7 +709,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         await APIServices().request(
             AppAPIPath.activityDestinationImage, RequestType.POST,
             needAccessToken: true, data: image);
-      } else if (screenArguments['upload_count'] == 2) {
+      } else if (item[i].uploadCount == 2) {
         final ImageListPackage objImg1 = ImageListPackage(
             id: activityPackageDestinationId, img: item[i].img1Holder);
         final ImageListPackage objImg2 = ImageListPackage(
@@ -725,7 +725,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         await APIServices().request(
             AppAPIPath.activityDestinationImageBulk, RequestType.POST,
             needAccessToken: true, data: finalJson);
-      } else if (screenArguments['upload_count'] == 3) {
+      } else if (item[i].uploadCount == 3) {
         final ImageListPackage objImg1 = ImageListPackage(
             id: activityPackageDestinationId, img: item[i].img1Holder);
         final ImageListPackage objImg2 = ImageListPackage(

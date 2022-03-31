@@ -6,8 +6,10 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
+import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/routes/route_generator.dart';
+import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 String _defaultHome = '/login';
@@ -35,7 +37,7 @@ class MyApp extends StatelessWidget {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const MaterialApp(
-            home: Splash(),
+            // home: Splash(),
           );
         } else {
           return ScreenUtilInit(
@@ -80,20 +82,6 @@ class MyApp extends StatelessWidget {
           );
         }
       },
-    );
-  }
-}
-
-/// Splash Screen for waiting
-class Splash extends StatelessWidget {
-  /// Constructor
-  const Splash({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Container(),
     );
   }
 }

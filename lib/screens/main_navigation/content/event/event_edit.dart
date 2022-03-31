@@ -1,18 +1,28 @@
-// ignore_for_file: unnecessary_raw_strings, always_specify_types, curly_braces_in_flow_control_structures, cast_nullable_to_non_nullable
+// ignore_for_file: unnecessary_raw_strings, always_specify_types, curly_braces_in_flow_control_structures, cast_nullable_to_non_nullable, avoid_dynamic_calls
 
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Edit Event Screen
 class EventEdit extends StatefulWidget {
@@ -39,6 +49,16 @@ class _EventEditState extends State<EventEdit> {
   bool _isEnabledMainActivity = false;
   bool _isEnabledSubActivity = false;
   bool _isEnabledServices = false;
+  bool isNewDate = false;
+  bool showMainActivityChoices = false;
+  bool showSubActivityChoices = false;
+  bool _isMainActivityEdited = false;
+  bool _isSubActivityEdited = false;
+  bool showLimitNote = false;
+  bool _didClickedSubActivity = false;
+  bool _didClickedImage = false;
+  bool _isEnabledImage = false;
+  bool _isSubmit = false;
 
   TextEditingController _title = TextEditingController();
   TextEditingController _country = TextEditingController();
@@ -49,9 +69,10 @@ class _EventEditState extends State<EventEdit> {
   TextEditingController _eventDate = TextEditingController();
   TextEditingController _description = TextEditingController();
   TextEditingController _price = TextEditingController();
-  TextEditingController _mainactivity = TextEditingController();
+  // TextEditingController _mainactivity = TextEditingController();
   TextEditingController _subactivity = TextEditingController();
   TextEditingController _services = TextEditingController();
+  TextEditingController _keyword = TextEditingController();
 
   final FocusNode _titleFocus = FocusNode();
   final FocusNode _countryFocus = FocusNode();
@@ -62,13 +83,33 @@ class _EventEditState extends State<EventEdit> {
   final FocusNode _eventDateFocus = FocusNode();
   final FocusNode _descriptionFocus = FocusNode();
   final FocusNode _priceFocus = FocusNode();
-  final FocusNode _mainactivityFocus = FocusNode();
+  // final FocusNode _mainactivityFocus = FocusNode();
   final FocusNode _subactivityFocus = FocusNode();
   final FocusNode _servicesFocus = FocusNode();
-
+  FocusNode _keywordFocus = FocusNode();
   DateTime _selectedDate = DateTime.now();
   final TextStyle txtStyle = TextStyle(fontSize: 14.sp, fontFamily: 'Poppins');
-  bool isNewDate = false;
+  late Future<BadgeModelData> _loadingData;
+  int count = 0;
+
+  dynamic mainActivity;
+  dynamic subActivities1;
+  dynamic subActivities2;
+  dynamic subActivities3;
+
+  String mainActivityTitle = '';
+  String subActivities1Txt = '';
+  String subActivities2Txt = '';
+  String subActivities3Txt = '';
+
+  String subActivities1Id = '';
+  String subActivities2Id = '';
+  String subActivities3Id = '';
+
+  File? image1;
+
+  int _uploadCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -88,12 +129,665 @@ class _EventEditState extends State<EventEdit> {
       _province = TextEditingController(text: screenArguments['province']);
       _postalCode = TextEditingController(text: screenArguments['zip_code']);
 
-      _mainactivity =
-          TextEditingController(text: screenArguments['main_activity']);
-      _subactivity =
-          TextEditingController(text: screenArguments['sub_activity']);
+      _subactivity = TextEditingController(
+          text: screenArguments['sub_activity'].join(','));
       _services = TextEditingController(text: screenArguments['services']);
     });
+    _loadingData = APIServices().getBadgesModel();
+  }
+
+  ListTile _choicesMainActivity(BadgeDetailsModel badges) {
+    return ListTile(
+      onTap: () {
+        setState(() {
+          mainActivity = badges;
+          showMainActivityChoices = false;
+          mainActivityTitle = badges.name;
+          subActivities1 = null;
+          subActivities2 = null;
+          subActivities3 = null;
+          subActivities1Txt = '';
+          subActivities2Txt = '';
+          subActivities3Txt = '';
+          count = 0;
+          _isMainActivityEdited = true;
+        });
+      },
+      minLeadingWidth: 20,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
+      ),
+      title: Text(badges.name),
+    );
+  }
+
+  Column _mainActivityDropdown(double width) {
+    return Column(
+      children: <Widget>[
+        InkWell(
+          onTap: () {
+            setState(() {
+              if (showMainActivityChoices) {
+                showMainActivityChoices = false;
+              } else {
+                showMainActivityChoices = true;
+              }
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              border: Border.all(
+                color: Color.fromARGB(255, 100, 17, 17),
+                width: 1.w,
+              ),
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            width: width,
+            height: 65.h,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                if (mainActivity == null)
+                  SizedBox(
+                    width: 150.w,
+                    height: 100.h,
+                  )
+                else
+                  SizedBox(
+                    width: 160.w,
+                    height: 100.h,
+                    child: _choicesMainActivity(mainActivity),
+                  ),
+                SizedBox(
+                  width: 110.w,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          mainActivity = null;
+                          subActivities1 = null;
+                          subActivities2 = null;
+                          subActivities3 = null;
+                          mainActivityTitle = '';
+                          subActivities1Txt = '';
+                          subActivities2Txt = '';
+                          subActivities3Txt = '';
+                          count = 0;
+                        });
+                      },
+                      child: mainActivity == null
+                          ? const Icon(
+                              Icons.arrow_drop_down_outlined,
+                            )
+                          : const Icon(Icons.close_rounded)),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (showMainActivityChoices)
+          Material(
+            elevation: 5,
+            borderRadius: BorderRadius.circular(12.r),
+            child: SizedBox(
+              height: 200.h,
+              width: width,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
+                child: FutureBuilder<BadgeModelData>(
+                  future: _loadingData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasData) {
+                      final BadgeModelData badgeData = snapshot.data;
+                      final int length = badgeData.badgeDetails.length;
+                      return GridView.count(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        crossAxisCount: 2,
+                        childAspectRatio: 2.5,
+                        children: List.generate(length, (int index) {
+                          final BadgeDetailsModel badgeDetails =
+                              badgeData.badgeDetails[index];
+                          return SizedBox(
+                            height: 10.h,
+                            width: 100.w,
+                            child: _choicesMainActivity(badgeDetails),
+                          );
+                        }),
+                      );
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Container();
+                  },
+                ),
+              ),
+            ),
+          )
+        else
+          const SizedBox(),
+      ],
+    );
+  }
+
+  Column _subActivityDropdown(double width) {
+    return Column(
+      children: <Widget>[
+        InkWell(
+          onTap: () {
+            setState(() {
+              if (mainActivity != null) {
+                if (showSubActivityChoices) {
+                  showSubActivityChoices = false;
+                  _didClickedSubActivity = true;
+                } else {
+                  showSubActivityChoices = true;
+                  _isSubActivityEdited = true;
+                  _didClickedSubActivity = true;
+                }
+              }
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              border: Border.all(
+                color: Colors.grey.shade400,
+                // width: 1.w,
+              ),
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            // width: width,
+            height: 130.w,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Align(
+                      child: SizedBox(
+                        width: 340,
+                        height: 50.h,
+                        child: ListView(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            children: <Widget>[
+                              if (subActivities1 == null)
+                                SizedBox(
+                                  height: 100.h,
+                                )
+                              else
+                                _chosenSubActivities1(subActivities1),
+                              if (subActivities2 == null)
+                                SizedBox(
+                                  height: 100.h,
+                                )
+                              else
+                                _chosenSubActivities2(subActivities2),
+                            ]),
+                      ),
+                    ),
+                  ],
+                ),
+                if (subActivities3 == null)
+                  SizedBox(
+                    height: 100.h,
+                  )
+                else
+                  _chosenSubActivities3(subActivities3),
+              ],
+            ),
+          ),
+        ),
+        if (showSubActivityChoices)
+          Material(
+            elevation: 5,
+            borderRadius: BorderRadius.circular(12.r),
+            child: SizedBox(
+              height: 200.h,
+              width: width,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
+                child: FutureBuilder<BadgeModelData>(
+                  future: _loadingData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasData) {
+                      final BadgeModelData badgeData = snapshot.data;
+                      final int length = badgeData.badgeDetails.length;
+                      return GridView.count(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        crossAxisCount: 2,
+                        childAspectRatio: 2.5,
+                        children: List.generate(length, (int index) {
+                          final BadgeDetailsModel badgeDetails =
+                              badgeData.badgeDetails[index];
+                          return SizedBox(
+                            height: 10.h,
+                            width: 100.w,
+                            child: _choicesSubActivities(badgeDetails),
+                          );
+                        }),
+                      );
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Container();
+                  },
+                ),
+              ),
+            ),
+          )
+        else
+          const SizedBox(),
+      ],
+    );
+  }
+
+  Padding _chosenSubActivities1(BadgeDetailsModel badges) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Align(
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              subActivities1 = badges;
+              subActivities1Txt = badges.name;
+              _isSubActivityEdited = true;
+              count++;
+            });
+          },
+          child: Container(
+            height: 42.h,
+            decoration: BoxDecoration(
+                color: AppColors.platinum.withOpacity(0.8),
+                border: Border.all(
+                  color: AppColors.platinum.withOpacity(0.8),
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(20.r))),
+            child: Align(
+              child: Stack(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        child: SizedBox(
+                          width: 70.w,
+                          height: 30.h,
+                          child: Align(
+                            child: Text(
+                              badges.name,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 13.sp),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 10.w),
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (subActivities2 != null) {
+                                  subActivities1 = subActivities2;
+                                } else {
+                                  subActivities1 = null;
+                                }
+
+                                if (subActivities3 != null) {
+                                  subActivities2 = subActivities3;
+                                  subActivities3 = null;
+                                } else {
+                                  subActivities2 = null;
+                                }
+                                count--;
+                                showLimitNote = false;
+                              });
+                            },
+                            child: const Icon(
+                              Icons.close_rounded,
+                            )),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding _chosenSubActivities2(BadgeDetailsModel badges) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Align(
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              subActivities2 = badges;
+              subActivities2Txt = badges.name;
+              count++;
+            });
+          },
+          child: Container(
+            height: 40.h,
+            decoration: BoxDecoration(
+                color: AppColors.platinum.withOpacity(0.8),
+                border: Border.all(
+                  color: AppColors.platinum.withOpacity(0.8),
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(20.r))),
+            child: Align(
+              child: Stack(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        child: SizedBox(
+                          width: 70.w,
+                          height: 30.h,
+                          child: Align(
+                            child: Text(
+                              badges.name,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 13.sp),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 10.w),
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (subActivities3 != null) {
+                                  subActivities2 = subActivities3;
+                                  subActivities3 = null;
+                                } else {
+                                  subActivities2 = null;
+                                }
+                                count--;
+                                showLimitNote = false;
+                              });
+                            },
+                            child: const Icon(
+                              Icons.close_rounded,
+                            )),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding _chosenSubActivities3(BadgeDetailsModel badges) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Align(
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              subActivities3 = badges;
+              subActivities3Txt = badges.name;
+              count++;
+            });
+          },
+          child: Container(
+            height: 40.h,
+            width: 140.w,
+            decoration: BoxDecoration(
+                color: AppColors.platinum.withOpacity(0.8),
+                border: Border.all(
+                  color: AppColors.platinum.withOpacity(0.8),
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(20.r))),
+            child: Align(
+              child: Stack(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        child: SizedBox(
+                          width: 70.w,
+                          height: 30.h,
+                          child: Align(
+                            child: Text(
+                              badges.name,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 13.sp),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 10.w),
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                subActivities3 = null;
+                                count--;
+                                showLimitNote = false;
+                              });
+                            },
+                            child: const Icon(
+                              Icons.close_rounded,
+                            )),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  ListTile _choicesSubActivities(BadgeDetailsModel badges) {
+    if (badges.name == mainActivity.name) {
+      return _disabledSubActivities(badges);
+    }
+    if (subActivities1 == badges) {
+      return _disabledSubActivities(badges);
+    }
+    if (subActivities2 == badges) {
+      return _disabledSubActivities(badges);
+    }
+    if (subActivities3 == badges) {
+      return _disabledSubActivities(badges);
+    }
+
+    return _enabledSubActivities(badges);
+  }
+
+  ListTile _disabledSubActivities(BadgeDetailsModel badges) {
+    return ListTile(
+      enabled: false,
+      onTap: () {
+        setState(() {
+          switch (count) {
+            case 0:
+              subActivities1 = badges;
+              subActivities1Txt = badges.name;
+              count++;
+              showSubActivityChoices = true;
+              break;
+            case 1:
+              subActivities2 = badges;
+              subActivities2Txt = badges.name;
+              count++;
+              showSubActivityChoices = true;
+              break;
+            case 2:
+              subActivities3 = badges;
+              subActivities3Txt = badges.name;
+              count++;
+              showSubActivityChoices = false;
+              break;
+            default:
+              count = 0;
+          }
+        });
+      },
+      minLeadingWidth: 20,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
+      ),
+      title: Text(badges.name),
+    );
+  }
+
+  ListTile _enabledSubActivities(BadgeDetailsModel badges) {
+    return ListTile(
+      onTap: () {
+        setState(() {
+          switch (count) {
+            case 0:
+              subActivities1 = badges;
+              subActivities1Txt = badges.name;
+              count++;
+              showSubActivityChoices = true;
+              showLimitNote = false;
+              break;
+            case 1:
+              subActivities2 = badges;
+              subActivities2Txt = badges.name;
+              count++;
+              showSubActivityChoices = true;
+              showLimitNote = false;
+              break;
+            case 2:
+              subActivities3 = badges;
+              subActivities3Txt = badges.name;
+              count++;
+              showSubActivityChoices = false;
+              showLimitNote = true;
+              break;
+            case 3:
+              showSubActivityChoices = false;
+              showLimitNote = true;
+              break;
+            default:
+              count = 0;
+          }
+        });
+      },
+      minLeadingWidth: 20,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
+      ),
+      title: Text(badges.name),
+    );
+  }
+
+  Stack _default() {
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: 100.w,
+          height: 87.h,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.r),
+            color: AppColors.gallery,
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: AppColors.gallery,
+                spreadRadius: 3,
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(25),
+            child: Row(
+              children: <Widget>[
+                Image.asset(
+                  AssetsPath.imagePrey,
+                  height: 50.h,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          right: 3.w,
+          top: 3.h,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.r),
+              color: Colors.white,
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Colors.white,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.add,
+              color: Colors.grey,
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   @override
@@ -103,6 +797,147 @@ class _EventEditState extends State<EventEdit> {
 
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    Widget image1Placeholder(BuildContext context) {
+      return GestureDetector(
+        onTap: () {
+          if (_isEnabledImage) {
+            showMaterialModalBottomSheet(
+                expand: false,
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (BuildContext context) => SafeArea(
+                    top: false,
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                              leading: const Icon(Icons.photo_camera),
+                              title: const Text('Camera'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image1 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.camera,
+                                          imageQuality: 25);
+                                  if (image1 == null) {
+                                    return;
+                                  }
+
+                                  final File imageTemporary = File(image1.path);
+                                  setState(() {
+                                    this.image1 = imageTemporary;
+                                    _uploadCount += 1;
+                                  });
+                                } on PlatformException catch (e) {
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                          ListTile(
+                              leading: const Icon(Icons.photo_album),
+                              title: const Text('Photo Gallery'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image1 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.gallery,
+                                          imageQuality: 10);
+
+                                  if (image1 == null) {
+                                    return;
+                                  }
+
+                                  final File imageTemporary = File(image1.path);
+                                  setState(() {
+                                    this.image1 = imageTemporary;
+                                    _uploadCount += 1;
+                                  });
+                                } on PlatformException catch (e) {
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                        ],
+                      ),
+                    )));
+          }
+        },
+        child: image1 != null
+            ? Stack(
+                children: <Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      image1!,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.fitHeight,
+                    ),
+                  ),
+                  Positioned(
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            image1 = null;
+                            _uploadCount -= 1;
+                          });
+                        },
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: CircleAvatar(
+                            radius: 14.r,
+                            backgroundColor: Colors.white,
+                            child: const Icon(Icons.close, color: Colors.black),
+                          ),
+                        ),
+                      ))
+                ],
+              )
+            : _default(),
+      );
+    }
+
+    Stack _presetDefault() {
+      return Stack(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.memory(
+              base64.decode(screenArguments['snapshot_img'].split(',').last),
+              fit: BoxFit.cover,
+              gaplessPlayback: true,
+              width: 100,
+              height: 100,
+            ),
+          ),
+          Positioned(
+              right: 0,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (_isEnabledImage) {
+                      image1 = null;
+                      _uploadCount -= 1;
+                      _didClickedImage = true;
+                    }
+                  });
+                },
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: CircleAvatar(
+                    radius: 14.r,
+                    backgroundColor: Colors.white,
+                    child: const Icon(Icons.close, color: Colors.black),
+                  ),
+                ),
+              ))
+        ],
+      );
+    }
 
     /// Image List card widget
     Card _widgetImagesList() => Card(
@@ -119,15 +954,28 @@ class _EventEditState extends State<EventEdit> {
                         fontWeight: FontWeight.bold,
                       ),
                     )),
-                    Text(
-                      AppTextConstants.edit,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        decoration: TextDecoration.underline,
-                        color: AppColors.primaryGreen,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (_isEnabledImage == false) {
+                            _isEnabledImage = true;
+                          } else {
+                            _isEnabledImage = false;
+                          }
+                        });
+                      },
+                      child: Text(
+                        _isEnabledImage
+                            ? AppTextConstants.done
+                            : AppTextConstants.edit,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          decoration: TextDecoration.underline,
+                          color: AppColors.primaryGreen,
+                        ),
+                        textAlign: TextAlign.right,
                       ),
-                      textAlign: TextAlign.right,
                     ),
                   ],
                 ),
@@ -137,28 +985,12 @@ class _EventEditState extends State<EventEdit> {
                     SizedBox(
                       height: 5.h,
                     ),
-                    Text(
-                      AppTextConstants.sampleImage,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        decoration: TextDecoration.underline,
-                        color: AppColors.primaryGreen,
-                      ),
-                      textAlign: TextAlign.right,
-                    ),
+                    if (_didClickedImage)
+                      image1Placeholder(context)
+                    else
+                      _presetDefault(),
                     SizedBox(
-                      height: 5.h,
-                    ),
-                    Text(
-                      AppTextConstants.sampleImage,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        decoration: TextDecoration.underline,
-                        color: AppColors.primaryGreen,
-                      ),
-                      textAlign: TextAlign.right,
+                      height: 10.h,
                     ),
                   ],
                 ),
@@ -187,8 +1019,10 @@ class _EventEditState extends State<EventEdit> {
                         setState(() {
                           if (_isEnabledMainActivity == false) {
                             _isEnabledMainActivity = true;
+                            showMainActivityChoices = true;
                           } else {
                             _isEnabledMainActivity = false;
+                            showMainActivityChoices = false;
                           }
                         });
                       },
@@ -213,18 +1047,66 @@ class _EventEditState extends State<EventEdit> {
                     SizedBox(
                       height: 5.h,
                     ),
-                    TextField(
-                      enabled: _isEnabledMainActivity,
-                      controller: _mainactivity,
-                      focusNode: _mainactivityFocus,
-                      decoration: InputDecoration(
-                        hintText: screenArguments['main_activity'],
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
+                    if (_isEnabledMainActivity)
+                      _mainActivityDropdown(width)
+                    else if (_isMainActivityEdited && mainActivity != null)
+                      ListTile(
+                        onTap: () {},
+                        minLeadingWidth: 20,
+                        leading: Image.memory(
+                          base64.decode(mainActivity.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 30,
+                          height: 30,
                         ),
+                        title: Text(mainActivity.name),
+                      )
+                    else
+                      FutureBuilder<BadgeModelData>(
+                        future: APIServices()
+                            .getBadgesModelById(screenArguments['badge_id']),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.hasData) {
+                            final BadgeModelData badgeData = snapshot.data;
+                            final int length = badgeData.badgeDetails.length;
+                            return GridView.count(
+                              shrinkWrap: true,
+                              padding: EdgeInsets.zero,
+                              crossAxisCount: 2,
+                              childAspectRatio: 2.5,
+                              children: List.generate(length, (int index) {
+                                final BadgeDetailsModel badgeDetails =
+                                    badgeData.badgeDetails[index];
+
+                                mainActivity = badgeData.badgeDetails[0];
+                                return SizedBox(
+                                  height: 10.h,
+                                  width: 100.w,
+                                  child: ListTile(
+                                    onTap: () {},
+                                    minLeadingWidth: 20,
+                                    leading: Image.memory(
+                                      base64.decode(
+                                          badgeDetails.imgIcon.split(',').last),
+                                      gaplessPlayback: true,
+                                      width: 30,
+                                      height: 30,
+                                    ),
+                                    title: Text(badgeDetails.name),
+                                  ),
+                                );
+                              }),
+                            );
+                          }
+                          if (snapshot.connectionState !=
+                              ConnectionState.done) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          return Container();
+                        },
                       ),
-                      style: txtStyle,
-                    )
                   ],
                 ),
               ),
@@ -238,61 +1120,189 @@ class _EventEditState extends State<EventEdit> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                title: Row(
-                  children: <Widget>[
-                    Expanded(
+                  title: Row(
+                    children: <Widget>[
+                      Expanded(
+                          child: Text(
+                        AppTextConstants.subActivities,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (_isEnabledSubActivity == false) {
+                              _isEnabledSubActivity = true;
+                              _isSubActivityEdited = true;
+                            } else {
+                              _isEnabledSubActivity = false;
+                            }
+                          });
+                        },
                         child: Text(
-                      AppTextConstants.subActivities,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (_isEnabledSubActivity == false) {
-                            _isEnabledSubActivity = true;
-                          } else {
-                            _isEnabledSubActivity = false;
-                          }
-                        });
-                      },
-                      child: Text(
-                        _isEnabledSubActivity
-                            ? AppTextConstants.done
-                            : AppTextConstants.edit,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          decoration: TextDecoration.underline,
-                          color: AppColors.primaryGreen,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    TextField(
-                      enabled: _isEnabledSubActivity,
-                      controller: _subactivity,
-                      focusNode: _subactivityFocus,
-                      decoration: InputDecoration(
-                        hintText: screenArguments['sub_activity'],
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
+                          _isEnabledSubActivity
+                              ? AppTextConstants.done
+                              : AppTextConstants.edit,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            decoration: TextDecoration.underline,
+                            color: AppColors.primaryGreen,
+                          ),
+                          textAlign: TextAlign.right,
                         ),
                       ),
-                      style: txtStyle,
-                    )
-                  ],
-                ),
-              ),
+                    ],
+                  ),
+                  subtitle: _isEnabledSubActivity
+                      ? _subActivityDropdown(width)
+                      : _isSubActivityEdited
+                          ? Row(
+                              children: <Widget>[
+                                if (subActivities1 != null)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: AppColors.harp,
+                                        border:
+                                            Border.all(color: AppColors.harp),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5.r))),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(
+                                          subActivities1.name.toString(),
+                                          style: TextStyle(
+                                              color: AppColors.nobel)),
+                                    ),
+                                  )
+                                else
+                                  Container(),
+                                SizedBox(
+                                  width: 5.w,
+                                ),
+                                if (subActivities2 != null)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: AppColors.harp,
+                                        border:
+                                            Border.all(color: AppColors.harp),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5.r))),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(
+                                          subActivities2.name.toString(),
+                                          style: TextStyle(
+                                              color: AppColors.nobel)),
+                                    ),
+                                  )
+                                else
+                                  Container(),
+                                SizedBox(
+                                  width: 5.w,
+                                ),
+                                if (subActivities3 != null)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: AppColors.harp,
+                                        border:
+                                            Border.all(color: AppColors.harp),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5.r))),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(
+                                          subActivities3.name.toString(),
+                                          style: TextStyle(
+                                              color: AppColors.nobel)),
+                                    ),
+                                  )
+                                else
+                                  Container(),
+                              ],
+                            )
+                          : SizedBox(
+                              height: 50.h,
+                              child: Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount:
+                                            screenArguments['sub_activity']
+                                                .length,
+                                        itemBuilder:
+                                            (BuildContext ctx, int index) {
+                                          return FutureBuilder<BadgeModelData>(
+                                            future: APIServices()
+                                                .getBadgesModelById(
+                                                    screenArguments[
+                                                        'sub_activity'][index]),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot<dynamic>
+                                                    snapshot) {
+                                              if (snapshot.hasData) {
+                                                final BadgeModelData badgeData =
+                                                    snapshot.data;
+                                                final int length = badgeData
+                                                    .badgeDetails.length;
+                                                return Row(
+                                                  children: <Widget>[
+                                                    Container(
+                                                      decoration: BoxDecoration(
+                                                          color: AppColors.harp,
+                                                          border: Border.all(
+                                                              color: AppColors
+                                                                  .harp),
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          5.r))),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8),
+                                                        child: Text(
+                                                            badgeData
+                                                                .badgeDetails[0]
+                                                                .name
+                                                                .toString(),
+                                                            style: TextStyle(
+                                                                color: AppColors
+                                                                    .nobel)),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5.w,
+                                                    )
+                                                  ],
+                                                );
+                                              }
+                                              if (snapshot.connectionState !=
+                                                  ConnectionState.done) {
+                                                return Align(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  child: Row(
+                                                    children: <Widget>[
+                                                      SizedBox(
+                                                        width: 10.w,
+                                                      ),
+                                                      const CircularProgressIndicator(),
+                                                    ],
+                                                  ),
+                                                );
+                                              }
+                                              return Container();
+                                            },
+                                          );
+                                        }),
+                                  )
+                                ],
+                              ),
+                            )),
             ],
           ),
         );
@@ -354,7 +1364,7 @@ class _EventEditState extends State<EventEdit> {
                         ),
                       ),
                       style: txtStyle,
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -931,7 +1941,7 @@ class _EventEditState extends State<EventEdit> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () async => eventEditDetail(),
+            onPressed: () async => _isSubmit ? null : eventEditDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -942,58 +1952,140 @@ class _EventEditState extends State<EventEdit> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.postEvent1,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.postEvent1,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
     );
   }
 
-  Future<void> eventEditDetail() async {
-    final Map<String, dynamic> screenArguments =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final String? userId = UserSingleton.instance.user.user!.id;
+  Future<void> saveImage(String activityEventId, String imageId) async {
+    final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+    final String base64Image1 = base64Encode(await image1Bytes);
 
-    final Map<String, dynamic> eventEditDetails = {
-      'user_id': userId,
-      'badge_id': '764f32ae-7f8c-4d3c-b948-d7b93eaed436',
-      'title': _title.text,
-      'free_service': _services.text,
-      'main_activities': _mainactivity.text,
-      'sub_activities': _subactivity.text,
-      'country': _country.text,
-      'address':
-          '${_street.text}, ${_city.text}, ${_province.text}, ${_country.text}, ${_postalCode.text}',
-      'description': _description.text,
-      'price': int.parse(_price.text),
-      'event_date':
-          isNewDate ? _eventDate.text : screenArguments['date_format'],
-      'is_published': true,
+    final Map<String, dynamic> image = {
+      'activity_event_id': activityEventId,
+      'snapshot_img': base64Image1
     };
 
-    final dynamic response = await APIServices().request(
-        '${AppAPIPath.activityEventUrl}/${screenArguments['id']}',
-        RequestType.PATCH,
-        needAccessToken: true,
-        data: eventEditDetails);
+    await APIServices().request(
+        '${AppAPIPath.eventImageUrl}/$imageId', RequestType.PATCH,
+        needAccessToken: true, data: image);
+  }
 
-    await Navigator.pushReplacement(
-        context,
-        MaterialPageRoute<dynamic>(
-            builder: (BuildContext context) => const MainNavigationScreen(
-                  navIndex: 1,
-                  contentIndex: 1,
-                )));
+  Future<void> eventEditDetail() async {
+    String subActivity;
+
+    if (_didClickedSubActivity) {
+      subActivity =
+          '${subActivities1.id.toString()},${subActivities2.id.toString()},${subActivities3.id.toString()}';
+    } else {
+      subActivity = _subactivity.text;
+    }
+
+    if (mainActivity == null) {
+      AdvanceSnackBar(message: ErrorMessageConstants.mainActivityEmpty)
+          .show(context);
+    } else if (subActivity == '') {
+      AdvanceSnackBar(message: ErrorMessageConstants.subActivityEmpty)
+          .show(context);
+    } else if (_didClickedImage) {
+      if (image1 == null) {
+        AdvanceSnackBar(message: ErrorMessageConstants.eventImageEmpty)
+            .show(context);
+      }
+    } else if (_title.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.titleEmpty).show(context);
+    } else if (_price.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.priceEmpty).show(context);
+    } else if (_country.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.countryEmpty)
+          .show(context);
+    } else if (_street.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.streetEmpty).show(context);
+    } else if (_city.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.cityEmpty).show(context);
+    } else if (_province.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.provinceEmpty)
+          .show(context);
+    } else if (_postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.postalCodeEmpty)
+          .show(context);
+    } else if (isNewDate && _eventDate.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
+    } else if (_description.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.descriptionEmpty)
+          .show(context);
+    } else if (_services.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.serviceEmpty)
+          .show(context);
+    } else {
+      setState(() {
+        _isSubmit = true;
+      });
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      final String? userId = UserSingleton.instance.user.user!.id;
+
+      String subActivity;
+
+      if (_didClickedSubActivity) {
+        subActivity =
+            '${subActivities1.id.toString()},${subActivities2.id.toString()},${subActivities3.id.toString()}';
+      } else {
+        subActivity = _subactivity.text;
+      }
+
+      final Map<String, dynamic> eventEditDetails = {
+        'user_id': userId,
+        'badge_id': mainActivity.id,
+        'title': _title.text,
+        'free_service': _services.text,
+        'main_activities': mainActivity.name,
+        'sub_activities': subActivity,
+        'country': _country.text,
+        'address':
+            '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
+        'description': _description.text,
+        'price': int.parse(_price.text),
+        'event_date':
+            isNewDate ? _eventDate.text : screenArguments['date_format'],
+        'is_published': true,
+      };
+
+      final dynamic response = await APIServices().request(
+          '${AppAPIPath.activityEventUrl}/${screenArguments['id']}',
+          RequestType.PATCH,
+          needAccessToken: true,
+          data: eventEditDetails);
+
+      if (_didClickedImage) {
+        if (image1 != null) {
+          await saveImage(screenArguments['id'], screenArguments['image_id']);
+        }
+      }
+
+      await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const MainNavigationScreen(
+                    navIndex: 1,
+                    contentIndex: 1,
+                  )));
+    }
   }
 
   Future<void> _showDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
-      firstDate: DateTime(1901),
+      firstDate: DateTime.now().subtract(Duration(days: 0)),
       lastDate: DateTime(2100),
       builder: (BuildContext context, Widget? child) {
         return Theme(
