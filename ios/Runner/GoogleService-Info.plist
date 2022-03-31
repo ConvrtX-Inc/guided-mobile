@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>875562076914-95vmr9eavt7il3a8qbkdprl82ogpalj8.apps.googleusercontent.com</string>
+	<string>875562076914-82rf1to9ns5d72pn562tp51v42t49fpe.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.875562076914-95vmr9eavt7il3a8qbkdprl82ogpalj8</string>
+	<string>com.googleusercontent.apps.875562076914-82rf1to9ns5d72pn562tp51v42t49fpe</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>875562076914-gbvhsq8oggqjd8vcjvv82bc282fqin8d.apps.googleusercontent.com</string>
+	<string>875562076914-dcrk073qt165esv0j4paqmo5er4830gn.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyD1kAPIrkeTHM2OywqemU9pAUFVHbBfnk4</string>
 	<key>GCM_SENDER_ID</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.guided</string>
+	<string>com.canada.guided</string>
 	<key>PROJECT_ID</key>
 	<string>guided-convrtx</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:875562076914:ios:1329ccea747404198b5e6b</string>
+	<string>1:875562076914:ios:315a158d0d6173818b5e6b</string>
 </dict>
 </plist>
