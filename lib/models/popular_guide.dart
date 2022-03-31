@@ -10,7 +10,7 @@ class PopularGuide {
   String? activityId;
   String? activityUserId;
   String? activityMainBadgeId;
-  Null? activitySubBadgeIds;
+  String? activitySubBadgeIds;
   String? activityPackageNote;
   String? activityName;
   String? activityDescription;
@@ -28,12 +28,12 @@ class PopularGuide {
   String? activityPriceNote;
   bool? activityIsPublished;
   Null? activityDeletedAt;
-  Null? badgeId;
-  Null? badgeBadgeName;
-  Null? badgeBadgeDescription;
-  Null? badgeImgIcon;
-  Null? badgeIsMainActivity;
-  Null? badgeIsSubActivity;
+  String? badgeId;
+  String? badgeBadgeName;
+  String? badgeBadgeDescription;
+
+  bool? badgeIsMainActivity;
+  bool? badgeIsSubActivity;
   Null? badgeDeletedAt;
   int? reviews;
   double? distance;
@@ -70,7 +70,6 @@ class PopularGuide {
       this.badgeId,
       this.badgeBadgeName,
       this.badgeBadgeDescription,
-      this.badgeImgIcon,
       this.badgeIsMainActivity,
       this.badgeIsSubActivity,
       this.badgeDeletedAt,
@@ -110,7 +109,7 @@ class PopularGuide {
     badgeId = json['badge_id'];
     badgeBadgeName = json['badge_badge_name'];
     badgeBadgeDescription = json['badge_badge_description'];
-    badgeImgIcon = json['badge_img_icon'];
+
     badgeIsMainActivity = json['badge_is_main_activity'];
     badgeIsSubActivity = json['badge_is_sub_activity'];
     badgeDeletedAt = json['badge_deletedAt'];
@@ -152,7 +151,7 @@ class PopularGuide {
     data['badge_id'] = this.badgeId;
     data['badge_badge_name'] = this.badgeBadgeName;
     data['badge_badge_description'] = this.badgeBadgeDescription;
-    data['badge_img_icon'] = this.badgeImgIcon;
+
     data['badge_is_main_activity'] = this.badgeIsMainActivity;
     data['badge_is_sub_activity'] = this.badgeIsSubActivity;
     data['badge_deletedAt'] = this.badgeDeletedAt;

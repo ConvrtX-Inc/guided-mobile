@@ -166,6 +166,9 @@ class AssetsPath {
   /// returns discovery top image
   static String discoverytopImage = 'assets/images/png/discoverytopImage.png';
 
+  /// returns discovery top image
+  static String discoveryMapImage = 'assets/images/png/discoveryMapImage.png';
+
   /// returns discovery Tree image
   static String discoveryTree = 'assets/images/png/discoveryTree.png';
 

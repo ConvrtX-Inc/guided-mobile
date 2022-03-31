@@ -5,7 +5,7 @@ class ActivityPackage {
   String? id;
   String? userId;
   String? mainBadgeId;
-  Null? subBadgeIds;
+  String? subBadgeIds;
   String? packageNote;
   String? name;
   String? description;

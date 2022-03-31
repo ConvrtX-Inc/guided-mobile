@@ -494,6 +494,8 @@ class APIServices {
         headers: headers);
 
     final dynamic jsonData = jsonDecode(response.body);
+    print(response.request!.url);
+    print(jsonData);
     print(jsonData['response']['data']['details']);
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
     final activityPackage = (jsonData['response']['data']['details'] as List)
@@ -523,6 +525,7 @@ class APIServices {
 
     return BadgeModelData(badgeDetails: details);
   }
+
   /// API service for get Popular guides
 
   Future<List<PopularGuide>> getPopularGuides() async {
@@ -542,7 +545,8 @@ class APIServices {
     print(popularGuides.length);
     return popularGuides;
   }
- /// API service for outfitter image model
+
+  /// API service for outfitter image model
   Future<BadgeModelData> getBadgesModelById(String id) async {
     final dynamic response = await http.get(
         Uri.parse(
@@ -562,7 +566,8 @@ class APIServices {
 
     return BadgeModelData(badgeDetails: details);
   }
- /// API service for countries
+
+  /// API service for countries
   Future<List<CountryModel>> getCountries() async {
     final http.Response response =
         await http.get(Uri.http(apiBaseUrl, '/api/v1/countries'), headers: {

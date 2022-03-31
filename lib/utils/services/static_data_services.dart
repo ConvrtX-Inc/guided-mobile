@@ -96,7 +96,7 @@ class StaticDataService {
           featureImage: 'assets/images/jpg/fishing.jpg'),
       Activity(
           id: '5',
-          name: 'Botanical Garden Tour.',
+          name: 'Botanical Garden Tour',
           path: AssetsPath.eco,
           distance: '3.5 hours drive',
           featureImage: 'assets/images/jpg/eco_tour.jpg'),

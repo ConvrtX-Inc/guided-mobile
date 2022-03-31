@@ -10,7 +10,8 @@ class AppAPIPath {
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
 
   /// Returns API base url
-  static String apiBaseUrl = 'dev-guided-convrtx.herokuapp.com';
+  static String apiBaseUrl =
+      'guided-api-dev.herokuapp.com'; //'dev-guided-convrtx.herokuapp.com';
 
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';

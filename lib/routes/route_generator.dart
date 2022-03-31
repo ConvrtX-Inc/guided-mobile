@@ -3,6 +3,7 @@ import 'package:guided/screens/activities/activities.dart';
 
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/dicovery/discovery.dart';
+import 'package:guided/screens/dicovery/discovery_map.dart';
 import 'package:guided/screens/faq/faq.dart';
 
 import 'package:guided/screens/auths/logins/screens/login_screen.dart';
@@ -228,6 +229,9 @@ class RouteGenerator {
       case '/discovery':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const DiscoveryScreen(), settings: settings);
+      case '/discovery_map':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const DiscoveryMapScreen(), settings: settings);
       case '/activities':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ActivitiesScreen(), settings: settings);
@@ -266,6 +270,8 @@ class RouteGenerator {
       case '/availability_booking_dates':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AvailabilityBookingDateScreen());
+      case '/tabMapScreen':
+        return MaterialPageRoute<dynamic>(builder: (_) => const TabMapScreen());
       default:
         return _errorRoute();
     }

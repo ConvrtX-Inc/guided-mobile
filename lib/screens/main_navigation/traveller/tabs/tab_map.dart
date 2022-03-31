@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, use_named_constants
 
 import 'dart:math';
-
+import 'dart:ui';
 import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:custom_marker/marker_icon.dart';
@@ -20,6 +20,7 @@ import 'dart:async';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/guide.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/utils/services/static_data_services.dart';
@@ -322,7 +323,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                     tourList[i].name,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w700,
-                                      fontSize: 12.sp,
+                                      fontSize: 11.sp,
                                       color: Colors.black,
                                     ),
                                   ),
@@ -354,6 +355,20 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                 AssetImage(tourList[i].path),
                                           ),
                                         ),
+                                        if (UserSingleton
+                                                .instance.user.user!.email ==
+                                            'traveller1@abc.com')
+                                          Container(
+                                            height: 90.h,
+                                            width: 135.w,
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.grey.withOpacity(0.8),
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(15.r),
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
                                   ),
