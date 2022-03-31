@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guided/screens/activities/activities.dart';
+import 'package:guided/screens/auths/splashes/splash.dart';
 
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/dicovery/discovery.dart';
@@ -270,8 +271,8 @@ class RouteGenerator {
       case '/availability_booking_dates':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AvailabilityBookingDateScreen());
-      case '/tabMapScreen':
-        return MaterialPageRoute<dynamic>(builder: (_) => const TabMapScreen());
+      case '/':
+        return MaterialPageRoute<dynamic>(builder: (_) => const Splash());
       default:
         return _errorRoute();
     }

@@ -1,17 +1,28 @@
-// ignore_for_file: always_specify_types, cast_nullable_to_non_nullable, unnecessary_raw_strings, curly_braces_in_flow_control_structures
+// ignore_for_file: always_specify_types, cast_nullable_to_non_nullable, unnecessary_raw_strings, curly_braces_in_flow_control_structures, avoid_dynamic_calls, non_constant_identifier_names, unused_element, unnecessary_string_interpolations
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:path_provider/path_provider.dart';
 
 /// Edit Outfitter Screen
 class OutfitterEdit extends StatefulWidget {
@@ -22,7 +33,10 @@ class OutfitterEdit extends StatefulWidget {
   _OutfitterEditState createState() => _OutfitterEditState();
 }
 
-class _OutfitterEditState extends State<OutfitterEdit> {
+class _OutfitterEditState extends State<OutfitterEdit>
+    with AutomaticKeepAliveClientMixin<OutfitterEdit> {
+  @override
+  bool get wantKeepAlive => true;
   bool isChecked = false;
   bool _isEnabledTitle = false;
   bool _isEnabledPrice = false;
@@ -60,14 +74,29 @@ class _OutfitterEditState extends State<OutfitterEdit> {
 
   DateTime _selectedDate = DateTime.now();
   final TextStyle txtStyle = TextStyle(fontSize: 14.sp, fontFamily: 'Poppins');
+  bool _didClickedImage1 = false;
+  bool _didClickedImage2 = false;
+  bool _didClickedImage3 = false;
+  bool _isEnabledImage = false;
+  File? image1;
+  File? image2;
+  File? image3;
+  bool _enabledImgHolder2 = false;
+  int _uploadCount = 0;
+
+  String img1Id = '';
+  String img2Id = '';
+  String img3Id = '';
+
+  bool _isSubmit = false;
 
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      String dir = (await getApplicationDocumentsDirectory()).path;
 
       final String removedDollar =
           screenArguments['price'].toString().substring(0);
@@ -91,12 +120,546 @@ class _OutfitterEditState extends State<OutfitterEdit> {
     });
   }
 
+  Stack _default() {
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: 100.w,
+          height: 87.h,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.r),
+            color: AppColors.gallery,
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: AppColors.gallery,
+                spreadRadius: 3,
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(25),
+            child: Row(
+              children: <Widget>[
+                Image.asset(
+                  AssetsPath.imagePrey,
+                  height: 50.h,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          right: 3.w,
+          top: 3.h,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.r),
+              color: Colors.white,
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Colors.white,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.add,
+              color: Colors.grey,
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    Widget image1Placeholder(BuildContext context) {
+      return GestureDetector(
+        onTap: () {
+          if (_isEnabledImage) {
+            showMaterialModalBottomSheet(
+                expand: false,
+                context: context,
+                backgroundColor: Color.fromARGB(0, 61, 56, 56),
+                builder: (BuildContext context) => SafeArea(
+                    top: false,
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                              leading: const Icon(Icons.photo_camera),
+                              title: const Text('Camera'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image1 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.camera,
+                                          imageQuality: 25);
+                                  if (image1 == null) {
+                                    return;
+                                  }
+
+                                  final File imageTemporary = File(image1.path);
+                                  setState(() {
+                                    this.image1 = imageTemporary;
+                                    _uploadCount += 1;
+                                  });
+                                } on PlatformException catch (e) {
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                          ListTile(
+                              leading: const Icon(Icons.photo_album),
+                              title: const Text('Photo Gallery'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image1 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.gallery,
+                                          imageQuality: 10);
+
+                                  if (image1 == null) {
+                                    return;
+                                  }
+
+                                  final File imageTemporary = File(image1.path);
+                                  setState(() {
+                                    this.image1 = imageTemporary;
+                                    _uploadCount += 1;
+                                  });
+                                } on PlatformException catch (e) {
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                        ],
+                      ),
+                    )));
+          }
+        },
+        child: image1 != null
+            ? Stack(
+                children: <Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      image1!,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.fitHeight,
+                    ),
+                  ),
+                  Positioned(
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            image1 = null;
+                            _uploadCount -= 1;
+                          });
+                        },
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: CircleAvatar(
+                            radius: 14.r,
+                            backgroundColor: Colors.white,
+                            child: const Icon(Icons.close, color: Colors.black),
+                          ),
+                        ),
+                      ))
+                ],
+              )
+            : _default(),
+      );
+    }
+
+    Widget image2Placeholder(BuildContext context) {
+      return GestureDetector(
+        onTap: () => _isEnabledImage
+            ? showMaterialModalBottomSheet(
+                expand: false,
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (BuildContext context) => SafeArea(
+                    top: false,
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                              leading: const Icon(Icons.photo_camera),
+                              title: const Text('Camera'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image2 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.camera,
+                                          imageQuality: 25);
+
+                                  if (image2 == null) {
+                                    return;
+                                  }
+
+                                  final File imageTemporary = File(image2.path);
+                                  setState(() {
+                                    this.image2 = imageTemporary;
+                                    _uploadCount += 1;
+                                  });
+                                } on PlatformException catch (e) {
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                          ListTile(
+                              leading: const Icon(Icons.photo_album),
+                              title: const Text('Photo Gallery'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image2 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.gallery,
+                                          imageQuality: 10);
+                                  if (image2 == null) {
+                                    return;
+                                  }
+
+                                  final File imageTemporary = File(image2.path);
+                                  setState(() {
+                                    this.image2 = imageTemporary;
+                                    _uploadCount += 1;
+                                    _enabledImgHolder2 = true;
+                                  });
+                                } on PlatformException catch (e) {
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                        ],
+                      ),
+                    )))
+            : null,
+        child: image2 != null
+            ? Stack(
+                children: <Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      image2!,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.fitHeight,
+                    ),
+                  ),
+                  Positioned(
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            image2 = null;
+                            _uploadCount -= 1;
+                          });
+                        },
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: CircleAvatar(
+                            radius: 14.r,
+                            backgroundColor: Colors.white,
+                            child: const Icon(Icons.close, color: Colors.black),
+                          ),
+                        ),
+                      ))
+                ],
+              )
+            : _default(),
+      );
+    }
+
+    Widget image3Placeholder(BuildContext context) {
+      return GestureDetector(
+        onTap: () => _isEnabledImage
+            ? showMaterialModalBottomSheet(
+                expand: false,
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (BuildContext context) => SafeArea(
+                    top: false,
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                              leading: const Icon(Icons.photo_camera),
+                              title: const Text('Camera'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image3 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.camera,
+                                          imageQuality: 25);
+
+                                  if (image3 == null) {
+                                    return;
+                                  }
+                                  final File imageTemporary = File(image3.path);
+                                  setState(() {
+                                    this.image3 = imageTemporary;
+                                    _uploadCount += 1;
+                                  });
+                                } on PlatformException catch (e) {
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                          ListTile(
+                              leading: const Icon(Icons.photo_album),
+                              title: const Text('Photo Gallery'),
+                              onTap: () async {
+                                try {
+                                  final XFile? image3 = await ImagePicker()
+                                      .pickImage(
+                                          source: ImageSource.gallery,
+                                          imageQuality: 10);
+
+                                  if (image3 == null) {
+                                    return;
+                                  }
+
+                                  final File imageTemporary = File(image3.path);
+                                  setState(() {
+                                    this.image3 = imageTemporary;
+                                    _uploadCount += 1;
+                                  });
+                                } on PlatformException catch (e) {
+                                  print('Failed to pick image: $e');
+                                }
+                                Navigator.of(context).pop();
+                              }),
+                        ],
+                      ),
+                    )))
+            : null,
+        child: image3 != null
+            ? Stack(
+                children: <Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      image3!,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.fitHeight,
+                    ),
+                  ),
+                  Positioned(
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            image3 = null;
+                            _uploadCount -= 1;
+                          });
+                        },
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: CircleAvatar(
+                            radius: 14.r,
+                            backgroundColor: Colors.white,
+                            child: const Icon(Icons.close, color: Colors.black),
+                          ),
+                        ),
+                      ))
+                ],
+              )
+            : _default(),
+      );
+    }
+
+    Stack _presetDefault1() {
+      return Stack(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.memory(
+              base64.decode(screenArguments['image_list'][0].split(',').last),
+              fit: BoxFit.cover,
+              gaplessPlayback: true,
+              width: 100,
+              height: 100,
+            ),
+          ),
+          Positioned(
+              right: 0,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (_isEnabledImage) {
+                      image1 = null;
+                      _uploadCount -= 1;
+                      _didClickedImage1 = true;
+                      img1Id = screenArguments['image_id_list'][0];
+                    }
+                  });
+                },
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: CircleAvatar(
+                    radius: 14.r,
+                    backgroundColor: Colors.white,
+                    child: const Icon(Icons.close, color: Colors.black),
+                  ),
+                ),
+              ))
+        ],
+      );
+    }
+
+    Stack _presetDefault2() {
+      return Stack(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.memory(
+              base64.decode(screenArguments['image_list'][1].split(',').last),
+              fit: BoxFit.cover,
+              gaplessPlayback: true,
+              width: 100,
+              height: 100,
+            ),
+          ),
+          Positioned(
+              right: 0,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (_isEnabledImage) {
+                      image2 = null;
+                      _uploadCount -= 1;
+                      _didClickedImage2 = true;
+                      img2Id = screenArguments['image_id_list'][1];
+                    }
+                  });
+                },
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: CircleAvatar(
+                    radius: 14.r,
+                    backgroundColor: Colors.white,
+                    child: const Icon(Icons.close, color: Colors.black),
+                  ),
+                ),
+              ))
+        ],
+      );
+    }
+
+    Stack _presetDefault3() {
+      return Stack(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.memory(
+              base64.decode(screenArguments['image_list'][2].split(',').last),
+              fit: BoxFit.cover,
+              gaplessPlayback: true,
+              width: 100,
+              height: 100,
+            ),
+          ),
+          Positioned(
+              right: 0,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (_isEnabledImage) {
+                      image3 = null;
+                      _uploadCount -= 1;
+                      _didClickedImage3 = true;
+                      img3Id = screenArguments['image_id_list'][2];
+                    }
+                  });
+                },
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: CircleAvatar(
+                    radius: 14.r,
+                    backgroundColor: Colors.white,
+                    child: const Icon(Icons.close, color: Colors.black),
+                  ),
+                ),
+              ))
+        ],
+      );
+    }
+
+    Row _3rowImage() {
+      return Row(
+        children: <Widget>[
+          if (_didClickedImage1)
+            image1Placeholder(context)
+          else
+            _presetDefault1(),
+          if (_didClickedImage2)
+            image2Placeholder(context)
+          else
+            _presetDefault2(),
+          if (_didClickedImage3)
+            image3Placeholder(context)
+          else
+            _presetDefault3(),
+        ],
+      );
+    }
+
+    Row _2rowImage() {
+      return Row(
+        children: <Widget>[
+          if (_didClickedImage1)
+            image1Placeholder(context)
+          else
+            _presetDefault1(),
+          if (_didClickedImage2)
+            image2Placeholder(context)
+          else
+            _presetDefault2(),
+          image3Placeholder(context)
+        ],
+      );
+    }
+
+    Row _1rowImage() {
+      return Row(
+        children: <Widget>[
+          if (_didClickedImage1)
+            image1Placeholder(context)
+          else
+            _presetDefault1(),
+          image2Placeholder(context),
+          image3Placeholder(context)
+        ],
+      );
+    }
+
+    Row _0rowImage() {
+      return Row(
+        children: <Widget>[
+          image1Placeholder(context),
+          image2Placeholder(context),
+          image3Placeholder(context)
+        ],
+      );
+    }
 
     /// Image List card widget
     Card _widgetImagesList() => Card(
@@ -113,47 +676,46 @@ class _OutfitterEditState extends State<OutfitterEdit> {
                         fontWeight: FontWeight.bold,
                       ),
                     )),
-                    Text(
-                      AppTextConstants.edit,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        decoration: TextDecoration.underline,
-                        color: AppColors.primaryGreen,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (_isEnabledImage == false) {
+                            _isEnabledImage = true;
+                          } else {
+                            _isEnabledImage = false;
+                          }
+                        });
+                      },
+                      child: Text(
+                        _isEnabledImage
+                            ? AppTextConstants.done
+                            : AppTextConstants.edit,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          decoration: TextDecoration.underline,
+                          color: AppColors.primaryGreen,
+                        ),
+                        textAlign: TextAlign.right,
                       ),
-                      textAlign: TextAlign.right,
                     ),
                   ],
                 ),
                 subtitle: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     SizedBox(
                       height: 5.h,
                     ),
-                    Text(
-                      AppTextConstants.sampleImage,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        decoration: TextDecoration.underline,
-                        color: AppColors.primaryGreen,
-                      ),
-                      textAlign: TextAlign.right,
-                    ),
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    Text(
-                      AppTextConstants.sampleImage,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        decoration: TextDecoration.underline,
-                        color: AppColors.primaryGreen,
-                      ),
-                      textAlign: TextAlign.right,
-                    ),
+                    Row(
+                      children: <Widget>[
+                        if (screenArguments['image_count'] == 3) _3rowImage(),
+                        if (screenArguments['image_count'] == 2) _2rowImage(),
+                        if (screenArguments['image_count'] == 1) _1rowImage(),
+                        if (screenArguments['image_count'] == 0) _0rowImage(),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -791,7 +1353,7 @@ class _OutfitterEditState extends State<OutfitterEdit> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () async => outfitterEditDetail(),
+            onPressed: () async => _isSubmit ? null : outfitterEditDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -802,10 +1364,13 @@ class _OutfitterEditState extends State<OutfitterEdit> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.post,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.post,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -813,39 +1378,277 @@ class _OutfitterEditState extends State<OutfitterEdit> {
   }
 
   Future<void> outfitterEditDetail() async {
-    final Map<String, dynamic> screenArguments =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    if (_didClickedImage1) {
+      if (image1 == null) {
+        AdvanceSnackBar(message: ErrorMessageConstants.outfitterImageEmpty)
+            .show(context);
+      }
+    } else if (_title.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.titleEmpty).show(context);
+    } else if (_price.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.priceEmpty).show(context);
+    } else if (_productLink.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.productEmpty)
+          .show(context);
+    } else if (_country.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.countryEmpty)
+          .show(context);
+    } else if (_street.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.streetEmpty).show(context);
+    } else if (_city.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.cityEmpty).show(context);
+    } else if (_province.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.provinceEmpty)
+          .show(context);
+    } else if (_postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.postalCodeEmpty)
+          .show(context);
+    } else if (_date.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
+    } else if (_description.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.descriptionEmpty)
+          .show(context);
+    } else {
+      setState(() {
+        _isSubmit = true;
+      });
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-    final String? userId = UserSingleton.instance.user.user!.id;
+      final String? userId = UserSingleton.instance.user.user!.id;
 
-    final Map<String, dynamic> outfitterEditDetails = {
-      'title': _title.text,
-      'price': int.parse(_price.text),
-      'product_link': _productLink.text,
-      'country': _country.text,
-      'address':
-          '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
-      'street': _street.text,
-      'city': _city.text,
-      'province': _province.text,
-      'zip_code': _postalCode.text,
-      'availability_date': _date.text,
-      'description': _description.text
-    };
+      final Map<String, dynamic> outfitterEditDetails = {
+        'title': _title.text,
+        'price': int.parse(_price.text),
+        'product_link': _productLink.text,
+        'country': _country.text,
+        'address':
+            '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
+        'street': _street.text,
+        'city': _city.text,
+        'province': _province.text,
+        'zip_code': _postalCode.text,
+        'availability_date': _date.text,
+        'description': _description.text
+      };
 
-    final dynamic response = await APIServices().request(
-        '${AppAPIPath.outfitterUrl}/${screenArguments['id']}',
-        RequestType.PATCH,
-        needAccessToken: true,
-        data: outfitterEditDetails);
+      final dynamic response = await APIServices().request(
+          '${AppAPIPath.outfitterUrl}/${screenArguments['id']}',
+          RequestType.PATCH,
+          needAccessToken: true,
+          data: outfitterEditDetails);
 
-    await Navigator.pushReplacement(
-        context,
-        MaterialPageRoute<dynamic>(
-            builder: (BuildContext context) => const MainNavigationScreen(
-                  navIndex: 1,
-                  contentIndex: 2,
-                )));
+      _imageUpdate(screenArguments['id'], screenArguments['image_count']);
+
+      await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const MainNavigationScreen(
+                    navIndex: 1,
+                    contentIndex: 2,
+                  )));
+    }
+  }
+
+  void _imageUpdate(String id, int imageCount) {
+    if (imageCount == 3) {
+      _3image(id);
+    }
+    if (imageCount == 2) {
+      _2image(id);
+    }
+    if (imageCount == 1) {
+      _1image(id);
+    }
+    if (imageCount == 0) {
+      _0image(id);
+    }
+  }
+
+  Future<void> _3image(String id) async {
+    if (_didClickedImage3) {
+      if (image3 != null) {
+        final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
+        final String base64Image3 = base64Encode(await image3Bytes);
+        final Map<String, dynamic> img3Details = {
+          'activity_outfitter_id': id,
+          'snapshot_img': base64Image3
+        };
+        final dynamic img3response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img3Id', RequestType.PATCH,
+            needAccessToken: true, data: img3Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img3response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img3Id', RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+    if (_didClickedImage2) {
+      if (image2 != null) {
+        final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
+        final String base64Image2 = base64Encode(await image2Bytes);
+        final Map<String, dynamic> img2Details = {
+          'activity_outfitter_id': id,
+          'snapshot_img': base64Image2
+        };
+        final dynamic img2response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img2Id', RequestType.PATCH,
+            needAccessToken: true, data: img2Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img2response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img2Id', RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+    if (_didClickedImage1) {
+      if (image1 != null) {
+        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+        final String base64Image1 = base64Encode(await image1Bytes);
+        final Map<String, dynamic> img1Details = {
+          'activity_outfitter_id': id,
+          'snapshot_img': base64Image1
+        };
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.PATCH,
+            needAccessToken: true, data: img1Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+  }
+
+  Future<void> _2image(String id) async {
+    if (image3 != null) {
+      final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
+      final String base64Image3 = base64Encode(await image3Bytes);
+      final Map<String, dynamic> img3Details = {
+        'activity_outfitter_id': id,
+        'snapshot_img': base64Image3
+      };
+      final dynamic img3response = await APIServices().request(
+          '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
+          needAccessToken: true, data: img3Details);
+    }
+    if (_didClickedImage2) {
+      if (image2 != null) {
+        final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
+        final String base64Image2 = base64Encode(await image2Bytes);
+        final Map<String, dynamic> img2Details = {
+          'activity_outfitter_id': id,
+          'snapshot_img': base64Image2
+        };
+        final dynamic img2response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img2Id', RequestType.PATCH,
+            needAccessToken: true, data: img2Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img2response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img2Id', RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+    if (_didClickedImage1) {
+      if (image1 != null) {
+        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+        final String base64Image1 = base64Encode(await image1Bytes);
+        final Map<String, dynamic> img1Details = {
+          'activity_outfitter_id': id,
+          'snapshot_img': base64Image1
+        };
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.PATCH,
+            needAccessToken: true, data: img1Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+  }
+
+  Future<void> _1image(String id) async {
+    if (image3 != null) {
+      final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
+      final String base64Image3 = base64Encode(await image3Bytes);
+      final Map<String, dynamic> img3Details = {
+        'activity_outfitter_id': id,
+        'snapshot_img': base64Image3
+      };
+      final dynamic img3response = await APIServices().request(
+          '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
+          needAccessToken: true, data: img3Details);
+    }
+    if (image2 != null) {
+      final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
+      final String base64Image2 = base64Encode(await image2Bytes);
+      final Map<String, dynamic> img2Details = {
+        'activity_outfitter_id': id,
+        'snapshot_img': base64Image2
+      };
+      final dynamic img2response = await APIServices().request(
+          '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
+          needAccessToken: true, data: img2Details);
+    }
+    if (_didClickedImage1) {
+      if (image1 != null) {
+        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+        final String base64Image1 = base64Encode(await image1Bytes);
+        final Map<String, dynamic> img1Details = {
+          'activity_outfitter_id': id,
+          'snapshot_img': base64Image1
+        };
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.PATCH,
+            needAccessToken: true, data: img1Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+  }
+
+  Future<void> _0image(String id) async {
+    if (image3 != null) {
+      final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
+      final String base64Image3 = base64Encode(await image3Bytes);
+      final Map<String, dynamic> img3Details = {
+        'activity_outfitter_id': id,
+        'snapshot_img': base64Image3
+      };
+      final dynamic img3response = await APIServices().request(
+          '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
+          needAccessToken: true, data: img3Details);
+    }
+    if (image2 != null) {
+      final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
+      final String base64Image2 = base64Encode(await image2Bytes);
+      final Map<String, dynamic> img2Details = {
+        'activity_outfitter_id': id,
+        'snapshot_img': base64Image2
+      };
+      final dynamic img2response = await APIServices().request(
+          '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
+          needAccessToken: true, data: img2Details);
+    }
+    if (image1 != null) {
+      final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+      final String base64Image1 = base64Encode(await image1Bytes);
+      final Map<String, dynamic> img1Details = {
+        'activity_outfitter_id': id,
+        'snapshot_img': base64Image1
+      };
+      final dynamic img1response = await APIServices().request(
+          '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
+          needAccessToken: true, data: img1Details);
+    }
   }
 
   Future<void> _showDate(BuildContext context) async {

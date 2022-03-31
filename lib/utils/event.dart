@@ -12,7 +12,7 @@ class EventUtils {
       HomeModel(
           featureName: 'Rowing on Blue Lake.',
           featureImageUrl: 'assets/images/png/event1.png',
-          featureStarRating: 4.9,
+          featureStarRating: 0,
           featureFee: 200,
           featureNumberOfTourists: 5,
           dateRange: '1-9',
@@ -20,7 +20,7 @@ class EventUtils {
       HomeModel(
           featureName: 'Fishing on Blue Tank',
           featureImageUrl: 'assets/images/png/event2.png',
-          featureStarRating: 4.9,
+          featureStarRating: 0,
           featureFee: 100,
           featureNumberOfTourists: 2,
           dateRange: '1-9',

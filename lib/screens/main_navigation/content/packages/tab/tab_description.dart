@@ -276,7 +276,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                   SizedBox(
                     width: 5.w,
                   ),
-                  Text('4.9',
+                  Text('0',
                       style: TextStyle(
                           fontFamily: 'Gilroy',
                           fontSize: 14.sp,

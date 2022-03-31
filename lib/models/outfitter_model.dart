@@ -62,7 +62,7 @@ class OutfitterDetailsModel {
         title = parseJson['title'],
         price = parseJson['price'],
         productLink = parseJson['product_link'],
-        country = parseJson['country'],
+        country = parseJson['country'] ?? '',
         address = parseJson['address'] ?? '',
         street = parseJson['street'] ?? '',
         city = parseJson['city'] ?? '',

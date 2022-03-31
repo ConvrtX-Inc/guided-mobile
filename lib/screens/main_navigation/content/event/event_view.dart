@@ -139,12 +139,15 @@ class _EventViewState extends State<EventView> {
           flexibleSpace: Center(
             child: Stack(
               children: <Widget>[
-                Image.memory(
-                  base64
-                      .decode(screenArguments['snapshot_img'].split(',').last),
-                  fit: BoxFit.cover,
-                  gaplessPlayback: true,
-                ),
+                if (screenArguments['snapshot_img'] != '')
+                  Image.memory(
+                    base64.decode(
+                        screenArguments['snapshot_img'].split(',').last),
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
+                  )
+                else
+                  Container(),
                 FutureBuilder<BadgeModelData>(
                   future: APIServices()
                       .getBadgesModelById(screenArguments['badge_id']),
@@ -649,9 +652,12 @@ class _EventViewState extends State<EventView> {
       'province': screenArguments['province'],
       'zip_code': screenArguments['zip_code'],
       'main_activity': screenArguments['main_activity'],
-      'services': service.join(', '),
-      'sub_activity': subactivity.join(', '),
+      'badge_id': screenArguments['badge_id'],
+      'services': service.join(','),
+      'sub_activity': subactivity,
       'date_format': screenArguments['date_format'],
+      'snapshot_img': screenArguments['snapshot_img'],
+      'image_id': screenArguments['image_id'],
       'is_published': true
     };
 

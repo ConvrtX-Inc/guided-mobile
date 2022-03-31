@@ -179,15 +179,10 @@ class _SettingsContactUsState extends State<SettingsContactUs> {
           AppAPIPath.contactUsUrl, RequestType.POST,
           needAccessToken: true, data: contactUsDetail);
 
-      if (response == 200) {
-        await Navigator.pushReplacement(
-            context,
-            MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => SettingsMain()));
-      } else {
-        AdvanceSnackBar(message: AppTextConstants.anErrorOccurred)
-            .show(context);
-      }
+      await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => SettingsMain()));
     }
   }
 }

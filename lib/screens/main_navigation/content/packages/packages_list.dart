@@ -113,7 +113,7 @@ class _PackageListState extends State<PackageList>
         description: details.description,
         imageUrl: details.coverImg,
         numberOfTourist: details.maxTraveller,
-        starRating: 4.9,
+        starRating: 0,
         fee: double.parse(details.basePrice),
         dateRange: '1-9',
         services: details.services,
