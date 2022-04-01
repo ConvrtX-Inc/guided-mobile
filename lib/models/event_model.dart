@@ -55,15 +55,15 @@ class EventDetailsModel {
   EventDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
         userId = parseJson['user_id'],
-        badgeId = parseJson['badge_id'],
-        title = parseJson['title'],
+        badgeId = parseJson['badge_id'] ?? '',
+        title = parseJson['title'] ?? '',
         freeService = parseJson['free_service'] ?? '',
         mainActivities = parseJson['main_activities'] ?? '',
         subActivities = parseJson['sub_activities'] ?? '',
         country = parseJson['country'] ?? '',
-        address = parseJson['address'],
-        description = parseJson['description'],
-        fee = parseJson['price'],
+        address = parseJson['address'] ?? '',
+        description = parseJson['description'] ?? '',
+        fee = parseJson['price'] ?? '',
         eventDate = DateTime.parse(parseJson['event_date']),
         isPublished = parseJson['is_published'];
 }

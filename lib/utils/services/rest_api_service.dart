@@ -526,7 +526,7 @@ class APIServices {
   //       await http.get(Uri.http(apiBaseUrl, '/api/v1/countries'));*/
   //   final Map<String, dynamic> jsonData = jsonDecode(response.body);
   //   debugPrint('$jsonData - countries');
-  //   final List<dynamic> res = jsonData['response'];
+  //   final List<dynamic> res = jsonData['data'];
   //   final List<CountryModel> countries = <CountryModel>[];
 
   //   for (final dynamic data in res) {

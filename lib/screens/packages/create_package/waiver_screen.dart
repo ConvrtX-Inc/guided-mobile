@@ -83,10 +83,10 @@ class _WaiverScreenState extends State<WaiverScreen> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                if (_isEnabledEdit == false) {
-                                  _isEnabledEdit = true;
-                                } else {
+                                if (_isEnabledEdit) {
                                   _isEnabledEdit = false;
+                                } else {
+                                  _isEnabledEdit = true;
                                 }
                               });
                             },

@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -116,6 +117,10 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
                             BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
                   ),
                   SizedBox(
                     height: 20.h,
@@ -136,6 +141,10 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
                             BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
                   ),
                   SizedBox(
                     height: 20.h,

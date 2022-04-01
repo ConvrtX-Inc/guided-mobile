@@ -6,7 +6,9 @@ import 'dart:typed_data';
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:guided/common/widgets/country_dropdown.dart';
@@ -47,6 +49,17 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   final TextEditingController _description = TextEditingController();
   final TextEditingController _price = TextEditingController();
 
+  final FocusNode _titleFocus = FocusNode();
+  final FocusNode _useCurrentLocationFocus = FocusNode();
+  final FocusNode _countryFocus = FocusNode();
+  final FocusNode _streetFocus = FocusNode();
+  final FocusNode _cityFocus = FocusNode();
+  final FocusNode _provinceFocus = FocusNode();
+  final FocusNode _postalCodeFocus = FocusNode();
+  final FocusNode _dateFocus = FocusNode();
+  final FocusNode _descriptionFocus = FocusNode();
+  final FocusNode _priceFocus = FocusNode();
+
   File? image1;
   File? image2;
   File? image3;
@@ -71,7 +84,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   late CountryModel _countryDropdown;
   bool isLocationBtnClicked = false;
   late Future<BadgeModelData> _loadingData;
-
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   @override
   void initState() {
     super.initState();
@@ -512,107 +525,44 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  HeaderText.headerText(AppTextConstants.advertisement),
-                  SizedBox(
-                    height: 50.h,
-                  ),
-                  Text(
-                    AppTextConstants.uploadImages,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: AppColors.osloGrey),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      image1Placeholder(context),
-                      image2Placeholder(context),
-                      image3Placeholder(context)
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  TextField(
-                    controller: _title,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.title,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+              child: FormBuilder(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    HeaderText.headerText(AppTextConstants.advertisement),
+                    SizedBox(
+                      height: 50.h,
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  Text(
-                    AppTextConstants.addMultipleSubActivities,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: Colors.grey),
-                  ),
-                  SizedBox(height: 15.h),
-                  _subActivityDropdown(width),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  ElevatedButton(
-                    onPressed: () => _getCurrentLocation(),
-                    style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              side: BorderSide(color: AppColors.osloGrey)),
-                        ),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                        elevation: MaterialStateProperty.all<double>(0)),
-                    child: Row(
+                    Text(
+                      AppTextConstants.uploadImages,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: AppColors.osloGrey),
+                    ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        const Icon(
-                          Icons.pin_drop,
-                          color: Colors.black,
-                        ),
-                        if (isLocationBtnClicked)
-                          Text(
-                            AppTextConstants.removeCurrentLocation,
-                            style: const TextStyle(color: Colors.black),
-                          )
-                        else
-                          Text(
-                            AppTextConstants.useCurrentLocation,
-                            style: const TextStyle(color: Colors.black),
-                          )
+                        image1Placeholder(context),
+                        image2Placeholder(context),
+                        image3Placeholder(context)
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  if (isLocationBtnClicked)
-                    TextField(
-                      controller: _country,
-                      readOnly: true,
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    FormBuilderTextField(
+                      controller: _title,
+                      focusNode: _titleFocus,
                       decoration: InputDecoration(
                         contentPadding:
                             EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                        hintText: AppTextConstants.country,
+                        hintText: AppTextConstants.title,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
                         ),
@@ -622,102 +572,68 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                    )
-                  else
-                    DropDownCountry(
-                      value: _countryDropdown,
-                      setCountry: setCountry,
-                      list: listCountry,
+                      name: 'title',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
                     ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  TextField(
-                    controller: _street,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.street,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+                    SizedBox(
+                      height: 20.h,
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Text(
-                      AppTextConstants.streetHint,
-                      style: AppTextStyle.greyStyle,
+                    Text(
+                      AppTextConstants.addMultipleSubActivities,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: Colors.grey),
                     ),
-                  ),
-                  SizedBox(height: 20.h),
-                  TextField(
-                    controller: _city,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.city,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+                    SizedBox(height: 15.h),
+                    _subActivityDropdown(width),
+                    SizedBox(
+                      height: 20.h,
                     ),
-                  ),
-                  SizedBox(height: 20.h),
-                  TextField(
-                    controller: _province,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.provinceHint,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
+                    ElevatedButton(
+                      onPressed: () => _getCurrentLocation(),
+                      style: ButtonStyle(
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.r),
+                                side: BorderSide(color: AppColors.osloGrey)),
+                          ),
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                          elevation: MaterialStateProperty.all<double>(0)),
+                      child: Row(
+                        children: <Widget>[
+                          const Icon(
+                            Icons.pin_drop,
+                            color: Colors.black,
+                          ),
+                          if (isLocationBtnClicked)
+                            Text(
+                              AppTextConstants.removeCurrentLocation,
+                              style: const TextStyle(color: Colors.black),
+                            )
+                          else
+                            Text(
+                              AppTextConstants.useCurrentLocation,
+                              style: const TextStyle(color: Colors.black),
+                            )
+                        ],
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20.h),
-                  TextField(
-                    controller: _postalCode,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.postalCodeHint,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+                    SizedBox(
+                      height: 20.h,
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  GestureDetector(
-                    onTap: () => _showDate(context),
-                    child: AbsorbPointer(
-                      child: TextField(
-                        controller: _date,
+                    if (isLocationBtnClicked)
+                      TextField(
+                        controller: _country,
+                        readOnly: true,
                         decoration: InputDecoration(
                           contentPadding:
                               EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                          hintText: AppTextConstants.date,
+                          hintText: AppTextConstants.country,
                           hintStyle: TextStyle(
                             color: AppColors.grey,
                           ),
@@ -727,54 +643,290 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                 BorderSide(color: Colors.grey, width: 0.2.w),
                           ),
                         ),
+                      )
+                    else
+                      DropDownCountry(
+                        value: _countryDropdown,
+                        setCountry: setCountry,
+                        list: listCountry,
+                      ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    FormBuilderTextField(
+                      controller: _street,
+                      focusNode: _streetFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.street,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                      name: 'street',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
+                    ),
+                    // TextField(
+                    //   controller: _street,
+                    //   decoration: InputDecoration(
+                    //     contentPadding:
+                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                    //     hintText: AppTextConstants.street,
+                    //     hintStyle: TextStyle(
+                    //       color: AppColors.grey,
+                    //     ),
+                    //     enabledBorder: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(14.r),
+                    //       borderSide:
+                    //           BorderSide(color: Colors.grey, width: 0.2.w),
+                    //     ),
+                    //   ),
+                    // ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        AppTextConstants.streetHint,
+                        style: AppTextStyle.greyStyle,
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  TextField(
-                    controller: _description,
-                    maxLines: 10,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.description,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
+                    SizedBox(height: 20.h),
+                    FormBuilderTextField(
+                      controller: _city,
+                      focusNode: _cityFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.city,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
+                      name: 'city',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
+                    ),
+                    // TextField(
+                    //   controller: _city,
+                    //   decoration: InputDecoration(
+                    //     contentPadding:
+                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                    //     hintText: AppTextConstants.city,
+                    //     hintStyle: TextStyle(
+                    //       color: AppColors.grey,
+                    //     ),
+                    //     enabledBorder: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(14.r),
+                    //       borderSide:
+                    //           BorderSide(color: Colors.grey, width: 0.2.w),
+                    //     ),
+                    //   ),
+                    // ),
+                    SizedBox(height: 20.h),
+                    FormBuilderTextField(
+                      controller: _province,
+                      focusNode: _provinceFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.province,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                      name: 'province',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
+                    ),
+                    // TextField(
+                    //   controller: _province,
+                    //   decoration: InputDecoration(
+                    //     contentPadding:
+                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                    //     hintText: AppTextConstants.provinceHint,
+                    //     hintStyle: TextStyle(
+                    //       color: AppColors.grey,
+                    //     ),
+                    //     enabledBorder: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(14.r),
+                    //       borderSide:
+                    //           BorderSide(color: Colors.grey, width: 0.2.w),
+                    //     ),
+                    //   ),
+                    // ),
+                    SizedBox(height: 20.h),
+                    FormBuilderTextField(
+                      controller: _postalCode,
+                      focusNode: _postalCodeFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.postalCode,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                      name: 'postal-code',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
+                    ),
+                    // TextField(
+                    //   controller: _postalCode,
+                    //   decoration: InputDecoration(
+                    //     contentPadding:
+                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                    //     hintText: AppTextConstants.postalCodeHint,
+                    //     hintStyle: TextStyle(
+                    //       color: AppColors.grey,
+                    //     ),
+                    //     enabledBorder: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(14.r),
+                    //       borderSide:
+                    //           BorderSide(color: Colors.grey, width: 0.2.w),
+                    //     ),
+                    //   ),
+                    // ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    GestureDetector(
+                      onTap: () => _showDate(context),
+                      child: AbsorbPointer(
+                        child: TextField(
+                          controller: _date,
+                          decoration: InputDecoration(
+                            contentPadding:
+                                EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                            hintText: AppTextConstants.date,
+                            hintStyle: TextStyle(
+                              color: AppColors.grey,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14.r),
+                              borderSide:
+                                  BorderSide(color: Colors.grey, width: 0.2.w),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  TextField(
-                    controller: _price,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.price,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+                    SizedBox(
+                      height: 20.h,
                     ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.digitsOnly
-                    ],
-                  ),
-                  SizedBox(height: 20.h),
-                ],
+                    FormBuilderTextField(
+                      controller: _description,
+                      focusNode: _descriptionFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.description,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                      name: 'description',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
+                    ),
+                    // TextField(
+                    //   controller: _description,
+                    //   maxLines: 10,
+                    //   decoration: InputDecoration(
+                    //     contentPadding:
+                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                    //     hintText: AppTextConstants.description,
+                    //     hintStyle: TextStyle(
+                    //       color: AppColors.grey,
+                    //     ),
+                    //     enabledBorder: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(14.r),
+                    //       borderSide:
+                    //           BorderSide(color: Colors.grey, width: 0.2.w),
+                    //     ),
+                    //   ),
+                    // ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    FormBuilderTextField(
+                      controller: _price,
+                      focusNode: _priceFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.price,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                      name: 'price',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                    ),
+                    // TextField(
+                    //   controller: _price,
+                    //   decoration: InputDecoration(
+                    //     contentPadding:
+                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                    //     hintText: AppTextConstants.price,
+                    //     hintStyle: TextStyle(
+                    //       color: AppColors.grey,
+                    //     ),
+                    //     enabledBorder: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(14.r),
+                    //       borderSide:
+                    //           BorderSide(color: Colors.grey, width: 0.2.w),
+                    //     ),
+                    //   ),
+                    //   keyboardType: TextInputType.number,
+                    //   inputFormatters: <TextInputFormatter>[
+                    //     FilteringTextInputFormatter.digitsOnly
+                    //   ],
+                    // ),
+                    SizedBox(height: 20.h),
+                  ],
+                ),
               ),
             ),
           ),
@@ -786,7 +938,14 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () async => _isSubmit ? null : advertisementDetail(),
+            onPressed: () {
+              _formKey.currentState?.save();
+              if (_formKey.currentState!.validate()) {
+                _isSubmit ? null : advertisementDetail();
+              } else {
+                print('validation failed');
+              }
+            },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -1342,29 +1501,8 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     if (image1 == null) {
       AdvanceSnackBar(message: ErrorMessageConstants.advertisementImageEmpty)
           .show(context);
-    } else if (_title.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.titleEmpty).show(context);
-    } else if (_country.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.countryEmpty)
-          .show(context);
-    } else if (_street.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.streetEmpty).show(context);
-    } else if (_city.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.cityEmpty).show(context);
-    } else if (_province.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.provinceEmpty)
-          .show(context);
-    } else if (_postalCode.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.postalCodeEmpty)
-          .show(context);
     } else if (_date.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty)
-          .show(context);
-    } else if (_description.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.descriptionEmpty)
-          .show(context);
-    } else if (_price.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.priceEmpty).show(context);
+      AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
     } else if (subActivities1 == null) {
       AdvanceSnackBar(message: ErrorMessageConstants.subActivityEmpty)
           .show(context);
