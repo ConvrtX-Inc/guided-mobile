@@ -15,6 +15,9 @@ class AppAPIPath {
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
 
+  /// Returns facebook url
+  static String facebookLogin = 'api/v1/auth/facebook/login';
+
   /// Returns user Type url
   static String userTpye = 'api/v1/user-types';
 
@@ -79,6 +82,12 @@ class AppAPIPath {
 
   /// Returns activity packages url
   static String activityPackagesUrl = 'api/v1/activity-packages';
+
+  /// Returns closest-activity url
+  static String closestActivity = 'api/v1/activity-packages/closest-activity';
+
+  /// Returns popular guides url
+  static String popularGuides = 'api/v1/nearby-activities/popular-guides-list';
 
   /// Returns activity destination image url
   static String activityDestinationImage =

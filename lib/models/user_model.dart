@@ -38,7 +38,7 @@ class User {
   Null? releaseWaiverData;
   String? userTypeId;
   String? provider;
-  Null? socialId;
+  String? socialId;
   bool? isVerified;
   bool? isOnline;
   String? createdDate;

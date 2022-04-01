@@ -4,6 +4,7 @@ import 'package:guided/screens/auths/splashes/splash.dart';
 
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/dicovery/discovery.dart';
+import 'package:guided/screens/dicovery/discovery_map.dart';
 import 'package:guided/screens/faq/faq.dart';
 
 import 'package:guided/screens/auths/logins/screens/login_screen.dart';
@@ -229,6 +230,9 @@ class RouteGenerator {
       case '/discovery':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const DiscoveryScreen(), settings: settings);
+      case '/discovery_map':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const DiscoveryMapScreen(), settings: settings);
       case '/activities':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ActivitiesScreen(), settings: settings);
