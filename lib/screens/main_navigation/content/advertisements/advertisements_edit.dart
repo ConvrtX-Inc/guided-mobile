@@ -796,10 +796,10 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledImage == false) {
-                            _isEnabledImage = true;
-                          } else {
+                          if (_isEnabledImage) {
                             _isEnabledImage = false;
+                          } else {
+                            _isEnabledImage = true;
                           }
                         });
                       },
@@ -856,10 +856,10 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledTitle == false) {
-                            _isEnabledTitle = true;
-                          } else {
+                          if (_isEnabledTitle) {
                             _isEnabledTitle = false;
+                          } else {
+                            _isEnabledTitle = true;
                           }
                         });
                       },
@@ -921,11 +921,11 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                       GestureDetector(
                         onTap: () {
                           setState(() {
-                            if (_isEnabledSubActivity == false) {
+                            if (_isEnabledSubActivity) {
+                              _isEnabledSubActivity = false;
+                            } else {
                               _isEnabledSubActivity = true;
                               _isSubActivityEdited = true;
-                            } else {
-                              _isEnabledSubActivity = false;
                             }
                           });
                         },
@@ -1113,10 +1113,10 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledPrice == false) {
-                            _isEnabledPrice = true;
-                          } else {
+                          if (_isEnabledPrice) {
                             _isEnabledPrice = false;
+                          } else {
+                            _isEnabledPrice = true;
                           }
                         });
                       },
@@ -1178,10 +1178,10 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledDescription == false) {
-                            _isEnabledDescription = true;
-                          } else {
+                          if (_isEnabledDescription) {
                             _isEnabledDescription = false;
+                          } else {
+                            _isEnabledDescription = true;
                           }
                         });
                       },
@@ -1243,16 +1243,16 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledLocation == false) {
-                            _isEnabledLocation = true;
-                            _isEnabledCountry = true;
-                            _isEnabledStreet = true;
-                            _isEnabledCity = true;
-                          } else {
+                          if (_isEnabledLocation) {
                             _isEnabledLocation = false;
                             _isEnabledCountry = false;
                             _isEnabledStreet = false;
                             _isEnabledCity = false;
+                          } else {
+                            _isEnabledLocation = true;
+                            _isEnabledCountry = true;
+                            _isEnabledStreet = true;
+                            _isEnabledCity = true;
                           }
                         });
                       },
@@ -1344,10 +1344,10 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledProvince == false) {
-                            _isEnabledProvince = true;
-                          } else {
+                          if (_isEnabledProvince) {
                             _isEnabledProvince = false;
+                          } else {
+                            _isEnabledProvince = true;
                           }
                         });
                       },
@@ -1409,10 +1409,10 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledPostalCode == false) {
-                            _isEnabledPostalCode = true;
-                          } else {
+                          if (_isEnabledPostalCode) {
                             _isEnabledPostalCode = false;
+                          } else {
+                            _isEnabledPostalCode = true;
                           }
                         });
                       },
@@ -1474,10 +1474,10 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledDate == false) {
-                            _isEnabledDate = true;
-                          } else {
+                          if (_isEnabledDate) {
                             _isEnabledDate = false;
+                          } else {
+                            _isEnabledDate = true;
                           }
                         });
                       },
@@ -1641,29 +1641,9 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
         AdvanceSnackBar(message: ErrorMessageConstants.eventImageEmpty)
             .show(context);
       }
-    } else if (_title.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.titleEmpty).show(context);
-    } else if (_country.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.countryEmpty)
-          .show(context);
-    } else if (_street.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.streetEmpty).show(context);
-    } else if (_city.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.cityEmpty).show(context);
-    } else if (_province.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.provinceEmpty)
-          .show(context);
-    } else if (_postalCode.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.postalCodeEmpty)
-          .show(context);
     } else if (_date.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.serviceEmpty)
           .show(context);
-    } else if (_description.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.descriptionEmpty)
-          .show(context);
-    } else if (_price.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.priceEmpty).show(context);
     } else {
       setState(() {
         _isSubmit = true;

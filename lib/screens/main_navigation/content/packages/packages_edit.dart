@@ -8,9 +8,7 @@ import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -26,16 +24,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-/// Edit Event Screen
-class EventEdit extends StatefulWidget {
+/// Package Edit Screen
+class PackageEdit extends StatefulWidget {
   /// Constructor
-  const EventEdit({Key? key}) : super(key: key);
+  const PackageEdit({Key? key}) : super(key: key);
 
   @override
-  _EventEditState createState() => _EventEditState();
+  _PackageEditState createState() => _PackageEditState();
 }
 
-class _EventEditState extends State<EventEdit> {
+class _PackageEditState extends State<PackageEdit> {
   bool isChecked = false;
 
   bool _isEnabledTitle = false;
@@ -111,7 +109,7 @@ class _EventEditState extends State<EventEdit> {
   File? image1;
 
   int _uploadCount = 0;
-  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
   @override
   void initState() {
     super.initState();
@@ -1497,9 +1495,6 @@ class _EventEditState extends State<EventEdit> {
                         ),
                       ),
                       style: txtStyle,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
-                      ],
                     )
                   ],
                 ),
@@ -1946,14 +1941,7 @@ class _EventEditState extends State<EventEdit> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () {
-              _formKey.currentState?.save();
-              if (_formKey.currentState!.validate()) {
-                _isSubmit ? null : eventEditDetail();
-              } else {
-                print('validation failed');
-              }
-            },
+            onPressed: () async => _isSubmit ? null : eventEditDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -1992,13 +1980,51 @@ class _EventEditState extends State<EventEdit> {
   }
 
   Future<void> eventEditDetail() async {
-    if (isNewDate && _eventDate.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
+    String subActivity;
+
+    if (_didClickedSubActivity) {
+      subActivity =
+          '${subActivities1.id.toString()},${subActivities2.id.toString()},${subActivities3.id.toString()}';
+    } else {
+      subActivity = _subactivity.text;
+    }
+
+    if (mainActivity == null) {
+      AdvanceSnackBar(message: ErrorMessageConstants.mainActivityEmpty)
+          .show(context);
+    } else if (subActivity == '') {
+      AdvanceSnackBar(message: ErrorMessageConstants.subActivityEmpty)
+          .show(context);
     } else if (_didClickedImage) {
       if (image1 == null) {
         AdvanceSnackBar(message: ErrorMessageConstants.eventImageEmpty)
             .show(context);
       }
+    } else if (_title.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.titleEmpty).show(context);
+    } else if (_price.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.priceEmpty).show(context);
+    } else if (_country.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.countryEmpty)
+          .show(context);
+    } else if (_street.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.streetEmpty).show(context);
+    } else if (_city.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.cityEmpty).show(context);
+    } else if (_province.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.provinceEmpty)
+          .show(context);
+    } else if (_postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.postalCodeEmpty)
+          .show(context);
+    } else if (isNewDate && _eventDate.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
+    } else if (_description.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.descriptionEmpty)
+          .show(context);
+    } else if (_services.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.serviceEmpty)
+          .show(context);
     } else {
       setState(() {
         _isSubmit = true;

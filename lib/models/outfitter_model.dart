@@ -59,9 +59,9 @@ class OutfitterDetailsModel {
   OutfitterDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
         userId = parseJson['user_id'],
-        title = parseJson['title'],
-        price = parseJson['price'],
-        productLink = parseJson['product_link'],
+        title = parseJson['title'] ?? '',
+        price = parseJson['price'] ?? '',
+        productLink = parseJson['product_link'] ?? '',
         country = parseJson['country'] ?? '',
         address = parseJson['address'] ?? '',
         street = parseJson['street'] ?? '',
@@ -69,7 +69,7 @@ class OutfitterDetailsModel {
         province = parseJson['province'] ?? '',
         zipCode = parseJson['zip_code'] ?? '',
         availabilityDate = DateTime.parse(parseJson['availability_date']),
-        description = parseJson['description'],
+        description = parseJson['description'] ?? '',
         isPublished = parseJson['is_published'],
         createdDate = DateTime.parse(parseJson['created_date']);
 }
