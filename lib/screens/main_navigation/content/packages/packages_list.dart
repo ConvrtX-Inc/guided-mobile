@@ -117,6 +117,9 @@ class _PackageListState extends State<PackageList>
         fee: double.parse(details.basePrice),
         dateRange: '1-9',
         services: details.services,
+        country: details.country,
+        address: details.address,
+        extraCost: details.extraCostPerPerson,
         isPublished: details.isPublished,
       );
 }
