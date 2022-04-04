@@ -1758,19 +1758,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     );
   }
 
-  Future<void> saveImage(String packageId, String imageId) async {
-    final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-    final String base64Image1 = base64Encode(await image1Bytes);
-
-    final Map<String, dynamic> image = {
-      'activity_event_id': packageId,
-      'snapshot_img': base64Image1
-    };
-
-    await APIServices().request(AppAPIPath.eventImageUrl, RequestType.POST,
-        needAccessToken: true, data: image);
-  }
-
   Future<void> packageDetail() async {
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
@@ -1783,13 +1770,13 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       _isSubmit = true;
     });
 
-    if (_isEnabledMainActivity) {
+    if (_isMainActivityEdited) {
       mainBadge = mainActivity;
     } else {
       mainBadge = preMainActivity;
     }
 
-    if (_isEnabledSubActivity) {
+    if (_isSubActivityEdited) {
       subBadges = '${subActivities1.id},${subActivities2.id},${subActivities3.id}';
     } else {
       subBadges =
