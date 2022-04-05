@@ -199,10 +199,13 @@ class _EventEditState extends State<EventEdit> {
                     height: 100.h,
                   )
                 else
-                  SizedBox(
-                    width: 160.w,
-                    height: 100.h,
-                    child: _choicesMainActivity(mainActivity),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: SizedBox(
+                      width: 160.w,
+                      height: 100.h,
+                      child: _choicesMainActivity(mainActivity),
+                    ),
                   ),
                 SizedBox(
                   width: 110.w,
@@ -257,10 +260,13 @@ class _EventEditState extends State<EventEdit> {
                         children: List.generate(length, (int index) {
                           final BadgeDetailsModel badgeDetails =
                               badgeData.badgeDetails[index];
-                          return SizedBox(
-                            height: 10.h,
-                            width: 100.w,
-                            child: _choicesMainActivity(badgeDetails),
+                          return Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: SizedBox(
+                              height: 10.h,
+                              width: 100.w,
+                              child: _choicesMainActivity(badgeDetails),
+                            ),
                           );
                         }),
                       );
@@ -308,7 +314,7 @@ class _EventEditState extends State<EventEdit> {
               borderRadius: BorderRadius.circular(16.r),
             ),
             // width: width,
-            height: 130.w,
+            height: 130.h,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
@@ -316,26 +322,28 @@ class _EventEditState extends State<EventEdit> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Align(
-                      child: SizedBox(
-                        width: 340,
-                        height: 50.h,
-                        child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: <Widget>[
-                              if (subActivities1 == null)
-                                SizedBox(
-                                  height: 100.h,
-                                )
-                              else
-                                _chosenSubActivities1(subActivities1),
-                              if (subActivities2 == null)
-                                SizedBox(
-                                  height: 100.h,
-                                )
-                              else
-                                _chosenSubActivities2(subActivities2),
-                            ]),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: SizedBox(
+                          height: 50.h,
+                          child: ListView(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              children: <Widget>[
+                                if (subActivities1 == null)
+                                  SizedBox(
+                                    height: 100.h,
+                                  )
+                                else
+                                  _chosenSubActivities1(subActivities1),
+                                if (subActivities2 == null)
+                                  SizedBox(
+                                    height: 100.h,
+                                  )
+                                else
+                                  _chosenSubActivities2(subActivities2),
+                              ]),
+                        ),
                       ),
                     ),
                   ],
@@ -424,7 +432,16 @@ class _EventEditState extends State<EventEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -464,16 +481,6 @@ class _EventEditState extends State<EventEdit> {
                       ),
                     ],
                   ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -509,7 +516,16 @@ class _EventEditState extends State<EventEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -542,16 +558,6 @@ class _EventEditState extends State<EventEdit> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -589,7 +595,16 @@ class _EventEditState extends State<EventEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -617,16 +632,6 @@ class _EventEditState extends State<EventEdit> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -1946,14 +1951,7 @@ class _EventEditState extends State<EventEdit> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () {
-              _formKey.currentState?.save();
-              if (_formKey.currentState!.validate()) {
-                _isSubmit ? null : eventEditDetail();
-              } else {
-                print('validation failed');
-              }
-            },
+            onPressed: eventEditDetail,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -1998,60 +1996,60 @@ class _EventEditState extends State<EventEdit> {
       if (image1 == null) {
         AdvanceSnackBar(message: ErrorMessageConstants.eventImageEmpty)
             .show(context);
-      }
-    } else {
-      setState(() {
-        _isSubmit = true;
-      });
-      final Map<String, dynamic> screenArguments =
-          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-      final String? userId = UserSingleton.instance.user.user!.id;
-
-      String subActivity;
-
-      if (_didClickedSubActivity) {
-        subActivity =
-            '${subActivities1.id.toString()},${subActivities2.id.toString()},${subActivities3.id.toString()}';
       } else {
-        subActivity = _subactivity.text;
-      }
+        setState(() {
+          _isSubmit = true;
+        });
+        final Map<String, dynamic> screenArguments =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+        final String? userId = UserSingleton.instance.user.user!.id;
 
-      final Map<String, dynamic> eventEditDetails = {
-        'user_id': userId,
-        'badge_id': mainActivity.id,
-        'title': _title.text,
-        'free_service': _services.text,
-        'main_activities': mainActivity.name,
-        'sub_activities': subActivity,
-        'country': _country.text,
-        'address':
-            '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
-        'description': _description.text,
-        'price': int.parse(_price.text),
-        'event_date':
-            isNewDate ? _eventDate.text : screenArguments['date_format'],
-        'is_published': true,
-      };
+        String subActivity;
 
-      final dynamic response = await APIServices().request(
-          '${AppAPIPath.activityEventUrl}/${screenArguments['id']}',
-          RequestType.PATCH,
-          needAccessToken: true,
-          data: eventEditDetails);
-
-      if (_didClickedImage) {
-        if (image1 != null) {
-          await saveImage(screenArguments['id'], screenArguments['image_id']);
+        if (_didClickedSubActivity) {
+          subActivity =
+              '${subActivities1.id.toString()},${subActivities2.id.toString()},${subActivities3.id.toString()}';
+        } else {
+          subActivity = _subactivity.text;
         }
-      }
 
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
-                    navIndex: 1,
-                    contentIndex: 1,
-                  )));
+        final Map<String, dynamic> eventEditDetails = {
+          'user_id': userId,
+          'badge_id': mainActivity.id,
+          'title': _title.text,
+          'free_service': _services.text,
+          'main_activities': mainActivity.name,
+          'sub_activities': subActivity,
+          'country': _country.text,
+          'address':
+              '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
+          'description': _description.text,
+          'price': int.parse(_price.text),
+          'event_date':
+              isNewDate ? _eventDate.text : screenArguments['date_format'],
+          'is_published': true,
+        };
+
+        final dynamic response = await APIServices().request(
+            '${AppAPIPath.activityEventUrl}/${screenArguments['id']}',
+            RequestType.PATCH,
+            needAccessToken: true,
+            data: eventEditDetails);
+
+        if (_didClickedImage) {
+          if (image1 != null) {
+            await saveImage(screenArguments['id'], screenArguments['image_id']);
+          }
+        }
+
+        await Navigator.pushReplacement(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => const MainNavigationScreen(
+                      navIndex: 1,
+                      contentIndex: 1,
+                    )));
+      }
     }
   }
 

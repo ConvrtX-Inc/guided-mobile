@@ -3,10 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/hourly_item.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Set Booking Date Screen
@@ -19,9 +22,13 @@ class SetBookingDateScreen extends StatefulWidget {
 }
 
 class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
+  late DateTime _preSelectedDay = DateTime.now();
+  late DateTime _prefocusedDay = DateTime.now();
   late DateTime _selectedDay = DateTime.now();
   late DateTime _focusedDay = DateTime.now();
+
   bool isRefreshing = false;
+  bool _didPickedDate = false;
 
   late List<bool> _isChecked;
   late List<int> _value;
@@ -39,6 +46,12 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    _preSelectedDay = screenArguments['selected_date'];
+    _prefocusedDay = screenArguments['selected_date'];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -87,7 +100,9 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                         onPrimary: Colors.white,
                       ),
                       child: Text(
-                        '${_selectedDay.day}/${AppListConstants.calendarMonths.elementAt(_selectedDay.month - 1)}/ ${_selectedDay.year}', // Just an example
+                        _didPickedDate
+                            ? '${_selectedDay.day}/${AppListConstants.calendarMonths.elementAt(_selectedDay.month - 1)}/ ${_selectedDay.year}'
+                            : '${_preSelectedDay.day}/${AppListConstants.calendarMonths.elementAt(_preSelectedDay.month - 1)}/ ${_preSelectedDay.year}',
                         style: TextStyle(
                           fontSize: 14.sp,
                           color: AppColors.primaryGreen,
@@ -111,7 +126,8 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                         ),
                         onTap: () {
                           setState(() {
-                            _focusedDay = _focusedDay.subtract(Duration(days: 7));
+                            _focusedDay =
+                                _focusedDay.subtract(Duration(days: 7));
                           });
                         },
                       ),
@@ -124,6 +140,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                                 _selectedDay = selectedDay;
                                 _focusedDay = focusedDay;
                                 isRefreshing = true;
+                                _didPickedDate = true;
                               });
 
                               Future.delayed(const Duration(milliseconds: 100),
@@ -135,7 +152,8 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                             });
                           },
                           calendarFormat: CalendarFormat.week,
-                          currentDay: _selectedDay,
+                          currentDay:
+                              _didPickedDate ? _selectedDay : _preSelectedDay,
                           headerVisible: false,
                           headerStyle: const HeaderStyle(
                             formatButtonVisible: false,
@@ -143,7 +161,8 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                           daysOfWeekVisible: false,
                           firstDay: DateTime.utc(2010, 10, 16),
                           lastDay: DateTime.utc(2030, 3, 14),
-                          focusedDay: _focusedDay,
+                          focusedDay:
+                              _didPickedDate ? _focusedDay : _prefocusedDay,
                           calendarStyle: CalendarStyle(
                             todayDecoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -155,18 +174,19 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                           ),
                         ),
                       ),
-                      InkWell( // inkwell color
-                          child: const Icon(
-                            Icons.arrow_forward_ios_sharp,
-                            color: Colors.grey,
-                            size: 20,
-                          ),
-                          onTap: () {
-                            setState(() {
+                      InkWell(
+                        // inkwell color
+                        child: const Icon(
+                          Icons.arrow_forward_ios_sharp,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
+                        onTap: () {
+                          setState(() {
                             _focusedDay = _focusedDay.add(Duration(days: 7));
                           });
-                          },
-                        ),
+                        },
+                      ),
                     ],
                   ),
                   SizedBox(
@@ -196,9 +216,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () {
-              // Navigator.of(context).pushNamed('/guide_rule');
-            },
+            onPressed: setBookingDates,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -217,6 +235,41 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> setBookingDates() async {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    final Map<String, dynamic> availabilityDateDetails = {
+      'activity_package_id': screenArguments['id'],
+      'availability_date': '',
+      'slots': 0,
+    };
+
+    final dynamic response = await APIServices().request(
+        AppAPIPath.createSlotAvailability, RequestType.POST,
+        needAccessToken: true, data: availabilityDateDetails);
+
+    final String activityAvailabilityId = response['id'];
+
+    final Map<String, dynamic> availabilityDateHourDetails = {
+      'activity_availability_id': activityAvailabilityId,
+      'availability_date_hour': '',
+      'slots': 0,
+    };
+
+    final dynamic response1 = await APIServices().request(
+        AppAPIPath.createSlotAvailabilityHour, RequestType.POST,
+        needAccessToken: true, data: availabilityDateHourDetails);
+
+    await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => const MainNavigationScreen(
+                  navIndex: 1,
+                  contentIndex: 0,
+                )));
   }
 
   @override
