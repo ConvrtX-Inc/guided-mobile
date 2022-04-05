@@ -24,6 +24,7 @@ import 'package:guided/screens/main_navigation/content/event/event_add.dart';
 import 'package:guided/screens/main_navigation/content/event/event_edit.dart';
 import 'package:guided/screens/main_navigation/content/event/event_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/package_view.dart';
+import 'package:guided/screens/main_navigation/content/packages/packages_edit.dart';
 import 'package:guided/screens/main_navigation/traveller/check_availability/check_availability.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_view.dart';
@@ -116,8 +117,8 @@ class RouteGenerator {
             builder: (_) => const CalendarAvailabilityScreen());
       case '/set_booking_date':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const SetBookingDateScreen());
-      case '/guide_rule':
+            builder: (_) => const SetBookingDateScreen(), settings: settings);
+      case '/guide_rule': 
         return MaterialPageRoute<dynamic>(
             builder: (_) => const GuideRulesScreen(), settings: settings);
       case '/advertisement_view':
@@ -273,6 +274,9 @@ class RouteGenerator {
             builder: (_) => const AvailabilityBookingDateScreen());
       case '/':
         return MaterialPageRoute<dynamic>(builder: (_) => const Splash());
+      case '/package_edit':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PackageEdit(), settings: settings);
       default:
         return _errorRoute();
     }

@@ -1,10 +1,8 @@
-// ignore_for_file: unnecessary_raw_strings, always_specify_types, curly_braces_in_flow_control_structures, cast_nullable_to_non_nullable, avoid_dynamic_calls
-
+// ignore_for_file: file_names, cast_nullable_to_non_nullable, unused_local_variable, avoid_dynamic_calls, always_specify_types
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,81 +14,86 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/user_model.dart';
-import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
-import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-/// Edit Advertisement Screen
-class AdvertisementEdit extends StatefulWidget {
+/// Package Summary Screen
+class PackageEdit extends StatefulWidget {
   /// Constructor
-  const AdvertisementEdit({Key? key}) : super(key: key);
+  const PackageEdit({Key? key}) : super(key: key);
 
   @override
-  _AdvertisementEditState createState() => _AdvertisementEditState();
+  _PackageEditState createState() => _PackageEditState();
 }
 
-class _AdvertisementEditState extends State<AdvertisementEdit> {
+class _PackageEditState extends State<PackageEdit> {
   bool isChecked = false;
-
-  bool _isEnabledTitle = false;
-  bool _isEnabledLocation = false;
+  bool _isSubmit = false;
+  bool _isEnabledMainActivity = false;
+  bool _isEnabledSubActivity = false;
+  bool showMainActivityChoices = false;
+  bool showSubActivityChoices = false;
+  bool _isMainActivityEdited = false;
+  bool _isSubActivityEdited = false;
+  bool _didClickedSubActivity = false;
+  bool showLimitNote = false;
+  bool _isEnabledNumberofTraveler = false;
   bool _isEnabledCountry = false;
   bool _isEnabledStreet = false;
   bool _isEnabledCity = false;
   bool _isEnabledProvince = false;
   bool _isEnabledPostalCode = false;
-  bool _isEnabledDate = false;
-  bool _isEnabledDescription = false;
-  bool _isEnabledPrice = false;
+  bool _isEnabledServices = false;
   bool _isEnabledImage = false;
+  bool _isBasePrice = false;
   bool _didClickedImage = false;
-  bool _isSubmit = false;
-  bool _isEnabledSubActivity = false;
-  bool _isSubActivityEdited = false;
-  bool showSubActivityChoices = false;
-  bool _didClickedSubActivity = false;
-  bool showLimitNote = false;
+  bool _isEnabledLocation = false;
+  bool _isEnabledPackageDescription = false;
 
-  TextEditingController _title = TextEditingController();
-  TextEditingController _country = TextEditingController();
-  TextEditingController _street = TextEditingController();
-  TextEditingController _city = TextEditingController();
-  TextEditingController _province = TextEditingController();
-  TextEditingController _postalCode = TextEditingController();
-  TextEditingController _date = TextEditingController();
-  TextEditingController _description = TextEditingController();
-  TextEditingController _price = TextEditingController();
-  TextEditingController _activities = TextEditingController();
+  dynamic mainActivity;
+  dynamic subActivities1;
+  dynamic subActivities2;
+  dynamic subActivities3;
 
-  final FocusNode _titleFocus = FocusNode();
+  dynamic preMainActivity;
+
+  String mainActivityTitle = '';
+  String subActivities1Txt = '';
+  String subActivities2Txt = '';
+  String subActivities3Txt = '';
+  File? image1;
+  int count = 0;
+  int _uploadCount = 0;
+  late Future<BadgeModelData> _loadingData;
+
+  final FocusNode _packageNameFocus = FocusNode();
+  final FocusNode _descriptionFocus = FocusNode();
+  final FocusNode _numberTravelerFocus = FocusNode();
   final FocusNode _countryFocus = FocusNode();
   final FocusNode _streetFocus = FocusNode();
   final FocusNode _cityFocus = FocusNode();
   final FocusNode _provinceFocus = FocusNode();
   final FocusNode _postalCodeFocus = FocusNode();
-  final FocusNode _dateFocus = FocusNode();
-  final FocusNode _descriptionFocus = FocusNode();
+  final FocusNode _servicesFocus = FocusNode();
   final FocusNode _priceFocus = FocusNode();
-  final FocusNode _activitiesFocus = FocusNode();
-  DateTime _selectedDate = DateTime.now();
+  final FocusNode _extraCostFocus = FocusNode();
   final TextStyle txtStyle = TextStyle(fontSize: 14.sp, fontFamily: 'Poppins');
+  late List<String> subActivityId;
 
-  File? image1;
+  TextEditingController _packageName = TextEditingController();
+  TextEditingController _description = TextEditingController();
+  TextEditingController _numberTraveler = TextEditingController();
+  TextEditingController _country = TextEditingController();
+  TextEditingController _street = TextEditingController();
+  TextEditingController _city = TextEditingController();
+  TextEditingController _province = TextEditingController();
+  TextEditingController _postalCode = TextEditingController();
+  TextEditingController _services = TextEditingController();
+  TextEditingController _price = TextEditingController();
+  TextEditingController _extraCost = TextEditingController();
 
-  int _uploadCount = 0;
-  int count = 0;
-  dynamic subActivities1;
-  dynamic subActivities2;
-  dynamic subActivities3;
-  String subActivities1Txt = '';
-  String subActivities2Txt = '';
-  String subActivities3Txt = '';
-
-  late Future<BadgeModelData> _loadingData;
   @override
   void initState() {
     super.initState();
@@ -99,27 +102,163 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-      final String removedDollar =
-          screenArguments['price'].toString().substring(0);
-      final String removedDecimal =
-          removedDollar.substring(0, removedDollar.indexOf('.'));
-      final String price = removedDecimal.replaceAll(RegExp(r'[,]'), '');
-
-      _title = TextEditingController(text: screenArguments['title']);
-      _price = TextEditingController(text: price);
+      _packageName = TextEditingController(text: screenArguments['name']);
       _description =
           TextEditingController(text: screenArguments['description']);
+      _numberTraveler = TextEditingController(
+          text: screenArguments['number_of_tourist'].toString());
       _country = TextEditingController(text: screenArguments['country']);
-      _street = TextEditingController(text: screenArguments['street']);
-      _city = TextEditingController(text: screenArguments['city']);
-      _province = TextEditingController(text: screenArguments['province']);
-      _postalCode = TextEditingController(text: screenArguments['zip_code']);
-      _date = TextEditingController(
-          text: screenArguments['availability_date'].toString());
-      _activities =
-          TextEditingController(text: screenArguments['activities'].join(','));
+      _street = TextEditingController(text: screenArguments['address'][0]);
+      _city = TextEditingController(text: screenArguments['address'][1]);
+      _province = TextEditingController(text: screenArguments['address'][2]);
+      _postalCode = TextEditingController(text: screenArguments['address'][3]);
+      _services = TextEditingController(text: screenArguments['services']);
+      _price = TextEditingController(text: screenArguments['fee'].toString());
+      _extraCost = TextEditingController(text: screenArguments['extra_cost']);
     });
     _loadingData = APIServices().getBadgesModel();
+  }
+
+  ListTile _choicesMainActivity(BadgeDetailsModel badges) {
+    return ListTile(
+      onTap: () {
+        setState(() {
+          mainActivity = badges;
+          showMainActivityChoices = false;
+          mainActivityTitle = badges.name;
+          subActivities1 = null;
+          subActivities2 = null;
+          subActivities3 = null;
+          subActivities1Txt = '';
+          subActivities2Txt = '';
+          subActivities3Txt = '';
+          count = 0;
+          _isMainActivityEdited = true;
+        });
+      },
+      minLeadingWidth: 20,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
+      ),
+      title: Text(badges.name),
+    );
+  }
+
+  Column _mainActivityDropdown(double width) {
+    return Column(
+      children: <Widget>[
+        InkWell(
+          onTap: () {
+            setState(() {
+              if (showMainActivityChoices) {
+                showMainActivityChoices = false;
+              } else {
+                showMainActivityChoices = true;
+              }
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              border: Border.all(
+                color: Color.fromARGB(255, 100, 17, 17),
+                width: 1.w,
+              ),
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            width: width,
+            height: 65.h,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                if (mainActivity == null)
+                  SizedBox(
+                    width: 150.w,
+                    height: 100.h,
+                  )
+                else
+                  SizedBox(
+                    width: 140.w,
+                    height: 100.h,
+                    child: _choicesMainActivity(mainActivity),
+                  ),
+                SizedBox(
+                  width: 90.w,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          mainActivity = null;
+                          subActivities1 = null;
+                          subActivities2 = null;
+                          subActivities3 = null;
+                          mainActivityTitle = '';
+                          subActivities1Txt = '';
+                          subActivities2Txt = '';
+                          subActivities3Txt = '';
+                          count = 0;
+                        });
+                      },
+                      child: mainActivity == null
+                          ? const Icon(
+                              Icons.arrow_drop_down_outlined,
+                            )
+                          : const Icon(Icons.close_rounded)),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (showMainActivityChoices)
+          Material(
+            elevation: 5,
+            borderRadius: BorderRadius.circular(12.r),
+            child: SizedBox(
+              height: 200.h,
+              width: width,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
+                child: FutureBuilder<BadgeModelData>(
+                  future: _loadingData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasData) {
+                      final BadgeModelData badgeData = snapshot.data;
+                      final int length = badgeData.badgeDetails.length;
+                      return GridView.count(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        crossAxisCount: 2,
+                        childAspectRatio: 2.5,
+                        children: List.generate(length, (int index) {
+                          final BadgeDetailsModel badgeDetails =
+                              badgeData.badgeDetails[index];
+                          return SizedBox(
+                            height: 10.h,
+                            width: 100.w,
+                            child: _choicesMainActivity(badgeDetails),
+                          );
+                        }),
+                      );
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Container();
+                  },
+                ),
+              ),
+            ),
+          )
+        else
+          const SizedBox(),
+      ],
+    );
   }
 
   Column _subActivityDropdown(double width) {
@@ -157,6 +296,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                   children: <Widget>[
                     Align(
                       child: SizedBox(
+                        width: 320,
                         height: 50.h,
                         child: ListView(
                             shrinkWrap: true,
@@ -263,16 +403,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
-                        child: Image.memory(
-                        base64.decode(badges.imgIcon.split(',').last),
-                        gaplessPlayback: true,
-                        width: 20,
-                        height: 20,
-                                          ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -312,6 +443,16 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                       ),
                     ],
                   ),
+                  Positioned(
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -347,16 +488,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
-                        child: Image.memory(
-                        base64.decode(badges.imgIcon.split(',').last),
-                        gaplessPlayback: true,
-                        width: 20,
-                        height: 20,
-                    ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -390,6 +522,16 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                       ),
                     ],
                   ),
+                  Positioned(
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -413,7 +555,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
           },
           child: Container(
             height: 40.h,
-            width: 140.w,
+            width: 110.w,
             decoration: BoxDecoration(
                 color: AppColors.platinum.withOpacity(0.8),
                 border: Border.all(
@@ -426,16 +568,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
-                        child: Image.memory(
-                        base64.decode(badges.imgIcon.split(',').last),
-                        gaplessPlayback: true,
-                        width: 20,
-                        height: 20,
-                    ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -463,6 +596,16 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                             )),
                       ),
                     ],
+                  ),
+                  Positioned(
+                    left: 10.w,
+                    bottom: 3.h,
+                    child: Image.memory(
+                      base64.decode(badges.imgIcon.split(',').last),
+                      gaplessPlayback: true,
+                      width: 20,
+                      height: 20,
+                    ),
                   ),
                 ],
               ),
@@ -630,13 +773,17 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
+    late List<String> splitAddress;
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    splitAddress = screenArguments['address'];
 
+    preMainActivity = screenArguments['main_badge_id'];
+    subActivityId = screenArguments['sub_badge_id'];
     Widget image1Placeholder(BuildContext context) {
       return GestureDetector(
         onTap: () {
-          if (_isEnabledImage && _didClickedImage) {
+          if (_isEnabledImage) {
             showMaterialModalBottomSheet(
                 expand: false,
                 context: context,
@@ -742,7 +889,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: Image.memory(
-              base64.decode(screenArguments['snapshot_img'].split(',').last),
+              base64.decode(screenArguments['image_url'].split(',').last),
               fit: BoxFit.cover,
               gaplessPlayback: true,
               width: 100,
@@ -774,8 +921,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
       );
     }
 
-    /// Image List card widget
-    Card _widgetImagesList() => Card(
+    Card _widgetActivity() => Card(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -784,7 +930,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                   children: <Widget>[
                     Expanded(
                         child: Text(
-                      AppTextConstants.images,
+                      AppTextConstants.activity,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -792,15 +938,17 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledImage) {
-                            _isEnabledImage = false;
+                          if (_isEnabledMainActivity) {
+                            _isEnabledMainActivity = false;
+                            showMainActivityChoices = false;
                           } else {
-                            _isEnabledImage = true;
+                            _isEnabledMainActivity = true;
+                            showMainActivityChoices = true;
                           }
                         });
                       },
                       child: Text(
-                        _isEnabledImage
+                        _isEnabledMainActivity
                             ? AppTextConstants.done
                             : AppTextConstants.edit,
                         style: TextStyle(
@@ -820,78 +968,60 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                     SizedBox(
                       height: 5.h,
                     ),
-                    if (_didClickedImage)
-                      image1Placeholder(context)
+                    if (_isEnabledMainActivity)
+                      _mainActivityDropdown(width)
+                    else if (_isMainActivityEdited && mainActivity != null)
+                      ListTile(
+                        onTap: () {},
+                        minLeadingWidth: 20,
+                        leading: Image.memory(
+                          base64.decode(mainActivity.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 30,
+                          height: 30,
+                        ),
+                        title: Text(mainActivity.name),
+                      )
                     else
-                      _presetDefault(),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-
-    /// Title card widget
-    Card _widgetTitle() => Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                title: Row(
-                  children: <Widget>[
-                    Expanded(
-                        child: Text(
-                      AppTextConstants.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (_isEnabledTitle) {
-                            _isEnabledTitle = false;
-                          } else {
-                            _isEnabledTitle = true;
+                      FutureBuilder<BadgeModelData>(
+                        future: APIServices().getBadgesModelById(
+                            screenArguments['main_badge_id']),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.hasData) {
+                            final BadgeModelData badgeData = snapshot.data;
+                            final int length = badgeData.badgeDetails.length;
+                            return ListTile(
+                              onTap: () {},
+                              minLeadingWidth: 20,
+                              leading: Image.memory(
+                                base64.decode(badgeData.badgeDetails[0].imgIcon
+                                    .split(',')
+                                    .last),
+                                gaplessPlayback: true,
+                                width: 30,
+                                height: 30,
+                              ),
+                              title: Text(badgeData.badgeDetails[0].name),
+                            );
                           }
-                        });
-                      },
-                      child: Text(
-                        _isEnabledTitle
-                            ? AppTextConstants.done
-                            : AppTextConstants.edit,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          decoration: TextDecoration.underline,
-                          color: AppColors.primaryGreen,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    TextField(
-                      enabled: _isEnabledTitle,
-                      controller: _title,
-                      focusNode: _titleFocus,
-                      decoration: InputDecoration(
-                        hintText: screenArguments['title'],
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                      style: txtStyle,
-                    )
+                          if (snapshot.connectionState !=
+                              ConnectionState.done) {
+                            return Padding(
+                              padding: EdgeInsets.only(left: 10.w),
+                              child: Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 140.h,
+                                  ),
+                                  const CircularProgressIndicator(),
+                                ],
+                              ),
+                            );
+                          }
+                          return Container();
+                        },
+                      )
                   ],
                 ),
               ),
@@ -899,7 +1029,6 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
           ),
         );
 
-    /// Activity card widget
     Card _widgetSubActivity() => Card(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1014,15 +1143,13 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                   Expanded(
                                     child: ListView.builder(
                                         scrollDirection: Axis.horizontal,
-                                        itemCount: screenArguments['activities']
-                                            .length,
+                                        itemCount: subActivityId.length,
                                         itemBuilder:
                                             (BuildContext ctx, int index) {
                                           return FutureBuilder<BadgeModelData>(
                                             future: APIServices()
                                                 .getBadgesModelById(
-                                                    screenArguments[
-                                                        'activities'][index]),
+                                                    subActivityId[index]),
                                             builder: (BuildContext context,
                                                 AsyncSnapshot<dynamic>
                                                     snapshot) {
@@ -1083,7 +1210,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                             },
                                           );
                                         }),
-                                  )
+                                  ),
                                 ],
                               ),
                             )),
@@ -1091,471 +1218,515 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
           ),
         );
 
-    /// Price card widget
-    Card _widgetPrice() => Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                title: Row(
-                  children: <Widget>[
-                    Expanded(
-                        child: Text(
-                      AppTextConstants.price,
-                      style: const TextStyle(
+    Card _widgetPackageNameDescription() {
+      return Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Text(
+                    AppTextConstants.packageNameandDescr,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_isEnabledPackageDescription) {
+                          _isEnabledPackageDescription = false;
+                        } else {
+                          _isEnabledPackageDescription = true;
+                        }
+                      });
+                    },
+                    child: Text(
+                      _isEnabledPackageDescription
+                          ? AppTextConstants.done
+                          : AppTextConstants.edit,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        color: AppColors.primaryGreen,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  TextField(
+                    enabled: _isEnabledPackageDescription,
+                    controller: _packageName,
+                    focusNode: _packageNameFocus,
+                    decoration: InputDecoration(
+                      hintText: screenArguments['name'],
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    style: txtStyle,
+                  ),
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  TextField(
+                    enabled: _isEnabledPackageDescription,
+                    controller: _description,
+                    focusNode: _descriptionFocus,
+                    decoration: InputDecoration(
+                      hintText: screenArguments['description'],
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    style: txtStyle,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Card _numberOfTraveler() {
+      return Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Text(
+                    AppTextConstants.numberOfTraveler,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_isEnabledNumberofTraveler) {
+                          _isEnabledNumberofTraveler = false;
+                        } else {
+                          _isEnabledNumberofTraveler = true;
+                        }
+                      });
+                    },
+                    child: Text(
+                      _isEnabledNumberofTraveler
+                          ? AppTextConstants.done
+                          : AppTextConstants.edit,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        color: AppColors.primaryGreen,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  TextField(
+                    enabled: _isEnabledNumberofTraveler,
+                    controller: _numberTraveler,
+                    focusNode: _numberTravelerFocus,
+                    decoration: InputDecoration(
+                      hintText: screenArguments['number_of_tourist'].toString(),
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    style: txtStyle,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Card _currentLocation() {
+      return Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Text(
+                    AppTextConstants.currentLocation,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_isEnabledLocation) {
+                          _isEnabledLocation = false;
+                          _isEnabledCountry = false;
+                          _isEnabledStreet = false;
+                          _isEnabledProvince = false;
+                          _isEnabledCity = false;
+                          _isEnabledPostalCode = false;
+                        } else {
+                          _isEnabledLocation = true;
+                          _isEnabledCountry = true;
+                          _isEnabledStreet = true;
+                          _isEnabledProvince = true;
+                          _isEnabledCity = true;
+                          _isEnabledPostalCode = true;
+                        }
+                      });
+                    },
+                    child: Text(
+                      _isEnabledLocation
+                          ? AppTextConstants.done
+                          : AppTextConstants.edit,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        color: AppColors.primaryGreen,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  TextField(
+                    enabled: _isEnabledCountry,
+                    controller: _country,
+                    focusNode: _countryFocus,
+                    decoration: InputDecoration(
+                      hintText: 'Country: ${screenArguments['country']}',
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    style: txtStyle,
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  TextField(
+                    enabled: _isEnabledStreet,
+                    controller: _street,
+                    focusNode: _streetFocus,
+                    decoration: InputDecoration(
+                      hintText: 'Street: ${splitAddress[0]}',
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    style: txtStyle,
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  TextField(
+                    enabled: _isEnabledProvince,
+                    controller: _province,
+                    focusNode: _provinceFocus,
+                    decoration: InputDecoration(
+                      hintText: 'State/Province: ${splitAddress[1]}',
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    style: txtStyle,
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  TextField(
+                    enabled: _isEnabledCity,
+                    controller: _city,
+                    focusNode: _cityFocus,
+                    decoration: InputDecoration(
+                      hintText: 'City: ${splitAddress[2]}',
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    style: txtStyle,
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  TextField(
+                    enabled: _isEnabledPostalCode,
+                    controller: _postalCode,
+                    focusNode: _postalCodeFocus,
+                    decoration: InputDecoration(
+                      hintText: 'Postal Code: ${splitAddress[3]}',
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    style: txtStyle,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Card _offeredAmenities() {
+      return Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Text(
+                    AppTextConstants.offeredAmenities,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_isEnabledServices) {
+                          _isEnabledServices = false;
+                        } else {
+                          _isEnabledServices = true;
+                        }
+                      });
+                    },
+                    child: Text(
+                      _isEnabledServices
+                          ? AppTextConstants.done
+                          : AppTextConstants.edit,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        color: AppColors.primaryGreen,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  TextField(
+                    enabled: _isEnabledServices,
+                    controller: _services,
+                    focusNode: _servicesFocus,
+                    decoration: InputDecoration(
+                      hintText: screenArguments['services'],
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    style: txtStyle,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Card _attachedPhotos() {
+      return Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Text(
+                    AppTextConstants.attachedPhotos,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_isEnabledImage) {
+                          _isEnabledImage = false;
+                        } else {
+                          _isEnabledImage = true;
+                        }
+                      });
+                    },
+                    child: Text(
+                      _isEnabledImage
+                          ? AppTextConstants.done
+                          : AppTextConstants.edit,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        color: AppColors.primaryGreen,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  if (_didClickedImage)
+                    image1Placeholder(context)
+                  else
+                    _presetDefault(),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Card _basePrice() {
+      return Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Text(
+                    AppTextConstants.basePrice,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_isBasePrice) {
+                          _isBasePrice = false;
+                        } else {
+                          _isBasePrice = true;
+                        }
+                      });
+                    },
+                    child: Text(
+                      _isBasePrice
+                          ? AppTextConstants.done
+                          : AppTextConstants.edit,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        color: AppColors.primaryGreen,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  TextField(
+                    enabled: _isBasePrice,
+                    controller: _price,
+                    focusNode: _priceFocus,
+                    decoration: InputDecoration(
+                      hintText:
+                          '${AppTextConstants.basePrice}: \$${screenArguments['fee'].toString()}',
+                      hintStyle: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
-                    )),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (_isEnabledPrice) {
-                            _isEnabledPrice = false;
-                          } else {
-                            _isEnabledPrice = true;
-                          }
-                        });
-                      },
-                      child: Text(
-                        _isEnabledPrice
-                            ? AppTextConstants.done
-                            : AppTextConstants.edit,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          decoration: TextDecoration.underline,
-                          color: AppColors.primaryGreen,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
                     ),
-                  ],
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    TextField(
-                      enabled: _isEnabledPrice,
-                      controller: _price,
-                      focusNode: _priceFocus,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        hintText: '\$${screenArguments['price']}',
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                      style: txtStyle,
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-
-    /// Description card widget
-    Card _widgetDescription() => Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                title: Row(
-                  children: <Widget>[
-                    Expanded(
-                        child: Text(
-                      AppTextConstants.description,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, height: 1.5),
-                    )),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (_isEnabledDescription) {
-                            _isEnabledDescription = false;
-                          } else {
-                            _isEnabledDescription = true;
-                          }
-                        });
-                      },
-                      child: Text(
-                        _isEnabledDescription
-                            ? AppTextConstants.done
-                            : AppTextConstants.edit,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          decoration: TextDecoration.underline,
-                          color: AppColors.primaryGreen,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    TextField(
-                      enabled: _isEnabledDescription,
-                      controller: _description,
-                      focusNode: _descriptionFocus,
-                      decoration: InputDecoration(
-                        hintText: screenArguments['description'],
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                      style: txtStyle,
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-
-    /// Location card widget
-    Card _widgetLocation() => Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                title: Row(
-                  children: <Widget>[
-                    Expanded(
-                        child: Text(
-                      AppTextConstants.location,
-                      style: const TextStyle(
+                    style: txtStyle,
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  TextField(
+                    enabled: _isBasePrice,
+                    controller: _extraCost,
+                    focusNode: _extraCostFocus,
+                    decoration: InputDecoration(
+                      hintText:
+                          '${AppTextConstants.extraCost}: \$${screenArguments['extra_cost']}',
+                      hintStyle: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
-                    )),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (_isEnabledLocation) {
-                            _isEnabledLocation = false;
-                            _isEnabledCountry = false;
-                            _isEnabledStreet = false;
-                            _isEnabledCity = false;
-                          } else {
-                            _isEnabledLocation = true;
-                            _isEnabledCountry = true;
-                            _isEnabledStreet = true;
-                            _isEnabledCity = true;
-                          }
-                        });
-                      },
-                      child: Text(
-                        _isEnabledLocation
-                            ? AppTextConstants.done
-                            : AppTextConstants.edit,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          decoration: TextDecoration.underline,
-                          color: AppColors.primaryGreen,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
                     ),
-                  ],
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    TextField(
-                      enabled: _isEnabledCountry,
-                      controller: _country,
-                      focusNode: _countryFocus,
-                      decoration: InputDecoration(
-                        hintText: 'Country: ${screenArguments['country']}',
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                      style: txtStyle,
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    TextField(
-                      enabled: _isEnabledStreet,
-                      controller: _street,
-                      focusNode: _streetFocus,
-                      decoration: InputDecoration(
-                        hintText: 'Street: ${screenArguments['street']}',
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                      style: txtStyle,
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    TextField(
-                      enabled: _isEnabledCity,
-                      controller: _city,
-                      focusNode: _cityFocus,
-                      decoration: InputDecoration(
-                        hintText: 'City: ${screenArguments['city']}',
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                      style: txtStyle,
-                    )
-                  ],
-                ),
+                    style: txtStyle,
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-
-    /// Province card widget
-    Card _widgetProvince() => Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                title: Row(
-                  children: <Widget>[
-                    Expanded(
-                        child: Text(
-                      AppTextConstants.province,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (_isEnabledProvince) {
-                            _isEnabledProvince = false;
-                          } else {
-                            _isEnabledProvince = true;
-                          }
-                        });
-                      },
-                      child: Text(
-                        _isEnabledProvince
-                            ? AppTextConstants.done
-                            : AppTextConstants.edit,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          decoration: TextDecoration.underline,
-                          color: AppColors.primaryGreen,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    TextField(
-                      enabled: _isEnabledProvince,
-                      controller: _province,
-                      focusNode: _provinceFocus,
-                      decoration: InputDecoration(
-                        hintText: screenArguments['province'],
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                      style: txtStyle,
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-
-    /// Postal Code card widget
-    Card _widgetPostalCode() => Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                title: Row(
-                  children: <Widget>[
-                    Expanded(
-                        child: Text(
-                      AppTextConstants.postalCode,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (_isEnabledPostalCode) {
-                            _isEnabledPostalCode = false;
-                          } else {
-                            _isEnabledPostalCode = true;
-                          }
-                        });
-                      },
-                      child: Text(
-                        _isEnabledPostalCode
-                            ? AppTextConstants.done
-                            : AppTextConstants.edit,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          decoration: TextDecoration.underline,
-                          color: AppColors.primaryGreen,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    TextField(
-                      enabled: _isEnabledPostalCode,
-                      controller: _postalCode,
-                      focusNode: _postalCodeFocus,
-                      decoration: InputDecoration(
-                        hintText: screenArguments['zip_code'],
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                      style: txtStyle,
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-
-    /// Date card widget
-    Card _widgetDate() => Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                title: Row(
-                  children: <Widget>[
-                    Expanded(
-                        child: Text(
-                      AppTextConstants.date,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (_isEnabledDate) {
-                            _isEnabledDate = false;
-                          } else {
-                            _isEnabledDate = true;
-                          }
-                        });
-                      },
-                      child: Text(
-                        _isEnabledDate
-                            ? AppTextConstants.done
-                            : AppTextConstants.edit,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          decoration: TextDecoration.underline,
-                          color: AppColors.primaryGreen,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    GestureDetector(
-                      onTap: () => _isEnabledDate ? _showDate(context) : null,
-                      child: AbsorbPointer(
-                        child: TextField(
-                          enabled: _isEnabledDate,
-                          keyboardType: TextInputType.datetime,
-                          controller: _date,
-                          focusNode: _dateFocus,
-                          decoration: InputDecoration(
-                            hintText: screenArguments['date'],
-                            hintStyle: TextStyle(
-                              color: Colors.grey.shade800,
-                            ),
-                          ),
-                          style: txtStyle,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
+            ),
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.chevron_left,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         elevation: 0,
-        leading: Transform.scale(
-          scale: 0.8,
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Container(
-              width: 40.w,
-              height: 40.h,
-              padding: EdgeInsets.zero,
-              decoration: BoxDecoration(
-                color: AppColors.harp,
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_sharp,
-                  color: Colors.black,
-                  size: 25,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ),
-        ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-          ),
-        ),
+        backgroundColor: Colors.white,
       ),
       body: SafeArea(
         child: SizedBox(
@@ -1563,24 +1734,27 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
           height: height,
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(10.w, 10.h, 10.w, 10.h),
+              padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  HeaderText.headerText(AppTextConstants.editsummaryTitle),
-                  SizedBox(
-                    height: 30.h,
-                  ),
-                  _widgetImagesList(),
-                  _widgetTitle(),
+                  HeaderText.headerText(AppTextConstants.headerSummary),
+                  SizedBox(height: 30.h),
+                  _widgetActivity(),
+                  SizedBox(height: 15.h),
                   _widgetSubActivity(),
-                  _widgetLocation(),
-                  _widgetProvince(),
-                  _widgetPostalCode(),
-                  _widgetDate(),
-                  _widgetDescription(),
-                  _widgetPrice(),
+                  SizedBox(height: 15.h),
+                  _widgetPackageNameDescription(),
+                  SizedBox(height: 15.h),
+                  _numberOfTraveler(),
+                  SizedBox(height: 15.h),
+                  _currentLocation(),
+                  SizedBox(height: 15.h),
+                  _offeredAmenities(),
+                  SizedBox(height: 15.h),
+                  _attachedPhotos(),
+                  SizedBox(height: 15.h),
+                  _basePrice(),
                 ],
               ),
             ),
@@ -1591,9 +1765,9 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
         padding: const EdgeInsets.all(20),
         child: SizedBox(
           width: width,
-          height: 60.h,
+          height: 60,
           child: ElevatedButton(
-            onPressed: () async => _isSubmit ? null : advertisementEditDetail(),
+            onPressed: () async => _isSubmit ? null : packageDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -1607,7 +1781,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
             child: _isSubmit
                 ? const Center(child: CircularProgressIndicator())
                 : Text(
-                    AppTextConstants.postEvent,
+                    AppTextConstants.submit,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 16),
                   ),
@@ -1617,111 +1791,71 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
     );
   }
 
-  Future<void> saveImage(String activityAdId, String imageId) async {
-    final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-    final String base64Image1 = base64Encode(await image1Bytes);
+  Future<void> packageDetail() async {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final String? userId = UserSingleton.instance.user.user!.id;
 
-    final Map<String, dynamic> image = {
-      'activity_event_id': activityAdId,
-      'snapshot_img': base64Image1
+    String mainBadge;
+    String subBadges;
+    String imageByte;
+
+    setState(() {
+      _isSubmit = true;
+    });
+
+    if (_isMainActivityEdited) {
+      mainBadge = mainActivity.id;
+    } else {
+      mainBadge = screenArguments['main_badge_id'];
+    }
+
+    if (_isSubActivityEdited) {
+      subBadges =
+          '${subActivities1.id},${subActivities2.id},${subActivities3.id}';
+    } else {
+      subBadges = '${subActivityId[0]},${subActivityId[1]},${subActivityId[2]}';
+    }
+
+    if (image1 != null) {
+      final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+      final String base64Image1 = base64Encode(await image1Bytes);
+      imageByte = base64Image1;
+    } else {
+      imageByte = screenArguments['image_url'];
+    }
+
+    Map<String, dynamic> packageDetails = {
+      'user_id': userId,
+      'main_badge_id': mainBadge,
+      'sub_badge_ids': subBadges,
+      'name': _packageName.text,
+      'description': _description.text,
+      'max_traveller': int.parse(_numberTraveler.text),
+      'country': _country.text,
+      'address':
+          '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}',
+      'services': _services.text,
+      'base_price': _price.text,
+      'extra_cost_per_person': _extraCost.text,
+      'is_published': true,
+      'cover_img': imageByte,
     };
 
-    await APIServices().request(
-        '${AppAPIPath.imageUrl}/$imageId', RequestType.PATCH,
-        needAccessToken: true, data: image);
-  }
+    /// Activity Package Details API
+    final dynamic response = await APIServices().request(
+        '${AppAPIPath.activityPackagesUrl}/${screenArguments['id']}',
+        RequestType.PATCH,
+        needAccessToken: true,
+        data: packageDetails);
 
-  Future<void> advertisementEditDetail() async {
-    if (_didClickedImage) {
-      if (image1 == null) {
-        AdvanceSnackBar(message: ErrorMessageConstants.eventImageEmpty)
-            .show(context);
-      } else {
-        setState(() {
-          _isSubmit = true;
-        });
-        final Map<String, dynamic> screenArguments =
-            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
-        String subActivity = '';
-
-        if (_didClickedSubActivity) {
-          if (subActivities1 != null) {
-            subActivity = subActivities1.id.toString();
-          }
-          if (subActivities2 != null) {
-            subActivity = '$subActivity,${subActivities2.id.toString()}';
-          }
-          if (subActivities3 != null) {
-            subActivity = '$subActivity,${subActivities3.id.toString()}';
-          }
-        } else {
-          subActivity = _activities.text;
-        }
-
-        final Map<String, dynamic> advertisementEditDetails = {
-          'title': _title.text,
-          'country': _country.text,
-          'address':
-              '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
-          'activities': subActivity,
-          'street': _street.text,
-          'city': _city.text,
-          'province': _province.text,
-          'zip_code': _postalCode.text,
-          'ad_date': _date.text,
-          'description': _description.text,
-          'price': int.parse(_price.text)
-        };
-
-        final dynamic response = await APIServices().request(
-            '${AppAPIPath.getAdvertisementDetail}/${screenArguments['id']}',
-            RequestType.PATCH,
-            needAccessToken: true,
-            data: advertisementEditDetails);
-
-        if (_didClickedImage) {
-          if (image1 != null) {
-            await saveImage(screenArguments['id'], screenArguments['image_id']);
-          }
-        }
-        await Navigator.pushReplacement(
-            context,
-            MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => const MainNavigationScreen(
-                      navIndex: 1,
-                      contentIndex: 3,
-                    )));
-      }
-    } else if (_date.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.serviceEmpty)
-          .show(context);
-    }
-  }
-
-  Future<void> _showDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(1901),
-      lastDate: DateTime(2100),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData(
-            primarySwatch: Colors.green,
-            splashColor: AppColors.primaryGreen,
-          ),
-          child: child ?? const Text(''),
-        );
-      },
-    );
-    if (picked != null && picked != _selectedDate) {
-      final String formattedDate = DateFormat('yyyy-MM-dd').format(picked);
-      setState(() {
-        _selectedDate = picked;
-        _date = TextEditingController(text: formattedDate.toString());
-      });
-    }
+    await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => const MainNavigationScreen(
+                  navIndex: 1,
+                  contentIndex: 0,
+                )));
   }
 
   @override

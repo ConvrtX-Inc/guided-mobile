@@ -726,7 +726,8 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
             placeDescription: _description.text,
             img1Holder: base64Image1,
             latitude: latitute,
-            longitude: longitude));
+            longitude: longitude,
+            uploadCount: _uploadCount));
       } else if (_uploadCount == 2) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -743,7 +744,8 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
             img1Holder: base64Image1,
             img2Holder: base64Image2,
             latitude: latitute,
-            longitude: longitude));
+            longitude: longitude,
+            uploadCount: _uploadCount));
       } else if (_uploadCount == 3) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);

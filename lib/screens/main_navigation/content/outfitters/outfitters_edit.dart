@@ -13,11 +13,8 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/user_model.dart';
-import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
-import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -679,10 +676,10 @@ class _OutfitterEditState extends State<OutfitterEdit>
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledImage == false) {
-                            _isEnabledImage = true;
-                          } else {
+                          if (_isEnabledImage) {
                             _isEnabledImage = false;
+                          } else {
+                            _isEnabledImage = true;
                           }
                         });
                       },
@@ -741,10 +738,10 @@ class _OutfitterEditState extends State<OutfitterEdit>
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledTitle == false) {
-                            _isEnabledTitle = true;
-                          } else {
+                          if (_isEnabledTitle) {
                             _isEnabledTitle = false;
+                          } else {
+                            _isEnabledTitle = true;
                           }
                         });
                       },
@@ -806,10 +803,10 @@ class _OutfitterEditState extends State<OutfitterEdit>
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledPrice == false) {
-                            _isEnabledPrice = true;
-                          } else {
+                          if (_isEnabledPrice) {
                             _isEnabledPrice = false;
+                          } else {
+                            _isEnabledPrice = true;
                           }
                         });
                       },
@@ -871,10 +868,10 @@ class _OutfitterEditState extends State<OutfitterEdit>
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledProductLink == false) {
-                            _isEnabledProductLink = true;
-                          } else {
+                          if (_isEnabledProductLink) {
                             _isEnabledProductLink = false;
+                          } else {
+                            _isEnabledProductLink = true;
                           }
                         });
                       },
@@ -936,10 +933,10 @@ class _OutfitterEditState extends State<OutfitterEdit>
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledDescription == false) {
-                            _isEnabledDescription = true;
-                          } else {
+                          if (_isEnabledDescription) {
                             _isEnabledDescription = false;
+                          } else {
+                            _isEnabledDescription = true;
                           }
                         });
                       },
@@ -1001,16 +998,16 @@ class _OutfitterEditState extends State<OutfitterEdit>
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledLocation == false) {
-                            _isEnabledLocation = true;
-                            _isEnabledCountry = true;
-                            _isEnabledStreet = true;
-                            _isEnabledCity = true;
-                          } else {
+                          if (_isEnabledLocation) {
                             _isEnabledLocation = false;
                             _isEnabledCountry = false;
                             _isEnabledStreet = false;
                             _isEnabledCity = false;
+                          } else {
+                            _isEnabledLocation = true;
+                            _isEnabledCountry = true;
+                            _isEnabledStreet = true;
+                            _isEnabledCity = true;
                           }
                         });
                       },
@@ -1102,10 +1099,10 @@ class _OutfitterEditState extends State<OutfitterEdit>
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledProvince == false) {
-                            _isEnabledProvince = true;
-                          } else {
+                          if (_isEnabledProvince) {
                             _isEnabledProvince = false;
+                          } else {
+                            _isEnabledProvince = true;
                           }
                         });
                       },
@@ -1167,10 +1164,10 @@ class _OutfitterEditState extends State<OutfitterEdit>
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledPostalCode == false) {
-                            _isEnabledPostalCode = true;
-                          } else {
+                          if (_isEnabledPostalCode) {
                             _isEnabledPostalCode = false;
+                          } else {
+                            _isEnabledPostalCode = true;
                           }
                         });
                       },
@@ -1232,10 +1229,10 @@ class _OutfitterEditState extends State<OutfitterEdit>
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (_isEnabledDate == false) {
-                            _isEnabledDate = true;
-                          } else {
+                          if (_isEnabledDate) {
                             _isEnabledDate = false;
+                          } else {
+                            _isEnabledDate = true;
                           }
                         });
                       },
@@ -1382,71 +1379,48 @@ class _OutfitterEditState extends State<OutfitterEdit>
       if (image1 == null) {
         AdvanceSnackBar(message: ErrorMessageConstants.outfitterImageEmpty)
             .show(context);
+      } else {
+        setState(() {
+          _isSubmit = true;
+        });
+        final Map<String, dynamic> screenArguments =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+        final String? userId = UserSingleton.instance.user.user!.id;
+
+        final Map<String, dynamic> outfitterEditDetails = {
+          'title': _title.text,
+          'price': int.parse(_price.text),
+          'product_link': _productLink.text,
+          'country': _country.text,
+          'address':
+              '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
+          'street': _street.text,
+          'city': _city.text,
+          'province': _province.text,
+          'zip_code': _postalCode.text,
+          'availability_date': _date.text,
+          'description': _description.text
+        };
+
+        final dynamic response = await APIServices().request(
+            '${AppAPIPath.outfitterUrl}/${screenArguments['id']}',
+            RequestType.PATCH,
+            needAccessToken: true,
+            data: outfitterEditDetails);
+
+        _imageUpdate(screenArguments['id'], screenArguments['image_count']);
+
+        await Navigator.pushReplacement(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => const MainNavigationScreen(
+                      navIndex: 1,
+                      contentIndex: 2,
+                    )));
       }
-    } else if (_title.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.titleEmpty).show(context);
-    } else if (_price.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.priceEmpty).show(context);
-    } else if (_productLink.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.productEmpty)
-          .show(context);
-    } else if (_country.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.countryEmpty)
-          .show(context);
-    } else if (_street.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.streetEmpty).show(context);
-    } else if (_city.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.cityEmpty).show(context);
-    } else if (_province.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.provinceEmpty)
-          .show(context);
-    } else if (_postalCode.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.postalCodeEmpty)
-          .show(context);
     } else if (_date.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
-    } else if (_description.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.descriptionEmpty)
-          .show(context);
-    } else {
-      setState(() {
-        _isSubmit = true;
-      });
-      final Map<String, dynamic> screenArguments =
-          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
-      final String? userId = UserSingleton.instance.user.user!.id;
-
-      final Map<String, dynamic> outfitterEditDetails = {
-        'title': _title.text,
-        'price': int.parse(_price.text),
-        'product_link': _productLink.text,
-        'country': _country.text,
-        'address':
-            '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
-        'street': _street.text,
-        'city': _city.text,
-        'province': _province.text,
-        'zip_code': _postalCode.text,
-        'availability_date': _date.text,
-        'description': _description.text
-      };
-
-      final dynamic response = await APIServices().request(
-          '${AppAPIPath.outfitterUrl}/${screenArguments['id']}',
-          RequestType.PATCH,
-          needAccessToken: true,
-          data: outfitterEditDetails);
-
-      _imageUpdate(screenArguments['id'], screenArguments['image_count']);
-
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
-                    navIndex: 1,
-                    contentIndex: 2,
-                  )));
     }
   }
 

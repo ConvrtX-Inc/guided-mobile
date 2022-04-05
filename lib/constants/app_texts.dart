@@ -977,4 +977,7 @@ class ErrorMessageConstants {
 
   /// Returns 'Product field is empty' text
   static String productEmpty = 'Product field is empty';
+
+  /// Returns 'Fill all location field' text
+  static String locationEmpty = 'Fill all location field';
 }

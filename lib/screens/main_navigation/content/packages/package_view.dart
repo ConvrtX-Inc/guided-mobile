@@ -143,7 +143,7 @@ class _PackageViewState extends State<PackageView>
                           size: 25,
                         ),
                         onPressed: () {
-                          //  navigateEditAdvertisementDetails(context, screenArguments);
+                          navigateEditPackageDetails(context);
                         },
                       ),
                     ),
@@ -197,7 +197,7 @@ class _PackageViewState extends State<PackageView>
                           child: Column(
                             children: <Widget>[
                               SizedBox(
-                                height: 140.h,
+                                height: 110.h,
                               ),
                               Image.memory(
                                 base64.decode(badgeData.badgeDetails[0].imgIcon
@@ -215,7 +215,7 @@ class _PackageViewState extends State<PackageView>
                           child: Column(
                             children: <Widget>[
                               SizedBox(
-                                height: 140.h,
+                                height: 110.h,
                               ),
                               const CircularProgressIndicator(),
                             ],
@@ -267,7 +267,9 @@ class _PackageViewState extends State<PackageView>
                 services: screenArguments['services'],
                 starRating: screenArguments['star_rating'],
               ),
-              const TabSlotsAndScheduleView()
+              TabSlotsAndScheduleView(
+                id: screenArguments['id'],
+              )
             ],
             onChange: setTitle,
             initialIndex: initIndex,
@@ -292,5 +294,30 @@ class _PackageViewState extends State<PackageView>
                   navIndex: 1,
                   contentIndex: 0,
                 )));
+  }
+
+  /// Navigate to Advertisement Edit
+  Future<void> navigateEditPackageDetails(BuildContext context) async {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    final Map<String, dynamic> details = {
+      'id': screenArguments['id'],
+      'name': screenArguments['name'],
+      'main_badge_id': screenArguments['main_badge_id'],
+      'sub_badge_id': screenArguments['sub_badge_id'],
+      'description': screenArguments['description'],
+      'image_url': screenArguments['image_url'],
+      'number_of_tourist': screenArguments['number_of_tourist'],
+      'star_rating': screenArguments['star_rating'],
+      'fee': screenArguments['fee'],
+      'date_range': screenArguments['date_range'],
+      'services': screenArguments['services'],
+      'address': screenArguments['address'],
+      'extra_cost': screenArguments['extra_cost'],
+      'country': screenArguments['country']
+    };
+
+    await Navigator.pushNamed(context, '/package_edit', arguments: details);
   }
 }

@@ -83,10 +83,10 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                if (_isEnabledEdit == false) {
-                                  _isEnabledEdit = true;
-                                } else {
+                                if (_isEnabledEdit) {
                                   _isEnabledEdit = false;
+                                } else {
+                                  _isEnabledEdit = true;
                                 }
                               });
                             },

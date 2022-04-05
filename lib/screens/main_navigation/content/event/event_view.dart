@@ -161,7 +161,7 @@ class _EventViewState extends State<EventView> {
                         child: Column(
                           children: <Widget>[
                             SizedBox(
-                              height: 140.h,
+                              height: 110.h,
                             ),
                             Image.memory(
                               base64.decode(badgeData.badgeDetails[0].imgIcon
@@ -177,7 +177,7 @@ class _EventViewState extends State<EventView> {
                       return Column(
                         children: <Widget>[
                           SizedBox(
-                            height: 140.h,
+                            height: 110.h,
                           ),
                           const CircularProgressIndicator(),
                         ],
