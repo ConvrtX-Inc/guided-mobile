@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:flutter_cart_and_payment/controllers/CartController.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/models/set_booking_date_model.dart';
+import 'package:guided/utils/event.dart';
 
 /// Hourly Class
 class HourlyItem extends StatefulWidget {
@@ -20,6 +22,14 @@ class HourlyItem extends StatefulWidget {
 class _HourlyItemState extends State<HourlyItem> {
   // final CartController _CartController = Get.find();
   int counter = 0;
+  late List<SetBookingDateModel> setbookingmodel = EventUtils.getMockData();
+
+  void _onCheckedSelected(bool selected, String time, int counter) {
+    if (selected) {
+      setbookingmodel
+          .add(SetBookingDateModel(availabilityHour: time, slots: counter));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,93 +53,93 @@ class _HourlyItemState extends State<HourlyItem> {
                 width: 10.w,
               ),
               SizedBox(
-                  width: 150,
                   child: Wrap(alignment: WrapAlignment.spaceBetween, children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          width: 40.w,
-                          height: 40.h,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: widget.boolVal[0] == true
-                                      ? counter == 0
-                                          ? AppColors.osloGrey
-                                          : AppColors.deepGreen
-                                      : AppColors.osloGrey),
-                              color: Colors.white,
-                              shape: BoxShape.circle),
-                          child: IconButton(
-                              icon: Icon(
-                                Icons.remove,
-                                color: widget.boolVal[0] == true
-                                    ? counter == 0
-                                        ? AppColors.osloGrey
-                                        : AppColors.primaryGreen
-                                    : AppColors.osloGrey,
-                                size: 15,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  if (widget.boolVal[0] == true) {
-                                    if (counter != 0) {
-                                      counter--;
-                                    }
-                                  }
-                                  // _CartController.decrement(widget.price);
-                                });
-                              }),
-                        ),
-                        Container(
-                          height: 40.h,
-                          width: 50.w,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: AppColors.osloGrey),
-                              borderRadius: BorderRadius.circular(10.r)),
-                          child: Center(
-                            child: Text(
-                              ' $counter',
-                              style: TextStyle(fontSize: 20.sp),
-                            ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      width: 30.w,
+                      height: 40.h,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: widget.boolVal[0] == true
+                                  ? counter == 0
+                                      ? AppColors.osloGrey
+                                      : AppColors.deepGreen
+                                  : AppColors.osloGrey),
+                          color: Colors.white,
+                          shape: BoxShape.circle),
+                      child: IconButton(
+                          icon: Icon(
+                            Icons.remove,
+                            color: widget.boolVal[0] == true
+                                ? counter == 0
+                                    ? AppColors.osloGrey
+                                    : AppColors.primaryGreen
+                                : AppColors.osloGrey,
+                            size: 15,
                           ),
-                        ),
-                        Container(
-                          width: 40.w,
-                          height: 40.h,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: widget.boolVal[0] == true
-                                      ? AppColors.deepGreen
-                                      : AppColors.osloGrey),
-                              color: Colors.white,
-                              shape: BoxShape.circle),
-                          child: IconButton(
-                              icon: Icon(
-                                Icons.add,
-                                color: widget.boolVal[0] == true
-                                    ? AppColors.primaryGreen
-                                    : AppColors.osloGrey,
-                                size: 15,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  if (widget.boolVal[0] == true) {
-                                    counter++;
-                                  }
-                                  // _CartController.increment(widget.price);
-                                });
-                              }),
-                        )
-                      ],
+                          onPressed: () {
+                            setState(() {
+                              if (widget.boolVal[0] == true) {
+                                if (counter != 0) {
+                                  counter--;
+                                }
+                              }
+                              // _CartController.decrement(widget.price);
+                            });
+                          }),
                     ),
-                  ]))
+                    Container(
+                      height: 40.h,
+                      width: 40.w,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.osloGrey),
+                          borderRadius: BorderRadius.circular(10.r)),
+                      child: Center(
+                        child: Text(
+                          ' $counter',
+                          style: TextStyle(fontSize: 20.sp),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 30.w,
+                      height: 40.h,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: widget.boolVal[0] == true
+                                  ? AppColors.deepGreen
+                                  : AppColors.osloGrey),
+                          color: Colors.white,
+                          shape: BoxShape.circle),
+                      child: IconButton(
+                          icon: Icon(
+                            Icons.add,
+                            color: widget.boolVal[0] == true
+                                ? AppColors.primaryGreen
+                                : AppColors.osloGrey,
+                            size: 15,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              if (widget.boolVal[0] == true) {
+                                counter++;
+                              }
+                              // _CartController.increment(widget.price);
+                            });
+                          }),
+                    )
+                  ],
+                ),
+              ]))
             ],
           ),
           onChanged: (bool? value) {
             setState(() {
               widget.boolVal[0] = value!;
             });
+            _onCheckedSelected(widget.boolVal[0], widget.title[0], counter);
           },
           value: widget.boolVal[0],
         ),

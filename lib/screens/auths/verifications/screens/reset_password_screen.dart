@@ -159,23 +159,40 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   /// Methode for caling the API
   Future<void> sendVerificationCode() async {
-    final Map<String, dynamic> userDetails = {
-      'email': emailController.text,
-      'phone_no': _dialCode + phoneController.text,
-    };
+    if (emailController.text.isNotEmpty && phoneController.text.isEmpty) {
+      final Map<String, dynamic> userDetails = {'email': emailController.text};
 
-    if (emailController.text != '' && phoneController.text != '') {
       final dynamic response = await APIServices().request(
           AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
           data: userDetails);
 
-      if (response == 200) {
-        await Navigator.pushNamed(context, '/verification_code',
-            arguments: userDetails);
-      } else {
-        AdvanceSnackBar(message: ErrorMessageConstants.somethingWenWrong)
-            .show(context);
-      }
+      await Navigator.pushNamed(context, '/verification_code',
+          arguments: userDetails);
+    } else if (emailController.text.isEmpty &&
+        phoneController.text.isNotEmpty) {
+      final Map<String, dynamic> userDetails = {
+        'phone_no': phoneController.text,
+      };
+
+      final dynamic response = await APIServices().request(
+          AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
+          data: userDetails);
+
+      await Navigator.pushNamed(context, '/verification_code',
+          arguments: userDetails);
+    } else if (emailController.text.isNotEmpty &&
+        phoneController.text.isNotEmpty) {
+      final Map<String, dynamic> userDetails = {
+        'email': emailController.text,
+        'phone_no': phoneController.text,
+      };
+
+      final dynamic response = await APIServices().request(
+          AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
+          data: userDetails);
+
+      await Navigator.pushNamed(context, '/verification_code',
+          arguments: userDetails);
     } else {
       AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
           .show(context);

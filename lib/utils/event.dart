@@ -4,6 +4,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/discovery_hub.dart';
 import 'package:guided/models/home.dart';
 import 'package:guided/models/hub_outfitter.dart';
+import 'package:guided/models/set_booking_date_model.dart';
 
 /// Settings items data generator
 class EventUtils {
@@ -96,7 +97,6 @@ class EventUtils {
     ];
   }
 
-
   static List<HubOutfitter> getMockHubOutfitterFeatures() {
     return [
       HubOutfitter(
@@ -132,6 +132,15 @@ class EventUtils {
         img2: 'assets/images/jpg/hiking_hat_2.jpeg',
         img3: 'assets/images/jpg/hiking_hat_3.jpeg',
       ),
+    ];
+  }
+
+  static List<SetBookingDateModel> getMockData() {
+    return [
+      SetBookingDateModel(
+        availabilityHour: '',
+        slots: 0,
+      )
     ];
   }
 }
