@@ -13,11 +13,8 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/user_model.dart';
-import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
-import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -1382,48 +1379,48 @@ class _OutfitterEditState extends State<OutfitterEdit>
       if (image1 == null) {
         AdvanceSnackBar(message: ErrorMessageConstants.outfitterImageEmpty)
             .show(context);
+      } else {
+        setState(() {
+          _isSubmit = true;
+        });
+        final Map<String, dynamic> screenArguments =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+        final String? userId = UserSingleton.instance.user.user!.id;
+
+        final Map<String, dynamic> outfitterEditDetails = {
+          'title': _title.text,
+          'price': int.parse(_price.text),
+          'product_link': _productLink.text,
+          'country': _country.text,
+          'address':
+              '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
+          'street': _street.text,
+          'city': _city.text,
+          'province': _province.text,
+          'zip_code': _postalCode.text,
+          'availability_date': _date.text,
+          'description': _description.text
+        };
+
+        final dynamic response = await APIServices().request(
+            '${AppAPIPath.outfitterUrl}/${screenArguments['id']}',
+            RequestType.PATCH,
+            needAccessToken: true,
+            data: outfitterEditDetails);
+
+        _imageUpdate(screenArguments['id'], screenArguments['image_count']);
+
+        await Navigator.pushReplacement(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => const MainNavigationScreen(
+                      navIndex: 1,
+                      contentIndex: 2,
+                    )));
       }
     } else if (_date.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
-    } else {
-      setState(() {
-        _isSubmit = true;
-      });
-      final Map<String, dynamic> screenArguments =
-          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
-      final String? userId = UserSingleton.instance.user.user!.id;
-
-      final Map<String, dynamic> outfitterEditDetails = {
-        'title': _title.text,
-        'price': int.parse(_price.text),
-        'product_link': _productLink.text,
-        'country': _country.text,
-        'address':
-            '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
-        'street': _street.text,
-        'city': _city.text,
-        'province': _province.text,
-        'zip_code': _postalCode.text,
-        'availability_date': _date.text,
-        'description': _description.text
-      };
-
-      final dynamic response = await APIServices().request(
-          '${AppAPIPath.outfitterUrl}/${screenArguments['id']}',
-          RequestType.PATCH,
-          needAccessToken: true,
-          data: outfitterEditDetails);
-
-      _imageUpdate(screenArguments['id'], screenArguments['image_count']);
-
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
-                    navIndex: 1,
-                    contentIndex: 2,
-                  )));
     }
   }
 

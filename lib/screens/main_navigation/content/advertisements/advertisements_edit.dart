@@ -157,7 +157,6 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                   children: <Widget>[
                     Align(
                       child: SizedBox(
-                        width: 340,
                         height: 50.h,
                         child: ListView(
                             shrinkWrap: true,
@@ -264,7 +263,16 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                        base64.decode(badges.imgIcon.split(',').last),
+                        gaplessPlayback: true,
+                        width: 20,
+                        height: 20,
+                                          ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -304,16 +312,6 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                       ),
                     ],
                   ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -349,7 +347,16 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                        base64.decode(badges.imgIcon.split(',').last),
+                        gaplessPlayback: true,
+                        width: 20,
+                        height: 20,
+                    ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -382,16 +389,6 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -429,7 +426,16 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                        base64.decode(badges.imgIcon.split(',').last),
+                        gaplessPlayback: true,
+                        width: 20,
+                        height: 20,
+                    ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -457,16 +463,6 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -1640,66 +1636,66 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
       if (image1 == null) {
         AdvanceSnackBar(message: ErrorMessageConstants.eventImageEmpty)
             .show(context);
+      } else {
+        setState(() {
+          _isSubmit = true;
+        });
+        final Map<String, dynamic> screenArguments =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+        String subActivity = '';
+
+        if (_didClickedSubActivity) {
+          if (subActivities1 != null) {
+            subActivity = subActivities1.id.toString();
+          }
+          if (subActivities2 != null) {
+            subActivity = '$subActivity,${subActivities2.id.toString()}';
+          }
+          if (subActivities3 != null) {
+            subActivity = '$subActivity,${subActivities3.id.toString()}';
+          }
+        } else {
+          subActivity = _activities.text;
+        }
+
+        final Map<String, dynamic> advertisementEditDetails = {
+          'title': _title.text,
+          'country': _country.text,
+          'address':
+              '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
+          'activities': subActivity,
+          'street': _street.text,
+          'city': _city.text,
+          'province': _province.text,
+          'zip_code': _postalCode.text,
+          'ad_date': _date.text,
+          'description': _description.text,
+          'price': int.parse(_price.text)
+        };
+
+        final dynamic response = await APIServices().request(
+            '${AppAPIPath.getAdvertisementDetail}/${screenArguments['id']}',
+            RequestType.PATCH,
+            needAccessToken: true,
+            data: advertisementEditDetails);
+
+        if (_didClickedImage) {
+          if (image1 != null) {
+            await saveImage(screenArguments['id'], screenArguments['image_id']);
+          }
+        }
+        await Navigator.pushReplacement(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => const MainNavigationScreen(
+                      navIndex: 1,
+                      contentIndex: 3,
+                    )));
       }
     } else if (_date.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.serviceEmpty)
           .show(context);
-    } else {
-      setState(() {
-        _isSubmit = true;
-      });
-      final Map<String, dynamic> screenArguments =
-          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
-      String subActivity = '';
-
-      if (_didClickedSubActivity) {
-        if (subActivities1 != null) {
-          subActivity = subActivities1.id.toString();
-        }
-        if (subActivities2 != null) {
-          subActivity = '$subActivity,${subActivities2.id.toString()}';
-        }
-        if (subActivities3 != null) {
-          subActivity = '$subActivity,${subActivities3.id.toString()}';
-        }
-      } else {
-        subActivity = _activities.text;
-      }
-
-      final Map<String, dynamic> advertisementEditDetails = {
-        'title': _title.text,
-        'country': _country.text,
-        'address':
-            '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
-        'activities': subActivity,
-        'street': _street.text,
-        'city': _city.text,
-        'province': _province.text,
-        'zip_code': _postalCode.text,
-        'ad_date': _date.text,
-        'description': _description.text,
-        'price': int.parse(_price.text)
-      };
-
-      final dynamic response = await APIServices().request(
-          '${AppAPIPath.getAdvertisementDetail}/${screenArguments['id']}',
-          RequestType.PATCH,
-          needAccessToken: true,
-          data: advertisementEditDetails);
-
-      if (_didClickedImage) {
-        if (image1 != null) {
-          await saveImage(screenArguments['id'], screenArguments['image_id']);
-        }
-      }
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
-                    navIndex: 1,
-                    contentIndex: 3,
-                  )));
     }
   }
 

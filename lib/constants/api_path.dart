@@ -130,4 +130,12 @@ class AppAPIPath {
 
   /// Returns badges url
   static String badgesUrl = 'api/v1/badges';
+
+  /// Returns booking dates
+  static String createSlotAvailability =
+      'api/v1/activity-availabilities/create-slot-availability';
+
+  /// Returns booking dates and hour
+  static String createSlotAvailabilityHour =
+      'api/v1/activity-availability-hours';
 }
