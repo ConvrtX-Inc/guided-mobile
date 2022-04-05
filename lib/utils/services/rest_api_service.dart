@@ -22,6 +22,7 @@ import 'package:guided/models/package_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/transaction_model.dart';
 import 'package:guided/models/user_model.dart';
 
 import 'package:guided/utils/secure_storage.dart';
@@ -426,4 +427,31 @@ class APIServices {
 
     return EventImageModelData(eventImageDetails: details);
   }
+
+
+  ///API Service for transactions
+  Future<APIStandardReturnFormat> getTransactions() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactions}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+        });
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  ///API Service for Posts
+  Future<APIStandardReturnFormat> getPosts() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getPosts}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+        });
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+
 }

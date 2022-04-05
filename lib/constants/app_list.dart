@@ -1,6 +1,8 @@
 import 'package:guided/models/badgesModel.dart';
 import 'package:guided/models/faq.dart';
 import 'package:guided/models/message.dart';
+import 'package:guided/models/post_model.dart';
+import 'package:guided/models/transaction_model.dart';
 
 /// Class for app constant list
 class AppListConstants {
@@ -175,4 +177,29 @@ class AppListConstants {
 
   ///
   static List<int> numberList = <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+  ///Test transaction data
+  static List<Transaction> transactions = <Transaction>[
+    Transaction(id : '0001', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0001', transactionNumber : 'tn-0001', statusId : Transaction.COMPLETED, total : 50.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null),
+    Transaction(id : '0002', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0002', transactionNumber : 'tn-0002', statusId : Transaction.COMPLETED, total : 60.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null),
+    Transaction(id : '0003', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0003', transactionNumber : 'tn-0003', statusId : Transaction.COMPLETED, total : 70.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null),
+    Transaction(id : '0004', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0004', transactionNumber : 'tn-0004', statusId : Transaction.PENDING, total : 80.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null),
+    Transaction(id : '0005', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0005', transactionNumber : 'tn-0005', statusId :  Transaction.PENDING, total : 90.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null),
+    Transaction(id : '0006', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0006', transactionNumber : 'tn-0006', statusId :  Transaction.PENDING, total : 100.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null),
+    Transaction(id : '0007', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0007', transactionNumber : 'tn-0007', statusId : Transaction.REJECTED, total : 110.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null),
+    Transaction(id : '0008', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0008', transactionNumber : 'tn-0008', statusId : Transaction.REJECTED, total : 120.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null),
+    Transaction(id : '0009', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0009', transactionNumber : 'tn-0009', statusId : Transaction.REJECTED, total : 130.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null)
+  ];
+  ///Test post data
+  static List<Post> posts = <Post>[
+    Post(id:'0001',userId:'u-0001',postId:'p-0001',title: 'title-001',categoryType: 1,views: 0,isPublished: true),
+    Post(id:'0002',userId:'u-0002',postId:'p-0002',title: 'title-001',categoryType: 1,views: 0,isPublished: true),
+    Post(id:'0003',userId:'u-0003',postId:'p-0003',title: 'title-001',categoryType: 1,views: 0,isPublished: true),
+    Post(id:'0004',userId:'u-0004',postId:'p-0004',title: 'title-001',categoryType: 2,views: 0,isPublished: true),
+    Post(id:'0005',userId:'u-0005',postId:'p-0005',title: 'title-001',categoryType: 2,views: 0,isPublished: true),
+    Post(id:'0006',userId:'u-0006',postId:'p-0006',title: 'title-001',categoryType: 2,views: 0,isPublished: true),
+    Post(id:'0007',userId:'u-0007',postId:'p-0007',title: 'title-001',categoryType: 3,views: 0,isPublished: true),
+    Post(id:'0008',userId:'u-0008',postId:'p-0008',title: 'title-001',categoryType: 3,views: 0,isPublished: true),
+    Post(id:'0009',userId:'u-0009',postId:'p-0009',title: 'title-001',categoryType: 3,views: 0,isPublished: true),
+  ];
 }

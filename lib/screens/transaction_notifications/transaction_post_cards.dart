@@ -2,24 +2,25 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/post_model.dart';
 
 import '../../constants/app_colors.dart';
 import '../../models/transaction_model.dart';
 
 class TransactionPostCard extends StatefulWidget {
-  late Transaction transaction;
-  TransactionPostCard(Transaction transaction,{Key? key}) {
-    this.transaction = transaction;
+  late Post post;
+  TransactionPostCard(Post post,{Key? key}) {
+    this.post = post;
   }
   @override
-  State<TransactionPostCard> createState() => _TransactionPostCardState(this.transaction);
+  State<TransactionPostCard> createState() => _TransactionPostCardState(this.post);
 }
 
 class _TransactionPostCardState extends State<TransactionPostCard> {
-  late Transaction transaction;
-  _TransactionPostCardState(Transaction transaction)
+  late Post post;
+  _TransactionPostCardState(Post post)
   {
-  this.transaction = transaction;
+  this.post = post;
   }
   @override
   Widget build(BuildContext context) {
@@ -138,7 +139,7 @@ class _TransactionPostCardState extends State<TransactionPostCard> {
 
   Color statusColor()
   {
-    switch(int.parse(transaction.statusId))
+    switch(post.categoryType)
     {
 
       case 1:
@@ -153,7 +154,7 @@ class _TransactionPostCardState extends State<TransactionPostCard> {
 
   Image statusImage()
   {
-    switch(int.parse(transaction.statusId))
+    switch(post.categoryType)
     {
 
       case 1:
@@ -168,7 +169,7 @@ class _TransactionPostCardState extends State<TransactionPostCard> {
 
   String statusMessage()
   {
-    switch(int.parse(transaction.statusId))
+    switch(post.categoryType)
     {
 
       case 1:

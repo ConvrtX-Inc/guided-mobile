@@ -5,51 +5,180 @@ import 'package:guided/screens/transaction_notifications/transaction_cards.dart'
 import 'package:guided/screens/transaction_notifications/transaction_post_cards.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_texts.dart';
+import '../../models/post_model.dart';
 import '../../models/transaction_model.dart';
 
 class TransactionPostList extends StatefulWidget {
-  const TransactionPostList({Key? key}) : super(key: key);
+  late VoidCallback refreshData;
+
+  TransactionPostList(VoidCallback refreshData,{Key? key}) : super(key: key){
+    this.refreshData = refreshData;
+  }
 
   @override
-  State<TransactionPostList> createState() => _TransactionPostListState();
+  State<TransactionPostList> createState() {
+    return  TransactionPostListState(this.refreshData);
+  }
 }
 
-class _TransactionPostListState extends State<TransactionPostList> {
+class TransactionPostListState extends State<TransactionPostList>
+with SingleTickerProviderStateMixin{
 
-  List<Transaction> transactions = List.empty(growable: true);
-  void generateTestData()
+  List<Post> posts = List.empty(growable: true);
+  List<Post> displayed = List.empty(growable: true);
+  bool isLoading = false;
+  bool _isFirstLoad = true;
+  int _statusSelectedIndex = 0;
+  late TabController _statusController;
+  late double screenWidth;
+  late double screenHeight;
+  late final VoidCallback refreshData;
+
+  TransactionPostListState(VoidCallback refreshData)
   {
-    transactions.add(Transaction(id : '0001', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0001', transactionNumber : 'tn-0001', statusId : '1', total : 50.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null));
-    transactions.add(Transaction(id : '0002', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0002', transactionNumber : 'tn-0002', statusId : '1', total : 60.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null));
-    transactions.add(Transaction(id : '0003', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0003', transactionNumber : 'tn-0003', statusId : '1', total : 70.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null));
-    transactions.add(Transaction(id : '0004', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0004', transactionNumber : 'tn-0004', statusId : '2', total : 80.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null));
-    transactions.add(Transaction(id : '0005', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0005', transactionNumber : 'tn-0005', statusId : '2', total : 90.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null));
-    transactions.add(Transaction(id : '0006', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0006', transactionNumber : 'tn-0006', statusId : '2', total : 100.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null));
-    transactions.add(Transaction(id : '0007', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0007', transactionNumber : 'tn-0007', statusId : '3', total : 110.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null));
-    transactions.add(Transaction(id : '0008', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0008', transactionNumber : 'tn-0008', statusId : '3', total : 120.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null));
-    transactions.add(Transaction(id : '0009', userId : 'u-0001', activityPackageId : 'p-0001', tourGuideId : 'u-0002', serviceName : 'Test Service 0009', transactionNumber : 'tn-0009', statusId : '3', total : 130.0, numberOfPeople : 1, bookDate : DateTime.now(), createdDate :null, updatedDate : null));
-
+    this.refreshData = refreshData;
   }
+
+
+  void setPosts(List<Post> posts){
+    setState(() => this.posts = posts);
+    filter();
+  }
+  void setLoading(bool isLoading){
+    setState(() => this.isLoading = isLoading);
+  }
+
+
   @override
   void initState() {
     super.initState();
-    generateTestData();
-
+    _statusController = TabController(length: 4, vsync: this);
+    _statusController .addListener(() {
+      if(!_statusController.indexIsChanging)
+      {
+        setState(() {
+          _statusSelectedIndex = _statusController.index;
+          print("POST STATE:"+_statusSelectedIndex.toString());
+          setState(() => this.isLoading = true);
+          if(refreshData!=null)
+          {
+            refreshData.call();
+          }
+        });
+      }
+    });
   }
-  @override
-  Widget build(BuildContext context) {
 
-    return ListView.separated(
-        itemCount: transactions.length,
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        separatorBuilder: (BuildContext context, int index) {
-          return Divider(height: 10.0.h,color: Colors.transparent);
-        },
-        itemBuilder: (BuildContext context, int index) {
-          return  TransactionPostCard(transactions[index]);
-        }
+  Widget getProgressBar(){
+    return Column(
+      children: [
+        Divider(height: screenHeight*0.2,color: Colors.transparent),
+        CircularProgressIndicator(color:AppColors.completedText)
+      ],
     );
 
   }
+
+
+  @override
+  Widget build(BuildContext context) {
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
+    return Column(
+      children: [
+        getStatusTabBar(),
+        isLoading?getProgressBar():posts.length>0?showList():noData()
+      ],
+    );
+
+  }
+
+
+  Widget showList()
+  {
+
+    return Container(
+        child: ListView.separated(
+            shrinkWrap:true,
+            itemCount: displayed.length,
+            physics: NeverScrollableScrollPhysics(),
+            separatorBuilder: (BuildContext context, int index) {return Divider(height: 10.0.h,color: Colors.transparent);},
+            itemBuilder: (BuildContext context, int index) {return TransactionPostCard(displayed[index]);}
+        ));
+
+  }
+
+  void filter() {
+
+    displayed.clear();
+    if (_statusSelectedIndex == 0) {
+      print("Displaying posts all");
+      setState(() {
+        displayed.addAll(posts);
+      });
+    }
+    else {
+      print("Displaying posts filtered:" + _statusSelectedIndex.toString());
+      setState(() {
+        displayed.addAll(posts.where((element) => element.categoryType == _statusSelectedIndex).toList()) ;
+      });
+    }
+    setState(() => this.isLoading = false);
+  }
+
+
+  Widget noData()
+  {
+    print("Transaction post list: no data");
+    if(_isFirstLoad)
+      {
+        _isFirstLoad = false;
+        return getProgressBar();
+      }
+    else
+      {
+        return  Column(
+          children: [
+            Divider(height: screenHeight*0.2,color: Colors.transparent),
+            Center(child: Text("Nothing to display"))
+          ],
+        );
+
+      }
+
+  }
+
+  Widget getStatusTabBar()
+  {
+    return Container(
+      child: getStatusTabBarTabs(),
+      margin: EdgeInsets.all(9),
+      padding: EdgeInsets.only(left: 9,right: 9),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: AppColors.tabBorder, width: 1),
+          borderRadius: BorderRadius.all(Radius.circular(12))
+      ),
+    );
+  }
+
+  Widget getStatusTabBarTabs()
+  {
+    return  TabBar(
+      labelPadding:EdgeInsets.zero,
+      indicatorWeight: 3,
+      indicatorColor:Transaction.indicatorColor(_statusSelectedIndex),
+      controller: _statusController,
+      tabs: [
+        Tab(child:Center(child: Text("All", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: _statusSelectedIndex==0?Transaction.indicatorColor(_statusSelectedIndex):Colors.black)))),
+        Tab(child: Center(child:Text("Completed", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: _statusSelectedIndex==1?Transaction.indicatorColor(_statusSelectedIndex):Colors.black)))),
+        Tab(child: Center(child:Text("Pending", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: _statusSelectedIndex==2?Transaction.indicatorColor(_statusSelectedIndex):Colors.black)))),
+        Tab(child: Center(child:Text("Rejected", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: _statusSelectedIndex==3?Transaction.indicatorColor(_statusSelectedIndex):Colors.black)))),
+      ],
+    );
+  }
+
+
+
 }

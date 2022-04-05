@@ -159,14 +159,14 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
   }
   Color statusColor()
   {
-    switch(int.parse(transaction.statusId))
+    switch(transaction.statusId)
     {
 
-      case 1:
+      case Transaction.COMPLETED:
         return AppColors.completedText;
-      case 2:
+      case Transaction.PENDING:
         return AppColors.pendingText;
-      case 3:
+      case Transaction.REJECTED:
         return AppColors.rejectedText;
     }
     return AppColors.rejectedText;
@@ -174,14 +174,14 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
 
   Image statusImage()
   {
-    switch(int.parse(transaction.statusId))
+    switch(transaction.statusId)
     {
 
-      case 1:
+      case Transaction.COMPLETED:
         return Image.asset("assets/images/complete.png");
-      case 2:
+      case Transaction.PENDING:
         return Image.asset("assets/images/pending.png");
-      case 3:
+      case Transaction.REJECTED:
         return Image.asset("assets/images/rejected.png");
     }
     return Image.asset("assets/images/rejected.png");
@@ -190,14 +190,14 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
 
   String statusMessage()
   {
-    switch(int.parse(transaction.statusId))
+    switch(transaction.statusId)
     {
 
-      case 1:
+      case Transaction.COMPLETED:
         return "Payment Completed";
-      case 2:
+      case Transaction.PENDING:
         return "Patment Pending";
-      case 3:
+      case Transaction.REJECTED:
         return "Payment Rejected";
     }
     return "Payment Rejected";

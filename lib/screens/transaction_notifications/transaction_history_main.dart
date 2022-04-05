@@ -1,14 +1,22 @@
+import 'dart:convert';
+
+
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:guided/constants/app_list.dart';
+import 'package:guided/models/post_model.dart';
+import 'package:guided/models/transaction_model.dart';
 import 'package:guided/screens/transaction_notifications/transaction_cards.dart';
 import 'package:guided/screens/transaction_notifications/transaction_customer.dart';
 import 'package:guided/screens/transaction_notifications/transaction_post.dart';
-import 'package:intl/intl.dart';
+import 'package:http/http.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_texts.dart';
-import '../../constants/asset_path.dart';
+import '../../models/api/api_standard_return.dart';
+import '../../models/user_model.dart';
+import '../../utils/services/rest_api_service.dart';
 
 ///Main screen for transaction history
 class TransactionHistoryMain extends StatefulWidget {
@@ -20,64 +28,201 @@ class TransactionHistoryMain extends StatefulWidget {
 
 
 class _TransactionHistoryMainState extends State<TransactionHistoryMain>
-    with TickerProviderStateMixin
-{
-  int _selectedIndex = 0;
-  int _statusSelectedIndex = 0;
+    with SingleTickerProviderStateMixin {
+
+  GlobalKey<TransactionCustomerListState> _myKey = GlobalKey();
+
+  GlobalKey<TransactionPostListState> _postKey = GlobalKey();
   late TabController _controller;
-  late TabController _statusController;
+  late double screenWidth;
+  late double screenHeight;
+  List<Transaction> transactions = List.empty(growable: true);
+  int _selectedIndex = 0;
+  bool isLoading = false;
+
+  Future<void> login() async {
+    final Map<String, String> credentials = <String, String>{
+      'email': 'mraraullo@gmail.com',
+      'password': 'string'
+    };
+    await APIServices()
+        .login(credentials)
+        .then((APIStandardReturnFormat response) async {
+      print("EMAIL:"+credentials.toString());
+      if (response.status == 'error') {
+        print("Response:"+response.errorResponse);
+        AdvanceSnackBar(
+            message: ErrorMessageConstants.loginWrongEmailorPassword)
+            .show(context);
+        setState(() => isLoading = false);
+      }
+      else {
+        print("Response:"+response.successResponse);
+
+        final UserModel user =
+        UserModel.fromJson(json.decode(response.successResponse));
+        UserSingleton.instance.user = user;
+
+        if (user.user?.isTraveller != true) {
+        } else {
+        }
+      }
+    });
+  }
+  Future<void> loginTraveller() async {
+    final Map<String, String> credentials = <String, String>{
+      'email': 'mraraullo_travel.gmail.com',
+      'password': 'string'
+    };
+    await APIServices()
+        .login(credentials)
+        .then((APIStandardReturnFormat response) async {
+      print("EMAIL:"+credentials.toString());
+      if (response.status == 'error') {
+        print("Response:"+response.errorResponse);
+        AdvanceSnackBar(
+            message: ErrorMessageConstants.loginWrongEmailorPassword)
+            .show(context);
+        setState(() => isLoading = false);
+      }
+      else {
+        print("Response:"+response.successResponse);
+        final UserModel user =
+        UserModel.fromJson(json.decode(response.successResponse));
+        UserSingleton.instance.user = user;
+        if (user.user?.isTraveller != true) {
+        } else {
+        }
+      }
+    });
+  }
+  Future<void> getTransactions() async {
+    print("Refreshing transactions data");
+    setState(() {
+      isLoading = true;
+    });
+
+    await APIServices()
+        .getTransactions()
+        .then((APIStandardReturnFormat response) async {
+      if (response.status == 'error') {
+      }
+      else {
+        final List<Transaction> details = <Transaction>[];
+        final List<dynamic> res = jsonDecode(response.successResponse);
+        for (final dynamic data in res) {
+          final Transaction transactionModel =
+          Transaction.fromJson(data);
+          details.add(transactionModel);
+        }
+        details.addAll(AppListConstants.transactions);
+        _myKey.currentState?.setLoading(false);
+        setState(() => this.isLoading = false);
+        _myKey.currentState?.setTransactions(details);
+      }
 
 
-  TransactionCustomerList getCustomerList(int stat)
-  {
-    print("CustomerList:"+stat.toString());
-    return TransactionCustomerList(stat);
+    });
   }
 
+  Future<void> getPosts() async {
+    print("Refreshing posts data");
+    setState(() {
+      isLoading = true;
+    });
+
+    await APIServices()
+        .getPosts()
+        .then((APIStandardReturnFormat response) async {
+      if (response.status == 'error') {
+        print("Error:"+response.errorResponse);
+
+      }
+      else {
+        final List<Post> posts = <Post>[];
+        final List<dynamic> res = jsonDecode(response.successResponse);
+        for (final dynamic data in res) {
+          final Post post =
+            Post.fromJson(data);
+            posts.add(post);
+        }
+        posts.addAll(AppListConstants.posts);
+        print("Posts:"+posts.length.toString());
+        _postKey.currentState?.setLoading(false);
+        setState(() => this.isLoading = false);
+        _postKey.currentState?.setPosts(posts);
+      }
+
+
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    print("Init State");
     _controller = TabController(length: 2, vsync: this);
     _controller.addListener(() {
-
-
           if(!_controller.indexIsChanging)
           {
             setState(() {
               _selectedIndex = _controller.index;
-              print("InDEX:"+_selectedIndex.toString());
             });
+            switch(_selectedIndex)
+            {
+              case 0:
+                getTransactions();
+                break;
+              case 1:
+                getPosts();
+                break;
+            }
           }
-
     });
-    _statusController = TabController(length: 4, vsync: this);
-    _statusController .addListener(() {
-
-      if(!_statusController.indexIsChanging)
-      {
-        setState(() {
-          _statusSelectedIndex = _statusController.index;
-
-        });
-      }
-    });
+    login();
+    getTransactions();
   }
 
   @override
   Widget build(BuildContext context) {
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: getAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            getTitleBar(),
-            getMainContainer()
-          ],
-        )
-      ),
+      body:RefreshIndicator(
+        child: SingleChildScrollView(
+            physics: isLoading?NeverScrollableScrollPhysics():AlwaysScrollableScrollPhysics(),
+            child: getMainDisplay()
+        ),
+        onRefresh: _onReferesh,
+      )
+    );
+  }
+
+  Future<void> _onReferesh() async
+  {
+
+
+    setState(() => this.isLoading = true);
+    switch(_selectedIndex)
+    {
+      case 0:
+        _myKey.currentState?.setLoading(true);
+        getTransactions();
+        break;
+      case 1:
+        _postKey.currentState?.setLoading(true);
+        getPosts();
+        break;
+    }
+  }
+
+  Widget getMainDisplay(){
+    return  Column(
+      children: <Widget>[
+        getTitleBar(),
+        getMainContainer()
+      ],
     );
   }
 
@@ -130,29 +275,35 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
     );
   }
 
-
   Widget getMainContainer()
   {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.0),
-      padding: EdgeInsets.all(0),
+      margin: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.all(0),
+      constraints: BoxConstraints(
+          minHeight: screenHeight*0.80,
+          minWidth: double.infinity,
+          maxHeight: double.infinity
+      ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.tabBorder, width: 1),
         color: AppColors.tabFill
       ),
-      child:Column(
-        children: [
-          getMainTabBar(),
-          getStatusTabBar(),
-          Divider(height: 16.0.h,color: Colors.transparent),
-          getDisplay(_statusSelectedIndex),
-          Divider(height: 16.0.h,color: Colors.transparent),
-        ],
-      ),
+      child:getDataDisplay()
     );
   }
 
+  Widget getDataDisplay()
+  {
+    return Column(
+      children: [
+        getMainTabBar(),
+        if (_selectedIndex==0) TransactionCustomerList(_onReferesh,key:_myKey) else TransactionPostList(_onReferesh,key:_postKey),
+        Divider(height:16.h,color: Colors.transparent,)
+      ],
+    );
+  }
 
   Widget getMainTabBar()
   {
@@ -167,12 +318,11 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
     );
   }
 
-
-
   Widget getDisplay(int stat)
   {
-    // return Center(child: Text("Display"));
-    return _selectedIndex == 0 ? getCustomerList(stat):TransactionPostList();
+    return _selectedIndex == 0 ?
+    TransactionCustomerList(_onReferesh,key:_myKey) :
+    TransactionPostList(_onReferesh,key:_postKey);
   }
   
   Widget getTab(String label)
@@ -199,6 +349,13 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
       
       height: 45.0.h,
       width: double.infinity ,
+      decoration: BoxDecoration(
+        color: AppColors.tabColorSelected,
+        borderRadius:const BorderRadius.only(
+          topLeft:  Radius.circular(12),
+          bottomRight: Radius.circular(12)
+        ),
+      ),
       child: Padding(
         padding: EdgeInsets.only(top: 12.0.h,bottom:16.0.h ),
         child: Center(
@@ -214,13 +371,6 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
           )
         ),
       ) ,
-      decoration: BoxDecoration(
-        color: AppColors.tabColorSelected,
-        borderRadius:BorderRadius.only(
-          topLeft:  Radius.circular(12),
-          bottomRight: Radius.circular(12)
-        ),
-      ),
     );
   }
   Widget getTabSelected2(String label)
@@ -228,6 +378,13 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
     return Container(
       height: 45.0.h,
       width: double.infinity ,
+      decoration: BoxDecoration(
+        color: AppColors.tabColorSelected,
+        borderRadius:const BorderRadius.only(
+            topRight:  Radius.circular(12),
+            bottomLeft: Radius.circular(12)
+        ),
+      ),
       child: Padding(
         padding: EdgeInsets.only(top: 12.0.h,bottom:16.0.h ),
         child: Center(
@@ -243,104 +400,9 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
             )
         ),
       ) ,
-      decoration: BoxDecoration(
-        color: AppColors.tabColorSelected,
-        borderRadius:BorderRadius.only(
-            topRight:  Radius.circular(12),
-            bottomLeft: Radius.circular(12)
-        ),
-      ),
     );
   }
 
-  Widget getStatusTabBar()
-  {
-    return Container(
-      child: getStatusTabBarTabs(),
-      margin: EdgeInsets.all(9),
-      padding: EdgeInsets.only(left: 9,right: 9),
-      decoration: BoxDecoration(
-        color: Colors.white,
-          border: Border.all(color: AppColors.tabBorder, width: 1),
-        borderRadius: BorderRadius.all(Radius.circular(12))
-      ),
-    );
-  }
-  Widget getStatusTabBarTabs()
-  {
-    return  TabBar(
-      labelPadding:EdgeInsets.zero,
-      indicatorWeight: 3,
-      indicatorColor:indicatorColor(),
-      controller: _statusController,
-      tabs: [
-        Tab(
-          child:
-          Center(
-            child: Text(
-              "All",
-              style: TextStyle(
-                  height: 1.5,
-                  fontSize: 11.0.sp,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: AppTextConstants.fontPoppins,
-                  color: _statusSelectedIndex==0?indicatorColor():AppColors.tabTextNotSelected),
-            ),
-          ),
-        ),
-        Tab(
-          child: Center(
-              child:Text(
-                "Completed",
-                style: TextStyle(
-                    height: 1.5,
-                    fontSize: 11.0.sp,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: AppTextConstants.fontPoppins,
-                    color: _statusSelectedIndex==1?indicatorColor():AppColors.tabTextNotSelected),
-              )
-         ),
-          ),
-        Tab(  child: Text(
-          "Pending",
-          style: TextStyle(
-              height: 1.5,
-              fontSize: 11.0.sp,
-              fontWeight: FontWeight.w700,
-              fontFamily: AppTextConstants.fontPoppins,
-              color: _statusSelectedIndex==2?indicatorColor():AppColors.tabTextNotSelected),
-        )
-        ),
-        Tab(
-
-          child: Text(
-          "Rejected",
-          style: TextStyle(
-              height: 1.5,
-              fontSize: 11.0.sp,
-              fontWeight: FontWeight.w700,
-              fontFamily: AppTextConstants.fontPoppins,
-              color: _statusSelectedIndex==3?indicatorColor():AppColors.tabTextNotSelected),
-        ),),
-      ],
-    );
-  }
-
-  Color indicatorColor()
-  {
-    switch(_statusSelectedIndex)
-    {
-      case 0:
-        return Colors.black;
-      case 1:
-        return AppColors.completedText;
-      case 2:
-        return AppColors.pendingText;
-      case 3:
-        return AppColors.rejectedText;
-    }
-    return Colors.black;
-  }
 
 
 }

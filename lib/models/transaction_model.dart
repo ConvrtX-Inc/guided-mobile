@@ -1,3 +1,9 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+
+import '../constants/app_colors.dart';
+
 /// Transaction Model
 class TransactionModelData{
   /// Constructor
@@ -9,6 +15,10 @@ class TransactionModelData{
 }
 
 class Transaction {
+
+  static const String COMPLETED = "6e9ee3f9-e5c5-4820-a93f-76622c41b94e";
+  static const String PENDING   = "e860cd28-cf9a-4525-aed6-fa9ad930e957";
+  static const String REJECTED  = "a36819dc-d54c-4cc2-b4dc-8bbc776c240d";
 
   final String id, userId, activityPackageId,tourGuideId,serviceName,transactionNumber,statusId;
   final double total;
@@ -44,5 +54,23 @@ class Transaction {
     bookDate = parseJson['book_date'],
     createdDate = parseJson['created_date'],
     updatedDate = parseJson['updated_date'];
+
+
+  static Color indicatorColor(status)
+  {
+    switch(status)
+    {
+      case 0:
+        return Colors.black;
+      case 1:
+        return AppColors.completedText;
+      case 2:
+        return AppColors.pendingText;
+      case 3:
+        return AppColors.rejectedText;
+    }
+    return Colors.black;
+  }
+
 
 }
