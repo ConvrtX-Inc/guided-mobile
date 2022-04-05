@@ -12,7 +12,7 @@ import 'package:guided/routes/route_generator.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-String _defaultHome = '/login';
+String _defaultHome = '/splash_screen';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,8 +37,8 @@ class MyApp extends StatelessWidget {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const MaterialApp(
-            // home: Splash(),
-          );
+              // home: Splash(),
+              );
         } else {
           return ScreenUtilInit(
             builder: () => KeyboardDismissOnTap(
