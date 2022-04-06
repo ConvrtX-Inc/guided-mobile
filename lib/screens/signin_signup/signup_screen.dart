@@ -18,6 +18,8 @@ import 'package:guided/models/guide.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/text_service.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
 
 /// Sign up screen
@@ -33,6 +35,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
+  final TextEditingController _phoneTextController = TextEditingController();
   bool buttonIsLoading = false;
   final FocusNode _name = FocusNode();
   final FocusNode _email = FocusNode();
@@ -40,6 +43,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   List<String> errorMessages = <String>[];
   TextServices textServices = TextServices();
+  String _phonenumber = '';
+  String country = '+63';
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -223,6 +228,32 @@ class _SignupScreenState extends State<SignupScreen> {
                       ]),
                     ),
                     SizedBox(height: 20.h),
+                    IntlPhoneField(
+                      controller: _phoneTextController,
+                      dropdownIcon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.white,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Phone number',
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                      countries: const <String>['CA'],
+                      initialCountryCode: 'CA',
+                      onChanged: (PhoneNumber phone) {
+                        setState(() {
+                          _phonenumber = phone.completeNumber;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 20.h),
                     SizedBox(
                       width: width,
                       height: 60.h,
@@ -255,6 +286,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               'first_name': name[0],
                               'last_name': name[1],
                               'user_type': isTraveller ? 'Traveller' : 'Guide',
+                              'phone_no': _phonenumber,
                               'is_traveller': isTraveller
                             };
                             print(details);
