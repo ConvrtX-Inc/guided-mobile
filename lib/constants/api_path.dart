@@ -133,4 +133,11 @@ class AppAPIPath {
 
   /// Returns bank account url
   static String bankAccountUrl = 'api/v1/bank-account';
+  /// Returns booking dates
+  static String createSlotAvailability =
+      'api/v1/activity-availabilities/create-slot-availability';
+
+  /// Returns booking dates and hour
+  static String createSlotAvailabilityHour =
+      'api/v1/activity-availability-hours';
 }

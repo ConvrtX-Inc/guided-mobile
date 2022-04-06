@@ -231,7 +231,16 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -251,16 +260,17 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                               setState(() {
                                 if (subActivities2 != null) {
                                   subActivities1 = subActivities2;
+                                  subActivities2 = null;
                                 } else {
                                   subActivities1 = null;
                                 }
-
                                 if (subActivities3 != null) {
                                   subActivities2 = subActivities3;
                                   subActivities3 = null;
                                 } else {
                                   subActivities2 = null;
                                 }
+
                                 count--;
                                 showLimitNote = false;
                               });
@@ -270,16 +280,6 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -316,9 +316,18 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
-                          width: 70.w,
+                          width: 60.w,
                           height: 30.h,
                           child: Align(
                             child: Text(
@@ -349,16 +358,6 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -396,7 +395,16 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -424,16 +432,6 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -468,10 +466,13 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                     height: 100.h,
                   )
                 else
-                  SizedBox(
-                    width: 160.w,
-                    height: 100.h,
-                    child: _chosenMainActivity(mainActivity),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: SizedBox(
+                      width: 160.w,
+                      height: 100.h,
+                      child: _chosenMainActivity(mainActivity),
+                    ),
                   ),
                 SizedBox(
                   width: 110.w,
@@ -514,10 +515,13 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                         children: List.generate(length, (int index) {
                           final BadgeDetailsModel badgeDetails =
                               badgeData.badgeDetails[index];
-                          return SizedBox(
-                            height: 10.h,
-                            width: 100.w,
-                            child: _choicesMainActivity(badgeDetails),
+                          return Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: SizedBox(
+                              height: 10.h,
+                              width: 100.w,
+                              child: _choicesMainActivity(badgeDetails),
+                            ),
                           );
                         }),
                       );
@@ -560,7 +564,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
               borderRadius: BorderRadius.circular(16.r),
             ),
             // width: width,
-            height: 130.w,
+            height: 130.h,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
@@ -568,26 +572,28 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Align(
-                      child: SizedBox(
-                        width: 340,
-                        height: 50.h,
-                        child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: <Widget>[
-                              if (subActivities1 == null)
-                                SizedBox(
-                                  height: 100.h,
-                                )
-                              else
-                                _chosenSubActivities1(subActivities1),
-                              if (subActivities2 == null)
-                                SizedBox(
-                                  height: 100.h,
-                                )
-                              else
-                                _chosenSubActivities2(subActivities2),
-                            ]),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: SizedBox(
+                          height: 50.h,
+                          child: ListView(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              children: <Widget>[
+                                if (subActivities1 == null)
+                                  SizedBox(
+                                    height: 100.h,
+                                  )
+                                else
+                                  _chosenSubActivities1(subActivities1),
+                                if (subActivities2 == null)
+                                  SizedBox(
+                                    height: 100.h,
+                                  )
+                                else
+                                  _chosenSubActivities2(subActivities2),
+                              ]),
+                        ),
                       ),
                     ),
                   ],
@@ -627,10 +633,13 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                         children: List.generate(length, (int index) {
                           final BadgeDetailsModel badgeDetails =
                               badgeData.badgeDetails[index];
-                          return SizedBox(
-                            height: 10.h,
-                            width: 100.w,
-                            child: _choicesSubActivities(badgeDetails),
+                          return Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: SizedBox(
+                              height: 10.h,
+                              width: 100.w,
+                              child: _choicesSubActivities(badgeDetails),
+                            ),
                           );
                         }),
                       );
@@ -730,7 +739,11 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                       width: width,
                       height: 60.h,
                       child: ElevatedButton(
-                        onPressed: () => navigatePackageInfoScreen(context),
+                        onPressed: () {
+                          if (subActivities1 != null) {
+                            navigatePackageInfoScreen(context);
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             side: BorderSide(

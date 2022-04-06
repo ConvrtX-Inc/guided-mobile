@@ -676,7 +676,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                         list: listCountry,
                       ),
                     SizedBox(height: 20.h),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _street,
                       focusNode: _streetFocus,
                       decoration: InputDecoration(
@@ -692,10 +692,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'street',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8),
@@ -707,7 +703,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     SizedBox(
                       height: 20.h,
                     ),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _city,
                       focusNode: _cityFocus,
                       decoration: InputDecoration(
@@ -723,13 +719,9 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'city',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
                     SizedBox(height: 20.h),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _province,
                       focusNode: _provinceFocus,
                       decoration: InputDecoration(
@@ -745,15 +737,11 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'province',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
                     SizedBox(
                       height: 20.h,
                     ),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _postalCode,
                       focusNode: _postalCodeFocus,
                       decoration: InputDecoration(
@@ -769,10 +757,6 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'postal-code',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
                     SizedBox(
                       height: 20.h,
@@ -974,6 +958,12 @@ class _OutfitterAddState extends State<OutfitterAdd> {
           .show(context);
     } else if (_date.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
+    } else if (_street.text.isEmpty ||
+        _city.text.isEmpty ||
+        _province.text.isEmpty ||
+        _postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.locationEmpty)
+          .show(context);
     } else {
       setState(() {
         _isSubmit = true;

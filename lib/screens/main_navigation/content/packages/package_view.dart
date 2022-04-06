@@ -197,7 +197,7 @@ class _PackageViewState extends State<PackageView>
                           child: Column(
                             children: <Widget>[
                               SizedBox(
-                                height: 140.h,
+                                height: 110.h,
                               ),
                               Image.memory(
                                 base64.decode(badgeData.badgeDetails[0].imgIcon
@@ -215,7 +215,7 @@ class _PackageViewState extends State<PackageView>
                           child: Column(
                             children: <Widget>[
                               SizedBox(
-                                height: 140.h,
+                                height: 110.h,
                               ),
                               const CircularProgressIndicator(),
                             ],
@@ -267,7 +267,9 @@ class _PackageViewState extends State<PackageView>
                 services: screenArguments['services'],
                 starRating: screenArguments['star_rating'],
               ),
-              const TabSlotsAndScheduleView()
+              TabSlotsAndScheduleView(
+                id: screenArguments['id'],
+              )
             ],
             onChange: setTitle,
             initialIndex: initIndex,

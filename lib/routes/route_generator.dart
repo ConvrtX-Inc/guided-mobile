@@ -120,8 +120,8 @@ class RouteGenerator {
             builder: (_) => const CalendarAvailabilityScreen());
       case '/set_booking_date':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const SetBookingDateScreen());
-      case '/guide_rule':
+            builder: (_) => const SetBookingDateScreen(), settings: settings);
+      case '/guide_rule': 
         return MaterialPageRoute<dynamic>(
             builder: (_) => const GuideRulesScreen(), settings: settings);
       case '/advertisement_view':
