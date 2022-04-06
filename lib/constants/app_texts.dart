@@ -908,6 +908,39 @@ class AppTextConstants {
   ///Returns successfully linked your bank account text
   static String successfullyLinkedYourBankAccount =
       'Successfully Linked \n Your Bank Account';
+
+  ///Returns Ending in Text
+  static String endingIn = 'Ending in';
+
+  ///Returns add card text
+  static String addCard = 'Add Card';
+
+  ///Returns Full name text
+  static String fullName = 'Full Name';
+
+  ///Returns Address text
+  static String address = 'Address';
+
+  ///Returns name on card text
+  static String nameOnCard = 'Name on card';
+
+  ///Returns card number text
+  static String cardNumber = 'Card Number';
+
+  ///Returns expiryDate text
+  static String expiryDate = 'Expiry Date';
+
+  ///Returns cvc text
+  static String cvc = 'CVC';
+  ///Returns billing information text
+ static String billingInformation = 'Billing Information';
+
+  ///Returns card information text
+  static String cardInformation = 'Card Information';
+
+  ///Returns edit card text
+  static String editCard = 'Edit Card';
+
 }
 
 /// Class for error messages text

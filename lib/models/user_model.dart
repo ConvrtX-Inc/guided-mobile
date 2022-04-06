@@ -135,5 +135,5 @@ class UserSingleton {
   static final UserSingleton _singleton = UserSingleton._internal();
   UserSingleton._internal();
   static UserSingleton get instance => _singleton;
-  late UserModel user;
+  UserModel user = UserModel();
 }

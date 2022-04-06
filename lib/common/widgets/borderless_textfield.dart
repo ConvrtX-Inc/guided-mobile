@@ -63,6 +63,7 @@ class BorderlessTextField extends StatelessWidget {
         ),
         TextFormField(
           controller: controller,
+
           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
           onChanged: onChanged,
           // onSaved: onSaved,
@@ -95,7 +96,10 @@ class BorderlessTextField extends StatelessWidget {
                   width: 0,
                   style: BorderStyle.none,
                 ),
-              )),
+              ),
+          errorStyle: const TextStyle(fontSize: 10)
+
+          ),
         )
       ],
     );
