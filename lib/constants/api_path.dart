@@ -130,4 +130,7 @@ class AppAPIPath {
 
   /// Returns badges url
   static String badgesUrl = 'api/v1/badges';
+
+  /// Returns bank account url
+  static String bankAccountUrl = 'api/v1/bank-account';
 }

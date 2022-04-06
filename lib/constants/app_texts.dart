@@ -880,6 +880,34 @@ class AppTextConstants {
 
   /// Returns new splash screen
   // static String theGreatOutdoors = 'The Great Outdoors Just';
+
+  ///Returns add bank account text
+  static String addBankAccount = 'Add Bank Account';
+
+  ///Returns bank information text
+  static String bankInformation = 'Bank Information';
+
+  ///Returns account name text
+  static String accountName = 'Account Name';
+
+  ///Returns bank name text
+  static String bankName = 'Bank Name';
+
+  ///Returns Account Number text
+  static String accountNumber = 'Account Number';
+
+  ///Returns Type Here text
+  static String typeHere = 'Type Here';
+
+  ///Returns Bank routing number text
+  static String bankRoutingNumber = 'Bank Routing Number';
+
+  /// Returns Please Wait text
+  static String pleaseWait = 'Please Wait';
+
+  ///Returns successfully linked your bank account text
+  static String successfullyLinkedYourBankAccount =
+      'Successfully Linked \n Your Bank Account';
 }
 
 /// Class for error messages text

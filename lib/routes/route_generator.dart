@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:guided/screens/activities/activities.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
+import 'package:guided/screens/bank_accounts/add_bank_account.dart';
+import 'package:guided/screens/bank_accounts/manage_bank_account.dart';
 
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/dicovery/discovery.dart';
@@ -65,6 +67,7 @@ import 'package:guided/screens/packages/create_package/package_photos_screen.dar
 import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
+import 'package:guided/screens/payments/payment_manage_card.dart';
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
@@ -272,10 +275,20 @@ class RouteGenerator {
       case '/availability_booking_dates':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AvailabilityBookingDateScreen());
+      case '/payment':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PaymentManageCard());
       case '/':
         return MaterialPageRoute<dynamic>(builder: (_) => const Splash());
       case '/package_edit':
-        return MaterialPageRoute<dynamic>(builder: (_) => const PackageEdit(), settings: settings);
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PackageEdit(), settings: settings);
+      case '/add_bank_account':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AddBankAccountScreen());
+      case '/manage_bank_account':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ManageBankAccountScreen());
       default:
         return _errorRoute();
     }

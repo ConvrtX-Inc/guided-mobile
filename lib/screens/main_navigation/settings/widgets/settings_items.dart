@@ -55,6 +55,12 @@ class SettingsItems extends StatelessWidget {
           case 'local_laws_taxes':
             Navigator.pushNamed(context, '/local_laws_taxes_form');
             break;
+          case 'bank_account':
+            Navigator.pushNamed(context, '/add_bank_account');
+            break;
+          case 'payment':
+            Navigator.pushNamed(context, '/payment');
+            break;
         }
       },
       leading: SvgPicture.asset(_imgUrl),
