@@ -14,6 +14,13 @@ class SettingsUtils {
           imgUrl: 'assets/images/svg/settings_icon_schedule.svg',
           subSettings: []),
       SettingsModel(
+          keyName: 'bank_account',
+          name: 'Bank Account',
+          icon: 'test',
+          color: Colors.black,
+          imgUrl: 'assets/images/svg/settings_icon_payment.svg',
+          subSettings: []),
+      SettingsModel(
           keyName: 'transaction_history',
           name: 'Transaction History',
           icon: 'test',
@@ -103,6 +110,7 @@ class SettingsUtils {
           color: Colors.black,
           imgUrl: 'assets/images/svg/settings_icon_person.svg',
           subSettings: []),
+
       SettingsModel(
           keyName: 'payment',
           name: 'Payment',

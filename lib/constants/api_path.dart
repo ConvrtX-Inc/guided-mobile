@@ -131,6 +131,8 @@ class AppAPIPath {
   /// Returns badges url
   static String badgesUrl = 'api/v1/badges';
 
+  /// Returns bank account url
+  static String bankAccountUrl = 'api/v1/bank-account';
   /// Returns booking dates
   static String createSlotAvailability =
       'api/v1/activity-availabilities/create-slot-availability';
