@@ -3,9 +3,7 @@
 import 'dart:convert';
 
 import 'package:advance_notification/advance_notification.dart';
-import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,8 +45,7 @@ class _SignupScreenState extends State<SignupScreen> {
   TextServices textServices = TextServices();
   String _phonenumber = '';
   String country = '+63';
-  String _dialCode = '+1';
-
+  String _countryCode = '';
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -171,7 +168,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'full_name',
+                      name: 'first_name',
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(context),
                       ]),
@@ -232,43 +229,14 @@ class _SignupScreenState extends State<SignupScreen> {
                       ]),
                     ),
                     SizedBox(height: 20.h),
-                    // IntlPhoneField(
-                    //   controller: _phoneTextController,
-                    //   dropdownIcon: const Icon(
-                    //     Icons.arrow_drop_down,
-                    //     color: Colors.white,
-                    //   ),
-                    //   decoration: InputDecoration(
-                    //     hintText: 'Phone number',
-                    //     hintStyle: TextStyle(
-                    //       color: AppColors.grey,
-                    //     ),
-                    //     enabledBorder: OutlineInputBorder(
-                    //       borderRadius: BorderRadius.circular(14.r),
-                    //       borderSide:
-                    //           BorderSide(color: Colors.grey, width: 0.2.w),
-                    //     ),
-                    //   ),
-                    //   countries: const <String>['CA'],
-                    //   initialCountryCode: 'CA',
-                    //   onChanged: (PhoneNumber phone) {
-                    //     setState(() {
-                    //       _phonenumber = phone.completeNumber;
-                    //     });
-                    //   },
-                    // ),
-                    TextField(
+                    IntlPhoneField(
                       controller: _phoneTextController,
-                      keyboardType: TextInputType.number,
+                      dropdownIcon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.white,
+                      ),
                       decoration: InputDecoration(
-                        hintText: AppTextConstants.phoneNumberHint,
-                        prefixIcon: SizedBox(
-                          child: CountryCodePicker(
-                            onChanged: _onCountryChange,
-                            initialSelection: AppTextConstants.defaultCountry,
-                            favorite: ['+1', 'CA'],
-                          ),
-                        ),
+                        hintText: 'Phone number',
                         hintStyle: TextStyle(
                           color: AppColors.grey,
                         ),
@@ -278,9 +246,14 @@ class _SignupScreenState extends State<SignupScreen> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
-                      ],
+                      countries: const <String>['CA'],
+                      initialCountryCode: 'CA',
+                      onChanged: (PhoneNumber phone) {
+                        setState(() {
+                          _phonenumber = phone.number;
+                          _countryCode = phone.countryCode;
+                        });
+                      },
                     ),
                     SizedBox(height: 20.h),
                     SizedBox(
@@ -305,16 +278,20 @@ class _SignupScreenState extends State<SignupScreen> {
                               buttonIsLoading = true;
                             });
                             // print(_formKey.currentState?.value['email']);
-
+                            List<String> name = _formKey
+                                .currentState?.value['first_name']
+                                .split(' ');
                             final Map<String, dynamic> details = {
                               'email': _formKey.currentState?.value['email'],
                               'password':
                                   _formKey.currentState?.value['password'],
+                              'first_name': name[0],
+                              'last_name': name[1],
                               'full_name':
-                                  _formKey.currentState?.value['full_name'],
+                                  _formKey.currentState?.value['first_name'],
                               'user_type': isTraveller ? 'Traveller' : 'Guide',
-                              'phone_no': _phoneTextController.text,
-                              'country_code': _dialCode.substring(0),
+                              'phone_no': _phonenumber,
+                              'country_code': _countryCode,
                               'is_traveller': isTraveller
                             };
                             print(details);
@@ -430,10 +407,6 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
-
-  /// Method for getting the country code
-  void _onCountryChange(CountryCode countryCode) =>
-      _dialCode = countryCode.dialCode.toString();
 
   // /// Method for verifying Code
   // Future<void> signupUser(Map<String, dynamic> data) async {
