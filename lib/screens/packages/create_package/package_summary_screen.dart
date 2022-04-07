@@ -188,10 +188,13 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                     height: 100.h,
                   )
                 else
-                  SizedBox(
-                    width: 140.w,
-                    height: 100.h,
-                    child: _choicesMainActivity(mainActivity),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: SizedBox(
+                      width: 140.w,
+                      height: 100.h,
+                      child: _choicesMainActivity(mainActivity),
+                    ),
                   ),
                 SizedBox(
                   width: 90.w,
@@ -304,7 +307,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                   children: <Widget>[
                     Align(
                       child: SizedBox(
-                        width: 340,
                         height: 50.h,
                         child: ListView(
                             shrinkWrap: true,
@@ -411,7 +413,16 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -431,6 +442,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                               setState(() {
                                 if (subActivities2 != null) {
                                   subActivities1 = subActivities2;
+                                  subActivities2 = null;
                                 } else {
                                   subActivities1 = null;
                                 }
@@ -450,16 +462,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -496,7 +498,16 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -529,16 +540,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -576,7 +577,16 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -604,16 +614,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -1777,7 +1777,8 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     }
 
     if (_isSubActivityEdited) {
-      subBadges = '${subActivities1.id},${subActivities2.id},${subActivities3.id}';
+      subBadges =
+          '${subActivities1.id},${subActivities2.id},${subActivities3.id}';
     } else {
       subBadges =
           '${preSubActivities1.id},${preSubActivities2.id},${preSubActivities3.id}';
