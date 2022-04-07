@@ -143,4 +143,8 @@ class AppAPIPath {
   /// Returns booking dates and hour
   static String createSlotAvailabilityHour =
       'api/v1/activity-availability-hours';
+
+  ///Returns  card url
+  static String cardUrl = '/api/v1/card';
+
 }

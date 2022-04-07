@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/screens/activities/activities.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/bank_accounts/add_bank_account.dart';
@@ -67,6 +68,7 @@ import 'package:guided/screens/packages/create_package/package_photos_screen.dar
 import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
+import 'package:guided/screens/payments/payment_edit_card.dart';
 import 'package:guided/screens/payments/payment_manage_card.dart';
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
@@ -289,6 +291,9 @@ class RouteGenerator {
       case '/manage_bank_account':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ManageBankAccountScreen());
+      case '/payment_edit_card':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) =>   PaymentEditCard(card: args! as CardModel));
       default:
         return _errorRoute();
     }
