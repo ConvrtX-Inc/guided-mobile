@@ -1,4 +1,4 @@
-// ignore_for_file: no_default_cases
+// ignore_for_file: no_default_cases, always_specify_types
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +9,7 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/home.dart';
 import 'package:guided/models/package_model.dart';
+import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
 import 'package:guided/screens/main_navigation/home/widgets/concat_strings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_earnings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_features.dart';
@@ -55,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void initState() {
+    super.initState();
     _loadingData = APIServices().getPackageData();
   }
 
@@ -184,55 +186,57 @@ class _HomeScreenState extends State<HomeScreen>
           ),
           SizedBox(
             height: 270.h,
-            child: Column(
-              children: <Widget>[
-                // FutureBuilder<PackageModelData>(
-                //   future: _loadingData,
-                //   builder:
-                //       (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                //     if (snapshot.hasData) {
-                //       final PackageModelData packageData = snapshot.data;
-                //       final int length = packageData.packageDetails.length;
-                //       return Expanded(
-                //         child: ListView.builder(
-                //             scrollDirection: Axis.horizontal,
-                //             itemCount: length,
-                //             itemBuilder: (BuildContext ctx, int index) {
-                //               return HomeFeatures(
-                //                 name: packageData.packageDetails[index].name,
-                //                 imageUrl:
-                //                     packageData.packageDetails[index].coverImg,
-                //                 numberOfTourist: packageData
-                //                     .packageDetails[index].maxTraveller,
-                //                 starRating: 0,
-                //                 fee: double.parse(packageData
-                //                     .packageDetails[index].basePrice),
-                //                 dateRange: '1-9',
-                //               );
-                //             }),
-                //       );
-                //     }
-                //     if (snapshot.connectionState != ConnectionState.done) {
-                //       return const Center(child: CircularProgressIndicator());
-                //     }
-                //     return Container();
-                //   },
-                // ),
+            child: Row(
+              children: [
                 Expanded(
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: features.length,
-                        itemBuilder: (BuildContext ctx, int index) {
-                          return HomeFeatures(
-                            name: features[index].featureName,
-                            imageUrl: features[index].featureImageUrl,
-                            numberOfTourist:
-                                features[index].featureNumberOfTourists,
-                            starRating: features[index].featureStarRating,
-                            fee: features[index].featureFee,
-                            dateRange: features[index].dateRange,
-                          );
-                        }))
+                  child: FutureBuilder<PackageModelData>(
+                    future: _loadingData,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasData) {
+                        final PackageModelData packageData = snapshot.data;
+                        final int length = packageData.packageDetails.length;
+                        return ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: length,
+                            itemBuilder: (BuildContext ctx, int index) {
+                              return HomeFeatures(
+                                id: packageData.packageDetails[index].id,
+                                name: packageData.packageDetails[index].name,
+                                mainBadgeId: packageData
+                                    .packageDetails[index].mainBadgeId,
+                                subBadgeId: packageData
+                                    .packageDetails[index].subBadgeId,
+                                description: packageData
+                                    .packageDetails[index].description,
+                                imageUrl:
+                                    packageData.packageDetails[index].coverImg,
+                                numberOfTourist: packageData
+                                    .packageDetails[index].maxTraveller,
+                                starRating: 0,
+                                fee: double.parse(packageData
+                                    .packageDetails[index].basePrice),
+                                dateRange: '1-9',
+                                services:
+                                    packageData.packageDetails[index].services,
+                                country:
+                                    packageData.packageDetails[index].country,
+                                address:
+                                    packageData.packageDetails[index].address,
+                                extraCost: packageData
+                                    .packageDetails[index].extraCostPerPerson,
+                                isPublished: packageData
+                                    .packageDetails[index].isPublished,
+                              );
+                            });
+                      }
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return Container();
+                    },
+                  ),
+                ),
               ],
             ),
           ),
