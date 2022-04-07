@@ -144,7 +144,7 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
               padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
               height: MediaQuery.of(context).size.height * 0.4,
               child: SfDateRangePicker(
-                minDate: DateTime.parse(travellerMonthController.currentDate),
+                minDate: DateTime.now().subtract(Duration(days: 0)),
                 maxDate: Indate.DateUtils.lastDayOfMonth(
                     DateTime.parse(travellerMonthController.currentDate)),
                 initialDisplayDate:

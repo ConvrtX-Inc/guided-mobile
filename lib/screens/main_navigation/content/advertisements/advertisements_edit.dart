@@ -1149,6 +1149,9 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                         ),
                       ),
                       style: txtStyle,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
                     )
                   ],
                 ),

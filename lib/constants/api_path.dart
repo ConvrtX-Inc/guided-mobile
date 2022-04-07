@@ -12,6 +12,9 @@ class AppAPIPath {
   /// Returns API base url
   static String apiBaseUrl = 'guided-api-dev.herokuapp.com';
 
+  /// Returns API base url - staging
+  // static String apiBaseUrl = 'guided-api-staging.herokuapp.com';
+
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
 

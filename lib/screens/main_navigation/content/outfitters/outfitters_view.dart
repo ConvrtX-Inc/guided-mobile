@@ -8,6 +8,7 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Outfitter View Screen
 class OutfitterView extends StatefulWidget {
@@ -176,8 +177,15 @@ class _OutfitterViewState extends State<OutfitterView> {
                     style: AppTextStyle.semiBoldStyle,
                   ),
                   SizedBox(width: 15.w),
-                  Text(AppTextConstants.visitOurStore,
-                      style: AppTextStyle.underlinedLinkStyle),
+                  GestureDetector(
+                    onTap: () async {
+                      await openBrowserURL(
+                          url: 'https://${screenArguments['product_link']}',
+                          inApp: true);
+                    },
+                    child: Text(AppTextConstants.visitOurStore,
+                        style: AppTextStyle.underlinedLinkStyle),
+                  ),
                 ],
               ),
             ),
@@ -297,7 +305,11 @@ class _OutfitterViewState extends State<OutfitterView> {
                 width: MediaQuery.of(context).size.width,
                 height: 60.h,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await openBrowserURL(
+                        url: 'https://${screenArguments['product_link']}',
+                        inApp: true);
+                  },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       side: BorderSide(
@@ -365,5 +377,18 @@ class _OutfitterViewState extends State<OutfitterView> {
                   navIndex: 1,
                   contentIndex: 2,
                 )));
+  }
+
+  Future<void> openBrowserURL({
+    required String url,
+    bool inApp = false,
+  }) async {
+    if (await canLaunch(url)) {
+      await launch(url,
+          forceSafariVC: inApp, // iOS
+          forceWebView: inApp, // Android
+          enableJavaScript: true // Android
+          );
+    }
   }
 }
