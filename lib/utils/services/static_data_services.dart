@@ -3,6 +3,7 @@
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/guide.dart';
+import 'package:guided/models/payment_mode.dart';
 import 'package:guided/models/wishlist_model.dart';
 
 /// Static data service
@@ -149,6 +150,23 @@ class StaticDataService {
         featureImage2: 'assets/images/png/activity2.png',
         featureImage3: 'assets/images/png/activity3.png',
       ),
+    ];
+  }
+
+  ///Get Payment Modes
+  static List<PaymentMode> getPaymentModes(){
+    return <PaymentMode>[
+      PaymentMode(
+        mode: 'Bank_Card',
+        logo: 'assets/images/png/bank_card.png',
+        isSelected: true
+      ),  PaymentMode(
+          mode: 'Google_Pay',
+          logo: 'assets/images/png/google_wallet.png'
+      ),  PaymentMode(
+          mode: 'Apple_Pay',
+          logo: 'assets/images/png/wallet_app_icon.png'
+      )
     ];
   }
 }

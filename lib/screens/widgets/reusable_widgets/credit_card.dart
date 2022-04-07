@@ -13,6 +13,7 @@ class CreditCard extends StatelessWidget {
     required this.cardDetails,
     this.removeCallback,
     Key? key,
+    this.showRemoveBtn = true,
     this.cardColors = const <Color>[Color(0xFF1B1A60), Color(0xFF5E1A86)],
   }) : super(key: key);
 
@@ -26,6 +27,8 @@ class CreditCard extends StatelessWidget {
   ///Remove callback
   final VoidCallback? removeCallback;
 
+  ///show remove button
+  final bool showRemoveBtn;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -107,14 +110,15 @@ class CreditCard extends StatelessWidget {
                             letterSpacing: 6))
                   ],
                 )),
-            Positioned(
-                top: 10,
-                right: 10,
-                child: InkWell(
-                    onTap: removeCallback,
-                    child: SvgPicture.asset(
-                      '${AssetsPath.assetsSVGPath}/remove_card_btn.svg',
-                    ))),
+            if(showRemoveBtn)
+              Positioned(
+                  top: 10,
+                  right: 10,
+                  child: InkWell(
+                      onTap: removeCallback,
+                      child: SvgPicture.asset(
+                        '${AssetsPath.assetsSVGPath}/remove_card_btn.svg',
+                      ))),
           ],
         ));
   }
