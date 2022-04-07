@@ -66,6 +66,7 @@ class _AdvertisementListState extends State<AdvertisementList>
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'btn3',
         backgroundColor: AppColors.chateauGreen,
         onPressed: _settingModalBottomSheet,
         child: const Icon(Icons.add),

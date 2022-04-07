@@ -110,7 +110,7 @@ Widget buildProfileData(BuildContext context, ProfileModelData profileData) =>
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  getProfile(context, '${detail.firstName} ${detail.lastName}'),
+                  getProfile(context, '${detail.fullName}'),
                   SizedBox(
                     height: 9.h,
                   ),

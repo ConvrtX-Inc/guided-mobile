@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_raw_strings, always_specify_types, curly_braces_in_flow_control_structures, cast_nullable_to_non_nullable, avoid_dynamic_calls
+// ignore_for_file: unnecessary_raw_strings, always_specify_types, curly_braces_in_flow_control_structures, cast_nullable_to_non_nullable, avoid_dynamic_calls, unnecessary_statements
 
 import 'dart:convert';
 import 'dart:io';
@@ -461,6 +461,7 @@ class _EventEditState extends State<EventEdit> {
                               setState(() {
                                 if (subActivities2 != null) {
                                   subActivities1 = subActivities2;
+                                  subActivities2 = null;
                                 } else {
                                   subActivities1 = null;
                                 }
@@ -1992,6 +1993,12 @@ class _EventEditState extends State<EventEdit> {
   Future<void> eventEditDetail() async {
     if (isNewDate && _eventDate.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
+    } else if (_street.text.isEmpty ||
+        _city.text.isEmpty ||
+        _province.text.isEmpty ||
+        _postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.locationEmpty)
+          .show(context);
     } else if (_didClickedImage) {
       if (image1 == null) {
         AdvanceSnackBar(message: ErrorMessageConstants.eventImageEmpty)
@@ -2050,6 +2057,59 @@ class _EventEditState extends State<EventEdit> {
                       contentIndex: 1,
                     )));
       }
+    } else {
+      setState(() {
+        _isSubmit = true;
+      });
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      final String? userId = UserSingleton.instance.user.user!.id;
+
+      String subActivity;
+
+      if (_didClickedSubActivity) {
+        subActivity =
+            '${subActivities1.id.toString()},${subActivities2.id.toString()},${subActivities3.id.toString()}';
+      } else {
+        subActivity = _subactivity.text;
+      }
+
+      final Map<String, dynamic> eventEditDetails = {
+        'user_id': userId,
+        'badge_id': mainActivity.id,
+        'title': _title.text,
+        'free_service': _services.text,
+        'main_activities': mainActivity.name,
+        'sub_activities': subActivity,
+        'country': _country.text,
+        'address':
+            '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
+        'description': _description.text,
+        'price': int.parse(_price.text),
+        'event_date':
+            isNewDate ? _eventDate.text : screenArguments['date_format'],
+        'is_published': true,
+      };
+
+      final dynamic response = await APIServices().request(
+          '${AppAPIPath.activityEventUrl}/${screenArguments['id']}',
+          RequestType.PATCH,
+          needAccessToken: true,
+          data: eventEditDetails);
+
+      if (_didClickedImage) {
+        if (image1 != null) {
+          await saveImage(screenArguments['id'], screenArguments['image_id']);
+        }
+      }
+
+      await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const MainNavigationScreen(
+                    navIndex: 1,
+                    contentIndex: 1,
+                  )));
     }
   }
 

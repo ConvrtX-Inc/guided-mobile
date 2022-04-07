@@ -89,6 +89,11 @@
 		<string>fbauth2</string>
 		<string>fbshareextension</string>
 		</array>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+  		<string>https</string>
+  		<string>http</string>
+		</array>
 	</dict>
 </plist>
 

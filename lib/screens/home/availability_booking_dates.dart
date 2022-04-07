@@ -186,7 +186,7 @@ class _AvailabilityBookingDateScreenState
                             AppListConstants.timeList.length,
                             (i) => BookingTime(
                                   title: AppListConstants.timeList[i],
-                                  boolVal: AppListConstants.timeListValues[i],
+                                  boolVal: AppListConstants.timeList[i],
                                 ))),
                 ],
               ),

@@ -1021,6 +1021,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               setState(() {
                                 if (subActivities2 != null) {
                                   subActivities1 = subActivities2;
+                                  subActivities2 = null;
                                 } else {
                                   subActivities1 = null;
                                 }

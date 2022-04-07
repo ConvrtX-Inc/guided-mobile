@@ -2,6 +2,7 @@ import 'package:advance_notification/advance_notification.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -107,7 +108,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           onChanged: _onCountryChange,
                           initialSelection: AppTextConstants.defaultCountry,
                           // ignore: always_specify_types
-                          favorite: const ['+1', 'US'],
+                          favorite: const ['+1', 'CA'],
                         ),
                       ),
                       hintStyle: TextStyle(
@@ -119,6 +120,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
                   ),
                 ],
               ),
@@ -159,23 +163,40 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   /// Methode for caling the API
   Future<void> sendVerificationCode() async {
-    final Map<String, dynamic> userDetails = {
-      'email': emailController.text,
-      'phone_no': _dialCode + phoneController.text,
-    };
+    if (emailController.text.isNotEmpty && phoneController.text.isEmpty) {
+      final Map<String, dynamic> userDetails = {'email': emailController.text};
 
-    if (emailController.text != '' && phoneController.text != '') {
       final dynamic response = await APIServices().request(
           AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
           data: userDetails);
 
-      if (response == 200) {
-        await Navigator.pushNamed(context, '/verification_code',
-            arguments: userDetails);
-      } else {
-        AdvanceSnackBar(message: ErrorMessageConstants.somethingWenWrong)
-            .show(context);
-      }
+      await Navigator.pushNamed(context, '/verification_code',
+          arguments: userDetails);
+    } else if (emailController.text.isEmpty &&
+        phoneController.text.isNotEmpty) {
+      final Map<String, dynamic> userDetails = {
+        'phone_no': phoneController.text,
+      };
+
+      final dynamic response = await APIServices().request(
+          AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
+          data: userDetails);
+
+      await Navigator.pushNamed(context, '/verification_code',
+          arguments: userDetails);
+    } else if (emailController.text.isNotEmpty &&
+        phoneController.text.isNotEmpty) {
+      final Map<String, dynamic> userDetails = {
+        'email': emailController.text,
+        'phone_no': phoneController.text,
+      };
+
+      final dynamic response = await APIServices().request(
+          AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
+          data: userDetails);
+
+      await Navigator.pushNamed(context, '/verification_code',
+          arguments: userDetails);
     } else {
       AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
           .show(context);
