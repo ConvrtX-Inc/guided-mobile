@@ -1,3 +1,5 @@
+// ignore_for_file: no_default_cases
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,12 +8,15 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/home.dart';
+import 'package:guided/models/package_model.dart';
 import 'package:guided/screens/main_navigation/home/widgets/concat_strings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_earnings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_features.dart';
 import 'package:guided/screens/main_navigation/home/widgets/overlapping_avatars.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/utils/home.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Screen for home
 class HomeScreen extends StatefulWidget {
@@ -22,7 +27,10 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin<HomeScreen> {
+  @override
+  bool get wantKeepAlive => true;
   int _selectedMenuIndex = 0;
   final double _bulletHeight = 50;
   final double _bulletWidth = 50;
@@ -41,6 +49,13 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedMenuIndex = value;
     });
+  }
+
+  late Future<PackageModelData> _loadingData;
+
+  @override
+  void initState() {
+    _loadingData = APIServices().getPackageData();
   }
 
   @override
@@ -171,6 +186,38 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 270.h,
             child: Column(
               children: <Widget>[
+                // FutureBuilder<PackageModelData>(
+                //   future: _loadingData,
+                //   builder:
+                //       (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                //     if (snapshot.hasData) {
+                //       final PackageModelData packageData = snapshot.data;
+                //       final int length = packageData.packageDetails.length;
+                //       return Expanded(
+                //         child: ListView.builder(
+                //             scrollDirection: Axis.horizontal,
+                //             itemCount: length,
+                //             itemBuilder: (BuildContext ctx, int index) {
+                //               return HomeFeatures(
+                //                 name: packageData.packageDetails[index].name,
+                //                 imageUrl:
+                //                     packageData.packageDetails[index].coverImg,
+                //                 numberOfTourist: packageData
+                //                     .packageDetails[index].maxTraveller,
+                //                 starRating: 0,
+                //                 fee: double.parse(packageData
+                //                     .packageDetails[index].basePrice),
+                //                 dateRange: '1-9',
+                //               );
+                //             }),
+                //       );
+                //     }
+                //     if (snapshot.connectionState != ConnectionState.done) {
+                //       return const Center(child: CircularProgressIndicator());
+                //     }
+                //     return Container();
+                //   },
+                // ),
                 Expanded(
                     child: ListView.builder(
                         scrollDirection: Axis.horizontal,

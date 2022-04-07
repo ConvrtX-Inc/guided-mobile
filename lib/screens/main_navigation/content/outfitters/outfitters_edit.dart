@@ -1379,7 +1379,13 @@ class _OutfitterEditState extends State<OutfitterEdit>
   }
 
   Future<void> outfitterEditDetail() async {
-    if (_didClickedImage1) {
+    if (_street.text.isEmpty ||
+        _city.text.isEmpty ||
+        _province.text.isEmpty ||
+        _postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.locationEmpty)
+          .show(context);
+    } else if (_didClickedImage1) {
       if (image1 == null) {
         AdvanceSnackBar(message: ErrorMessageConstants.outfitterImageEmpty)
             .show(context);

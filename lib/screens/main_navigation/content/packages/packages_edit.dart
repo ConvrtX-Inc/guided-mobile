@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -180,10 +181,13 @@ class _PackageEditState extends State<PackageEdit> {
                     height: 100.h,
                   )
                 else
-                  SizedBox(
-                    width: 140.w,
-                    height: 100.h,
-                    child: _choicesMainActivity(mainActivity),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: SizedBox(
+                      width: 140.w,
+                      height: 100.h,
+                      child: _choicesMainActivity(mainActivity),
+                    ),
                   ),
                 SizedBox(
                   width: 90.w,
@@ -403,7 +407,16 @@ class _PackageEditState extends State<PackageEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -423,6 +436,7 @@ class _PackageEditState extends State<PackageEdit> {
                               setState(() {
                                 if (subActivities2 != null) {
                                   subActivities1 = subActivities2;
+                                  subActivities2 = null;
                                 } else {
                                   subActivities1 = null;
                                 }
@@ -442,16 +456,6 @@ class _PackageEditState extends State<PackageEdit> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -488,7 +492,16 @@ class _PackageEditState extends State<PackageEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -521,16 +534,6 @@ class _PackageEditState extends State<PackageEdit> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -568,7 +571,16 @@ class _PackageEditState extends State<PackageEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -596,16 +608,6 @@ class _PackageEditState extends State<PackageEdit> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -1804,62 +1806,71 @@ class _PackageEditState extends State<PackageEdit> {
     String subBadges;
     String imageByte;
 
-    setState(() {
-      _isSubmit = true;
-    });
-
-    if (_isMainActivityEdited) {
-      mainBadge = mainActivity.id;
+    if (_street.text.isEmpty ||
+        _city.text.isEmpty ||
+        _province.text.isEmpty ||
+        _postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.locationEmpty)
+          .show(context);
     } else {
-      mainBadge = screenArguments['main_badge_id'];
+      setState(() {
+        _isSubmit = true;
+      });
+
+      if (_isMainActivityEdited) {
+        mainBadge = mainActivity.id;
+      } else {
+        mainBadge = screenArguments['main_badge_id'];
+      }
+
+      if (_isSubActivityEdited) {
+        subBadges =
+            '${subActivities1.id},${subActivities2.id},${subActivities3.id}';
+      } else {
+        subBadges =
+            '${subActivityId[0]},${subActivityId[1]},${subActivityId[2]}';
+      }
+
+      if (image1 != null) {
+        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
+        final String base64Image1 = base64Encode(await image1Bytes);
+        imageByte = base64Image1;
+      } else {
+        imageByte = screenArguments['image_url'];
+      }
+
+      Map<String, dynamic> packageDetails = {
+        'user_id': userId,
+        'main_badge_id': mainBadge,
+        'sub_badge_ids': subBadges,
+        'name': _packageName.text,
+        'description': _description.text,
+        'max_traveller': int.parse(_numberTraveler.text),
+        'country': _country.text,
+        'address':
+            '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}',
+        'services': _services.text,
+        'base_price': _price.text,
+        'extra_cost_per_person': _extraCost.text,
+        'is_published': true,
+        'cover_img': imageByte,
+      };
+
+      /// Activity Package Details API
+      final dynamic response = await APIServices().request(
+          '${AppAPIPath.activityPackagesUrl}/${screenArguments['id']}',
+          RequestType.PATCH,
+          needAccessToken: true,
+          data: packageDetails);
+
+      await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const MainNavigationScreen(
+                    navIndex: 1,
+                    contentIndex: 0,
+                  )));
     }
-
-    if (_isSubActivityEdited) {
-      subBadges =
-          '${subActivities1.id},${subActivities2.id},${subActivities3.id}';
-    } else {
-      subBadges = '${subActivityId[0]},${subActivityId[1]},${subActivityId[2]}';
-    }
-
-    if (image1 != null) {
-      final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-      final String base64Image1 = base64Encode(await image1Bytes);
-      imageByte = base64Image1;
-    } else {
-      imageByte = screenArguments['image_url'];
-    }
-
-    Map<String, dynamic> packageDetails = {
-      'user_id': userId,
-      'main_badge_id': mainBadge,
-      'sub_badge_ids': subBadges,
-      'name': _packageName.text,
-      'description': _description.text,
-      'max_traveller': int.parse(_numberTraveler.text),
-      'country': _country.text,
-      'address':
-          '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}',
-      'services': _services.text,
-      'base_price': _price.text,
-      'extra_cost_per_person': _extraCost.text,
-      'is_published': true,
-      'cover_img': imageByte,
-    };
-
-    /// Activity Package Details API
-    final dynamic response = await APIServices().request(
-        '${AppAPIPath.activityPackagesUrl}/${screenArguments['id']}',
-        RequestType.PATCH,
-        needAccessToken: true,
-        data: packageDetails);
-
-    await Navigator.pushReplacement(
-        context,
-        MaterialPageRoute<dynamic>(
-            builder: (BuildContext context) => const MainNavigationScreen(
-                  navIndex: 1,
-                  contentIndex: 0,
-                )));
   }
 
   @override
