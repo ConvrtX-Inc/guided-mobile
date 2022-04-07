@@ -13,6 +13,7 @@ import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
 import 'package:guided/models/badge_model.dart';
+import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/event_image_model.dart';
@@ -570,10 +571,7 @@ class APIServices {
   /// API service for countries
   Future<List<CountryModel>> getCountries() async {
     final http.Response response =
-        await http.get(Uri.http(apiBaseUrl, '/api/v1/countries'), headers: {
-      HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
-    });
+        await http.get(Uri.http(apiBaseUrl, '/api/v1/countries'));
     final List<dynamic> res = jsonDecode(response.body);
     final List<CountryModel> countries = <CountryModel>[];
 
@@ -584,4 +582,36 @@ class APIServices {
 
     return countries;
   }
+
+  /// Api service for adding bank account
+  Future<BankAccountModel> addBankAccount(BankAccountModel params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'account_name': params.accountName,
+          'bank_name': params.bankName,
+          'account_no': params.accountNumber,
+          'country_id': params.countryId,
+          'bank_routing_number': params.bankRoutingNumber
+        }));
+    final jsonData = json.decode(response.body);
+
+    debugPrint('base url    ${ Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}')}  ');
+    debugPrint('BAnk Response ${jsonData} status code ${response.statusCode}');
+    if (response.statusCode == 201) {
+      debugPrint('BAnk Response ${jsonData}');
+      return BankAccountModel.fromJson(jsonData);
+    } else {
+      return BankAccountModel();
+    }
+  }
+
 }
