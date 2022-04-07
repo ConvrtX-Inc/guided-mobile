@@ -10,10 +10,11 @@ import 'package:guided/utils/event.dart';
 /// Hourly Class
 class HourlyItem extends StatefulWidget {
   /// Constructor
-  HourlyItem({required this.title, required this.boolVal});
+  HourlyItem({required this.title, required this.boolVal, required this.counter});
 
-  final List<String> title;
-  final List<bool> boolVal;
+  final List<dynamic> title;
+  final List<dynamic> boolVal;
+  final List<dynamic> counter;
 
   @override
   _HourlyItemState createState() => _HourlyItemState();
@@ -21,7 +22,7 @@ class HourlyItem extends StatefulWidget {
 
 class _HourlyItemState extends State<HourlyItem> {
   // final CartController _CartController = Get.find();
-  int counter = 0;
+  // int counter = 0;
   late List<SetBookingDateModel> setbookingmodel = EventUtils.getMockData();
 
   void _onCheckedSelected(bool selected, String time, int counter) {
@@ -43,7 +44,7 @@ class _HourlyItemState extends State<HourlyItem> {
                 widget.title[0],
                 style: TextStyle(
                     fontSize: 14.sp,
-                    color: widget.boolVal[0] == false
+                    color: widget.boolVal[1] == false
                         ? AppColors.osloGrey
                         : AppColors.deepGreen,
                     fontWeight: FontWeight.w600,
@@ -62,8 +63,8 @@ class _HourlyItemState extends State<HourlyItem> {
                       height: 40.h,
                       decoration: BoxDecoration(
                           border: Border.all(
-                              color: widget.boolVal[0] == true
-                                  ? counter == 0
+                              color: widget.boolVal[1] == true
+                                  ? widget.counter[2] == 0
                                       ? AppColors.osloGrey
                                       : AppColors.deepGreen
                                   : AppColors.osloGrey),
@@ -72,8 +73,8 @@ class _HourlyItemState extends State<HourlyItem> {
                       child: IconButton(
                           icon: Icon(
                             Icons.remove,
-                            color: widget.boolVal[0] == true
-                                ? counter == 0
+                            color: widget.boolVal[1] == true
+                                ? widget.counter[2] == 0
                                     ? AppColors.osloGrey
                                     : AppColors.primaryGreen
                                 : AppColors.osloGrey,
@@ -81,9 +82,9 @@ class _HourlyItemState extends State<HourlyItem> {
                           ),
                           onPressed: () {
                             setState(() {
-                              if (widget.boolVal[0] == true) {
-                                if (counter != 0) {
-                                  counter--;
+                              if (widget.boolVal[1] == true) {
+                                if (widget.counter[2] != 0) {
+                                  widget.counter[2]--;
                                 }
                               }
                               // _CartController.decrement(widget.price);
@@ -98,7 +99,7 @@ class _HourlyItemState extends State<HourlyItem> {
                           borderRadius: BorderRadius.circular(10.r)),
                       child: Center(
                         child: Text(
-                          ' $counter',
+                          ' ${widget.counter[2]}',
                           style: TextStyle(fontSize: 20.sp),
                         ),
                       ),
@@ -108,7 +109,7 @@ class _HourlyItemState extends State<HourlyItem> {
                       height: 40.h,
                       decoration: BoxDecoration(
                           border: Border.all(
-                              color: widget.boolVal[0] == true
+                              color: widget.boolVal[1] == true
                                   ? AppColors.deepGreen
                                   : AppColors.osloGrey),
                           color: Colors.white,
@@ -116,15 +117,15 @@ class _HourlyItemState extends State<HourlyItem> {
                       child: IconButton(
                           icon: Icon(
                             Icons.add,
-                            color: widget.boolVal[0] == true
+                            color: widget.boolVal[1] == true
                                 ? AppColors.primaryGreen
                                 : AppColors.osloGrey,
                             size: 15,
                           ),
                           onPressed: () {
                             setState(() {
-                              if (widget.boolVal[0] == true) {
-                                counter++;
+                              if (widget.boolVal[1] == true) {
+                                widget.counter[2]++;
                               }
                               // _CartController.increment(widget.price);
                             });
@@ -137,11 +138,11 @@ class _HourlyItemState extends State<HourlyItem> {
           ),
           onChanged: (bool? value) {
             setState(() {
-              widget.boolVal[0] = value!;
+              widget.boolVal[1] = value!;
             });
-            _onCheckedSelected(widget.boolVal[0], widget.title[0], counter);
+            _onCheckedSelected(widget.boolVal[1], widget.title[0], widget.counter[2]);
           },
-          value: widget.boolVal[0],
+          value: widget.boolVal[1],
         ),
       ),
     );

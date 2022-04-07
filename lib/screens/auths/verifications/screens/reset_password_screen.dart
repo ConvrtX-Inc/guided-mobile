@@ -2,6 +2,7 @@ import 'package:advance_notification/advance_notification.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -107,7 +108,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           onChanged: _onCountryChange,
                           initialSelection: AppTextConstants.defaultCountry,
                           // ignore: always_specify_types
-                          favorite: const ['+1', 'US'],
+                          favorite: const ['+1', 'CA'],
                         ),
                       ),
                       hintStyle: TextStyle(
@@ -119,6 +120,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
                   ),
                 ],
               ),

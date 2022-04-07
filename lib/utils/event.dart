@@ -140,7 +140,7 @@ class EventUtils {
       SetBookingDateModel(
         availabilityHour: '',
         slots: 0,
-      )
+      ),
     ];
   }
 }

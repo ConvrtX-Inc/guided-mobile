@@ -38,7 +38,7 @@ class AppTextConstants {
   static String inbox = 'Inbox';
 
   /// Returns default country text
-  static String defaultCountry = 'US';
+  static String defaultCountry = 'CA';
 
   /// Returns font name Gilroy
   static String fontGilroy = 'Gilroy';
@@ -980,4 +980,10 @@ class ErrorMessageConstants {
 
   /// Returns 'Fill all location field' text
   static String locationEmpty = 'Fill all location field';
+
+  /// Returns 'Number of Tourist is Zero (0)' text
+  static String slotIsZero = 'Number of Tourist is Zero (0)';
+  
+  /// Returns 'Please select time to proceed' text
+  static String selectTime = 'Please select a time in order to proceed';
 }

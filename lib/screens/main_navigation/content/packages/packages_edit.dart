@@ -1686,6 +1686,10 @@ class _PackageEditState extends State<PackageEdit> {
                       ),
                     ),
                     style: txtStyle,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
                   ),
                   SizedBox(
                     height: 2.h,
