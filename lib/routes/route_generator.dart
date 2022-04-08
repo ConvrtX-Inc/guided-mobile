@@ -52,6 +52,8 @@ import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_contact_us.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_guided_payments_payout_terms.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_local_laws_taxes_form.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_switch_user_type.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_availability.dart';
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
@@ -80,7 +82,6 @@ import 'package:guided/screens/signin_signup/signup_screen.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
-import 'package:guided/screens/main_navigation/settings/screens/settings_switch_user_type.dart';
 
 /// Route generator configuration
 class RouteGenerator {
@@ -302,6 +303,10 @@ class RouteGenerator {
       case '/switch_to_guide':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsSwitchUserType());
+
+      case '/availability':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsAvailability());
       default:
         return _errorRoute();
     }
