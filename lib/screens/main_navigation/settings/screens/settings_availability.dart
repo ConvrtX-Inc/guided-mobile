@@ -79,7 +79,7 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                             children: <Widget> [
                               Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text('Set yourself as unavailable',
+                                child: Text(_isActive ? 'Set yourself as unavailable' : 'Set yourself as available',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
