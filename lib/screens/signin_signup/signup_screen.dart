@@ -283,8 +283,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               'email': _formKey.currentState?.value['email'],
                               'password':
                                   _formKey.currentState?.value['password'],
-                              'first_name': name[0],
-                              'last_name': name[1],
+                              'full_name': name,
                               'user_type': isTraveller ? 'Traveller' : 'Guide',
                               'phone_no': _phonenumber,
                               'is_traveller': isTraveller
