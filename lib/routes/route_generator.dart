@@ -28,6 +28,7 @@ import 'package:guided/screens/main_navigation/content/event/event_edit.dart';
 import 'package:guided/screens/main_navigation/content/event/event_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/package_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/packages_edit.dart';
+import 'package:guided/screens/main_navigation/traveller/booking_journey/details.dart';
 import 'package:guided/screens/main_navigation/traveller/check_availability/check_availability.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_view.dart';
@@ -82,6 +83,12 @@ import 'package:guided/screens/signin_signup/signup_screen.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
+
+import '../screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
+import '../screens/main_navigation/traveller/booking_journey/check_activity_availability.dart';
+import '../screens/main_navigation/traveller/booking_journey/go_to_paymentmethod.dart';
+import '../screens/main_navigation/traveller/booking_journey/guide_screen.dart';
+import '../screens/main_navigation/traveller/booking_journey/request_to_book.dart';
 
 /// Route generator configuration
 class RouteGenerator {
@@ -287,7 +294,25 @@ class RouteGenerator {
       case '/package_edit':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PackageEdit(), settings: settings);
-      case '/add_bank_account':
+      case '/settingsCalendarManagement':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsCalendarManagement(),
+            settings: settings);
+      case '/checkActivityAvailabityScreen':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CheckActivityAvailabityScreen(),
+            settings: settings);
+      case '/travellerBookingDetailsScreen':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TravellerBookingDetailsScreen(),
+            settings: settings);
+      case '/requestToBookScreen':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const RequestToBookScreen(), settings: settings);
+      case '/goToPaymentMethod':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const GoToPaymentMethod(), settings: settings);
+  case '/add_bank_account':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AddBankAccountScreen());
       case '/manage_bank_account':
