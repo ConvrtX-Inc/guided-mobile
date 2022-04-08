@@ -24,6 +24,7 @@ import 'package:guided/models/package_destination_image_model.dart';
 import 'package:guided/models/package_destination_model.dart';
 import 'package:guided/models/package_model.dart';
 import 'package:guided/models/popular_guide.dart';
+import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
@@ -604,7 +605,8 @@ class APIServices {
         }));
     final jsonData = json.decode(response.body);
 
-    debugPrint('base url    ${ Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}')}  ');
+    debugPrint(
+        'base url    ${Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}')}  ');
     debugPrint('BAnk Response ${jsonData} status code ${response.statusCode}');
     if (response.statusCode == 201) {
       debugPrint('BAnk Response ${jsonData}');
@@ -614,4 +616,43 @@ class APIServices {
     }
   }
 
+  /// API service for waiver form
+  Future<List<PresetFormModel>> getPresetWaiver() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}?s={"id":"4c33d045-e881-4d93-a7b2-3ffa2a44c82c"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    final List<dynamic> res = jsonDecode(response.body);
+    final List<PresetFormModel> forms = <PresetFormModel>[];
+
+    for (final dynamic data in res) {
+      final PresetFormModel form = PresetFormModel.fromJson(data);
+      forms.add(form);
+    }
+
+    return forms;
+  }
+
+  /// API service for terms and condition form
+  Future<List<PresetFormModel>> getPresetTermsAndCondition() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}?s={"id":"c726b58d-f8bf-4777-a7c8-11b3882dcd9b"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    final List<dynamic> res = jsonDecode(response.body);
+    final List<PresetFormModel> forms = <PresetFormModel>[];
+
+    for (final dynamic data in res) {
+      final PresetFormModel form = PresetFormModel.fromJson(data);
+      forms.add(form);
+    }
+
+    return forms;
+  }
 }
