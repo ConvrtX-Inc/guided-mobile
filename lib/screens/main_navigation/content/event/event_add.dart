@@ -356,8 +356,6 @@ class _EventAddState extends State<EventAdd> {
               ),
               borderRadius: BorderRadius.circular(16.r),
             ),
-            // width: width,
-            height: 130.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[

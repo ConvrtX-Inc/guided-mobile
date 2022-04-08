@@ -124,7 +124,7 @@ class RouteGenerator {
       case '/set_booking_date':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SetBookingDateScreen(), settings: settings);
-      case '/guide_rule': 
+      case '/guide_rule':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const GuideRulesScreen(), settings: settings);
       case '/advertisement_view':
@@ -196,7 +196,7 @@ class RouteGenerator {
 
       case '/terms_and_condition':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TermsAndCondition());
+            builder: (_) => const TermsAndCondition(), settings: settings);
       case '/faq':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const FrequentlyAskQuestion());

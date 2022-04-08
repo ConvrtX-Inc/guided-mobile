@@ -7,6 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/preset_form_model.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Local laws taxes screen
 class LocalLawsTaxesScreen extends StatefulWidget {
@@ -22,6 +24,7 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
   bool _isEnabledEdit = false;
 
   TextEditingController _localLawsTaxes = TextEditingController();
+  String _waiver = '';
   final FocusNode _localLawsTaxesFocus = FocusNode();
 
   @override
@@ -196,8 +199,13 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
+    final List<PresetFormModel> resForm =
+          await APIServices().getPresetWaiver();
+      _waiver = resForm[0].description;
+
     if (_localLawsTaxes.text.isNotEmpty) {
       details['local_law_and_taxes'] = _localLawsTaxes.text;
+      details['preset_waiver'] = _waiver;
       await Navigator.pushNamed(context, '/waiver', arguments: details);
     } else {
       AdvanceSnackBar(message: ErrorMessageConstants.emptyLocalLaw)

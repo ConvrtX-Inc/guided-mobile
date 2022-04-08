@@ -313,8 +313,6 @@ class _EventEditState extends State<EventEdit> {
               ),
               borderRadius: BorderRadius.circular(16.r),
             ),
-            // width: width,
-            height: 130.h,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
