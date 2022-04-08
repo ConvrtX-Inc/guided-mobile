@@ -200,7 +200,9 @@ class _DiscoveryMapScreenState extends State<DiscoveryMapScreen> {
                     top: 30,
                     right: 30,
                     child: GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
                         child: Image.asset(
                           AssetsPath.discoveryClose,
                           height: 30.h,

@@ -84,6 +84,7 @@ dependencies:
   animated_splash_screen: ^1.2.0
   sign_in_with_apple: ^3.3.0
   intl_phone_field: ^3.0.1
+  flutter_multi_formatter: ^2.5.1
   url_launcher: ^6.0.20
   share_plus: ^4.0.3
   screenshot: ^1.2.3

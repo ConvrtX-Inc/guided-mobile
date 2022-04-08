@@ -141,10 +141,14 @@ class AppAPIPath {
   static String createSlotAvailability =
       'api/v1/activity-availabilities/create-slot-availability';
 
+  ///Returns  card url
+  static String cardUrl = '/api/v1/card';
+
   /// Returns booking dates and hour
   static String createSlotAvailabilityHour =
       'api/v1/activity-availability-hours';
 
   /// Returns Terms and Condition url
   static String termsAndCondition = 'api/v1/terms-and-conditions';
+
 }

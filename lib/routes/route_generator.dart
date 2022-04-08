@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/screens/activities/activities.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/bank_accounts/add_bank_account.dart';
@@ -67,6 +68,7 @@ import 'package:guided/screens/packages/create_package/package_photos_screen.dar
 import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
+import 'package:guided/screens/payments/payment_edit_card.dart';
 import 'package:guided/screens/payments/payment_manage_card.dart';
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
@@ -78,6 +80,7 @@ import 'package:guided/screens/signin_signup/signup_screen.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_switch_user_type.dart';
 
 /// Route generator configuration
 class RouteGenerator {
@@ -289,6 +292,16 @@ class RouteGenerator {
       case '/manage_bank_account':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ManageBankAccountScreen());
+      case '/payment_edit_card':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) =>   PaymentEditCard(card: args! as CardModel));
+
+      case '/switch_user_type':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsSwitchUserType());
+      case '/switch_to_guide':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsSwitchUserType());
       default:
         return _errorRoute();
     }

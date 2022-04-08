@@ -3,10 +3,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/common/widgets/custom_rounded_button_with_border.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/payments/payment_manage_card.dart';
+import 'package:guided/models/card_model.dart';
+import 'package:guided/screens/payments/payment_successful.dart';
 
 /// Modal Bottom sheet for confirm payment
-Future<dynamic> confirmPayment(BuildContext context) {
+Future<dynamic> confirmPaymentModal(
+    {required BuildContext context,
+    required Widget paymentDetails,
+    required Function onPaymentConfirm,
+    required String serviceName,
+    required String paymentMode,
+    required dynamic paymentMethod,
+required Function onPaymentSuccessful
+    }) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -27,7 +36,9 @@ Future<dynamic> confirmPayment(BuildContext context) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Row(children: <Widget>[
-                      Container(
+                      InkWell(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(6),
                             color: Colors.grey.withOpacity(0.2)),
@@ -35,7 +46,7 @@ Future<dynamic> confirmPayment(BuildContext context) {
                           Icons.arrow_back,
                           color: Colors.black,
                         ),
-                      ),
+                      )),
                       SizedBox(width: 20.w),
                       Text(
                         AppTextConstants.confirmPayment,
@@ -64,68 +75,17 @@ Future<dynamic> confirmPayment(BuildContext context) {
                             ),
                           ],
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20.w, vertical: 20.h),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: <Widget>[
-                                    Text(
-                                      '120',
-                                      style: TextStyle(
-                                        fontSize: 50.sp,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: 'Poppins',
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(bottom: 8.h),
-                                      child: Text(
-                                        '.00USD',
-                                        style: TextStyle(
-                                          fontSize: 26.sp,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                    ),
-                                  ]),
-                              Divider(
-                                thickness: 1.sp,
-                              ),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              getData(AppTextConstants.company, 'Guided'),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              getData(AppTextConstants.orderNumber, '1229000B3HN'),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              getData(AppTextConstants.service, 'Travel Service'),
-                            ],
-                          ),
-                        ),
+                        child: paymentDetails,
                       ),
                     ),
                     SizedBox(
                       height: 40.h,
                     ),
                     CustomRoundedButton(
-                        title: AppTextConstants.confirmPayment,
-                        onpressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) =>
-                                    const PaymentManageCard()),
-                          );
-                        }),
+                      title: AppTextConstants.confirmPayment,
+                      onpressed: () => confirmPayment(
+                          context, paymentDetails, paymentMode,paymentMethod,onPaymentSuccessful),
+                    ),
                     SizedBox(
                       height: 20.h,
                     ),
@@ -148,28 +108,21 @@ Future<dynamic> confirmPayment(BuildContext context) {
       });
 }
 
-/// data
-Widget getData(String title, String data) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          title,
-          style: TextStyle(
-              fontSize: 17.sp,
-              fontWeight: FontWeight.w400,
-              fontFamily: 'Poppins',
-              color: Colors.grey),
-        ),
-        SizedBox(
-          height: 7.h,
-        ),
-        Text(
-          data,
-          style: TextStyle(
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins',
-          ),
-        ),
-      ],
-    );
+/// Confirm Payment
+void confirmPayment(
+    BuildContext context, Widget paymentDetails, String paymentMode, dynamic paymentMethod, Function onPaymentSuccess) {
+
+  if(paymentMethod is CardModel){
+    debugPrint('Payment Method ${paymentMethod.cardNo}');
+  }
+  //Add Payment Process Here & redirect to Payment Success Screen if Successful...
+
+
+  //Add function to saving other data / transactions on your current screen for this call back
+  onPaymentSuccess();
+
+  paymentSuccessful(
+      context: context,
+      paymentDetails: paymentDetails,
+      paymentMethod: paymentMode);
+}
