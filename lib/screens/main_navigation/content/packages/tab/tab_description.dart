@@ -89,7 +89,9 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(widget.name, style: AppTextStyle.txtStyle),
-                  Text('\$${widget.fee}', style: AppTextStyle.txtStyle)
+                  Text(
+                      '\$${widget.fee.toString().substring(0, widget.fee.toString().indexOf('.'))}',
+                      style: AppTextStyle.txtStyle)
                 ],
               ),
             ),
