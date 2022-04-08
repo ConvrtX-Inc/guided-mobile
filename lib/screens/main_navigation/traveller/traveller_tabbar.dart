@@ -2,7 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/card_controller.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_home.dart';
@@ -14,6 +17,7 @@ import 'package:guided/screens/main_navigation/traveller/tabs/tab_settings_main.
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_wishlist.dart';
 
 import 'package:guided/screens/widgets/reusable_widgets/traveller_bottom_navigation.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 ///TravellerTabScreen
 class TravellerTabScreen extends StatefulWidget {
@@ -26,6 +30,7 @@ class TravellerTabScreen extends StatefulWidget {
 class _TravellerTabScreenState extends State<TravellerTabScreen> {
   int _selectedIndex = 0;
   late Widget _selectedWidget;
+  final CardController  _creditCardController  = Get.put(CardController());
 
   @override
   void initState() {
@@ -33,6 +38,10 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
       onItemPressed: popularGuideds,
     );
     super.initState();
+
+    if (_creditCardController.cards.isEmpty) {
+      getUserCards();
+    }
   }
 
   @override
@@ -88,6 +97,24 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
         _selectedWidget = const TabSettingsMain();
       }
     });
+  }
+
+  Future<void> getUserCards() async {
+    final List<CardModel> cards = await APIServices().getCards();
+    await _creditCardController.initCards(cards);
+
+    if (cards.isNotEmpty) {
+      debugPrint('cards $cards');
+      final CardModel card = cards.firstWhere(
+              (CardModel c) => c.isDefault == true,
+          orElse: () => CardModel());
+
+      if (card.id != '') {
+        _creditCardController.setDefaultCard(card);
+      } else {
+        _creditCardController.setDefaultCard(cards[0]);
+      }
+    }
   }
 }
 

@@ -944,6 +944,8 @@ class AppTextConstants {
   ///Returns edit card text
   static String editCard = 'Edit Card';
 
+  /// Returns transaction number
+  static String transactionNumber = 'Transaction Number';
   /// Returns Switch User Type text
   static String switchUserType = 'Switch User Type';
 

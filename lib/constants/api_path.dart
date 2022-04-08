@@ -151,4 +151,7 @@ class AppAPIPath {
   /// Returns Terms and Condition url
   static String termsAndCondition = 'api/v1/terms-and-conditions';
 
+  ///Returns  payment url
+  static String paymentUrl = '/api/v1/charge';
+
 }
