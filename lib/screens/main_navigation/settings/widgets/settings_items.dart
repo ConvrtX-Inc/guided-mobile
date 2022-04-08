@@ -61,6 +61,12 @@ class SettingsItems extends StatelessWidget {
           case 'payment':
             Navigator.pushNamed(context, '/payment');
             break;
+          case 'switch_user_type':
+            Navigator.pushNamed(context, '/switch_user_type');
+            break;
+          case 'switch_to_guide':
+            Navigator.pushNamed(context, '/switch_user_type');
+            break;
         }
       },
       leading: SvgPicture.asset(_imgUrl),

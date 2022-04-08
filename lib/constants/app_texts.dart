@@ -941,6 +941,15 @@ class AppTextConstants {
   ///Returns edit card text
   static String editCard = 'Edit Card';
 
+  /// Returns Switch User Type text
+  static String switchUserType = 'Switch User Type';
+
+  /// Returns Switch to Guide text
+  static String switchToGuide = 'Switch to Guide';
+
+  /// Returns Switch to Traveler text
+  static String switchToTraveler = 'Switch to Traveler';
+
 }
 
 /// Class for error messages text
