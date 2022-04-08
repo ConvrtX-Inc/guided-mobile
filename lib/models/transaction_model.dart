@@ -12,6 +12,7 @@ class TransactionModelData{
   late List<Transaction> transactions = <Transaction>[];
   /// Mapping
   TransactionModelData.fromJSON(List<dynamic> parseJson) : transactions = parseJson.map((i)=>Transaction.fromJson(i)).toList();
+
 }
 
 class Transaction {

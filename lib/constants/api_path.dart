@@ -4,15 +4,15 @@ class AppAPIPath {
   const AppAPIPath();
 
   /// Returns staging mode (change to false if deploying to live)
-  // static bool isStaging = false;
-  static bool isStaging = true;
+  static bool isStaging = false;
+  // static bool isStaging = true;
 
   /// Returns API mode
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
 
   /// Returns API base url
-  // static String apiBaseUrl = 'dev-guided-convrtx.herokuapp.com';
-  static String apiBaseUrl = '192.168.1.7:3000';
+  static String apiBaseUrl = 'guided-api-dev.herokuapp.com';
+  // static String apiBaseUrl = '192.168.1.7:3000';
 
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
@@ -120,5 +120,8 @@ class AppAPIPath {
   static String getTransactions = 'api/v1/transactions';
   /// Returns posts
   static String getPosts = 'api/v1/activity-post';
+  ///Return transactions by-guide
+  static String getTransactionsByGuide = 'api/v1/transactions/byguide/transaction';
+
 
 }
