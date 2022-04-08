@@ -1,3 +1,5 @@
+// ignore_for_file: no_default_cases, always_specify_types
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,12 +8,16 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/home.dart';
+import 'package:guided/models/package_model.dart';
+import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
 import 'package:guided/screens/main_navigation/home/widgets/concat_strings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_earnings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_features.dart';
 import 'package:guided/screens/main_navigation/home/widgets/overlapping_avatars.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/utils/home.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Screen for home
 class HomeScreen extends StatefulWidget {
@@ -22,7 +28,10 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin<HomeScreen> {
+  @override
+  bool get wantKeepAlive => true;
   int _selectedMenuIndex = 0;
   final double _bulletHeight = 50;
   final double _bulletWidth = 50;
@@ -41,6 +50,14 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedMenuIndex = value;
     });
+  }
+
+  late Future<PackageModelData> _loadingData;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadingData = APIServices().getPackageData();
   }
 
   @override
@@ -169,23 +186,57 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(
             height: 270.h,
-            child: Column(
-              children: <Widget>[
+            child: Row(
+              children: [
                 Expanded(
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: features.length,
-                        itemBuilder: (BuildContext ctx, int index) {
-                          return HomeFeatures(
-                            name: features[index].featureName,
-                            imageUrl: features[index].featureImageUrl,
-                            numberOfTourist:
-                                features[index].featureNumberOfTourists,
-                            starRating: features[index].featureStarRating,
-                            fee: features[index].featureFee,
-                            dateRange: features[index].dateRange,
-                          );
-                        }))
+                  child: FutureBuilder<PackageModelData>(
+                    future: _loadingData,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasData) {
+                        final PackageModelData packageData = snapshot.data;
+                        final int length = packageData.packageDetails.length;
+                        return ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: length,
+                            itemBuilder: (BuildContext ctx, int index) {
+                              return HomeFeatures(
+                                id: packageData.packageDetails[index].id,
+                                name: packageData.packageDetails[index].name,
+                                mainBadgeId: packageData
+                                    .packageDetails[index].mainBadgeId,
+                                subBadgeId: packageData
+                                    .packageDetails[index].subBadgeId,
+                                description: packageData
+                                    .packageDetails[index].description,
+                                imageUrl:
+                                    packageData.packageDetails[index].coverImg,
+                                numberOfTourist: packageData
+                                    .packageDetails[index].maxTraveller,
+                                starRating: 0,
+                                fee: double.parse(packageData
+                                    .packageDetails[index].basePrice),
+                                dateRange: '1-9',
+                                services:
+                                    packageData.packageDetails[index].services,
+                                country:
+                                    packageData.packageDetails[index].country,
+                                address:
+                                    packageData.packageDetails[index].address,
+                                extraCost: packageData
+                                    .packageDetails[index].extraCostPerPerson,
+                                isPublished: packageData
+                                    .packageDetails[index].isPublished,
+                              );
+                            });
+                      }
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return Container();
+                    },
+                  ),
+                ),
               ],
             ),
           ),

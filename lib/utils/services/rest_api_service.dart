@@ -13,6 +13,8 @@ import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
 import 'package:guided/models/badge_model.dart';
+import 'package:guided/models/bank_account_model.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/event_image_model.dart';
@@ -23,10 +25,12 @@ import 'package:guided/models/package_destination_image_model.dart';
 import 'package:guided/models/package_destination_model.dart';
 import 'package:guided/models/package_model.dart';
 import 'package:guided/models/popular_guide.dart';
+import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/utils/mixins/global_mixin.dart';
 
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/global_api_service.dart';
@@ -570,10 +574,7 @@ class APIServices {
   /// API service for countries
   Future<List<CountryModel>> getCountries() async {
     final http.Response response =
-        await http.get(Uri.http(apiBaseUrl, '/api/v1/countries'), headers: {
-      HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
-    });
+        await http.get(Uri.http(apiBaseUrl, '/api/v1/countries'));
     final List<dynamic> res = jsonDecode(response.body);
     final List<CountryModel> countries = <CountryModel>[];
 
@@ -583,5 +584,231 @@ class APIServices {
     }
 
     return countries;
+  }
+
+  /// Api service for adding bank account
+  Future<BankAccountModel> addBankAccount(BankAccountModel params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'account_name': params.accountName,
+          'bank_name': params.bankName,
+          'account_no': params.accountNumber,
+          'country_id': params.countryId,
+          'bank_routing_number': params.bankRoutingNumber
+        }));
+    final jsonData = json.decode(response.body);
+
+    debugPrint(
+        'base url    ${Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}')}  ');
+    debugPrint('BAnk Response ${jsonData} status code ${response.statusCode}');
+
+    if (response.statusCode == 201) {
+      debugPrint('BAnk Response ${jsonData}');
+      return BankAccountModel.fromJson(jsonData);
+    } else {
+      return BankAccountModel();
+    }
+  }
+
+  /// API service for waiver form
+  Future<List<PresetFormModel>> getPresetWaiver() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}?s={"id":"4c33d045-e881-4d93-a7b2-3ffa2a44c82c"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    final List<dynamic> res = jsonDecode(response.body);
+    final List<PresetFormModel> forms = <PresetFormModel>[];
+
+    for (final dynamic data in res) {
+      final PresetFormModel form = PresetFormModel.fromJson(data);
+      forms.add(form);
+    }
+
+    return forms;
+  }
+
+  /// API service for terms and condition form
+  Future<List<PresetFormModel>> getPresetTermsAndCondition() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}?s={"id":"c726b58d-f8bf-4777-a7c8-11b3882dcd9b"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    final List<dynamic> res = jsonDecode(response.body);
+    final List<PresetFormModel> forms = <PresetFormModel>[];
+
+    for (final dynamic data in res) {
+      final PresetFormModel form = PresetFormModel.fromJson(data);
+      forms.add(form);
+    }
+
+    return forms;
+  }
+
+  ///API Service for Retrieving User Cards
+  Future<List<CardModel>> getCards() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+    };
+
+    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/card', queryParameters)}');
+    debugPrint('params R$queryParameters');
+    final http.Response response = await http
+        .get(Uri.http(apiBaseUrl, '/api/v1/card', queryParameters), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<CardModel> cards = <CardModel>[];
+    for (final dynamic res in jsonData) {
+      final CardModel card = CardModel.fromJson(res);
+      cards.add(card);
+    }
+    return cards;
+  }
+
+  /// API service for Add Card
+  Future<CardModel> addCard(CardModel cardDetailParams, String cardType) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.cardUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'is_default': 'false',
+          'full_name': cardDetailParams.fullName,
+          'address': cardDetailParams.address,
+          'city': cardDetailParams.city,
+          'postal_code': cardDetailParams.postalCode,
+          'country_id': cardDetailParams.countryId,
+          'card_no': cardDetailParams.cardNo,
+          'name_on_card': cardDetailParams.nameOnCard,
+          'expiry_date': cardDetailParams.expiryDate,
+          'cvv': cardDetailParams.cvv.toString(),
+          'card_color': GlobalMixin().generateRandomHexColor().toString(),
+          'card_type': cardType
+        }));
+
+    final jsonData = json.decode(response.body);
+
+    if (response.statusCode == 201) {
+      return CardModel.fromJson(jsonData);
+    } else {
+      return CardModel();
+    }
+  }
+
+  /// API service for Remove Card
+  Future<http.Response> removeCard(String cardID) async {
+    final String? token = UserSingleton.instance.user.token;
+    final http.Response response = await http.delete(
+      Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.cardUrl}/$cardID'),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+    );
+
+    return response;
+  }
+
+  /// API service for default Card
+  Future<APIStandardReturnFormat> setDefaultCard(String cardID) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl${AppAPIPath.cardUrl}/set-default-card'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'card_id': cardID,
+        }));
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for Edit Card
+  Future<CardModel> editCard(
+      CardModel cardDetailParams, String cardType) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.patch(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl${AppAPIPath.cardUrl}/${cardDetailParams.id}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'id': cardDetailParams.id,
+          'user_id': userId.toString(),
+          'is_default': cardDetailParams.isDefault.toString(),
+          'full_name': cardDetailParams.fullName,
+          'address': cardDetailParams.address,
+          'city': cardDetailParams.city,
+          'postal_code': cardDetailParams.postalCode,
+          'country_id': cardDetailParams.countryId,
+          'card_no': cardDetailParams.cardNo,
+          'name_on_card': cardDetailParams.nameOnCard,
+          'expiry_date': cardDetailParams.expiryDate,
+          'cvv': cardDetailParams.cvv.toString(),
+          'card_color': cardDetailParams.cardColor,
+          'card_type': cardType
+        }));
+
+    final dynamic jsonData = json.decode(response.body);
+
+    if (response.statusCode == 200) {
+      return CardModel.fromJson(jsonData);
+    } else {
+      return CardModel();
+    }
+  }
+
+  ///API service for Payment
+  Future<APIStandardReturnFormat> pay(int amount, String paymentMethodID) async {
+    final String? token = UserSingleton.instance.user.token;
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.paymentUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          'content-type': 'application/json'
+        },
+        body: jsonEncode({
+          'payment_method_id': paymentMethodID,
+          'amount': amount,
+        }));
+
+    debugPrint('payment response:: ${response.body}');
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 }

@@ -7,11 +7,25 @@ class SettingsUtils {
   static List<SettingsModel> getMockedDataSettings() {
     return <SettingsModel>[
       SettingsModel(
+          keyName: 'availability',
+          name: 'Availability',
+          icon: 'calendar',
+          color: Colors.black,
+          imgUrl: 'assets/images/svg/settings_icon_availability.svg',
+          subSettings: []),
+      SettingsModel(
           keyName: 'schedule',
           name: 'Schedule',
           icon: 'test',
           color: Colors.black,
           imgUrl: 'assets/images/svg/settings_icon_schedule.svg',
+          subSettings: []),
+      SettingsModel(
+          keyName: 'bank_account',
+          name: 'Bank Account',
+          icon: 'test',
+          color: Colors.black,
+          imgUrl: 'assets/images/svg/settings_icon_payment.svg',
           subSettings: []),
       SettingsModel(
           keyName: 'transaction_history',
@@ -89,6 +103,13 @@ class SettingsUtils {
   /// generate mock data for traveller settings
   static List<SettingsModel> getMockedTravellerDataSettings() {
     return <SettingsModel>[
+    SettingsModel(
+          keyName: 'availability',
+          name: 'Availability',
+          icon: 'calendar',
+          color: Colors.black,
+          imgUrl: 'assets/images/svg/settings_icon_availability.svg',
+          subSettings: []),
       SettingsModel(
           keyName: 'my_booking',
           name: 'My Bookings',
@@ -103,6 +124,7 @@ class SettingsUtils {
           color: Colors.black,
           imgUrl: 'assets/images/svg/settings_icon_person.svg',
           subSettings: []),
+
       SettingsModel(
           keyName: 'payment',
           name: 'Payment',

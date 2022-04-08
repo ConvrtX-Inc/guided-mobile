@@ -45,6 +45,7 @@ class _SignupScreenState extends State<SignupScreen> {
   TextServices textServices = TextServices();
   String _phonenumber = '';
   String country = '+63';
+  String _countryCode = '';
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -249,7 +250,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       initialCountryCode: 'CA',
                       onChanged: (PhoneNumber phone) {
                         setState(() {
-                          _phonenumber = phone.completeNumber;
+                          _phonenumber = phone.number;
+                          _countryCode = phone.countryCode;
                         });
                       },
                     ),
@@ -286,6 +288,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               'full_name': name,
                               'user_type': isTraveller ? 'Traveller' : 'Guide',
                               'phone_no': _phonenumber,
+                              'country_code': _countryCode,
                               'is_traveller': isTraveller
                             };
                             print(details);

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/screens/activities/activities.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
+import 'package:guided/screens/bank_accounts/add_bank_account.dart';
+import 'package:guided/screens/bank_accounts/manage_bank_account.dart';
 
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/dicovery/discovery.dart';
@@ -50,6 +53,8 @@ import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_contact_us.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_guided_payments_payout_terms.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_local_laws_taxes_form.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_switch_user_type.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_availability.dart';
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
@@ -66,6 +71,8 @@ import 'package:guided/screens/packages/create_package/package_photos_screen.dar
 import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
+import 'package:guided/screens/payments/payment_edit_card.dart';
+import 'package:guided/screens/payments/payment_manage_card.dart';
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
@@ -197,7 +204,7 @@ class RouteGenerator {
 
       case '/terms_and_condition':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TermsAndCondition());
+            builder: (_) => const TermsAndCondition(), settings: settings);
       case '/faq':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const FrequentlyAskQuestion());
@@ -279,6 +286,9 @@ class RouteGenerator {
       case '/availability_booking_dates':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AvailabilityBookingDateScreen());
+      case '/payment':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PaymentManageCard());
       case '/':
         return MaterialPageRoute<dynamic>(builder: (_) => const Splash());
       case '/package_edit':
@@ -302,6 +312,26 @@ class RouteGenerator {
       case '/goToPaymentMethod':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const GoToPaymentMethod(), settings: settings);
+  case '/add_bank_account':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AddBankAccountScreen());
+      case '/manage_bank_account':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ManageBankAccountScreen());
+      case '/payment_edit_card':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) =>   PaymentEditCard(card: args! as CardModel));
+
+      case '/switch_user_type':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsSwitchUserType());
+      case '/switch_to_guide':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsSwitchUserType());
+
+      case '/availability':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsAvailability());
       default:
         return _errorRoute();
     }

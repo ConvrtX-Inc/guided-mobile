@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:guided/helpers/hexColor.dart';
@@ -6,14 +5,16 @@ import 'package:guided/helpers/hexColor.dart';
 /// Custom Textfield without border
 class BorderlessTextField extends StatelessWidget {
   /// Constructor
-  const BorderlessTextField({
-    required this.title,
-    Key? key,
-    this.hint,
-    this.onChanged,
-    this.description,
-    this.controller,
-  }) : super(key: key);
+  const BorderlessTextField(
+      {required this.title,
+      Key? key,
+      this.hint,
+      this.onChanged,
+      this.description,
+      this.controller,
+      this.onSaved,
+      this.onValidate})
+      : super(key: key);
 
   /// Title of the textfield
   final String title;
@@ -27,8 +28,15 @@ class BorderlessTextField extends StatelessWidget {
   /// The onchange function with string value parameter
   final Function(String)? onChanged;
 
+  /// The onSaved function with string value parameter
+  final Function? onSaved;
+
+  /// The onValidate function with string value parameter
+  final Function? onValidate;
+
   /// This textfield description
   final String? description;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -36,7 +44,8 @@ class BorderlessTextField extends StatelessWidget {
       children: <Widget>[
         Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15, fontFamily: 'Gilroy'),
+          style: const TextStyle(
+              fontWeight: FontWeight.w500, fontSize: 15, fontFamily: 'Gilroy'),
         ),
         if (description != null)
           Padding(
@@ -52,10 +61,24 @@ class BorderlessTextField extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        TextField(
+        TextFormField(
           controller: controller,
+
           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
           onChanged: onChanged,
+          // onSaved: onSaved,
+          validator: (String? val) {
+            if(onValidate != null){
+              return onValidate!(val);
+            }
+          },
+          onSaved: (String? val) {
+            if(onSaved != null){
+              return onSaved!(val);
+            }
+
+          },
+
           decoration: InputDecoration(
               filled: true,
               hintText: hint,
@@ -73,7 +96,10 @@ class BorderlessTextField extends StatelessWidget {
                   width: 0,
                   style: BorderStyle.none,
                 ),
-              )),
+              ),
+          errorStyle: const TextStyle(fontSize: 10)
+
+          ),
         )
       ],
     );

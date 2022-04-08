@@ -12,6 +12,7 @@ import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Widget for home features
 class OutfitterFeature extends StatefulWidget {
@@ -168,7 +169,10 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
                         color: Colors.white,
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      await openBrowserURL(
+                          url: 'https://${widget._productLink}', inApp: true);
+                    },
                   ),
                 ],
               ),
@@ -264,6 +268,19 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
             dotHeight: 10.h,
             dotWidth: 10.w),
       );
+
+  Future<void> openBrowserURL({
+    required String url,
+    bool inApp = false,
+  }) async {
+    if (await canLaunch(url)) {
+      await launch(url,
+          forceSafariVC: inApp, // iOS
+          forceWebView: inApp, // Android
+          enableJavaScript: true // Android
+          );
+    }
+  }
 
   /// Navigate to Outfitter View
   Future<void> navigateOutfitterDetails(

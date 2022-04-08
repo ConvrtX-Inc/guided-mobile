@@ -73,6 +73,7 @@ class _PackageListState extends State<PackageList>
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'btn0',
         backgroundColor: AppColors.chateauGreen,
         onPressed: () {
           Navigator.push(

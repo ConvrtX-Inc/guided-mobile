@@ -149,7 +149,7 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
     };
 
     final Map<String, dynamic> signupDetails = Map<String, dynamic>.from(data);
-    signupDetails['phone_number'] = _dialCode + phoneController.text;
+    signupDetails['phone_number'] = phoneController.text;
     signupDetails['country_code'] = _dialCode.substring(0);
     
     await APIServices().request(

@@ -248,10 +248,13 @@ class _EventAddState extends State<EventAdd> {
                     height: 100.h,
                   )
                 else
-                  SizedBox(
-                    width: 160.w,
-                    height: 100.h,
-                    child: _choicesMainActivity(mainActivity),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: SizedBox(
+                      width: 160.w,
+                      height: 100.h,
+                      child: _choicesMainActivity(mainActivity),
+                    ),
                   ),
                 SizedBox(
                   width: 110.w,
@@ -353,8 +356,6 @@ class _EventAddState extends State<EventAdd> {
               ),
               borderRadius: BorderRadius.circular(16.r),
             ),
-            // width: width,
-            height: 130.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
@@ -363,7 +364,6 @@ class _EventAddState extends State<EventAdd> {
                   children: <Widget>[
                     Align(
                       child: SizedBox(
-                        width: 340,
                         height: 50.h,
                         child: ListView(
                             shrinkWrap: true,
@@ -469,7 +469,16 @@ class _EventAddState extends State<EventAdd> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -489,6 +498,7 @@ class _EventAddState extends State<EventAdd> {
                               setState(() {
                                 if (subActivities2 != null) {
                                   subActivities1 = subActivities2;
+                                  subActivities2 = null;
                                 } else {
                                   subActivities1 = null;
                                 }
@@ -508,16 +518,6 @@ class _EventAddState extends State<EventAdd> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -554,7 +554,16 @@ class _EventAddState extends State<EventAdd> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -587,16 +596,6 @@ class _EventAddState extends State<EventAdd> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -634,7 +633,16 @@ class _EventAddState extends State<EventAdd> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -662,16 +670,6 @@ class _EventAddState extends State<EventAdd> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -1347,7 +1345,7 @@ class _EventAddState extends State<EventAdd> {
                     SizedBox(
                       height: 20.h,
                     ),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _street,
                       focusNode: _streetFocus,
                       decoration: InputDecoration(
@@ -1363,10 +1361,6 @@ class _EventAddState extends State<EventAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'street',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8),
@@ -1376,7 +1370,7 @@ class _EventAddState extends State<EventAdd> {
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _city,
                       focusNode: _cityFocus,
                       decoration: InputDecoration(
@@ -1392,13 +1386,9 @@ class _EventAddState extends State<EventAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'city',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
                     SizedBox(height: 20.h),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _province,
                       focusNode: _provinceFocus,
                       decoration: InputDecoration(
@@ -1414,13 +1404,9 @@ class _EventAddState extends State<EventAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'province',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
                     SizedBox(height: 20.h),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _postalCode,
                       focusNode: _postalCodeFocus,
                       decoration: InputDecoration(
@@ -1436,10 +1422,6 @@ class _EventAddState extends State<EventAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'postal-code',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
                     SizedBox(
                       height: 20.h,
@@ -1672,12 +1654,16 @@ class _EventAddState extends State<EventAdd> {
     } else if (image1 == null) {
       AdvanceSnackBar(message: ErrorMessageConstants.eventImageEmpty)
           .show(context);
-    }
-    else if (_date.text.isEmpty) {
+    } else if (_date.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
-    }
-    else if (services.isEmpty) {
+    } else if (services.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.serviceEmpty)
+          .show(context);
+    } else if (_street.text.isEmpty ||
+        _city.text.isEmpty ||
+        _province.text.isEmpty ||
+        _postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.locationEmpty)
           .show(context);
     } else {
       setState(() {

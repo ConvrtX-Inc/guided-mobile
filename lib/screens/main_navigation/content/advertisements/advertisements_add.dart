@@ -874,8 +874,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
               ),
               borderRadius: BorderRadius.circular(16.r),
             ),
-            // width: width,
-            height: 130.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
@@ -1021,6 +1019,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               setState(() {
                                 if (subActivities2 != null) {
                                   subActivities1 = subActivities2;
+                                  subActivities2 = null;
                                 } else {
                                   subActivities1 = null;
                                 }
