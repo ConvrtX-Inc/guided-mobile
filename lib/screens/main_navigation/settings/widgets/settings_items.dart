@@ -1,13 +1,15 @@
-// ignore_for_file: implementation_imports
+// ignore_for_file: implementation_imports, unnecessary_statements
 
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart';
+import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Widgets for displaying list of user settings
-class SettingsItems extends StatelessWidget {
+class SettingsItems extends StatefulWidget {
   /// Constructor
   const SettingsItems(
       {String keyName = '', String imgUrl = '', String name = '', Key? key})
@@ -21,10 +23,16 @@ class SettingsItems extends StatelessWidget {
   final String _name;
 
   @override
+  State<SettingsItems> createState() => _SettingsItemsState();
+}
+
+class _SettingsItemsState extends State<SettingsItems> {
+  String termsAndCondition = '';
+  @override
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () {
-        switch (_keyName) {
+        switch (widget._keyName) {
           case 'schedule':
             showAvatarModalBottomSheet(
               expand: true,
@@ -41,7 +49,7 @@ class SettingsItems extends StatelessWidget {
             Navigator.pushNamed(context, '/faq');
             break;
           case 'terms_of_service':
-            Navigator.pushNamed(context, '/terms_and_condition');
+            getTermsAndCondition(context);
             break;
           case 'traveler_release_waiver_form':
             Navigator.pushNamed(context, '/waiver_form');
@@ -61,11 +69,17 @@ class SettingsItems extends StatelessWidget {
           case 'payment':
             Navigator.pushNamed(context, '/payment');
             break;
+          case 'switch_user_type':
+            Navigator.pushNamed(context, '/switch_user_type');
+            break;
+          case 'switch_to_guide':
+            Navigator.pushNamed(context, '/switch_user_type');
+            break;
         }
       },
-      leading: SvgPicture.asset(_imgUrl),
+      leading: SvgPicture.asset(widget._imgUrl),
       title: Text(
-        _name,
+        widget._name,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
       ),
       trailing: const Icon(
@@ -74,5 +88,18 @@ class SettingsItems extends StatelessWidget {
         color: Colors.black,
       ),
     );
+  }
+
+  Future<void> getTermsAndCondition(BuildContext context) async {
+    final List<PresetFormModel> resForm =
+        await APIServices().getPresetTermsAndCondition();
+    termsAndCondition = resForm[0].description;
+
+    final Map<String, dynamic> details = {
+      'terms_and_condition': termsAndCondition
+    };
+
+    await Navigator.pushNamed(context, '/terms_and_condition',
+        arguments: details);
   }
 }

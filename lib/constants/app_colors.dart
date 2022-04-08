@@ -127,4 +127,7 @@ class AppColors {
 
   /// hex color for gallery white
   static HexColor galleryWhite = HexColor('#EBEBEB');
+
+  /// hex colr for dirty white
+  static HexColor dirtyWhite = HexColor('#F2F2F2');
 }

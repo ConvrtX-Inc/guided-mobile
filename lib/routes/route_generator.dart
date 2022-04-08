@@ -80,6 +80,7 @@ import 'package:guided/screens/signin_signup/signup_screen.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_switch_user_type.dart';
 
 /// Route generator configuration
 class RouteGenerator {
@@ -123,7 +124,7 @@ class RouteGenerator {
       case '/set_booking_date':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SetBookingDateScreen(), settings: settings);
-      case '/guide_rule': 
+      case '/guide_rule':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const GuideRulesScreen(), settings: settings);
       case '/advertisement_view':
@@ -195,7 +196,7 @@ class RouteGenerator {
 
       case '/terms_and_condition':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TermsAndCondition());
+            builder: (_) => const TermsAndCondition(), settings: settings);
       case '/faq':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const FrequentlyAskQuestion());
@@ -294,6 +295,13 @@ class RouteGenerator {
       case '/payment_edit_card':
         return MaterialPageRoute<dynamic>(
             builder: (_) =>   PaymentEditCard(card: args! as CardModel));
+
+      case '/switch_user_type':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsSwitchUserType());
+      case '/switch_to_guide':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsSwitchUserType());
       default:
         return _errorRoute();
     }

@@ -63,9 +63,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 UserModel.fromJson(json.decode(response.successResponse));
             UserSingleton.instance.user = user;
             if (user.user?.isTraveller != true) {
+              await SecureStorage.saveValue(key: AppTextConstants.userType, value: 'guide');
               await Navigator.pushReplacementNamed(context, '/main_navigation');
             } else {
               await Navigator.pushReplacementNamed(context, '/traveller_tab');
+              await SecureStorage.saveValue(key: AppTextConstants.userType, value: 'traveller');
             }
           }
         });
@@ -143,8 +145,10 @@ class _LoginScreenState extends State<LoginScreen> {
             UserModel.fromJson(json.decode(response.successResponse));
         UserSingleton.instance.user = user;
         if (user.user?.isTraveller != true) {
+           await SecureStorage.saveValue(key: AppTextConstants.userType, value: 'guide');
           await Navigator.pushReplacementNamed(context, '/main_navigation');
         } else {
+           await SecureStorage.saveValue(key: AppTextConstants.userType, value: 'traveller');
           await Navigator.pushReplacementNamed(context, '/traveller_tab');
         }
       }
@@ -243,9 +247,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   json.decode(response.successResponse));
                               UserSingleton.instance.user = user;
                               if (user.user?.isTraveller != true) {
+                                 await SecureStorage.saveValue(key: AppTextConstants.userType, value: 'guide');
                                 await Navigator.pushReplacementNamed(
                                     context, '/main_navigation');
                               } else {
+                                 await SecureStorage.saveValue(key: AppTextConstants.userType, value: 'traveller');
                                 await Navigator.pushReplacementNamed(
                                     context, '/traveller_tab');
                               }
