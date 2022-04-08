@@ -955,6 +955,12 @@ class AppTextConstants {
   /// Returns Switch to Traveler text
   static String switchToTraveler = 'Switch to Traveler';
 
+  /// Returns Availability text
+  static String availability = 'Availability';
+
+  /// Returns Why Optional text in Availability screen
+  static String why = 'Why? (Optional)';
+
 }
 
 /// Class for error messages text
