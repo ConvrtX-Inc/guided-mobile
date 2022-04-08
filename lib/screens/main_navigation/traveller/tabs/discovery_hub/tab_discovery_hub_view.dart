@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/models/discovery_hub.dart';
 import 'package:guided/models/hub_outfitter.dart';
+import 'package:guided/screens/payments/confirm_payment.dart';
+import 'package:guided/screens/payments/payment_method.dart';
+import 'package:guided/screens/payments/payment_successful.dart';
+import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
+import 'package:guided/screens/widgets/reusable_widgets/discovery_payment_details.dart';
 import 'package:guided/utils/event.dart';
+import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class TabDiscoveryHubView extends StatefulWidget {
   const TabDiscoveryHubView({Key? key}) : super(key: key);
@@ -163,8 +172,7 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                 padding: EdgeInsets.only(left: 15.w, top: 15.h),
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width / 1.4,
-                  child: Expanded(
-                      child: Row(children: <Widget>[
+                  child: Row(children: <Widget>[
                     Image.asset(
                       '${AssetsPath.assetsPNGPath}/mark_chen.png',
                       width: 50.w,
@@ -197,7 +205,7 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                         )
                       ],
                     ),
-                  ])),
+                  ]),
                 ),
               ),
               Image.asset(
@@ -207,7 +215,8 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
               ),
             ],
           ),
-          Padding(
+          Expanded(
+              child: Padding(
             padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.h),
             child: Text(
               features[screenArguments['id']].description,
@@ -218,12 +227,66 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                   fontSize: 14.sp,
                   height: 2),
             ),
-          ),
-          SizedBox(
-            height: 40.h,
-          ),
+          )),
+          if (features[screenArguments['id']].isPremium)
+            Padding(
+                padding: EdgeInsets.only(
+                    left: 20.w, right: 20.w, top: 10.h, bottom: 12.h),
+                child: CustomRoundedButton(
+                    title: 'Know More About This Event', onpressed:() => _showDiscoveryBottomSheet(features[screenArguments['id']].img1)))
         ],
       ),
     );
+  }
+
+  void _showDiscoveryBottomSheet(String backgroundImage) {
+    showCupertinoModalBottomSheet(
+        context: context,
+        isDismissible: true,
+        barrierColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        enableDrag: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext ctx) => DiscoveryBottomSheet(
+          backgroundImage: backgroundImage,
+          onSubscribeBtnPressed: () {
+            Navigator.of(ctx).pop();
+            paymentMethod(
+                context: context,
+
+                onContinueBtnPressed: (dynamic data) {
+                  String mode = '';
+                  if (data is CardModel) {
+                    mode = 'Credit Card';
+                  }
+                  final String transactionNumber =
+                  GlobalMixin().generateTransactionNumber();
+                  confirmPaymentModal(
+                      context: context,
+                      serviceName: 'Discovery Subscription',
+                      paymentMethod: data,
+                      paymentMode: mode,
+                      price: 5.99,
+                      onPaymentSuccessful: () {
+                        paymentSuccessful(
+                            context: context,
+                            paymentDetails: DiscoveryPaymentDetails(
+                                transactionNumber: transactionNumber),
+                            paymentMethod: mode);
+                      },
+                      paymentDetails: DiscoveryPaymentDetails(
+                          transactionNumber: transactionNumber));
+                });
+          },
+          onSkipBtnPressed: () {
+            Navigator.of(context).pop();
+          },
+          onCloseBtnPressed: () {
+            Navigator.of(context).pop();
+          },
+          onBackBtnPressed: () {
+            Navigator.of(context).pop();
+          },
+        ));
   }
 }

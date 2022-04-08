@@ -25,6 +25,7 @@ import 'package:guided/models/guide.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
 import 'package:guided/screens/payments/payment_method.dart';
+import 'package:guided/screens/payments/payment_successful.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_payment_details.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
@@ -64,9 +65,9 @@ class _TabMapScreenState extends State<TabMapScreen> {
     WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker(context));
     super.initState();
 
-    if (_creditCardController.cards.isEmpty) {
+/*    if (_creditCardController.cards.isEmpty) {
       getUserCards();
-    }
+    }*/
   }
 
   Future<void> addMarker(BuildContext context) async {
@@ -610,9 +611,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         enableDrag: true,
         backgroundColor: Colors.transparent,
-        builder: (BuildContext context) => DiscoveryBottomSheet(
+        builder: (BuildContext ctx) => DiscoveryBottomSheet(
               backgroundImage: backgroundImage,
               onSubscribeBtnPressed: () {
+                Navigator.of(ctx).pop();
                 paymentMethod(
                     context: context,
                     onCreditCardSelected: (CardModel card) {
@@ -630,13 +632,15 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           serviceName: 'Discovery Subscription',
                           paymentMethod: data,
                           paymentMode: mode,
-                          onPaymentConfirm: () {
-                            debugPrint('Confirm Payment');
+                          price: 5.99,
+                          onPaymentSuccessful: () {
+                            paymentSuccessful(
+                                context: context,
+                                paymentDetails: DiscoveryPaymentDetails(
+                                    transactionNumber: transactionNumber),
+                                paymentMethod: mode);
                           },
-                          onPaymentSuccessful: (){
-                            debugPrint('Payment Successful');
-                          },
-                          paymentDetails:   DiscoveryPaymentDetails(
+                          paymentDetails: DiscoveryPaymentDetails(
                               transactionNumber: transactionNumber));
                     });
               },
@@ -650,23 +654,5 @@ class _TabMapScreenState extends State<TabMapScreen> {
                 Navigator.of(context).pop();
               },
             ));
-  }
-
-  Future<void> getUserCards() async {
-    final List<CardModel> cards = await APIServices().getCards();
-    await _creditCardController.initCards(cards);
-
-    if (cards.isNotEmpty) {
-      debugPrint('cards $cards');
-      final CardModel card = cards.firstWhere(
-          (CardModel c) => c.isDefault == true,
-          orElse: () => CardModel());
-
-      if (card.id != '') {
-        _creditCardController.setDefaultCard(card);
-      } else {
-        _creditCardController.setDefaultCard(cards[0]);
-      }
-    }
   }
 }

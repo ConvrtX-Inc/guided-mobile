@@ -941,6 +941,9 @@ class AppTextConstants {
   ///Returns edit card text
   static String editCard = 'Edit Card';
 
+  /// Returns transaction number
+  static String transactionNumber = 'Transaction Number';
+
 }
 
 /// Class for error messages text

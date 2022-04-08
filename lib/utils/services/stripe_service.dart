@@ -64,4 +64,34 @@ class StripeServices {
 
   }
 
+  /// API service for Stripe Payment method
+  Future<String> createPaymentMethod(CardModel card) async {
+
+    List<String> expiryDetails = card.expiryDate.split("-");
+
+    final String expYear = expiryDetails[0];
+    final String expMonth= expiryDetails[1];
+    debugPrint('$expMonth $expYear EXPIRY');
+    Map<String, String> cardDetails = {
+      'type': 'card',
+      'card[number]': card.cardNo,
+      'card[exp_month]': expMonth,
+      'card[exp_year]': expYear,
+      'card[cvc]': card.cvv.toString()
+    };
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Bearer ${apiKey}'
+    };
+
+    final http.Response response =
+    await http.post(Uri.parse('$stripeApiUrl/payment_methods'), body: cardDetails, headers: headers);
+
+    final Map<String, dynamic> jsonData = jsonDecode(response.body);
+    debugPrint('Stripe Payment Method ID ${jsonData}');
+
+    return jsonData['id'];
+  }
+
 }

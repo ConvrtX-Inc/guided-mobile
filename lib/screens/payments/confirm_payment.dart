@@ -3,19 +3,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/common/widgets/custom_rounded_button_with_border.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/services/stripe_service.dart';
 
 /// Modal Bottom sheet for confirm payment
 Future<dynamic> confirmPaymentModal(
     {required BuildContext context,
     required Widget paymentDetails,
-    required Function onPaymentConfirm,
     required String serviceName,
     required String paymentMode,
     required dynamic paymentMethod,
-required Function onPaymentSuccessful
-    }) {
+    required Function onPaymentSuccessful,
+    required double price}) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -25,6 +27,7 @@ required Function onPaymentSuccessful
       ),
       isScrollControlled: true,
       builder: (BuildContext context) {
+        bool isPaymentProcessing = false;
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return ScreenUtilInit(
@@ -39,14 +42,14 @@ required Function onPaymentSuccessful
                       InkWell(
                           onTap: () => Navigator.of(context).pop(),
                           child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            color: Colors.grey.withOpacity(0.2)),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                        ),
-                      )),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: Colors.grey.withOpacity(0.2)),
+                            child: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.black,
+                            ),
+                          )),
                       SizedBox(width: 20.w),
                       Text(
                         AppTextConstants.confirmPayment,
@@ -82,9 +85,20 @@ required Function onPaymentSuccessful
                       height: 40.h,
                     ),
                     CustomRoundedButton(
-                      title: AppTextConstants.confirmPayment,
-                      onpressed: () => confirmPayment(
-                          context, paymentDetails, paymentMode,paymentMethod,onPaymentSuccessful),
+                      title:'Pay $price USD',
+                      isLoading: isPaymentProcessing,
+                      onpressed: () {
+                        //Handle Payment for Credit Cards
+                        if (paymentMethod is CardModel) {
+                          debugPrint('Payment Method ${paymentMethod.cardNo}');
+                          setState(() {
+                            isPaymentProcessing = true;
+                          });
+                          handlePayment(context,paymentMethod, onPaymentSuccessful,price);
+                        }
+                      },
+                      /*onpressed: () => confirmPayment(context, paymentDetails,
+                          paymentMode, paymentMethod, onPaymentSuccessful),*/
                     ),
                     SizedBox(
                       height: 20.h,
@@ -107,22 +121,25 @@ required Function onPaymentSuccessful
         });
       });
 }
+Future<void> handlePayment(BuildContext context, CardModel card, Function onPaymentSuccess,double price) async {
+  final String paymentMethodId =
+      await StripeServices().createPaymentMethod(card);
 
-/// Confirm Payment
-void confirmPayment(
-    BuildContext context, Widget paymentDetails, String paymentMode, dynamic paymentMethod, Function onPaymentSuccess) {
+  if (paymentMethodId != '') {
 
-  if(paymentMethod is CardModel){
-    debugPrint('Payment Method ${paymentMethod.cardNo}');
+    final int amount = (price * 100).round();
+
+    //Call Payment Api
+    final APIStandardReturnFormat paymentResponse =
+        await APIServices().pay(amount, paymentMethodId);
+
+    if (paymentResponse.statusCode == 201) {
+      Navigator.of(context).pop();
+      //Add function to saving other data / transactions / subscriptions on your current screen for this call back
+      onPaymentSuccess();
+    }
+  } else {
+    ///Payment Failed Notif
+    debugPrint('Payment Failed!');
   }
-  //Add Payment Process Here & redirect to Payment Success Screen if Successful...
-
-
-  //Add function to saving other data / transactions on your current screen for this call back
-  onPaymentSuccess();
-
-  paymentSuccessful(
-      context: context,
-      paymentDetails: paymentDetails,
-      paymentMethod: paymentMode);
 }

@@ -752,4 +752,23 @@ class APIServices {
       return CardModel();
     }
   }
+
+  ///API service for Payment
+  Future<APIStandardReturnFormat> pay(int amount, String paymentMethodID) async {
+    final String? token = UserSingleton.instance.user.token;
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.paymentUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          'content-type': 'application/json'
+        },
+        body: jsonEncode({
+          'payment_method_id': paymentMethodID,
+          'amount': amount,
+        }));
+
+    debugPrint('payment response:: ${response.body}');
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
 }

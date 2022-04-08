@@ -49,6 +49,7 @@ class EventUtils {
         img1: 'assets/images/jpg/tree_planting_1.jpg',
         img2: 'assets/images/jpg/tree_planting_2.jpeg',
         img3: 'assets/images/jpg/tree_planting_3.png',
+        isPremium: true
       ),
       DiscoveryHub(
         id: 1,

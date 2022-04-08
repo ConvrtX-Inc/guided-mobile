@@ -147,4 +147,7 @@ class AppAPIPath {
   ///Returns  card url
   static String cardUrl = '/api/v1/card';
 
+  ///Returns  payment url
+  static String paymentUrl = '/api/v1/charge';
+
 }
