@@ -453,5 +453,34 @@ class APIServices {
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
+  ///API Service for transactions-byguide
+  Future<APIStandardReturnFormat> getTransactionsByGuide(int status) async {
+    var tour_guide_id = UserSingleton.instance.user.user!.id;
+    var statusName = "";
+    switch(status)
+    {
+      case 1:
+        statusName = "completed";
+        break;
+      case 2:
+        statusName = "pending";
+        break;
+      case 3:
+        statusName = "rejected";
+        break;
+    }
+    var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/${tour_guide_id}\/${statusName}');
+    print("url:"+url);
+    final http.Response response = await http.get(
+        Uri.parse(url),
+        headers: {
+          HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+        });
+    // print('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}?s={"tour_guide_id": \"${UserSingleton.instance.user.user!.id}\"}');
+    print("response:"+response.body);
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
 
 }

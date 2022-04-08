@@ -2,14 +2,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/constants/app_list.dart';
 import 'package:guided/models/transaction_model.dart';
 import 'package:guided/screens/transaction_notifications/transaction_cards.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_texts.dart';
-import '../../models/api/api_standard_return.dart';
-import '../../utils/services/rest_api_service.dart';
+import '../../models/transaction_modelv2.dart';
 
 class TransactionCustomerList extends StatefulWidget {
   late VoidCallback refreshData;
@@ -25,11 +23,11 @@ class TransactionCustomerList extends StatefulWidget {
 class TransactionCustomerListState extends State<TransactionCustomerList>
 with SingleTickerProviderStateMixin{
 
-  List<Transaction> transactions = List.empty(growable: true);
-  List<Transaction> displayed = List.empty(growable: true);
+  List<Transaction2> transactions = List.empty(growable: true);
+  List<Transaction2> displayed = List.empty(growable: true);
   bool isLoading = false;
   bool _isFirstLoad = true;
-  int _statusSelectedIndex = 0;
+  int statusSelectedIndex = 0;
   late TabController _statusController;
   late double screenWidth;
   late double screenHeight;
@@ -40,11 +38,15 @@ TransactionCustomerListState(VoidCallback refreshData)
   this.refreshData = refreshData;
 }
 
-
-  void setTransactions(List<Transaction> transactions){
+  void setTransactions(List<Transaction2> transactions){
     setState(() => this.transactions = transactions);
     filter();
   }
+
+  int getFilter(){
+    return statusSelectedIndex;
+  }
+
   void setLoading(bool isLoading){
     setState(() => this.isLoading = isLoading);
   }
@@ -58,8 +60,8 @@ TransactionCustomerListState(VoidCallback refreshData)
       if(!_statusController.indexIsChanging)
       {
         setState(() {
-          _statusSelectedIndex = _statusController.index;
-          print("TRANS STATE:"+_statusSelectedIndex.toString());
+          statusSelectedIndex = _statusController.index;
+          print("TRANS STATE:"+statusSelectedIndex.toString());
           setState(() => this.isLoading = true);
           if(refreshData!=null)
             {
@@ -94,7 +96,6 @@ TransactionCustomerListState(VoidCallback refreshData)
 
   Widget showList()
   {
-
     return Container(
       child: ListView.separated(
         shrinkWrap:true,
@@ -103,21 +104,20 @@ TransactionCustomerListState(VoidCallback refreshData)
             separatorBuilder: (BuildContext context, int index) {return Divider(height: 10.0.h,color: Colors.transparent);},
             itemBuilder: (BuildContext context, int index) {return TransactionCustomerCard(displayed[index]);}
         ));
-
   }
 
 
   void filter() {
 
     displayed.clear();
-    if (_statusSelectedIndex == 0) {
+    if (statusSelectedIndex == 0) {
       print("Displaying all");
       setState(() {
         displayed.addAll(transactions);
       });
     }
     else {
-      print("Displaying filtered:" + _statusSelectedIndex.toString());
+      print("Displaying filtered:" + statusSelectedIndex.toString());
       setState(() {
         displayed.addAll(transactions.where((element) => element.statusId == statusId()).toList()) ;
       });
@@ -164,20 +164,20 @@ TransactionCustomerListState(VoidCallback refreshData)
     return  TabBar(
       labelPadding:EdgeInsets.zero,
       indicatorWeight: 3,
-      indicatorColor:Transaction.indicatorColor(_statusSelectedIndex),
+      indicatorColor:Transaction.indicatorColor(statusSelectedIndex),
       controller: _statusController,
       tabs: [
-        Tab(child:Center(child: Text("All", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: _statusSelectedIndex==0?Transaction.indicatorColor(_statusSelectedIndex):Colors.black)))),
-        Tab(child: Center(child:Text("Completed", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: _statusSelectedIndex==1?Transaction.indicatorColor(_statusSelectedIndex):Colors.black)))),
-        Tab(child: Center(child:Text("Pending", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: _statusSelectedIndex==2?Transaction.indicatorColor(_statusSelectedIndex):Colors.black)))),
-        Tab(child: Center(child:Text("Rejected", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: _statusSelectedIndex==3?Transaction.indicatorColor(_statusSelectedIndex):Colors.black)))),
+        Tab(child:Center(child: Text("All", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: statusSelectedIndex==0?Transaction.indicatorColor(statusSelectedIndex):Colors.black)))),
+        Tab(child: Center(child:Text("Completed", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: statusSelectedIndex==1?Transaction.indicatorColor(statusSelectedIndex):Colors.black)))),
+        Tab(child: Center(child:Text("Pending", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: statusSelectedIndex==2?Transaction.indicatorColor(statusSelectedIndex):Colors.black)))),
+        Tab(child: Center(child:Text("Rejected", style: TextStyle(height: 1.5, fontSize: 11.0.sp, fontWeight: FontWeight.w700, fontFamily: AppTextConstants.fontPoppins, color: statusSelectedIndex==3?Transaction.indicatorColor(statusSelectedIndex):Colors.black)))),
       ],
     );
   }
 
   String statusId()
   {
-    switch(_statusSelectedIndex)
+    switch(statusSelectedIndex)
     {
 
       case 1:

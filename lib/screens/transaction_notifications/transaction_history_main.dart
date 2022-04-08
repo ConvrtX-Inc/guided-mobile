@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/models/post_model.dart';
-import 'package:guided/models/transaction_model.dart';
 import 'package:guided/screens/transaction_notifications/transaction_cards.dart';
 import 'package:guided/screens/transaction_notifications/transaction_customer.dart';
 import 'package:guided/screens/transaction_notifications/transaction_post.dart';
@@ -15,6 +14,8 @@ import 'package:http/http.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/app_texts.dart';
 import '../../models/api/api_standard_return.dart';
+import '../../models/transaction_model.dart';
+import '../../models/transaction_modelv2.dart';
 import '../../models/user_model.dart';
 import '../../utils/services/rest_api_service.dart';
 
@@ -42,8 +43,8 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
 
   Future<void> login() async {
     final Map<String, String> credentials = <String, String>{
-      'email': 'mraraullo@gmail.com',
-      'password': 'string'
+      'email': 'touristguide.dummy@gmail.com',
+      'password': '123xswcde'
     };
     await APIServices()
         .login(credentials)
@@ -96,31 +97,31 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
       }
     });
   }
-  Future<void> getTransactions() async {
+  Future<void> getTransactions(int filter) async {
     print("Refreshing transactions data");
     setState(() {
       isLoading = true;
     });
-
+    int? status = _myKey.currentState?.getFilter();
     await APIServices()
-        .getTransactions()
+        .getTransactionsByGuide(filter)
         .then((APIStandardReturnFormat response) async {
       if (response.status == 'error') {
+        print("Error:"+response.errorResponse);
       }
       else {
-        final List<Transaction> details = <Transaction>[];
-        final List<dynamic> res = jsonDecode(response.successResponse);
+        final List<Transaction2> details = <Transaction2>[];
+        print("RESPONSE:"+response.successResponse);
+        final List<dynamic> res = jsonDecode(response.successResponse).cast<dynamic>();
         for (final dynamic data in res) {
-          final Transaction transactionModel =
-          Transaction.fromJson(data);
+          final Transaction2 transactionModel =
+          Transaction2.fromJson(data);
           details.add(transactionModel);
         }
-        details.addAll(AppListConstants.transactions);
         _myKey.currentState?.setLoading(false);
         setState(() => this.isLoading = false);
         _myKey.currentState?.setTransactions(details);
       }
-
 
     });
   }
@@ -136,7 +137,6 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
         .then((APIStandardReturnFormat response) async {
       if (response.status == 'error') {
         print("Error:"+response.errorResponse);
-
       }
       else {
         final List<Post> posts = <Post>[];
@@ -170,7 +170,7 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
             switch(_selectedIndex)
             {
               case 0:
-                getTransactions();
+                getTransactions(0);
                 break;
               case 1:
                 getPosts();
@@ -179,7 +179,7 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
           }
     });
     login();
-    getTransactions();
+    getTransactions(0);
   }
 
   @override
@@ -198,17 +198,16 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
       )
     );
   }
-
+  int filter = 0;
   Future<void> _onReferesh() async
   {
-
-
+    filter = _myKey.currentState!.statusSelectedIndex;
     setState(() => this.isLoading = true);
     switch(_selectedIndex)
     {
       case 0:
         _myKey.currentState?.setLoading(true);
-        getTransactions();
+        getTransactions(filter);
         break;
       case 1:
         _postKey.currentState?.setLoading(true);
@@ -216,6 +215,7 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
         break;
     }
   }
+
 
   Widget getMainDisplay(){
     return  Column(
@@ -404,5 +404,5 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
   }
 
 
-
+//678036c1-9da6-43ae-bb21-253a5e9b54d5
 }

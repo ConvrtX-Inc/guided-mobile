@@ -2,12 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:intl/intl.dart';
 import '../../constants/app_colors.dart';
 import '../../models/transaction_model.dart';
+import '../../models/transaction_modelv2.dart';
+
 
 class TransactionCustomerCard extends StatefulWidget {
-  late Transaction transaction;
-  TransactionCustomerCard(Transaction transaction,{Key? key}) {
+  late Transaction2 transaction;
+  TransactionCustomerCard(Transaction2 transaction,{Key? key}) {
     this.transaction = transaction;
   }
 
@@ -17,9 +20,9 @@ class TransactionCustomerCard extends StatefulWidget {
 
 class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
 
-  late Transaction transaction;
+  late Transaction2 transaction;
 
-   _TransactionCustomerCardState(Transaction transaction)
+   _TransactionCustomerCardState(Transaction2 transaction)
   {
     this.transaction = transaction;
   }
@@ -44,11 +47,11 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
       child: Column(
         children:[
           getTopRow(),
-          Divider(height: 9.0.h,color: Colors.transparent,),
+          Divider(height: 9.0.h,color: Colors.transparent),
           getMessage(),
-          Divider(height: 14.0.h,color: Colors.transparent,),
+          Divider(height: 14.0.h,color: Colors.transparent),
           getBookingDate(),
-          Divider(height: 14.0.h,color: Colors.transparent,),
+          Divider(height: 14.0.h,color: Colors.transparent),
           getStatus()
         ],
       ),
@@ -92,7 +95,7 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
     return Row(
       children: [
         Text(
-          "Anne Sasha's purchase is pending",
+         "${transaction.user?.firstName!} ${transaction.user?.lastName!}\'s purchase is ",
           style: TextStyle(
               fontFamily: AppTextConstants.fontPoppins,
               fontWeight: FontWeight.w600,
@@ -108,7 +111,7 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
     return Row(
       children: [
         Text(
-          "Booking Date 16 May 2021",
+          "Booking Date "+DateFormat.d().format(transaction.bookDate!)+" "+DateFormat.MMMM().format(transaction.bookDate!)+" "+DateFormat.y().format(transaction.bookDate!),
           style: TextStyle(
               fontFamily: AppTextConstants.fontPoppins,
               fontWeight: FontWeight.w400,
@@ -145,7 +148,7 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
 
     return Container(
                 child: Text(
-                  '\$'+transaction.total.toString(),
+                  '\$ '+transaction.total.toString(),
                   style: TextStyle(
                       fontFamily: AppTextConstants.fontPoppins,
                       fontWeight: FontWeight.w600,
@@ -154,8 +157,6 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
                   ),
                 )
               );
-
-
   }
   Color statusColor()
   {
@@ -192,7 +193,6 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
   {
     switch(transaction.statusId)
     {
-
       case Transaction.COMPLETED:
         return "Payment Completed";
       case Transaction.PENDING:
@@ -202,5 +202,21 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
     }
     return "Payment Rejected";
   }
+
+  String status()
+  {
+    switch(transaction.statusId)
+    {
+      case Transaction.COMPLETED:
+        return "completed";
+      case Transaction.PENDING:
+        return "pending";
+      case Transaction.REJECTED:
+        return "rejected";
+    }
+    return "rejected";
+  }
+
+
 
 }
