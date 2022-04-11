@@ -30,6 +30,7 @@ import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/models/user_subscription.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 
 import 'package:guided/utils/secure_storage.dart';
@@ -794,7 +795,8 @@ class APIServices {
   }
 
   ///API service for Payment
-  Future<APIStandardReturnFormat> pay(int amount, String paymentMethodID) async {
+  Future<APIStandardReturnFormat> pay(
+      int amount, String paymentMethodID) async {
     final String? token = UserSingleton.instance.user.token;
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.paymentUrl}'),
@@ -808,6 +810,51 @@ class APIServices {
         }));
 
     debugPrint('payment response:: ${response.body}');
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for user  adding subscription
+  Future<APIStandardReturnFormat> addUserSubscription(
+      UserSubscription params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.userSubscription}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'name': params.name,
+          'payment_reference_no': params.paymentReferenceNo,
+          'start_date': params.startDate,
+          'end_date': params.endDate,
+          'message': params.message,
+
+        }));
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+
+  /// API service creating payment intent - stripe
+  Future<APIStandardReturnFormat> createPaymentIntent(
+      int amount) async {
+    final String? token = UserSingleton.instance.user.token;
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.paymentUrl}/create-payment-intent'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          'content-type': 'application/json'
+        },
+        body: jsonEncode({
+          'amount': amount,
+        }));
+
+    debugPrint('payment intent response:: ${response.body}');
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }

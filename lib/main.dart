@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:guided/constants/asset_path.dart';
@@ -12,13 +14,20 @@ import 'package:guided/routes/route_generator.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-String _defaultHome = '/';
+String _defaultHome = '/traveller_tab';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: '.env');
+
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIOverlays(
       [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+
+  Stripe.publishableKey =
+      dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
+  Stripe.instance.applySettings();
   runApp(const MyApp());
+
 
   initializeDateFormatting().then((_) => runApp(const MyApp()));
 }

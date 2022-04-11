@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, use_named_constants
 
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:badges/badges.dart';
@@ -614,7 +615,9 @@ class _TabMapScreenState extends State<TabMapScreen> {
         builder: (BuildContext ctx) => DiscoveryBottomSheet(
               backgroundImage: backgroundImage,
               onSubscribeBtnPressed: () {
+                const double price = 5.99;
                 Navigator.of(ctx).pop();
+
                 paymentMethod(
                     context: context,
                     onCreditCardSelected: (CardModel card) {
@@ -624,6 +627,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
                       String mode = '';
                       if (data is CardModel) {
                         mode = 'Credit Card';
+                      } else {
+                        mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
                       }
                       final String transactionNumber =
                           GlobalMixin().generateTransactionNumber();
@@ -632,7 +637,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           serviceName: 'Discovery Subscription',
                           paymentMethod: data,
                           paymentMode: mode,
-                          price: 5.99,
+                          price: price,
                           onPaymentSuccessful: () {
                             paymentSuccessful(
                                 context: context,
@@ -642,7 +647,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           },
                           paymentDetails: DiscoveryPaymentDetails(
                               transactionNumber: transactionNumber));
-                    });
+                    },
+                    price: price);
               },
               onSkipBtnPressed: () {
                 Navigator.of(context).pop();

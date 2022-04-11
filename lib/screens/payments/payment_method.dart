@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -8,9 +12,12 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/payment_mode.dart';
-import 'package:guided/screens/payments/payment_manage_card.dart';
 import 'package:guided/screens/widgets/reusable_widgets/credit_card.dart';
 import 'package:guided/utils/services/static_data_services.dart';
+
+import 'package:pay/pay.dart' as pay;
+
+
 
 /// returns google wallet
 String googleWallet = 'assets/images/png/google_wallet.png';
@@ -27,7 +34,8 @@ final CardController _cardController = Get.put(CardController());
 Future<dynamic> paymentMethod(
     {required BuildContext context,
     required Function onContinueBtnPressed,
-    Function? onCreditCardSelected}) {
+    Function? onCreditCardSelected,
+    double? price }) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -42,6 +50,19 @@ Future<dynamic> paymentMethod(
         final List<PaymentMode> paymentModes =
             StaticDataService.getPaymentModes();
         int selectedPaymentMode = 0;
+        Stripe.publishableKey =
+            dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
+
+        /// For pay Plugin
+         final _paymentItems = [
+          pay.PaymentItem(
+            label: 'Total',
+            amount:  price.toString(),
+            status: pay.PaymentItemStatus.final_price,
+          )
+        ];
+
+        debugPrint('Publishable Key ${dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString()}');
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return ScreenUtilInit(
@@ -118,92 +139,155 @@ Future<dynamic> paymentMethod(
                                       isSelected: selectedPaymentMode == i,
                                       onPaymentModePressed: () {
                                         debugPrint('Selected');
-                                        // setState(() {
-                                        //   selectedPaymentMode = i;
-                                        // });
+
                                         setState((){
                                           selectedPaymentMode = i;
                                         });
+
+                                        if(selectedPaymentMode == 1){
+                                          // Google Pay
+                                          debugPrint('Google Pay');
+                                          // handleGooglePay(context);
+                                        }else{
+                                          // apple pay
+                                        }
                                       }),
                               ]),
 
                           SizedBox(
                             height: 20.h,
                           ),
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                'Bank card',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'Poppins',
+                          ///Bank Card Payment Mode
+                          if(selectedPaymentMode == 0)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Bank card',
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10.w,
+                                    ),
+                                    const Expanded(child: Divider(thickness: 2))
+                                  ],
                                 ),
-                              ),
-                              SizedBox(
-                                width: 10.w,
-                              ),
-                              const Expanded(child: Divider(thickness: 2))
-                            ],
-                          ),
-                          SizedBox(
-                            height: 20.h,
-                          ),
+                                SizedBox(
+                                  height: 20.h,
+                                ),
+                                CarouselSlider(
+                                  options: CarouselOptions(
+                                      height: 190.h,
+                                      enableInfiniteScroll: false,
+                                      onPageChanged: (int index,
+                                          CarouselPageChangedReason reason) {
+                                        setState(() {
+                                          selectedCard =
+                                              _cardController.cards[index];
+                                        });
+
+                                        if (onCreditCardSelected != null) {
+                                          return onCreditCardSelected(
+                                              selectedCard);
+                                        }
+
+                                        // setState(() {
+                                        //   currentCard = index;
+                                        //   selectedCard = myCards[currentCard];
+                                        // });
+                                      }),
+                                  items: _cardController.cards
+                                      .map((CardModel card) {
+                                    return Builder(
+                                      builder: (
+                                        BuildContext context,
+                                      ) {
+                                        return CreditCard(
+                                            cardDetails: card,
+                                            showRemoveBtn: false);
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                            ),
+                          
+
                         ],
                       ),
                     ),
-                    Container(
-                        child: CarouselSlider(
-                      options: CarouselOptions(
-                          height: 190.h,
-                          enableInfiniteScroll: false,
-                          onPageChanged:
-                              (int index, CarouselPageChangedReason reason) {
-                            setState(() {
-                              selectedCard = _cardController.cards[index];
-                            });
 
-                            if (onCreditCardSelected != null) {
-                              return onCreditCardSelected(selectedCard);
-                            }
 
-                            // setState(() {
-                            //   currentCard = index;
-                            //   selectedCard = myCards[currentCard];
-                            // });
-                          }),
-                      items: _cardController.cards.map((CardModel card) {
-                        return Builder(
-                          builder: (
-                            BuildContext context,
-                          ) {
-                            return CreditCard(
-                                cardDetails: card, showRemoveBtn: false);
-                          },
-                        );
-                      }).toList(),
-                    )),
                     SizedBox(
                       height: 40.h,
                     ),
-                    CustomRoundedButton(
-                      title: 'Continue',
-                      onpressed: (){
-                        ///For bank card
-                        if(selectedPaymentMode == 0){
+                    if(selectedPaymentMode == 0)
+                      CustomRoundedButton(
+                        title: 'Continue',
+                        onpressed: () {
+                          ///For bank card
+                          if (selectedPaymentMode == 0) {
+                            return onContinueBtnPressed(selectedCard);
+                          }
+                        },
+                        /* onpressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<dynamic>(
+                                  builder: (BuildContext context) =>
+                                      const PaymentManageCard()),
+                            );
+                          }*/
+                      ),
+                    if(selectedPaymentMode == 1)
+                      Container(
+                          height: 100.h,
+                          width: MediaQuery.of(context).size.width,
+                          // width: 100.w,
+                          child:
 
-                          return onContinueBtnPressed(selectedCard);
-                        }
-                      },
-                      /* onpressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) =>
-                                    const PaymentManageCard()),
-                          );
-                        }*/
-                    ),
+                          pay.GooglePayButton(
+                            paymentConfigurationAsset: 'google_pay_payment_profile.json',
+                            paymentItems: _paymentItems,
+                            margin: const EdgeInsets.only(top: 15),
+                            onPaymentResult: (result) async {
+                              final token =
+                              result['paymentMethodData']['tokenizationData']['token'];
+                              final tokenJson = Map.castFrom(json.decode(token));
+                              debugPrint('Result ${result}');
+                              debugPrint('payment method ${tokenJson['card']['id']}');
+
+
+
+                              // debugPrint('Params ${params}');
+                              onContinueBtnPressed(tokenJson);
+                            },
+                            loadingIndicator: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            onPressed: () async {
+                              // 1. Add your stripe publishable key to assets/google_pay_payment_profile.json
+                              // await debugChangedStripePublishableKey();
+                            },
+                            childOnError: Text('Google Pay is not available in this device'),
+                            onError: (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'There was an error while trying to perform the payment'),
+                                ),
+                              );
+                            },
+                          )
+
+
+                      ),
                     SizedBox(
                       height: 20.h,
                     ),
@@ -259,11 +343,10 @@ Widget buildcardImage(String cardImage, int index) => Container(
     );
 
 /// widet for payment method
-Widget getMethods({required PaymentMode data, required VoidCallback onPaymentModePressed, bool isSelected = false}) {
+Widget getMethods({required PaymentMode data, required VoidCallback onPaymentModePressed, bool isSelected = false,}) {
 
     return InkWell(
-      onTap:  onPaymentModePressed,
-
+      onTap: data.isEnabled ?  onPaymentModePressed : null,
       child: Container(
         height: 65.h,
         width: 95.w,
@@ -277,7 +360,10 @@ Widget getMethods({required PaymentMode data, required VoidCallback onPaymentMod
                   ),
             borderRadius: BorderRadius.circular(12)),
         child: Stack(clipBehavior: Clip.none, children: <Widget>[
-          Center(child: Image.asset(data.logo)),
+          Center(child: Container(decoration: BoxDecoration(
+              // child: Image.asset(data.logo)
+              image: DecorationImage(image: AssetImage(data.logo)),
+          ),)),
           if (isSelected)
             Positioned(
               right: -5,
@@ -300,5 +386,41 @@ Widget getMethods({required PaymentMode data, required VoidCallback onPaymentMod
         ]),
       ),
     );
+
+
+
+
+}
+
+/// For Google Pay
+Future<void> handleGooglePay(context) async {
+  debugPrint('Handle Google Pay');
+
+
+  try {
+    // 1. fetch Intent Client Secret from backend
+
+
+
+    // 2.present google pay sheet
+    await Stripe.instance.initGooglePay(GooglePayInitParams(
+        testEnv: true,
+        merchantName: "Example Merchant Name",
+        countryCode: 'us'));
+
+    await Stripe.instance.presentGooglePay(
+      const PresentGooglePayParams(clientSecret: 'sk_test_51K6QgjKn5tIlJ89hpKNuYDHqBxmc6l2BRG2REm11slivu6QzrRdyYB8DbGa3ObMTo2dyskjQ83GClkk5DVWrRRuO00RKZQAYm1'),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: Text('Google Pay payment succesfully completed')),
+    );
+  } catch (e) {
+    debugPrint('ERROR ${e}');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $e')),
+    );
+  }
+
 
 }
