@@ -298,7 +298,6 @@ class _PackageEditState extends State<PackageEdit> {
                   children: <Widget>[
                     Align(
                       child: SizedBox(
-                        width: 320,
                         height: 50.h,
                         child: ListView(
                             shrinkWrap: true,
@@ -556,7 +555,7 @@ class _PackageEditState extends State<PackageEdit> {
           },
           child: Container(
             height: 40.h,
-            width: 110.w,
+            width: 140.w,
             decoration: BoxDecoration(
                 color: AppColors.platinum.withOpacity(0.8),
                 border: Border.all(
