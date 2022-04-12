@@ -683,8 +683,7 @@ class APIServices {
 
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath
-                .termsAndCondition}?s={"id":\"$id\"}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}?s={"id":\"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
           'Bearer ${UserSingleton.instance.user.token}',
@@ -853,11 +852,10 @@ class APIServices {
 
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath
-                .termsAndCondition}/$id'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}/$id'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     final List<dynamic> res = jsonDecode(response.body);
     final List<PresetFormModel> forms = <PresetFormModel>[];
@@ -875,19 +873,18 @@ class APIServices {
     final String? userId = UserSingleton.instance.user.user?.id;
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath
-                .usersTermsAndCondition}?s={"user_id":\"$userId\"}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.usersTermsAndCondition}?s={"user_id":\"$userId\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     final List<dynamic> res = jsonDecode(response.body);
     final List<UsersTermsAndConditionModel> forms =
-    <UsersTermsAndConditionModel>[];
+        <UsersTermsAndConditionModel>[];
 
     for (final dynamic data in res) {
       final UsersTermsAndConditionModel form =
-      UsersTermsAndConditionModel.fromJson(data);
+          UsersTermsAndConditionModel.fromJson(data);
       forms.add(form);
     }
 
@@ -895,8 +892,8 @@ class APIServices {
   }
 
   ///API service for Payment
-  Future<APIStandardReturnFormat> pay(int amount,
-      String paymentMethodID) async {
+  Future<APIStandardReturnFormat> pay(
+      int amount, String paymentMethodID) async {
     final String? token = UserSingleton.instance.user.token;
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.paymentUrl}'),
@@ -964,11 +961,10 @@ class APIServices {
       String activityPackageId) async {
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath
-                .activityAvailability}?s={"activity_package_id":\"$activityPackageId\"}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityAvailability}?s={"activity_package_id":\"$activityPackageId\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     final List<dynamic> res = jsonDecode(response.body);
     final List<ActivityAvailability> forms = <ActivityAvailability>[];
