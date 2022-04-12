@@ -1,4 +1,6 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable
+import 'dart:ffi';
+
 import 'package:advance_notification/advance_notification.dart';
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:flutter/foundation.dart';
@@ -25,13 +27,20 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
 
   TextEditingController _localLawsTaxes = TextEditingController();
   String _waiver = '';
+  String _waiver_id = '';
   final FocusNode _localLawsTaxesFocus = FocusNode();
-
+  bool _isSubmit = false;
   @override
   void initState() {
     super.initState();
 
-    _localLawsTaxes = TextEditingController(text: AppTextConstants.loremIpsum);
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+      _localLawsTaxes =
+          TextEditingController(text: screenArguments['preset_local_law']);
+    });
   }
 
   @override
@@ -170,9 +179,13 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () {
-              if (isChecked == true) {
-                navigateWaiverScreen(context, screenArguments);
+            onPressed: () async {
+              if (isChecked) {
+                if (_isSubmit) {
+                  null;
+                } else {
+                  await navigateWaiverScreen(context, screenArguments);
+                }
               }
             },
             style: ElevatedButton.styleFrom(
@@ -185,10 +198,13 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.next,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.next,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -197,15 +213,20 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
 
   Future<void> navigateWaiverScreen(
       BuildContext context, Map<String, dynamic> data) async {
+    setState(() {
+      _isSubmit = true;
+    });
+
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
     final List<PresetFormModel> resForm =
-          await APIServices().getPresetWaiver();
-      _waiver = resForm[0].description;
-
+        await APIServices().getTermsAndCondition('traveler_waiver_form');
+    _waiver = resForm[0].description;
+    _waiver_id = resForm[0].id;
     if (_localLawsTaxes.text.isNotEmpty) {
       details['local_law_and_taxes'] = _localLawsTaxes.text;
       details['preset_waiver'] = _waiver;
+      details['preset_waiver_id'] = _waiver_id;
       await Navigator.pushNamed(context, '/waiver', arguments: details);
     } else {
       AdvanceSnackBar(message: ErrorMessageConstants.emptyLocalLaw)

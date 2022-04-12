@@ -14,7 +14,7 @@ import 'package:guided/routes/route_generator.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-String _defaultHome = '/traveller_tab';
+String _defaultHome = '/';
 
 void main() async {
   await dotenv.load(fileName: '.env');

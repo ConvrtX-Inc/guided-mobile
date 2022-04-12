@@ -1,17 +1,15 @@
-// ignore_for_file: file_names, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, cascade_invocations, cast_nullable_to_non_nullable
+// ignore_for_file: file_names, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, cascade_invocations, cast_nullable_to_non_nullable, prefer_final_in_for_each
 import 'package:advance_notification/advance_notification.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/common/widgets/hourly_item.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/models/set_booking_date_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
-import 'package:guided/utils/event.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -135,21 +133,52 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                         child: TableCalendar(
                           locale: 'en',
                           onDaySelected: (selectedDay, focusedDay) {
-                            setState(() {
+                            if (setbookingtime.isNotEmpty) {
+                              showDialog(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                        title:
+                                            Text(AppTextConstants.saveChanges),
+                                        content: Text(
+                                            AppTextConstants.saveChangesDesc),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('No')),
+                                          TextButton(
+                                              onPressed: setInitialDate,
+                                              child: const Text('Yes')),
+                                        ],
+                                      ),
+                                  barrierDismissible: false);
+                            } else {
                               setState(() {
-                                _selectedDay = selectedDay;
-                                _focusedDay = focusedDay;
-                                isRefreshing = true;
-                                _didPickedDate = true;
-                              });
-
-                              Future.delayed(const Duration(milliseconds: 100),
-                                  () {
                                 setState(() {
-                                  isRefreshing = false;
+                                  _selectedDay = selectedDay;
+                                  _focusedDay = focusedDay;
+                                  isRefreshing = true;
+                                  _didPickedDate = true;
                                 });
+
+                                Future.delayed(
+                                    const Duration(milliseconds: 100), () {
+                                  setState(() {
+                                    isRefreshing = false;
+                                  });
+                                });
+
+                                for (int index = 0;
+                                    index < listTime.length;
+                                    index++) {
+                                  setState(() {
+                                    listTime[index][1] = false;
+                                    listTime[index][2] = 0;
+                                  });
+                                }
                               });
-                            });
+                            }
                           },
                           calendarFormat: CalendarFormat.week,
                           currentDay:
@@ -396,6 +425,58 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
     } else {
       setbookingtime.remove(listTime[id]);
     }
+  }
+
+  Future<void> setInitialDate() async {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    DateTime _date;
+
+    if (_didPickedDate) {
+      _date = _selectedDay;
+    } else {
+      _date = _preSelectedDay;
+    }
+
+    final Map<String, dynamic> availabilityDateDetails = {
+      'activity_package_id': screenArguments['id'],
+      'availability_date':
+          '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[0][3]}',
+      'slots': setbookingtime[0][2],
+    };
+
+    final dynamic response = await APIServices().request(
+        AppAPIPath.createSlotAvailability, RequestType.POST,
+        needAccessToken: true, data: availabilityDateDetails);
+
+    if (setbookingtime.length > 1) {
+      final String activityAvailabilityId =
+          response['response']['data']['details']['id'];
+
+      for (var i = 1; i < setbookingtime.length; i++) {
+        final Map<String, dynamic> availabilityDateHourDetails = {
+          'activity_availability_id': activityAvailabilityId,
+          'availability_date_hour':
+              '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
+          'slots': setbookingtime[i][2],
+        };
+
+        final dynamic response1 = await APIServices().request(
+            AppAPIPath.createSlotAvailabilityHour, RequestType.POST,
+            needAccessToken: true, data: availabilityDateHourDetails);
+      }
+    }
+
+    for (var i = 0; i < setbookingtime.length; i++) {
+      int id = setbookingtime[i][4];
+      setState(() {
+        listTime[id][1] = false;
+        listTime[id][2] = 0;
+      });
+    }
+    setbookingtime.clear();
+    Navigator.pop(context);
   }
 
   Future<void> setBookingDates() async {

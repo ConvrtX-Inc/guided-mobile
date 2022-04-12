@@ -1,4 +1,4 @@
-/// Model for Country
+/// Model for Preset Form Model
 class PresetFormModel {
   /// Constructor
   PresetFormModel(

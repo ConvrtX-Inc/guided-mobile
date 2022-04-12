@@ -1,4 +1,5 @@
-// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings
+// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings, diagnostic_describe_all_properties, always_specify_types, unused_field
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -35,6 +36,7 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
   int selectedMonth = 0;
   DateTime focusedYear = DateTime.now();
   DateTime _selectedDate = DateTime.now();
+  bool _isSelectionChanged = false;
   @override
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
@@ -61,6 +63,7 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
     setState(() {
       if (args.value is DateTime) {
         _selectedDate = args.value;
+        _isSelectionChanged = true;
       }
     });
   }
@@ -203,11 +206,16 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
 
   /// Navigate to Add Schedule
   Future<void> navigateAddSchedule(BuildContext context) async {
-    final Map<String, dynamic> details = {
-      'id': widget.id,
-      'selected_date': _selectedDate,
-    };
+    if (_isSelectionChanged) {
+      final Map<String, dynamic> details = {
+        'id': widget.id,
+        'selected_date': _selectedDate,
+      };
 
-    await Navigator.pushNamed(context, '/set_booking_date', arguments: details);
+      await Navigator.pushNamed(context, '/set_booking_date',
+          arguments: details);
+    } else {
+      AdvanceSnackBar(message: ErrorMessageConstants.datePick).show(context);
+    }
   }
 }

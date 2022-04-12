@@ -151,6 +151,9 @@ class AppAPIPath {
   /// Returns Terms and Condition url
   static String termsAndCondition = 'api/v1/terms-and-conditions';
 
+  /// Returns Users Terms and Condition url
+  static String usersTermsAndCondition = 'api/v1/users-terms-and-conditions';
+
   ///Returns  payment url
   static String paymentUrl = '/api/v1/charge';
 
@@ -158,6 +161,8 @@ class AppAPIPath {
   ///Returns  subscription url
   static String userSubscription = '/api/v1/user-subscription';
 
+  /// Returns activity availabilities url
+  static String activityAvailability = 'api/v1/activity-availabilities';
 }
 ///Get Api Base Url
 getBaseUrl(String mode){

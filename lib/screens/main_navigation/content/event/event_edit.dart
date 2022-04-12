@@ -2063,11 +2063,18 @@ class _EventEditState extends State<EventEdit> {
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       final String? userId = UserSingleton.instance.user.user!.id;
 
-      String subActivity;
+      String subActivity = '';
 
       if (_didClickedSubActivity) {
-        subActivity =
-            '${subActivities1.id.toString()},${subActivities2.id.toString()},${subActivities3.id.toString()}';
+        if (subActivities1 != null) {
+          subActivity = subActivities1.id;
+        }
+        if (subActivities2 != null) {
+          subActivity = '$subActivity,${subActivities2.id}';
+        }
+        if (subActivities3 != null) {
+          subActivity = '$subActivity,${subActivities3.id}';
+        }
       } else {
         subActivity = _subactivity.text;
       }

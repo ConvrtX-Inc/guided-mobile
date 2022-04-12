@@ -27,7 +27,9 @@ class SettingsItems extends StatefulWidget {
 }
 
 class _SettingsItemsState extends State<SettingsItems> {
-  String termsAndCondition = '';
+  bool isEnableTile = true;
+  String description = '';
+  String id = '';
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -49,19 +51,19 @@ class _SettingsItemsState extends State<SettingsItems> {
             Navigator.pushNamed(context, '/faq');
             break;
           case 'terms_of_service':
-            getTermsAndCondition(context);
+            isEnableTile ? getTermsAndCondition(context) : false;
             break;
           case 'traveler_release_waiver_form':
-            Navigator.pushNamed(context, '/waiver_form');
+            isEnableTile ? getTravelerAndWaiverForm(context) : false;
             break;
           case 'cancellation_policy':
-            Navigator.pushNamed(context, '/cancellation_policy');
+            isEnableTile ? getCancellationPolicy(context) : false;
             break;
           case 'guided_payment_payout_terms':
-            Navigator.pushNamed(context, '/guide_payment_payout_terms');
+            isEnableTile ? getGuidedPaymentPayout(context) : false;
             break;
           case 'local_laws_taxes':
-            Navigator.pushNamed(context, '/local_laws_taxes_form');
+            isEnableTile ? getLocalLaws(context) : false;
             break;
           case 'bank_account':
             Navigator.pushNamed(context, '/add_bank_account');
@@ -74,6 +76,9 @@ class _SettingsItemsState extends State<SettingsItems> {
             break;
           case 'switch_to_guide':
             Navigator.pushNamed(context, '/switch_user_type');
+            break;
+          case 'availability':
+            Navigator.pushNamed(context, '/availability');
             break;
         }
       },
@@ -91,15 +96,104 @@ class _SettingsItemsState extends State<SettingsItems> {
   }
 
   Future<void> getTermsAndCondition(BuildContext context) async {
+    setState(() {
+      isEnableTile = false;
+    });
     final List<PresetFormModel> resForm =
-        await APIServices().getPresetTermsAndCondition();
-    termsAndCondition = resForm[0].description;
+        await APIServices().getTermsAndCondition('terms_and_condition');
+    description = resForm[0].description;
+    id = resForm[0].id;
 
     final Map<String, dynamic> details = {
-      'terms_and_condition': termsAndCondition
+      'id': id,
+      'terms_and_condition': description
     };
 
+    setState(() {
+      isEnableTile = true;
+    });
     await Navigator.pushNamed(context, '/terms_and_condition',
+        arguments: details);
+  }
+
+  Future<void> getTravelerAndWaiverForm(BuildContext context) async {
+    setState(() {
+      isEnableTile = false;
+    });
+
+    final List<PresetFormModel> resForm =
+        await APIServices().getTermsAndCondition('traveler_waiver_form');
+    description = resForm[0].description;
+    id = resForm[0].id;
+    final Map<String, dynamic> details = {
+      'id': id,
+      'traveler_waiver_form': description
+    };
+
+    setState(() {
+      isEnableTile = true;
+    });
+    await Navigator.pushNamed(context, '/waiver_form', arguments: details);
+  }
+
+  Future<void> getCancellationPolicy(BuildContext context) async {
+    setState(() {
+      isEnableTile = false;
+    });
+
+    final List<PresetFormModel> resForm =
+        await APIServices().getTermsAndCondition('cancellation_policy');
+    description = resForm[0].description;
+    id = resForm[0].id;
+    final Map<String, dynamic> details = {
+      'id': id,
+      'cancellation_policy': description
+    };
+
+    setState(() {
+      isEnableTile = true;
+    });
+    await Navigator.pushNamed(context, '/cancellation_policy',
+        arguments: details);
+  }
+
+  Future<void> getGuidedPaymentPayout(BuildContext context) async {
+    setState(() {
+      isEnableTile = false;
+    });
+
+    final List<PresetFormModel> resForm =
+        await APIServices().getTermsAndCondition('guided_payment_payout');
+    description = resForm[0].description;
+    id = resForm[0].id;
+    final Map<String, dynamic> details = {
+      'id': id,
+      'guided_payment_payout': description
+    };
+
+    setState(() {
+      isEnableTile = true;
+    });
+    await Navigator.pushNamed(context, '/guide_payment_payout_terms',
+        arguments: details);
+  }
+
+  Future<void> getLocalLaws(BuildContext context) async {
+    setState(() {
+      isEnableTile = false;
+    });
+
+    final List<PresetFormModel> resForm =
+        await APIServices().getTermsAndCondition('local_laws');
+    description = resForm[0].description;
+    id = resForm[0].id;
+    final Map<String, dynamic> details = {'id': id, 'local_laws': description};
+
+    setState(() {
+      isEnableTile = true;
+    });
+
+    await Navigator.pushNamed(context, '/local_laws_taxes_form',
         arguments: details);
   }
 }

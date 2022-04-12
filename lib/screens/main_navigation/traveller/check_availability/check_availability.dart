@@ -352,7 +352,10 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                   width: 125.w,
                   height: 53.h,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(
+                          context, '/travellerBookingDetailsScreen');
+                    },
                     style: AppTextStyle.active,
                     child: const Text(
                       'Book Now',
