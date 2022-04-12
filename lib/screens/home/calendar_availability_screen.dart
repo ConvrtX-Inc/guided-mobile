@@ -141,7 +141,12 @@ class _CalendarAvailabilityScreenState
                         id: 'calendar',
                         builder: (TravellerMonthController controller) {
                           return Sfcalendar(
-                              context, travellerMonthController.currentDate);
+                            context,
+                            travellerMonthController.currentDate,
+                            ((value) {
+                              print(value);
+                            }),
+                          );
                         }),
                   ),
                   SizedBox(

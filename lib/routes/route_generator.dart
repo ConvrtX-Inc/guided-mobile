@@ -312,7 +312,7 @@ class RouteGenerator {
       case '/goToPaymentMethod':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const GoToPaymentMethod(), settings: settings);
-  case '/add_bank_account':
+      case '/add_bank_account':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AddBankAccountScreen());
       case '/manage_bank_account':
@@ -320,7 +320,7 @@ class RouteGenerator {
             builder: (_) => const ManageBankAccountScreen());
       case '/payment_edit_card':
         return MaterialPageRoute<dynamic>(
-            builder: (_) =>   PaymentEditCard(card: args! as CardModel));
+            builder: (_) => PaymentEditCard(card: args! as CardModel));
 
       case '/switch_user_type':
         return MaterialPageRoute<dynamic>(

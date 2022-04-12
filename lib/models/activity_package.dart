@@ -14,7 +14,7 @@ class ActivityPackage {
   int? minTraveller;
   String? country;
   String? address;
-  List<String>? services;
+  String? services;
   String? createdDate;
   String? updatedDate;
   String? basePrice;
@@ -23,6 +23,7 @@ class ActivityPackage {
   String? currencyId;
   String? priceNote;
   bool? isPublished;
+  bool? isPost;
   Null? deletedAt;
   Destination? destination;
   String? sEntity;
@@ -51,6 +52,7 @@ class ActivityPackage {
       this.currencyId,
       this.priceNote,
       this.isPublished,
+      this.isPost,
       this.deletedAt,
       this.destination,
       this.sEntity,
@@ -70,9 +72,7 @@ class ActivityPackage {
     minTraveller = json['min_traveller'];
     country = json['country'];
     address = json['address'];
-    services = json['services'] != null
-        ? json['services'].cast<String>()
-        : [''].cast<String>();
+    services = json['services'];
     createdDate = json['created_date'];
     updatedDate = json['updated_date'];
     basePrice = json['base_price'];
@@ -81,6 +81,7 @@ class ActivityPackage {
     currencyId = json['currency_id'];
     priceNote = json['price_note'];
     isPublished = json['is_published'];
+    isPost = json['is_post'];
     deletedAt = json['deletedAt'];
     destination = json['destination'] != null
         ? new Destination.fromJson(json['destination'])
@@ -113,6 +114,7 @@ class ActivityPackage {
     data['currency_id'] = this.currencyId;
     data['price_note'] = this.priceNote;
     data['is_published'] = this.isPublished;
+    data['is_post'] = this.isPost;
     data['deletedAt'] = this.deletedAt;
     if (this.destination != null) {
       data['destination'] = this.destination!.toJson();
@@ -134,7 +136,7 @@ class Destination {
   String? createdDate;
   String? updatedDate;
   Null? deletedAt;
-  Null? destinationImage;
+  DestinationImage? destinationImage;
 
   Destination(
       {this.id,
@@ -158,7 +160,9 @@ class Destination {
     createdDate = json['created_date'];
     updatedDate = json['updated_date'];
     deletedAt = json['deletedAt'];
-    destinationImage = json['destinationImage'];
+    destinationImage = json['destinationImage'] != null
+        ? new DestinationImage.fromJson(json['destinationImage'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -172,7 +176,69 @@ class Destination {
     data['created_date'] = this.createdDate;
     data['updated_date'] = this.updatedDate;
     data['deletedAt'] = this.deletedAt;
-    data['destinationImage'] = this.destinationImage;
+    if (this.destinationImage != null) {
+      data['destinationImage'] = this.destinationImage!.toJson();
+    }
+    return data;
+  }
+}
+
+class DestinationImage {
+  String? id;
+  String? activityPackageDestinationId;
+  SnapshotImg? snapshotImg;
+  String? createdDate;
+  String? updatedDate;
+  Null? deletedAt;
+
+  DestinationImage(
+      {this.id,
+      this.activityPackageDestinationId,
+      this.snapshotImg,
+      this.createdDate,
+      this.updatedDate,
+      this.deletedAt});
+
+  DestinationImage.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    activityPackageDestinationId = json['activity_package_destination_id'];
+    snapshotImg = json['snapshot_img'] != null
+        ? new SnapshotImg.fromJson(json['snapshot_img'])
+        : null;
+    createdDate = json['created_date'];
+    updatedDate = json['updated_date'];
+    deletedAt = json['deletedAt'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['activity_package_destination_id'] = this.activityPackageDestinationId;
+    if (this.snapshotImg != null) {
+      data['snapshot_img'] = this.snapshotImg!.toJson();
+    }
+    data['created_date'] = this.createdDate;
+    data['updated_date'] = this.updatedDate;
+    data['deletedAt'] = this.deletedAt;
+    return data;
+  }
+}
+
+class SnapshotImg {
+  String? type;
+  List<int>? data;
+
+  SnapshotImg({this.type, this.data});
+
+  SnapshotImg.fromJson(Map<String, dynamic> json) {
+    type = json['type'];
+    data = json['data'].cast<int>();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['type'] = this.type;
+    data['data'] = this.data;
     return data;
   }
 }

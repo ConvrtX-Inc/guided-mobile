@@ -92,6 +92,10 @@ class AppAPIPath {
   /// Returns popular guides url
   static String popularGuides = 'api/v1/nearby-activities/popular-guides-list';
 
+  /// Returns activity-availability-hours
+  static String activityAvailabilityHours =
+      'api/v1/activity-availability-hours/date-range';
+
   /// Returns activity destination image url
   static String activityDestinationImage =
       'api/v1/activity-package-destination-images';
@@ -153,5 +157,4 @@ class AppAPIPath {
 
   ///Returns  payment url
   static String paymentUrl = '/api/v1/charge';
-
 }
