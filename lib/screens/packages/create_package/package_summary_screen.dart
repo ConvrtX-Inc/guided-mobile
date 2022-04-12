@@ -1891,24 +1891,26 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         needAccessToken: true, data: guideRuleDetails);
 
     final Map<String, dynamic> localLawDetails = {
-      'user_id': userId,
       'description': screenArguments['local_law_and_taxes']
     };
 
     /// Local Laws and Taxes Details API
     final dynamic response3 = await APIServices().request(
-        AppAPIPath.localLawandTaxes, RequestType.POST,
-        needAccessToken: true, data: localLawDetails);
+        '${AppAPIPath.termsAndCondition}/${screenArguments['preset_local_law_id']}',
+        RequestType.PATCH,
+        needAccessToken: true,
+        data: localLawDetails);
 
     final Map<String, dynamic> waiverDetails = {
-      'user_id': userId,
       'description': screenArguments['waiver']
     };
 
     /// Waiver Details API
     final dynamic response4 = await APIServices().request(
-        AppAPIPath.waiverUrl, RequestType.POST,
-        needAccessToken: true, data: waiverDetails);
+        '${AppAPIPath.termsAndCondition}/${screenArguments['preset_waiver_id']}',
+        RequestType.PATCH,
+        needAccessToken: true,
+        data: waiverDetails);
 
     await Navigator.pushReplacement(
         context,

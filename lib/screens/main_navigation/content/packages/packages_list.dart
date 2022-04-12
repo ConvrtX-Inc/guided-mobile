@@ -38,7 +38,7 @@ class _PackageListState extends State<PackageList>
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: SizedBox(
-          height: 550.h,
+          height: 600.h,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[

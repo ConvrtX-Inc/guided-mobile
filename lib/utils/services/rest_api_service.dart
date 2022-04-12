@@ -30,6 +30,7 @@ import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/models/user_terms_and_condition_model.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 
 import 'package:guided/utils/secure_storage.dart';
@@ -640,10 +641,23 @@ class APIServices {
   }
 
   /// API service for terms and condition form
-  Future<List<PresetFormModel>> getPresetTermsAndCondition() async {
+  Future<List<PresetFormModel>> getPresetTermsAndCondition(String type) async {
+    String id = '';
+    if (type == 'terms_and_condition') {
+      id = 'c726b58d-f8bf-4777-a7c8-11b3882dcd9b';
+    } else if (type == 'traveler_waiver_form') {
+      id = '4c33d045-e881-4d93-a7b2-3ffa2a44c82c';
+    } else if (type == 'cancellation_policy') {
+      id = '9c165381-1c82-4e6c-8d17-18beed8d1171';
+    } else if (type == 'guided_payment_payout') {
+      id = '73851b0c-f333-4d56-aac4-0f18235396e2';
+    } else if (type == 'local_laws') {
+      id = 'fd5fd2a7-7599-42b4-9a60-0dd9d9a980bd';
+    }
+
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}?s={"id":"c726b58d-f8bf-4777-a7c8-11b3882dcd9b"}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}?s={"id":\"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
@@ -793,8 +807,66 @@ class APIServices {
     }
   }
 
+  /// API service for terms and condition form
+  Future<List<PresetFormModel>> getTermsAndCondition(String type) async {
+    final String? userId = UserSingleton.instance.user.user?.id;
+    String id = '';
+    if (type == 'terms_and_condition') {
+      id = 'terms_and_condition_$userId';
+    } else if (type == 'traveler_waiver_form') {
+      id = 'traveler_waiver_form_$userId';
+    } else if (type == 'cancellation_policy') {
+      id = 'cancellation_policy_$userId';
+    } else if (type == 'guided_payment_payout') {
+      id = 'guided_payment_payout_$userId';
+    } else if (type == 'local_laws') {
+      id = 'local_laws_$userId';
+    }
+
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}/$id'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    final List<dynamic> res = jsonDecode(response.body);
+    final List<PresetFormModel> forms = <PresetFormModel>[];
+
+    for (final dynamic data in res) {
+      final PresetFormModel form = PresetFormModel.fromJson(data);
+      forms.add(form);
+    }
+
+    return forms;
+  }
+
+  /// API service for terms and condition form
+  Future<List<UsersTermsAndConditionModel>> getUsersTermsAndCondition() async {
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.usersTermsAndCondition}?s={"user_id":\"$userId\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    final List<dynamic> res = jsonDecode(response.body);
+    final List<UsersTermsAndConditionModel> forms =
+        <UsersTermsAndConditionModel>[];
+
+    for (final dynamic data in res) {
+      final UsersTermsAndConditionModel form =
+          UsersTermsAndConditionModel.fromJson(data);
+      forms.add(form);
+    }
+
+    return forms;
+  }
+
   ///API service for Payment
-  Future<APIStandardReturnFormat> pay(int amount, String paymentMethodID) async {
+  Future<APIStandardReturnFormat> pay(
+      int amount, String paymentMethodID) async {
     final String? token = UserSingleton.instance.user.token;
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.paymentUrl}'),
