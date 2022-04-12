@@ -105,37 +105,237 @@ class _CalendarAvailabilityScreenState
                     decoration: BoxDecoration(
                         border: Border.all(color: AppColors.dustyGrey),
                         borderRadius: BorderRadius.circular(10.r)),
-                    child: Container(
-                      padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
-                      height: MediaQuery.of(context).size.height * 0.4,
-                      child: SfDateRangePicker(
-                        minDate: DateTime.now().subtract(Duration(days: 0)),
-                        maxDate: Indate.DateUtils.lastDayOfMonth(DateTime.parse(
-                            travellerMonthController.currentDate)),
-                        initialDisplayDate: DateTime.parse(
-                            travellerMonthController.currentDate),
-                        navigationMode: DateRangePickerNavigationMode.none,
-                        monthViewSettings:
-                            const DateRangePickerMonthViewSettings(
-                          dayFormat: 'E',
-                        ),
-                        monthCellStyle: DateRangePickerMonthCellStyle(
-                          textStyle: TextStyle(color: HexColor('#3E4242')),
-                          todayTextStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: HexColor('#3E4242')),
-                        ),
-                        selectionTextStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                        selectionColor: HexColor('#FFC74A'),
-                        todayHighlightColor: HexColor('#FFC74A'),
-                        headerHeight: 0,
-                        onSelectionChanged: _onSelectionChanged,
-                      ),
-                    ),
+                    child: GetBuilder<TravellerMonthController>(
+                        id: 'calendar',
+                        builder: (TravellerMonthController controller) {
+                          return Sfcalendar(
+                            context,
+                            travellerMonthController.currentDate,
+                            ((value) {
+                              print(value);
+                            }),
+                          );
+                        }),
                   ),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  HeaderText.headerText(AppTextConstants.headerNumberOfPeople),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(top: 5.h),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              if (minimum != 0) {
+                                minimum = minimum - 1;
+                                txtMinimum.text = minimum.toString();
+                              }
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: CircleBorder(
+                              side: BorderSide(color: AppColors.primaryGreen),
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            primary: Colors.white, // <-- Button color
+                            onPrimary: Colors.green, // <-- Splash color
+                          ),
+                          child:
+                              Icon(Icons.remove, color: AppColors.primaryGreen),
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: <Widget>[
+                            TextField(
+                              controller: txtMinimum,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(top: 10.h),
+                                hintStyle: TextStyle(
+                                  color: AppColors.grey,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  borderSide: const BorderSide(
+                                      color: Colors.grey, width: 0.2),
+                                ),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              minimum = minimum + 1;
+                              txtMinimum.text = minimum.toString();
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: CircleBorder(
+                              side: BorderSide(color: AppColors.primaryGreen),
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            primary: Colors.white, // <-- Button color
+                            onPrimary: Colors.green, // <-- Splash color
+                          ),
+                          child: Icon(Icons.add, color: AppColors.primaryGreen),
+                        ),
+                      )
+                    ],
+                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(20),
+                  //   child: SizedBox(
+                  //     width: MediaQuery.of(context).size.width,
+                  //     height: 60.h,
+                  //     child: ElevatedButton(
+                  //       onPressed: () {
+                  //         Navigator.pushNamed(context, '/set_booking_date');
+                  //       },
+                  //       style: ElevatedButton.styleFrom(
+                  //         shape: RoundedRectangleBorder(
+                  //           side: BorderSide(
+                  //             color: AppColors.silver,
+                  //           ),
+                  //           borderRadius: BorderRadius.circular(18.r),
+                  //         ),
+                  //         primary: AppColors.primaryGreen,
+                  //         onPrimary: Colors.white,
+                  //       ),
+                  //       child: Text(
+                  //         AppTextConstants.addSchedule,
+                  //         style: const TextStyle(
+                  //             fontWeight: FontWeight.bold, fontSize: 16),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  // Card(
+                  //   child: Padding(
+                  //     padding: EdgeInsets.fromLTRB(10.w, 10.h, 10.w, 0),
+                  //     child: TableCalendar(
+                  //       onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
+                  //         setState(() {
+                  //           _selectedDay = selectedDay;
+                  //           _focusedDay =
+                  //               focusedDay; // update `_focusedDay` here as well
+                  //         });
+                  //       },
+                  //       currentDay: _selectedDay,
+                  //       headerVisible: false,
+                  //       firstDay: DateTime.utc(2010, 10, 16),
+                  //       lastDay: DateTime.utc(2030, 3, 14),
+                  //       focusedDay: _focusedDay,
+                  //       calendarStyle: CalendarStyle(
+                  //         todayDecoration: BoxDecoration(
+                  //           shape: BoxShape.circle,
+                  //           color: AppColors.brightSun,
+                  //         ),
+                  //         todayTextStyle: const TextStyle(
+                  //           color: Colors.black,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: 20.h,
+                  // ),
+                  // HeaderText.headerText(
+                  //   AppTextConstants.headerNumberOfPeople
+                  // ),
+                  // SizedBox(
+                  //   height: 20.h,
+                  // ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: <Widget>[
+                  //     Padding(
+                  //       padding: EdgeInsets.only(top: 5.h),
+                  //       child: ElevatedButton(
+                  //         onPressed: () {
+                  //           setState(() {
+                  //             minimum = minimum - 1;
+                  //             txtMinimum.text = minimum.toString();
+                  //           });
+                  //         },
+                  //         style: ElevatedButton.styleFrom(
+                  //           shape: CircleBorder(
+                  //             side: BorderSide(
+                  //                 color: AppColors.primaryGreen),
+                  //           ),
+                  //           padding: const EdgeInsets.all(8),
+                  //           primary: Colors.white, // <-- Button color
+                  //           onPrimary: Colors.green, // <-- Splash color
+                  //         ),
+                  //         child: Icon(
+                  //             Icons.remove,
+                  //             color: AppColors.primaryGreen),
+                  //       ),
+                  //     ),
+                  //     Expanded(
+                  //       child: Column(
+                  //         children: <Widget>[
+                  //           TextField(
+                  //             controller: txtMinimum,
+                  //             decoration: InputDecoration(
+                  //               contentPadding: EdgeInsets.only(top: 10.h),
+                  //               hintStyle: TextStyle(
+                  //                 color: AppColors.grey,
+                  //               ),
+                  //               enabledBorder: OutlineInputBorder(
+                  //                 borderRadius: BorderRadius.circular(16.r),
+                  //                 borderSide: const BorderSide(
+                  //                     color: Colors.grey, width: 0.2),
+                  //               ),
+                  //             ),
+                  //             textAlign: TextAlign.center,
+                  //           ),
+                  //           const SizedBox(
+                  //             height: 5,
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //     Padding(
+                  //       padding: const EdgeInsets.only(top: 5),
+                  //       child: ElevatedButton(
+                  //         onPressed: () {
+                  //           setState(() {
+                  //             minimum = minimum + 1;
+                  //             txtMinimum.text = minimum.toString();
+                  //           });
+                  //         },
+                  //         style: ElevatedButton.styleFrom(
+                  //           shape: CircleBorder(
+                  //             side: BorderSide(
+                  //                 color: AppColors.primaryGreen),
+                  //           ),
+                  //           padding: const EdgeInsets.all(8),
+                  //           primary: Colors.white, // <-- Button color
+                  //           onPrimary: Colors.green, // <-- Splash color
+                  //         ),
+                  //         child: Icon(Icons.add,
+                  //             color: AppColors.primaryGreen),
+                  //       ),
+                  //     )
+                  //   ],
+                  // ),
                 ],
               ),
             ),

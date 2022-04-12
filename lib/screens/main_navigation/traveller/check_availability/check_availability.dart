@@ -5,10 +5,15 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/activity_availability_hours.dart';
 // import 'package:horizontal_center_date_picker/datepicker_controller.dart';
 // import 'package:horizontal_center_date_picker/horizontal_date_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
+
+import '../../../../models/booking_hours.dart';
+import '../../../../utils/services/rest_api_service.dart';
 
 /// Check Availability
 class CheckAvailability extends StatefulWidget {
@@ -24,14 +29,20 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
   DateTime endDate = DateTime.now().add(Duration(days: 7));
   int _selectedDay = 0;
   int _numberOfTravellers = 0;
+  late List<BookingHours> listTime = [];
   @override
   void initState() {
     initializeDateFormatting('en', null);
+    listTime = AppListConstants.bookingHours;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final List<DateTime> ListDates =
+        List<DateTime>.from(screenArguments['selectedDates'] as List);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -148,7 +159,8 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                     child: ListView(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
-                      children: List<Widget>.generate(5, (int i) {
+                      children:
+                          List<Widget>.generate(ListDates.length, (int i) {
                         return GestureDetector(
                           onTap: () => setState(() {
                             _selectedDay = i;
@@ -165,7 +177,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                             ),
                             child: Center(
                               child: Text(
-                                '${8 + i}',
+                                getDay(ListDates[i]),
                                 style: TextStyle(
                                     color: HexColor('#181B1B'),
                                     fontSize: 17.sp,
@@ -182,57 +194,80 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                 SizedBox(
                   height: 20.h,
                 ),
-                Column(
-                  children: List.generate(
-                      AppListConstants.availavilityTime.length, (int index) {
+                FutureBuilder<List<ActivityHourAvailability>>(
+                  future: APIServices().getActivityHours(
+                      formatDate(ListDates.first),
+                      formatDate(ListDates.last),
+                      screenArguments['packageid']),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<ActivityHourAvailability>> snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(getTime(snapshot
+                          .data!
+                          .first
+                          .activityAvailabilityHours!
+                          .first
+                          .availabilityDateHour!));
+                      // return Text(listTime[1][1]);
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
                     return Column(
-                      children: <Widget>[
-                        // padding: EdgeInsets.fromLTRB(0, 15.h, 0, 15.h),
-                        ListTile(
-                            leading: Text(
-                              AppListConstants.availavilityTime[index],
-                              style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontFamily: 'Gilroy',
-                                  fontWeight: index == 0 || index == 4
-                                      ? FontWeight.bold
-                                      : FontWeight.w500),
-                            ),
-                            title: index == 0
-                                ? Text(
-                                    '  8 Traveler Limit Left',
+                      children: List.generate(
+                        listTime.length,
+                        (int index) {
+                          return Column(
+                            children: <Widget>[
+                              // padding: EdgeInsets.fromLTRB(0, 15.h, 0, 15.h),
+                              ListTile(
+                                  leading: Text(
+                                    '${listTime[index].startHour} - ${listTime[index].endHour}',
                                     style: TextStyle(
                                         fontSize: 14.sp,
                                         fontFamily: 'Gilroy',
-                                        color: AppColors.deepGreen,
-                                        fontWeight: FontWeight.w700),
-                                  )
-                                : index == 4
-                                    ? Text(
-                                        '4 Traveler Limit Left',
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontFamily: 'Gilroy',
+                                        fontWeight: index == 0 || index == 4
+                                            ? FontWeight.bold
+                                            : FontWeight.w500),
+                                  ),
+                                  title: index == 0
+                                      ? Text(
+                                          '  8 Traveler Limit Left',
+                                          style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontFamily: 'Gilroy',
+                                              color: AppColors.deepGreen,
+                                              fontWeight: FontWeight.w700),
+                                        )
+                                      : index == 4
+                                          ? Text(
+                                              '4 Traveler Limit Left',
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontFamily: 'Gilroy',
+                                                color: AppColors.deepGreen,
+                                              ),
+                                            )
+                                          : Container(),
+                                  trailing: index == 0
+                                      ? Icon(
+                                          Icons.radio_button_checked,
                                           color: AppColors.deepGreen,
-                                        ),
-                                      )
-                                    : Container(),
-                            trailing: index == 0
-                                ? Icon(
-                                    Icons.radio_button_checked,
-                                    color: AppColors.deepGreen,
-                                  )
-                                : index == 4
-                                    ? Icon(
-                                        Icons.radio_button_unchecked,
-                                        color: AppColors.deepGreen,
-                                      )
-                                    : null),
+                                        )
+                                      : index == 4
+                                          ? Icon(
+                                              Icons.radio_button_unchecked,
+                                              color: AppColors.deepGreen,
+                                            )
+                                          : null),
 
-                        const Divider(),
-                      ],
+                              const Divider(),
+                            ],
+                          );
+                        },
+                      ),
                     );
-                  }),
+                  },
                 ),
                 SizedBox(
                   height: 20.h,
@@ -371,5 +406,28 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
         ),
       ),
     );
+  }
+
+  String getDay(DateTime date) {
+    final DateFormat formatter = DateFormat('d');
+    final String formatted = formatter.format(date);
+
+    return formatted;
+  }
+
+  String formatDate(DateTime date) {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final String formatted = formatter.format(date);
+
+    return formatted;
+  }
+
+  String getTime(String date) {
+    final DateTime parseDate =
+        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+    final DateTime inputDate = DateTime.parse(parseDate.toString());
+    final DateFormat outputFormat = DateFormat('HH:mm:ss');
+    final String outputDate = outputFormat.format(inputDate);
+    return outputDate;
   }
 }

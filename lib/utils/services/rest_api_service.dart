@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:guided/constants/api_path.dart';
 
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/activity_availability_hours.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/activity_destination_model.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
@@ -516,7 +517,7 @@ class APIServices {
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
         body: jsonEncode(
-            {'latitude': '9.30', 'longitude': '19.67', 'distance': '20'}),
+            {'latitude': '40.71', 'longitude': '-74.01', 'distance': '20'}),
         headers: headers);
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -529,6 +530,59 @@ class APIServices {
         .toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
+  }
+
+  // /// API service for getActivityHours
+  // Future<List<ActivityAvailability>> getActivityHours(
+  //     String startDate, String endDate, String packageId) async {
+  //   final Map<String, String> headers = {
+  //     'Content-Type': 'application/json',
+  //     'Accept': '*/*',
+  //     HttpHeaders.authorizationHeader:
+  //         'Bearer ${UserSingleton.instance.user.token}',
+  //   };
+  //   final http.Response response = await http.post(
+  //       Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
+  //       body: jsonEncode({
+  //         'activity_package_id': packageId,
+  //         'start_date': startDate,
+  //         'end_date': endDate
+  //       }),
+  //       headers: headers);
+
+  //   final dynamic jsonData = jsonDecode(response.body);
+  //   print(response.request!.url);
+  //   print(jsonData);
+  //   final List<ActivityAvailability> hours = <ActivityAvailability>[];
+  //   final hour = (jsonData['response']['data']['details'] as List)
+  //       .map((i) => ActivityAvailability.fromJson(i))
+  //       .toList();
+  //   hours.addAll(hour);
+  //   return hours;
+  // }
+
+  /// API service getActivityHours
+
+  Future<List<ActivityHourAvailability>> getActivityHours(
+      String startDate, String endDate, String packageId) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityAvailabilityHours}/$packageId/$startDate/$endDate'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    print(response.request!.url);
+    final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
+    final List<ActivityHourAvailability> activityHours =
+        <ActivityHourAvailability>[];
+    final activityHour = (jsonData as List)
+        .map((i) => ActivityHourAvailability.fromJson(i))
+        .toList();
+    activityHours.addAll(activityHour);
+    print(activityHours.length);
+    return activityHours;
   }
 
   /// API service for badges model

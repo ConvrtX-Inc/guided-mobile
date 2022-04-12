@@ -1,5 +1,7 @@
 // ignore_for_file: public_member_api_docs, use_named_constants, diagnostic_describe_all_properties, no_default_cases
 
+import 'dart:convert';
+
 import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -15,6 +17,7 @@ import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/activity_package.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/guide.dart';
 import 'package:guided/models/popular_guide.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
@@ -71,6 +74,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(
                 children: <Widget>[
@@ -333,16 +337,21 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                 controller) {
                                               print(controller.currentDate);
                                               return Container(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      20.w, 0.h, 20.w, 0.h),
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.4,
-                                                  child: Sfcalendar(
-                                                      context,
-                                                      travellerMonthController
-                                                          .currentDate));
+                                                padding: EdgeInsets.fromLTRB(
+                                                    20.w, 0.h, 20.w, 0.h),
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.4,
+                                                child: Sfcalendar(
+                                                  context,
+                                                  travellerMonthController
+                                                      .currentDate,
+                                                  ((value) {
+                                                    print(value);
+                                                  }),
+                                                ),
+                                              );
                                             }),
                                         // SizedBox(
                                         //   height: 20.h,
@@ -664,32 +673,89 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Container(
-                                  height: 112.h,
-                                  width: 168.w,
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(15.r),
-                                    ),
-                                    image: DecorationImage(
-                                      image: AssetImage(
-                                          activities[index].featureImage),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  child: Stack(
-                                    children: <Widget>[
-                                      Positioned(
-                                        bottom: 0,
-                                        child: CircleAvatar(
-                                          backgroundColor: Colors.transparent,
-                                          radius: 30,
-                                          backgroundImage: AssetImage(
-                                              activities[index].path),
-                                        ),
+                                GestureDetector(
+                                  onTap: () {
+                                    checkAvailability(
+                                        context, snapshot.data![index].id!);
+                                  },
+                                  child: Container(
+                                    height: 112.h,
+                                    width: 168.w,
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(15.r),
                                       ),
-                                    ],
+                                      // image: DecorationImage(
+                                      //   image: AssetImage(
+                                      //       activities[index].featureImage),
+                                      //   fit: BoxFit.cover,
+                                      // ),
+                                      image: DecorationImage(
+                                          image: Image.memory(
+                                        base64.decode(snapshot
+                                            .data![index].coverImg!
+                                            .split(',')
+                                            .last),
+                                        fit: BoxFit.cover,
+                                        gaplessPlayback: true,
+                                      ).image),
+                                    ),
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Positioned(
+                                          bottom: 30,
+                                          left: 15,
+                                          child: FutureBuilder<BadgeModelData>(
+                                            future: APIServices()
+                                                .getBadgesModelById(snapshot
+                                                    .data![index].mainBadgeId!),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot<dynamic>
+                                                    snapshot) {
+                                              if (snapshot.hasData) {
+                                                final BadgeModelData badgeData =
+                                                    snapshot.data;
+                                                final int length = badgeData
+                                                    .badgeDetails.length;
+                                                // return CircleAvatar(
+                                                //   backgroundColor:
+                                                //       Colors.transparent,
+                                                //   radius: 30,
+                                                //   backgroundImage: AssetImage(
+                                                //       activities[index].path),
+                                                // );
+                                                return Image.memory(
+                                                  base64.decode(badgeData
+                                                      .badgeDetails[0].imgIcon
+                                                      .split(',')
+                                                      .last),
+                                                  width: 30,
+                                                  height: 30,
+                                                  gaplessPlayback: true,
+                                                );
+                                              }
+                                              if (snapshot.connectionState !=
+                                                  ConnectionState.done) {
+                                                return Padding(
+                                                  padding: EdgeInsets.only(
+                                                      left: 10.w),
+                                                  child: Column(
+                                                    children: <Widget>[
+                                                      SizedBox(
+                                                        height: 110.h,
+                                                      ),
+                                                      const CircularProgressIndicator(),
+                                                    ],
+                                                  ),
+                                                );
+                                              }
+                                              return Container();
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 SizedBox(
@@ -744,6 +810,19 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         ),
       ],
     );
+  }
+
+  /// Navigate to Advertisement View
+  Future<void> checkAvailability(
+    BuildContext context,
+    String packageID,
+  ) async {
+    final Map<String, dynamic> details = {
+      'packageid': packageID,
+    };
+
+    await Navigator.pushNamed(context, '/checkActivityAvailabityScreen',
+        arguments: details);
   }
 
   Widget popularGuidesNearYou(
