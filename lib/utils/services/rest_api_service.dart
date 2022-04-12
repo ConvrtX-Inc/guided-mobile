@@ -543,7 +543,7 @@ class APIServices {
 
   /// API service getActivityHours
 
-  Future<List<ActivityAvailability>> getActivityHours(
+  Future<List<ActivityHourAvailability>> getActivityHours(
       String startDate, String endDate, String packageId) async {
     final http.Response response = await http.get(
         Uri.parse(
@@ -555,9 +555,10 @@ class APIServices {
     print(response.request!.url);
     final dynamic jsonData = jsonDecode(response.body);
     print(jsonData);
-    final List<ActivityAvailability> activityHours = <ActivityAvailability>[];
+    final List<ActivityHourAvailability> activityHours =
+        <ActivityHourAvailability>[];
     final activityHour = (jsonData as List)
-        .map((i) => ActivityAvailability.fromJson(i))
+        .map((i) => ActivityHourAvailability.fromJson(i))
         .toList();
     activityHours.addAll(activityHour);
     print(activityHours.length);

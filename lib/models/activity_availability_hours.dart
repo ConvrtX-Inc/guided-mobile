@@ -1,7 +1,7 @@
 /// ActivityAvailability Model
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-class ActivityAvailability {
+class ActivityHourAvailability {
   String? id;
   String? activityPackageId;
   String? availabilityDate;
@@ -11,7 +11,7 @@ class ActivityAvailability {
   String? sEntity;
   List<ActivityAvailabilityHours>? activityAvailabilityHours;
 
-  ActivityAvailability(
+  ActivityHourAvailability(
       {this.id,
       this.activityPackageId,
       this.availabilityDate,
@@ -21,7 +21,7 @@ class ActivityAvailability {
       this.sEntity,
       this.activityAvailabilityHours});
 
-  ActivityAvailability.fromJson(Map<String, dynamic> json) {
+  ActivityHourAvailability.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     activityPackageId = json['activity_package_id'];
     availabilityDate = json['availability_date'];

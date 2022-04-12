@@ -194,13 +194,13 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                 SizedBox(
                   height: 20.h,
                 ),
-                FutureBuilder<List<ActivityAvailability>>(
+                FutureBuilder<List<ActivityHourAvailability>>(
                   future: APIServices().getActivityHours(
                       formatDate(ListDates.first),
                       formatDate(ListDates.last),
                       screenArguments['packageid']),
                   builder: (BuildContext context,
-                      AsyncSnapshot<List<ActivityAvailability>> snapshot) {
+                      AsyncSnapshot<List<ActivityHourAvailability>> snapshot) {
                     if (snapshot.hasData) {
                       return Text(getTime(snapshot
                           .data!
