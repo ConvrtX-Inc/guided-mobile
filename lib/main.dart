@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:guided/constants/asset_path.dart';
@@ -18,13 +20,18 @@ import 'package:intl/date_symbol_data_local.dart';
 
 String _defaultHome = '/';
 
+void main() async {
+  await dotenv.load(fileName: '.env');
 
-void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-      overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
-  // MapVqiew.setApiKey(api_key);
+  SystemChrome.setEnabledSystemUIOverlays(
+      [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+
+  Stripe.publishableKey =
+      dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
+  Stripe.instance.applySettings();
   runApp(const MyApp());
+
 
   initializeDateFormatting().then((_) => runApp(const MyApp()));
 }
