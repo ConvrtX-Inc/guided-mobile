@@ -202,10 +202,10 @@ class RouteGenerator {
             builder: (_) => const FrequentlyAskQuestion());
       case '/cancellation_policy':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const CancellationPolicy());
+            builder: (_) => const CancellationPolicy(), settings: settings);
       case '/waiver_form':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TravelerReleaseAndWaiverForm());
+            builder: (_) => const TravelerReleaseAndWaiverForm(), settings: settings);
       case '/verification_code':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ResetVerifyPhone(), settings: settings);
@@ -224,10 +224,10 @@ class RouteGenerator {
             builder: (_) => const SettingsContactUs());
       case '/guide_payment_payout_terms':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const GuidedPaymentPayoutTerms());
+            builder: (_) => const GuidedPaymentPayoutTerms(), settings: settings);
       case '/local_laws_taxes_form':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const LocalLawsTaxesForm());
+            builder: (_) => const LocalLawsTaxesForm(), settings: settings);
       case '/request_filter':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RequestFilterScreen());

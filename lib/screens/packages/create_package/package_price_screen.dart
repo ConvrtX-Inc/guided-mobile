@@ -7,6 +7,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/currencies_model.dart';
+import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/screens/packages/create_package/widget/dropdown_currency.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -32,6 +33,9 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
   FocusNode _extraCostFocus = FocusNode();
   FocusNode _maxPersonFocus = FocusNode();
   FocusNode _additionalNotesFocus = FocusNode();
+
+  String _local_law = '';
+  String _local_law_id = '';
 
   void setCurrency(dynamic value) {
     setState(() {
@@ -239,6 +243,11 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
 
   Future<void> navigateLocalLawTaxesScreen(
       BuildContext context, Map<String, dynamic> data) async {
+    final List<PresetFormModel> resForm =
+        await APIServices().getTermsAndCondition('local_laws');
+    _local_law = resForm[0].description;
+    _local_law_id = resForm[0].id;
+
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
     if (_basePrice.text.isEmpty ||
@@ -253,6 +262,8 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
       details['max_person'] = _maxPerson.text;
       details['currency_id'] = _currency.id;
       details['additional_notes'] = _additionalNotes.text;
+      details['preset_local_law'] = _local_law;
+      details['preset_local_law_id'] = _local_law_id;
 
       await Navigator.pushNamed(context, '/local_law_taxes',
           arguments: details);
