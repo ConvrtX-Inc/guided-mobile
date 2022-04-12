@@ -191,6 +191,7 @@ Future<dynamic> paymentMethod(
                       onpressed: (){
                         ///For bank card
                         if(selectedPaymentMode == 0){
+
                           return onContinueBtnPressed(selectedCard);
                         }
                       },

@@ -77,6 +77,9 @@ class _SettingsItemsState extends State<SettingsItems> {
           case 'switch_to_guide':
             Navigator.pushNamed(context, '/switch_user_type');
             break;
+          case 'availability':
+            Navigator.pushNamed(context, '/availability');
+            break;
         }
       },
       leading: SvgPicture.asset(widget._imgUrl),

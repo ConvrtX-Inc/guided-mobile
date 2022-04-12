@@ -163,6 +163,12 @@ class AssetsPath {
   /// returns discovery close image
   static String discoveryClose = 'assets/images/png/close.png';
 
+  /// returns discovery close image
+  static String close1 = 'assets/images/png/close1.png';
+
+  /// returns discovery close image
+  static String warning = 'assets/images/png/warning.png';
+
   /// returns discovery top image
   static String discoverytopImage = 'assets/images/png/discoverytopImage.png';
 

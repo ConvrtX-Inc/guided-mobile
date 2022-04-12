@@ -946,6 +946,9 @@ class AppTextConstants {
   ///Returns edit card text
   static String editCard = 'Edit Card';
 
+  /// Returns transaction number
+  static String transactionNumber = 'Transaction Number';
+
   /// Returns Switch User Type text
   static String switchUserType = 'Switch User Type';
 
@@ -973,6 +976,12 @@ class AppTextConstants {
   /// Returns 'You are about to save the selected date and time. Proceed?' text
   static String saveChangesDesc =
       'You are about to save the selected date and time. Proceed?';
+
+  /// Returns Availability text
+  static String availability = 'Availability';
+
+  /// Returns Why Optional text in Availability screen
+  static String why = 'Why? (Optional)';
 }
 
 /// Class for error messages text

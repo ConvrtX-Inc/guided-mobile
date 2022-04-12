@@ -7,7 +7,9 @@ import 'package:guided/screens/widgets/reusable_widgets/payment_detail.dart';
 
 /// Modal Bottom sheet for successful payment
 Future<dynamic> paymentSuccessful(
-    {required BuildContext context, required Widget paymentDetails, required String paymentMethod}) {
+    {required BuildContext context,
+    required Widget paymentDetails,
+    required String paymentMethod}) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -29,16 +31,21 @@ Future<dynamic> paymentSuccessful(
                   children: <Widget>[
                     Row(children: <Widget>[
                       InkWell(
-                          onTap: () => Navigator.of(context).pop(),
+                          onTap: () {
+                            int count = 0;
+                            Navigator.popUntil(context, (route) {
+                              return count++ == 2;
+                            });
+                          },
                           child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            color: Colors.grey.withOpacity(0.2)),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                        ),
-                      )),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: Colors.grey.withOpacity(0.2)),
+                            child: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.black,
+                            ),
+                          )),
                       SizedBox(width: 20.w),
                       Text(
                         AppTextConstants.paymentSuccessful,
@@ -97,9 +104,8 @@ Future<dynamic> paymentSuccessful(
                         onpressed: () {
                           int count = 0;
                           Navigator.popUntil(context, (route) {
-                            return count++ == 4;
+                            return count++ == 2;
                           });
-
                         }),
                     SizedBox(
                       height: 40.h,
