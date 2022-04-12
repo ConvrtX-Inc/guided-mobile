@@ -15,6 +15,8 @@ import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/settings.dart';
+import 'package:guided/utils/secure_storage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Screen for user settings
 class SettingsMain extends StatefulWidget {
@@ -29,6 +31,7 @@ class _SettingsMainState extends State<SettingsMain>
     with AutomaticKeepAliveClientMixin<SettingsMain> {
   @override
   bool get wantKeepAlive => true;
+  final storage = new FlutterSecureStorage();
 
   /// Get settings items mocked data
   final List<SettingsModel> settingsItems =
@@ -173,7 +176,8 @@ class _SettingsMainState extends State<SettingsMain>
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
+                            await storage.delete(key: AppTextConstants.userType);
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute<dynamic>(
@@ -208,7 +212,7 @@ class _SettingsMainState extends State<SettingsMain>
                 Column(
                   children: <Widget>[
                     Text(
-                      '${detail.firstName} ${detail.lastName}',
+                      detail.fullName,
                       style: TextStyle(
                           letterSpacing: 1,
                           fontSize: 18.sp,

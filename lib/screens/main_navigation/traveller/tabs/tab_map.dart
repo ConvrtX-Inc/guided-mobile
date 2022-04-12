@@ -14,15 +14,24 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'dart:async';
 
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/models/guide.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/payments/confirm_payment.dart';
+import 'package:guided/screens/payments/payment_method.dart';
+import 'package:guided/screens/payments/payment_successful.dart';
+import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
+import 'package:guided/screens/widgets/reusable_widgets/discovery_payment_details.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
+import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -44,6 +53,9 @@ class _TabMapScreenState extends State<TabMapScreen> {
   final List<Activity> activities = StaticDataService.getActivityList();
   final List<Activity> tourList = StaticDataService.getTourList();
   int _selectedActivity = -1;
+
+  final CardController _creditCardController = Get.put(CardController());
+
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
   }
@@ -52,6 +64,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker(context));
     super.initState();
+
+/*    if (_creditCardController.cards.isEmpty) {
+      getUserCards();
+    }*/
   }
 
   Future<void> addMarker(BuildContext context) async {
@@ -308,73 +324,83 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           scrollDirection: Axis.horizontal,
                           children:
                               List<Widget>.generate(tourList.length, (int i) {
-                            return Container(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 5.w, vertical: 20.h),
-                              height: 180.h,
-                              width: 135.w,
-                              decoration: const BoxDecoration(
-                                color: Colors.transparent,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    tourList[i].name,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 11.sp,
-                                      color: Colors.black,
-                                    ),
+                            return InkWell(
+                                onTap: () {
+                                  // Navigator.of(context)
+                                  //     .pushNamed('/discovery_map');
+                                  _showDiscoveryBottomSheet(
+                                      tourList[i].featureImage);
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 5.w, vertical: 20.h),
+                                  height: 180.h,
+                                  width: 135.w,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.transparent,
                                   ),
-                                  SizedBox(
-                                    height: 10.h,
-                                  ),
-                                  Container(
-                                    height: 90.h,
-                                    width: 135.w,
-                                    decoration: BoxDecoration(
-                                      color: Colors.transparent,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(15.r),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        tourList[i].name,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 11.sp,
+                                          color: Colors.black,
+                                        ),
                                       ),
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                            tourList[i].featureImage),
-                                        fit: BoxFit.cover,
+                                      SizedBox(
+                                        height: 10.h,
                                       ),
-                                    ),
-                                    child: Stack(
-                                      children: <Widget>[
-                                        Positioned(
-                                          bottom: 0,
-                                          child: CircleAvatar(
-                                            backgroundColor: Colors.transparent,
-                                            radius: 17,
-                                            backgroundImage:
-                                                AssetImage(tourList[i].path),
+                                      Container(
+                                        height: 90.h,
+                                        width: 135.w,
+                                        decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(15.r),
+                                          ),
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                                tourList[i].featureImage),
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
-                                        if (UserSingleton
-                                                .instance.user.user!.email ==
-                                            'traveller1@abc.com')
-                                          Container(
-                                            height: 90.h,
-                                            width: 135.w,
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(15.r),
+                                        child: Stack(
+                                          children: <Widget>[
+                                            Positioned(
+                                              bottom: 0,
+                                              child: CircleAvatar(
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                radius: 17,
+                                                backgroundImage: AssetImage(
+                                                    tourList[i].path),
                                               ),
                                             ),
-                                          ),
-                                      ],
-                                    ),
+                                            if (UserSingleton.instance.user
+                                                    .user!.email ==
+                                                'traveller1@abc.com')
+                                              Container(
+                                                height: 90.h,
+                                                width: 135.w,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.8),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(15.r),
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            );
+                                ));
                           }),
                         ),
                       ),
@@ -575,5 +601,58 @@ class _TabMapScreenState extends State<TabMapScreen> {
         // Positioned(child: items[4]),
       ],
     );
+  }
+
+  void _showDiscoveryBottomSheet(String backgroundImage) {
+    showCupertinoModalBottomSheet(
+        context: context,
+        isDismissible: true,
+        barrierColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        enableDrag: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext ctx) => DiscoveryBottomSheet(
+              backgroundImage: backgroundImage,
+              onSubscribeBtnPressed: () {
+                Navigator.of(ctx).pop();
+                paymentMethod(
+                    context: context,
+                    onCreditCardSelected: (CardModel card) {
+                      debugPrint('Payment Method:: ${card.cardNo}');
+                    },
+                    onContinueBtnPressed: (dynamic data) {
+                      String mode = '';
+                      if (data is CardModel) {
+                        mode = 'Credit Card';
+                      }
+                      final String transactionNumber =
+                          GlobalMixin().generateTransactionNumber();
+                      confirmPaymentModal(
+                          context: context,
+                          serviceName: 'Discovery Subscription',
+                          paymentMethod: data,
+                          paymentMode: mode,
+                          price: 5.99,
+                          onPaymentSuccessful: () {
+                            paymentSuccessful(
+                                context: context,
+                                paymentDetails: DiscoveryPaymentDetails(
+                                    transactionNumber: transactionNumber),
+                                paymentMethod: mode);
+                          },
+                          paymentDetails: DiscoveryPaymentDetails(
+                              transactionNumber: transactionNumber));
+                    });
+              },
+              onSkipBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+              onCloseBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+              onBackBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+            ));
   }
 }

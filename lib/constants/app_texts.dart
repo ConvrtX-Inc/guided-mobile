@@ -38,7 +38,7 @@ class AppTextConstants {
   static String inbox = 'Inbox';
 
   /// Returns default country text
-  static String defaultCountry = 'US';
+  static String defaultCountry = 'CA';
 
   /// Returns font name Gilroy
   static String fontGilroy = 'Gilroy';
@@ -478,7 +478,7 @@ class AppTextConstants {
   static String headerGuideRules = 'Guide Rules & What To Bring';
 
   /// Returns I agree with local laws
-  static String agreeLocalLaws = 'I agree with local laws and taxes terms';
+  static String agreeLocalLaws = 'I agree with the Local laws and Taxes terms';
 
   /// Returns I agree with Terms & Conditions
   static String agreeWithTermsConditions = 'I Agree With Terms & Conditions';
@@ -873,13 +873,115 @@ class AppTextConstants {
 
   /// Returns I agree with Guide Rules
   static String agreeWithGuideRules =
-      'I Agree With Guide Rules & What To Bring';
+      'I agree with the Guide Rules & What To Bring Condition';
 
   /// Returns I agree with Terms & Conditions
-  static String agreeWithWaiver = 'I Agree With the Waiver';
+  static String agreeWithWaiver = 'I agree with the Waiver Condition';
 
   /// Returns new splash screen
   // static String theGreatOutdoors = 'The Great Outdoors Just';
+
+  ///Returns add bank account text
+  static String addBankAccount = 'Add Bank Account';
+
+  ///Returns bank information text
+  static String bankInformation = 'Bank Information';
+
+  ///Returns account name text
+  static String accountName = 'Account Name';
+
+  ///Returns bank name text
+  static String bankName = 'Bank Name';
+
+  ///Returns Account Number text
+  static String accountNumber = 'Account Number';
+
+  ///Returns Type Here text
+  static String typeHere = 'Type Here';
+
+  ///Returns Bank routing number text
+  static String bankRoutingNumber = 'Bank Routing Number';
+
+  /// Returns Please Wait text
+  static String pleaseWait = 'Please Wait';
+
+  ///Returns successfully linked your bank account text
+  static String successfullyLinkedYourBankAccount =
+      'Successfully Linked \n Your Bank Account';
+
+  ///Returns hint for waiver
+  static String hintWaiver =
+      'Last update: August 28, 2021\n            RELEASE OF LIABILITY, WAIVER OF CLAIMS AND ASSUMPTION OF RISK AGREEMENT\n            BY SIGNING THIS DOCUMENT, YOU WILL WAIVE CERTAIN LEGAL RIGHTS, INCLUDING THE\n            RIGHT TO SUE OR CLAIM COMPENSATION FOLLOWING AN ACCIDENT OR INJURY.\n            PLEASE READ CAREFULLY!\n            This Traveler Release and Waiver is made pursuant to the GuidED Terms of Service, last updated June\n            1, 2021, which govern the use of GuidED, including any content, functionality and services offered on or\n            through www.guided.ca or any other website through which GuidED makes its services available (the\n            “Website”), and to any mobile, tablet and other smart device applications, and application program\n            interfaces (the “Application”) (collectively, the “Services”). All Adventures booked via the Services create\n            an agreement between registered users seeking adventures (“Travelers”) and other registered users\n            offering authentic adventures in the community (“Guides”).';
+
+  ///Returns Ending in Text
+  static String endingIn = 'Ending in';
+
+  ///Returns add card text
+  static String addCard = 'Add Card';
+
+  ///Returns Full name text
+  static String fullName = 'Full Name';
+
+  ///Returns Address text
+  static String address = 'Address';
+
+  ///Returns name on card text
+  static String nameOnCard = 'Name on card';
+
+  ///Returns card number text
+  static String cardNumber = 'Card Number';
+
+  ///Returns expiryDate text
+  static String expiryDate = 'Expiry Date';
+
+  ///Returns cvc text
+  static String cvc = 'CVC';
+
+  ///Returns billing information text
+  static String billingInformation = 'Billing Information';
+
+  ///Returns card information text
+  static String cardInformation = 'Card Information';
+
+  ///Returns edit card text
+  static String editCard = 'Edit Card';
+
+  /// Returns transaction number
+  static String transactionNumber = 'Transaction Number';
+
+  /// Returns Switch User Type text
+  static String switchUserType = 'Switch User Type';
+
+  /// Returns Switch to Guide text
+  static String switchToGuide = 'Switch to Guide';
+
+  /// Returns Switch to Traveler text
+  static String switchToTraveler = 'Switch to Traveler';
+
+  /// Returns Traveler hint text
+  static String hintTraveler =
+      'Last update: August 28, 2021\n            RELEASE OF LIABILITY, WAIVER OF CLAIMS AND ASSUMPTION OF RISK AGREEMENT\n            BY SIGNING THIS DOCUMENT, YOU WILL WAIVE CERTAIN LEGAL RIGHTS, INCLUDING THE\n            RIGHT TO SUE OR CLAIM COMPENSATION FOLLOWING AN ACCIDENT OR INJURY.\n            PLEASE READ CAREFULLY!\n            This Traveler Release and Waiver is made pursuant to the GuidED Terms of Service, last updated June\n            1, 2021, which govern the use of GuidED, including any content, functionality and services offered on or\n            through www.guided.ca or any other website through which GuidED makes its services available (the\n            “Website”), and to any mobile, tablet and other smart device applications, and application program\n            interfaces (the “Application”) (collectively, the “Services”). All Adventures booked via the Services create\n            an agreement between registered users seeking adventures (“Travelers”) and other registered users\n            offering authentic adventures in the community (“Guides”)';
+
+  /// Returns Cancellation Policy hint text
+  static String hintCancellation =
+      'This Cancellation Policy is made pursuant to the GuidED Terms & Conditions (“Terms of Use\n              Agreement”), which govern the use of GuidED, including any content, functionality and\n              services offered on or through GuidED, and to any mobile, tablet and other smart device\n              applications, and application program. All Adventures (as defined below) booked via the\n              Services create an Agreement between registered users seeking adventures (“Travelers”)\n              and other registered users offering authentic adventures in the community (“Guides”)';
+
+  /// Returns Guided Payment hint text
+  static String hintGuidedPayment =
+      'Last update: August 31, 2021\n            These Payment and Payout Terms are made pursuant to the GuidED Terms &\n            Conditions (“Terms of Service”), which govern the use of GuidED, including any\n            content, functionality and services offered on or throughwww.guided.ca, and to any\n            mobile, tablet and other smart device applications, and application program interfaces\n            (the “Application”) (collectively, the “Services”)';
+
+  /// Returns 'Save Changes?' text
+  static String saveChanges = 'Save Changes?';
+
+  /// Returns 'You are about to save the selected date and time. Proceed?' text
+  static String saveChangesDesc =
+      'You are about to save the selected date and time. Proceed?';
+
+  /// Returns Availability text
+  static String availability = 'Availability';
+
+  /// Returns Why Optional text in Availability screen
+  static String why = 'Why? (Optional)';
 }
 
 /// Class for error messages text
@@ -977,4 +1079,20 @@ class ErrorMessageConstants {
 
   /// Returns 'Product field is empty' text
   static String productEmpty = 'Product field is empty';
+
+  /// Returns 'Fill all location field' text
+  static String locationEmpty = 'Fill all location field';
+
+  /// Returns 'Number of Tourist is Zero (0)' text
+  static String slotIsZero = 'Number of Tourist is Zero (0)';
+
+  /// Returns 'Please select time to proceed' text
+  static String selectTime = 'Please select a time in order to proceed';
+
+  /// Returns 'Confirm Terms and Condition to proceed' text
+  static String confirmTermsAndCondition =
+      'Confirm Terms and Condition to proceed';
+
+  /// Returns 'You must pick a day to proceed' text
+  static String datePick = 'You must pick a day to proceed';
 }

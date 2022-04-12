@@ -653,7 +653,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     SizedBox(
                       height: 20.h,
                     ),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _street,
                       focusNode: _streetFocus,
                       decoration: InputDecoration(
@@ -669,27 +669,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'street',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
-                    // TextField(
-                    //   controller: _street,
-                    //   decoration: InputDecoration(
-                    //     contentPadding:
-                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                    //     hintText: AppTextConstants.street,
-                    //     hintStyle: TextStyle(
-                    //       color: AppColors.grey,
-                    //     ),
-                    //     enabledBorder: OutlineInputBorder(
-                    //       borderRadius: BorderRadius.circular(14.r),
-                    //       borderSide:
-                    //           BorderSide(color: Colors.grey, width: 0.2.w),
-                    //     ),
-                    //   ),
-                    // ),
                     Padding(
                       padding: const EdgeInsets.all(8),
                       child: Text(
@@ -698,7 +678,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _city,
                       focusNode: _cityFocus,
                       decoration: InputDecoration(
@@ -714,29 +694,9 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'city',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
-                    // TextField(
-                    //   controller: _city,
-                    //   decoration: InputDecoration(
-                    //     contentPadding:
-                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                    //     hintText: AppTextConstants.city,
-                    //     hintStyle: TextStyle(
-                    //       color: AppColors.grey,
-                    //     ),
-                    //     enabledBorder: OutlineInputBorder(
-                    //       borderRadius: BorderRadius.circular(14.r),
-                    //       borderSide:
-                    //           BorderSide(color: Colors.grey, width: 0.2.w),
-                    //     ),
-                    //   ),
-                    // ),
                     SizedBox(height: 20.h),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _province,
                       focusNode: _provinceFocus,
                       decoration: InputDecoration(
@@ -752,29 +712,9 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'province',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
-                    // TextField(
-                    //   controller: _province,
-                    //   decoration: InputDecoration(
-                    //     contentPadding:
-                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                    //     hintText: AppTextConstants.provinceHint,
-                    //     hintStyle: TextStyle(
-                    //       color: AppColors.grey,
-                    //     ),
-                    //     enabledBorder: OutlineInputBorder(
-                    //       borderRadius: BorderRadius.circular(14.r),
-                    //       borderSide:
-                    //           BorderSide(color: Colors.grey, width: 0.2.w),
-                    //     ),
-                    //   ),
-                    // ),
                     SizedBox(height: 20.h),
-                    FormBuilderTextField(
+                    TextField(
                       controller: _postalCode,
                       focusNode: _postalCodeFocus,
                       decoration: InputDecoration(
@@ -790,27 +730,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'postal-code',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
                     ),
-                    // TextField(
-                    //   controller: _postalCode,
-                    //   decoration: InputDecoration(
-                    //     contentPadding:
-                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                    //     hintText: AppTextConstants.postalCodeHint,
-                    //     hintStyle: TextStyle(
-                    //       color: AppColors.grey,
-                    //     ),
-                    //     enabledBorder: OutlineInputBorder(
-                    //       borderRadius: BorderRadius.circular(14.r),
-                    //       borderSide:
-                    //           BorderSide(color: Colors.grey, width: 0.2.w),
-                    //     ),
-                    //   ),
-                    // ),
                     SizedBox(
                       height: 20.h,
                     ),
@@ -859,23 +779,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                         FormBuilderValidators.required(context),
                       ]),
                     ),
-                    // TextField(
-                    //   controller: _description,
-                    //   maxLines: 10,
-                    //   decoration: InputDecoration(
-                    //     contentPadding:
-                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                    //     hintText: AppTextConstants.description,
-                    //     hintStyle: TextStyle(
-                    //       color: AppColors.grey,
-                    //     ),
-                    //     enabledBorder: OutlineInputBorder(
-                    //       borderRadius: BorderRadius.circular(14.r),
-                    //       borderSide:
-                    //           BorderSide(color: Colors.grey, width: 0.2.w),
-                    //     ),
-                    //   ),
-                    // ),
                     SizedBox(
                       height: 20.h,
                     ),
@@ -904,26 +807,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                         FilteringTextInputFormatter.digitsOnly
                       ],
                     ),
-                    // TextField(
-                    //   controller: _price,
-                    //   decoration: InputDecoration(
-                    //     contentPadding:
-                    //         EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                    //     hintText: AppTextConstants.price,
-                    //     hintStyle: TextStyle(
-                    //       color: AppColors.grey,
-                    //     ),
-                    //     enabledBorder: OutlineInputBorder(
-                    //       borderRadius: BorderRadius.circular(14.r),
-                    //       borderSide:
-                    //           BorderSide(color: Colors.grey, width: 0.2.w),
-                    //     ),
-                    //   ),
-                    //   keyboardType: TextInputType.number,
-                    //   inputFormatters: <TextInputFormatter>[
-                    //     FilteringTextInputFormatter.digitsOnly
-                    //   ],
-                    // ),
                     SizedBox(height: 20.h),
                   ],
                 ),
@@ -991,8 +874,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
               ),
               borderRadius: BorderRadius.circular(16.r),
             ),
-            // width: width,
-            height: 130.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
@@ -1000,26 +881,28 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Align(
-                      child: SizedBox(
-                        width: 340,
-                        height: 50.h,
-                        child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: <Widget>[
-                              if (subActivities1 == null)
-                                SizedBox(
-                                  height: 100.h,
-                                )
-                              else
-                                _chosenSubActivities1(subActivities1),
-                              if (subActivities2 == null)
-                                SizedBox(
-                                  height: 100.h,
-                                )
-                              else
-                                _chosenSubActivities2(subActivities2),
-                            ]),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: SizedBox(
+                          height: 50.h,
+                          child: ListView(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              children: <Widget>[
+                                if (subActivities1 == null)
+                                  SizedBox(
+                                    height: 100.h,
+                                  )
+                                else
+                                  _chosenSubActivities1(subActivities1),
+                                if (subActivities2 == null)
+                                  SizedBox(
+                                    height: 100.h,
+                                  )
+                                else
+                                  _chosenSubActivities2(subActivities2),
+                              ]),
+                        ),
                       ),
                     ),
                   ],
@@ -1108,7 +991,16 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -1127,6 +1019,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               setState(() {
                                 if (subActivities2 != null) {
                                   subActivities1 = subActivities2;
+                                  subActivities2 = null;
                                 } else {
                                   subActivities1 = null;
                                 }
@@ -1146,16 +1039,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -1192,7 +1075,16 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -1224,16 +1116,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -1271,7 +1153,16 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -1298,16 +1189,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -1503,6 +1384,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
           .show(context);
     } else if (_date.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
+    } else if (_street.text.isEmpty ||
+        _city.text.isEmpty ||
+        _province.text.isEmpty ||
+        _postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.locationEmpty).show(context);
     } else if (subActivities1 == null) {
       AdvanceSnackBar(message: ErrorMessageConstants.subActivityEmpty)
           .show(context);

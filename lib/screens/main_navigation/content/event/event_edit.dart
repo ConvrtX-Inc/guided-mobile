@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_raw_strings, always_specify_types, curly_braces_in_flow_control_structures, cast_nullable_to_non_nullable, avoid_dynamic_calls
+// ignore_for_file: unnecessary_raw_strings, always_specify_types, curly_braces_in_flow_control_structures, cast_nullable_to_non_nullable, avoid_dynamic_calls, unnecessary_statements
 
 import 'dart:convert';
 import 'dart:io';
@@ -199,10 +199,13 @@ class _EventEditState extends State<EventEdit> {
                     height: 100.h,
                   )
                 else
-                  SizedBox(
-                    width: 160.w,
-                    height: 100.h,
-                    child: _choicesMainActivity(mainActivity),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: SizedBox(
+                      width: 160.w,
+                      height: 100.h,
+                      child: _choicesMainActivity(mainActivity),
+                    ),
                   ),
                 SizedBox(
                   width: 110.w,
@@ -257,10 +260,13 @@ class _EventEditState extends State<EventEdit> {
                         children: List.generate(length, (int index) {
                           final BadgeDetailsModel badgeDetails =
                               badgeData.badgeDetails[index];
-                          return SizedBox(
-                            height: 10.h,
-                            width: 100.w,
-                            child: _choicesMainActivity(badgeDetails),
+                          return Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: SizedBox(
+                              height: 10.h,
+                              width: 100.w,
+                              child: _choicesMainActivity(badgeDetails),
+                            ),
                           );
                         }),
                       );
@@ -307,8 +313,6 @@ class _EventEditState extends State<EventEdit> {
               ),
               borderRadius: BorderRadius.circular(16.r),
             ),
-            // width: width,
-            height: 130.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
@@ -316,26 +320,28 @@ class _EventEditState extends State<EventEdit> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Align(
-                      child: SizedBox(
-                        width: 340,
-                        height: 50.h,
-                        child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: <Widget>[
-                              if (subActivities1 == null)
-                                SizedBox(
-                                  height: 100.h,
-                                )
-                              else
-                                _chosenSubActivities1(subActivities1),
-                              if (subActivities2 == null)
-                                SizedBox(
-                                  height: 100.h,
-                                )
-                              else
-                                _chosenSubActivities2(subActivities2),
-                            ]),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: SizedBox(
+                          height: 50.h,
+                          child: ListView(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              children: <Widget>[
+                                if (subActivities1 == null)
+                                  SizedBox(
+                                    height: 100.h,
+                                  )
+                                else
+                                  _chosenSubActivities1(subActivities1),
+                                if (subActivities2 == null)
+                                  SizedBox(
+                                    height: 100.h,
+                                  )
+                                else
+                                  _chosenSubActivities2(subActivities2),
+                              ]),
+                        ),
                       ),
                     ),
                   ],
@@ -424,7 +430,16 @@ class _EventEditState extends State<EventEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -444,6 +459,7 @@ class _EventEditState extends State<EventEdit> {
                               setState(() {
                                 if (subActivities2 != null) {
                                   subActivities1 = subActivities2;
+                                  subActivities2 = null;
                                 } else {
                                   subActivities1 = null;
                                 }
@@ -463,16 +479,6 @@ class _EventEditState extends State<EventEdit> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -509,7 +515,16 @@ class _EventEditState extends State<EventEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -542,16 +557,6 @@ class _EventEditState extends State<EventEdit> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -589,7 +594,16 @@ class _EventEditState extends State<EventEdit> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -617,16 +631,6 @@ class _EventEditState extends State<EventEdit> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -1946,14 +1950,7 @@ class _EventEditState extends State<EventEdit> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () {
-              _formKey.currentState?.save();
-              if (_formKey.currentState!.validate()) {
-                _isSubmit ? null : eventEditDetail();
-              } else {
-                print('validation failed');
-              }
-            },
+            onPressed: eventEditDetail,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -1994,10 +1991,69 @@ class _EventEditState extends State<EventEdit> {
   Future<void> eventEditDetail() async {
     if (isNewDate && _eventDate.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
+    } else if (_street.text.isEmpty ||
+        _city.text.isEmpty ||
+        _province.text.isEmpty ||
+        _postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.locationEmpty)
+          .show(context);
     } else if (_didClickedImage) {
       if (image1 == null) {
         AdvanceSnackBar(message: ErrorMessageConstants.eventImageEmpty)
             .show(context);
+      } else {
+        setState(() {
+          _isSubmit = true;
+        });
+        final Map<String, dynamic> screenArguments =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+        final String? userId = UserSingleton.instance.user.user!.id;
+
+        String subActivity;
+
+        if (_didClickedSubActivity) {
+          subActivity =
+              '${subActivities1.id.toString()},${subActivities2.id.toString()},${subActivities3.id.toString()}';
+        } else {
+          subActivity = _subactivity.text;
+        }
+
+        final Map<String, dynamic> eventEditDetails = {
+          'user_id': userId,
+          'badge_id': mainActivity.id,
+          'title': _title.text,
+          'free_service': _services.text,
+          'main_activities': mainActivity.name,
+          'sub_activities': subActivity,
+          'country': _country.text,
+          'address':
+              '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
+          'description': _description.text,
+          'price': int.parse(_price.text),
+          'event_date':
+              isNewDate ? _eventDate.text : screenArguments['date_format'],
+          'is_published': true,
+        };
+
+        final dynamic response = await APIServices().request(
+            '${AppAPIPath.activityEventUrl}/${screenArguments['id']}',
+            RequestType.PATCH,
+            needAccessToken: true,
+            data: eventEditDetails);
+
+        if (_didClickedImage) {
+          if (image1 != null) {
+            await saveImage(screenArguments['id'], screenArguments['image_id']);
+          }
+        }
+
+        await Navigator.pushReplacement(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => const MainNavigationScreen(
+                      navIndex: 1,
+                      contentIndex: 1,
+                    )));
       }
     } else {
       setState(() {
@@ -2007,11 +2063,18 @@ class _EventEditState extends State<EventEdit> {
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       final String? userId = UserSingleton.instance.user.user!.id;
 
-      String subActivity;
+      String subActivity = '';
 
       if (_didClickedSubActivity) {
-        subActivity =
-            '${subActivities1.id.toString()},${subActivities2.id.toString()},${subActivities3.id.toString()}';
+        if (subActivities1 != null) {
+          subActivity = subActivities1.id;
+        }
+        if (subActivities2 != null) {
+          subActivity = '$subActivity,${subActivities2.id}';
+        }
+        if (subActivities3 != null) {
+          subActivity = '$subActivity,${subActivities3.id}';
+        }
       } else {
         subActivity = _subactivity.text;
       }

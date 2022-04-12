@@ -12,6 +12,9 @@ class AppAPIPath {
   /// Returns API base url
   static String apiBaseUrl = 'guided-api-dev.herokuapp.com';
 
+  /// Returns API base url - staging
+  // static String apiBaseUrl = 'guided-api-staging.herokuapp.com';
+
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
 
@@ -130,4 +133,30 @@ class AppAPIPath {
 
   /// Returns badges url
   static String badgesUrl = 'api/v1/badges';
+
+  /// Returns bank account url
+  static String bankAccountUrl = 'api/v1/bank-account';
+
+  /// Returns booking dates
+  static String createSlotAvailability =
+      'api/v1/activity-availabilities/create-slot-availability';
+
+  ///Returns  card url
+  static String cardUrl = '/api/v1/card';
+
+  /// Returns booking dates and hour
+  static String createSlotAvailabilityHour =
+      'api/v1/activity-availability-hours';
+
+  /// Returns Terms and Condition url
+  static String termsAndCondition = 'api/v1/terms-and-conditions';
+
+  /// Returns Users Terms and Condition url
+  static String usersTermsAndCondition = 'api/v1/users-terms-and-conditions';
+
+  ///Returns  payment url
+  static String paymentUrl = '/api/v1/charge';
+
+  /// Returns activity availabilities url
+  static String activityAvailability = 'api/v1/activity-availabilities';
 }

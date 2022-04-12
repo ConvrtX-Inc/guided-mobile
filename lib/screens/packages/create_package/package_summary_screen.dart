@@ -188,10 +188,13 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                     height: 100.h,
                   )
                 else
-                  SizedBox(
-                    width: 140.w,
-                    height: 100.h,
-                    child: _choicesMainActivity(mainActivity),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: SizedBox(
+                      width: 140.w,
+                      height: 100.h,
+                      child: _choicesMainActivity(mainActivity),
+                    ),
                   ),
                 SizedBox(
                   width: 90.w,
@@ -294,8 +297,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
               ),
               borderRadius: BorderRadius.circular(16.r),
             ),
-            // width: width,
-            height: 130.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
@@ -304,7 +305,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                   children: <Widget>[
                     Align(
                       child: SizedBox(
-                        width: 340,
                         height: 50.h,
                         child: ListView(
                             shrinkWrap: true,
@@ -411,7 +411,16 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -431,6 +440,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                               setState(() {
                                 if (subActivities2 != null) {
                                   subActivities1 = subActivities2;
+                                  subActivities2 = null;
                                 } else {
                                   subActivities1 = null;
                                 }
@@ -450,16 +460,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -496,7 +496,16 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -529,16 +538,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -576,7 +575,16 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
@@ -604,16 +612,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 10.w,
-                    bottom: 3.h,
-                    child: Image.memory(
-                      base64.decode(badges.imgIcon.split(',').last),
-                      gaplessPlayback: true,
-                      width: 20,
-                      height: 20,
-                    ),
                   ),
                 ],
               ),
@@ -1764,7 +1762,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     final String? userId = UserSingleton.instance.user.user!.id;
     List<String> list = screenArguments['services'];
     dynamic mainBadge;
-    String subBadges;
+    String subBadges = '';
 
     setState(() {
       _isSubmit = true;
@@ -1777,10 +1775,25 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     }
 
     if (_isSubActivityEdited) {
-      subBadges = '${subActivities1.id},${subActivities2.id},${subActivities3.id}';
+      if (subActivities1 != null) {
+        subBadges = subActivities1.id;
+      }
+      if (subActivities2 != null) {
+        subBadges = '$subBadges,${subActivities2.id}';
+      }
+      if (subActivities3 != null) {
+        subBadges = '$subBadges,${subActivities3.id}';
+      }
     } else {
-      subBadges =
-          '${preSubActivities1.id},${preSubActivities2.id},${preSubActivities3.id}';
+      if (preSubActivities1 != null) {
+        subBadges = preSubActivities1.id;
+      }
+      if (preSubActivities2 != null) {
+        subBadges = '$subBadges,${preSubActivities2.id}';
+      }
+      if (preSubActivities3 != null) {
+        subBadges = '$subBadges,${preSubActivities3.id}';
+      }
     }
 
     Map<String, dynamic> packageDetails = {
@@ -1892,24 +1905,26 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         needAccessToken: true, data: guideRuleDetails);
 
     final Map<String, dynamic> localLawDetails = {
-      'user_id': userId,
       'description': screenArguments['local_law_and_taxes']
     };
 
     /// Local Laws and Taxes Details API
     final dynamic response3 = await APIServices().request(
-        AppAPIPath.localLawandTaxes, RequestType.POST,
-        needAccessToken: true, data: localLawDetails);
+        '${AppAPIPath.termsAndCondition}/${screenArguments['preset_local_law_id']}',
+        RequestType.PATCH,
+        needAccessToken: true,
+        data: localLawDetails);
 
     final Map<String, dynamic> waiverDetails = {
-      'user_id': userId,
       'description': screenArguments['waiver']
     };
 
     /// Waiver Details API
     final dynamic response4 = await APIServices().request(
-        AppAPIPath.waiverUrl, RequestType.POST,
-        needAccessToken: true, data: waiverDetails);
+        '${AppAPIPath.termsAndCondition}/${screenArguments['preset_waiver_id']}',
+        RequestType.PATCH,
+        needAccessToken: true,
+        data: waiverDetails);
 
     await Navigator.pushReplacement(
         context,

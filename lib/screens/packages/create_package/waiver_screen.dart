@@ -7,6 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/preset_form_model.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Waiver Screen
 class WaiverScreen extends StatefulWidget {
@@ -23,12 +25,21 @@ class _WaiverScreenState extends State<WaiverScreen> {
 
   TextEditingController _waiver = TextEditingController();
   final FocusNode _waiverFocus = FocusNode();
+  late Future<PresetFormModel> _loadingData;
 
+  late List<PresetFormModel> listForm = [];
+  late PresetFormModel _form = PresetFormModel();
+  bool _isSubmit = false;
   @override
   void initState() {
     super.initState();
 
-    _waiver = TextEditingController(text: AppTextConstants.loremIpsum);
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+      _waiver = TextEditingController(text: screenArguments['preset_waiver']);
+    });
   }
 
   @override
@@ -112,7 +123,7 @@ class _WaiverScreenState extends State<WaiverScreen> {
                             controller: _waiver,
                             focusNode: _waiverFocus,
                             decoration: InputDecoration(
-                              hintText: AppTextConstants.loremIpsum,
+                              hintText: AppTextConstants.hintWaiver,
                               hintStyle: TextStyle(
                                 color: Colors.grey.shade800,
                               ),
@@ -168,8 +179,12 @@ class _WaiverScreenState extends State<WaiverScreen> {
           height: 60.h,
           child: ElevatedButton(
             onPressed: () {
-              if (isChecked == true) {
-                navigatePackageSummaryScreen(context, screenArguments);
+              if (isChecked) {
+                if (_isSubmit) {
+                  null;
+                } else {
+                  navigatePackageSummaryScreen(context, screenArguments);
+                }
               }
             },
             style: ElevatedButton.styleFrom(
@@ -182,10 +197,13 @@ class _WaiverScreenState extends State<WaiverScreen> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.next,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.next,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -194,6 +212,10 @@ class _WaiverScreenState extends State<WaiverScreen> {
 
   Future<void> navigatePackageSummaryScreen(
       BuildContext context, Map<String, dynamic> data) async {
+    setState(() {
+      _isSubmit = true;
+    });
+
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
     if (_waiver.text.isNotEmpty) {

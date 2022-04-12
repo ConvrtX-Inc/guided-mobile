@@ -116,6 +116,7 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                         child: Column(
                           children: <Widget>[
                             TextField(
+                              enabled: false,
                               controller: txtMinimum,
                               decoration: InputDecoration(
                                 hintStyle: TextStyle(
@@ -206,6 +207,7 @@ class _NumberOfTravelersScreenState extends State<NumberOfTravelersScreen> {
                         child: Column(
                           children: <Widget>[
                             TextField(
+                              enabled: false,
                               controller: txtMaximum,
                               decoration: InputDecoration(
                                 hintStyle: TextStyle(

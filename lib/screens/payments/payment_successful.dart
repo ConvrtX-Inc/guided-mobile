@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
-import 'package:guided/common/widgets/custom_rounded_button_with_border.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/screens/payments/payment_manage_card.dart';
+import 'package:guided/screens/widgets/reusable_widgets/payment_detail.dart';
 
 /// Modal Bottom sheet for successful payment
-Future<dynamic> paymentSuccessful(BuildContext context) {
+Future<dynamic> paymentSuccessful(
+    {required BuildContext context,
+    required Widget paymentDetails,
+    required String paymentMethod}) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -28,15 +30,22 @@ Future<dynamic> paymentSuccessful(BuildContext context) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Row(children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            color: Colors.grey.withOpacity(0.2)),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                        ),
-                      ),
+                      InkWell(
+                          onTap: () {
+                            int count = 0;
+                            Navigator.popUntil(context, (route) {
+                              return count++ == 2;
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: Colors.grey.withOpacity(0.2)),
+                            child: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.black,
+                            ),
+                          )),
                       SizedBox(width: 20.w),
                       Text(
                         AppTextConstants.paymentSuccessful,
@@ -55,51 +64,37 @@ Future<dynamic> paymentSuccessful(BuildContext context) {
                     ),
                     Center(
                       child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height / 1.5,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              spreadRadius: 1,
-                              blurRadius: 3,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20.w, vertical: 20.h),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              getData(AppTextConstants.company, 'Guided'),
-                              SizedBox(
-                                height: 20.h,
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height / 1.5,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: <BoxShadow>[
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 1,
+                                blurRadius: 3,
+                                offset: const Offset(0, 2),
                               ),
-                              getData(AppTextConstants.orderNumber, '1229000B3HN'),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              getData(AppTextConstants.service, 'Travel Service'),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              getData(AppTextConstants.bookingDate, '09. 10. 2021'),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              getData(AppTextConstants.slots, '08'),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              getData(AppTextConstants.card, 'Credit Card'),
                             ],
                           ),
-                        ),
-                      ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              paymentDetails,
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    PaymentDetail(
+                                        label: AppTextConstants.card,
+                                        content: paymentMethod),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )),
                     ),
                     SizedBox(
                       height: 40.h,
@@ -107,12 +102,10 @@ Future<dynamic> paymentSuccessful(BuildContext context) {
                     CustomRoundedButton(
                         title: AppTextConstants.ok,
                         onpressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) =>
-                                    const PaymentManageCard()),
-                          );
+                          int count = 0;
+                          Navigator.popUntil(context, (route) {
+                            return count++ == 2;
+                          });
                         }),
                     SizedBox(
                       height: 40.h,
@@ -126,29 +119,3 @@ Future<dynamic> paymentSuccessful(BuildContext context) {
         });
       });
 }
-
-/// data
-Widget getData(String title, String data) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          title,
-          style: TextStyle(
-              fontSize: 17.sp,
-              fontWeight: FontWeight.w400,
-              fontFamily: 'Poppins',
-              color: Colors.grey),
-        ),
-        SizedBox(
-          height: 7.h,
-        ),
-        Text(
-          data,
-          style: TextStyle(
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
-          ),
-        ),
-      ],
-    );

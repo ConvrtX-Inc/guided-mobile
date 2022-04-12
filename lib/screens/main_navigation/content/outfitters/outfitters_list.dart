@@ -58,6 +58,7 @@ class _OutfitterListState extends State<OutfitterList>
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'btn2',
         backgroundColor: AppColors.chateauGreen,
         onPressed: _settingModalBottomSheet,
         child: const Icon(Icons.add),

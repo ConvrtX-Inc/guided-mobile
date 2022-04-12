@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/package_model.dart';
 import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
@@ -38,7 +39,7 @@ class _PackageListState extends State<PackageList>
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: SizedBox(
-          height: 550.h,
+          height: 600.h,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -73,6 +74,7 @@ class _PackageListState extends State<PackageList>
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'btn0',
         backgroundColor: AppColors.chateauGreen,
         onPressed: () {
           Navigator.push(

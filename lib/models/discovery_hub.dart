@@ -15,6 +15,7 @@ class DiscoveryHub {
     this.img1 = '',
     this.img2 = '',
     this.img3 = '',
+    this.isPremium = false
   });
 
   /// initialization
@@ -22,4 +23,7 @@ class DiscoveryHub {
 
   /// initialization
   final String title, description, date, path, img1, img2, img3;
+
+  ///Initialization
+  final bool isPremium;
 }

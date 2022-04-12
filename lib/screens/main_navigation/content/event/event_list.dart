@@ -78,6 +78,7 @@ class _EventListState extends State<EventList>
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'btn1',
         backgroundColor: AppColors.chateauGreen,
         onPressed: () {
           Navigator.pushNamed(context, '/event_add');

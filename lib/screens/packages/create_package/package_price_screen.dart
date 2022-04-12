@@ -7,6 +7,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/currencies_model.dart';
+import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/screens/packages/create_package/widget/dropdown_currency.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -32,6 +33,11 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
   FocusNode _extraCostFocus = FocusNode();
   FocusNode _maxPersonFocus = FocusNode();
   FocusNode _additionalNotesFocus = FocusNode();
+
+  String _local_law = '';
+  String _local_law_id = '';
+
+  bool _isSubmit = false;
 
   void setCurrency(dynamic value) {
     setState(() {
@@ -215,8 +221,9 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () =>
-                navigateLocalLawTaxesScreen(context, screenArguments),
+            onPressed: () async => _isSubmit
+                ? null
+                : navigateLocalLawTaxesScreen(context, screenArguments),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -227,10 +234,13 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.next,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.next,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -239,6 +249,19 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
 
   Future<void> navigateLocalLawTaxesScreen(
       BuildContext context, Map<String, dynamic> data) async {
+    setState(() {
+      _isSubmit = true;
+    });
+    final List<PresetFormModel> resForm =
+        await APIServices().getTermsAndCondition('local_laws');
+    if (resForm.isNotEmpty) {
+      _local_law = resForm[0].description;
+      _local_law_id = resForm[0].id;
+    } else {
+      _local_law = AppTextConstants.longLoremIpsum;
+      _local_law_id = '';
+    }
+
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
     if (_basePrice.text.isEmpty ||
@@ -253,6 +276,8 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
       details['max_person'] = _maxPerson.text;
       details['currency_id'] = _currency.id;
       details['additional_notes'] = _additionalNotes.text;
+      details['preset_local_law'] = _local_law;
+      details['preset_local_law_id'] = _local_law_id;
 
       await Navigator.pushNamed(context, '/local_law_taxes',
           arguments: details);

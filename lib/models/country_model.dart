@@ -1,28 +1,4 @@
 // // ignore_for_file: sort_constructors_first, avoid_dynamic_calls, always_specify_types
-// /// Country Model
-// class CountryModel {
-//   /// Constructor
-//   CountryModel({required this.countryDetails});
-
-//   /// Country Model details
-//   late List<CountryDetailsModel> countryDetails = <CountryDetailsModel>[];
-// }
-
-// /// Country Model class
-// class CountryDetailsModel {
-//   /// Constructor
-//   CountryDetailsModel({this.id = '', this.name = '', this.code = ''});
-
-//   /// String property initialization
-//   final String id, name, code;
-
-//   /// mapping
-//   CountryDetailsModel.fromJson(Map<String, dynamic> parseJson)
-//       : id = parseJson['id'],
-//         name = parseJson['name'],
-//         code = parseJson['code'];
-// }
-
 /// Model for Country
 class CountryModel {
   /// Constructor
