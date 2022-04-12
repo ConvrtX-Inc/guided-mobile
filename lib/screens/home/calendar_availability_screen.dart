@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, cast_nullable_to_non_nullable, unused_local_variable
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,9 +9,12 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/controller/traveller_controller.dart';
+import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/screens/home/set_booking_date_screen.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:in_date_utils/in_date_utils.dart' as Indate;
 
 /// Calendar Availability Screen
 class CalendarAvailabilityScreen extends StatefulWidget {
@@ -30,17 +33,29 @@ class _CalendarAvailabilityScreenState
   int minimum = 0;
   late DateTime _selectedDay = DateTime.now();
   late DateTime _focusedDay = DateTime.now();
+  DateTime _selectedDate = DateTime.now();
+  bool _isSelectionChanged = false;
 
   @override
   void initState() {
     super.initState();
     txtMinimum = TextEditingController(text: minimum.toString());
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+      
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
       appBar: AppBar(
@@ -73,69 +88,22 @@ class _CalendarAvailabilityScreenState
                   SubHeaderText.subHeaderText(
                       AppTextConstants.subheaderAvailability),
                   SizedBox(
-                    height: 40.h,
+                    height: 20.h,
                   ),
                   // Container(
-                  //   height: 50.h,
-                  //   padding:
-                  //       EdgeInsets.symmetric(horizontal: 24.w, vertical: 2.h),
                   //   decoration: BoxDecoration(
-                  //     borderRadius: BorderRadius.circular(20.r),
-                  //     color: Colors.white,
-                  //   ),
-                  //   child: DropdownButtonHideUnderline(
-                  //     child: DropdownButton<int>(
-                  //       value: selectedMonth,
-                  //       onChanged: (int? intVal) => setState(() {
-                  //         selectedMonth = intVal!;
-                  //         DateTime dt = DateTime.parse(
-                  //             travellerMonthController.currentDate);
-
-                  //         final DateTime plustMonth = DateTime(dt.year,
-                  //             selectedMonth, dt.day, dt.hour, dt.minute);
-
-                  //         final DateTime setLastday = DateTime(
-                  //             plustMonth.year,
-                  //             plustMonth.month,
-                  //             1,
-                  //             plustMonth.hour,
-                  //             plustMonth.minute);
-
-                  //         travellerMonthController.setCurrentMonth(
-                  //           setLastday.toString(),
-                  //         );
+                  //       border: Border.all(color: Colors.grey.shade400),
+                  //       borderRadius: BorderRadius.circular(10.r)),
+                  //   child: GetBuilder<TravellerMonthController>(
+                  //       id: 'calendar',
+                  //       builder: (TravellerMonthController controller) {
+                  //         return Sfcalendar(
+                  //             context, travellerMonthController.currentDate);
                   //       }),
-                  //       selectedItemBuilder: (BuildContext context) {
-                  //         return AppListConstants.numberList
-                  //             .map<Widget>((int item) {
-                  //           return Center(
-                  //               child: Text(
-                  //             '${AppListConstants.calendarMonths[item - 1]} ${focusedYear.year}',
-                  //             style: TextStyle(
-                  //                 fontFamily: 'Gilroy',
-                  //                 fontSize: 18.sp,
-                  //                 fontWeight: FontWeight.w600),
-                  //           ));
-                  //         }).toList();
-                  //       },
-                  //       items: AppListConstants.numberList.map((int item) {
-                  //         return DropdownMenuItem<int>(
-                  //           value: item,
-                  //           child: Center(
-                  //               child: Text(
-                  //                   '${AppListConstants.calendarMonths[item - 1]} ${focusedYear.year}',
-                  //                   style: TextStyle(
-                  //                       fontFamily: 'Gilroy',
-                  //                       fontSize: 18.sp,
-                  //                       fontWeight: FontWeight.w600))),
-                  //         );
-                  //       }).toList(),
-                  //     ),
-                  //   ),
                   // ),
                   Container(
                     decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade400),
+                        border: Border.all(color: AppColors.dustyGrey),
                         borderRadius: BorderRadius.circular(10.r)),
                     child: GetBuilder<TravellerMonthController>(
                         id: 'calendar',
@@ -401,6 +369,15 @@ class _CalendarAvailabilityScreenState
         ),
       ),
     );
+  }
+
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    setState(() {
+      if (args.value is DateTime) {
+        _selectedDate = args.value;
+        _isSelectionChanged = true;
+      }
+    });
   }
 
   @override

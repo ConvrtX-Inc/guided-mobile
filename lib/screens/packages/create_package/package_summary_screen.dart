@@ -1762,7 +1762,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     final String? userId = UserSingleton.instance.user.user!.id;
     List<String> list = screenArguments['services'];
     dynamic mainBadge;
-    String subBadges;
+    String subBadges = '';
 
     setState(() {
       _isSubmit = true;
@@ -1775,11 +1775,25 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     }
 
     if (_isSubActivityEdited) {
-      subBadges =
-          '${subActivities1.id},${subActivities2.id},${subActivities3.id}';
+      if (subActivities1 != null) {
+        subBadges = subActivities1.id;
+      }
+      if (subActivities2 != null) {
+        subBadges = '$subBadges,${subActivities2.id}';
+      }
+      if (subActivities3 != null) {
+        subBadges = '$subBadges,${subActivities3.id}';
+      }
     } else {
-      subBadges =
-          '${preSubActivities1.id},${preSubActivities2.id},${preSubActivities3.id}';
+      if (preSubActivities1 != null) {
+        subBadges = preSubActivities1.id;
+      }
+      if (preSubActivities2 != null) {
+        subBadges = '$subBadges,${preSubActivities2.id}';
+      }
+      if (preSubActivities3 != null) {
+        subBadges = '$subBadges,${preSubActivities3.id}';
+      }
     }
 
     Map<String, dynamic> packageDetails = {
@@ -1891,24 +1905,26 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         needAccessToken: true, data: guideRuleDetails);
 
     final Map<String, dynamic> localLawDetails = {
-      'user_id': userId,
       'description': screenArguments['local_law_and_taxes']
     };
 
     /// Local Laws and Taxes Details API
     final dynamic response3 = await APIServices().request(
-        AppAPIPath.localLawandTaxes, RequestType.POST,
-        needAccessToken: true, data: localLawDetails);
+        '${AppAPIPath.termsAndCondition}/${screenArguments['preset_local_law_id']}',
+        RequestType.PATCH,
+        needAccessToken: true,
+        data: localLawDetails);
 
     final Map<String, dynamic> waiverDetails = {
-      'user_id': userId,
       'description': screenArguments['waiver']
     };
 
     /// Waiver Details API
     final dynamic response4 = await APIServices().request(
-        AppAPIPath.waiverUrl, RequestType.POST,
-        needAccessToken: true, data: waiverDetails);
+        '${AppAPIPath.termsAndCondition}/${screenArguments['preset_waiver_id']}',
+        RequestType.PATCH,
+        needAccessToken: true,
+        data: waiverDetails);
 
     await Navigator.pushReplacement(
         context,

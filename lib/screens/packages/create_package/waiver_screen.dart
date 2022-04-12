@@ -29,7 +29,7 @@ class _WaiverScreenState extends State<WaiverScreen> {
 
   late List<PresetFormModel> listForm = [];
   late PresetFormModel _form = PresetFormModel();
-
+  bool _isSubmit = false;
   @override
   void initState() {
     super.initState();
@@ -179,8 +179,12 @@ class _WaiverScreenState extends State<WaiverScreen> {
           height: 60.h,
           child: ElevatedButton(
             onPressed: () {
-              if (isChecked == true) {
-                navigatePackageSummaryScreen(context, screenArguments);
+              if (isChecked) {
+                if (_isSubmit) {
+                  null;
+                } else {
+                  navigatePackageSummaryScreen(context, screenArguments);
+                }
               }
             },
             style: ElevatedButton.styleFrom(
@@ -193,10 +197,13 @@ class _WaiverScreenState extends State<WaiverScreen> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.next,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.next,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -205,6 +212,10 @@ class _WaiverScreenState extends State<WaiverScreen> {
 
   Future<void> navigatePackageSummaryScreen(
       BuildContext context, Map<String, dynamic> data) async {
+    setState(() {
+      _isSubmit = true;
+    });
+
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
     if (_waiver.text.isNotEmpty) {

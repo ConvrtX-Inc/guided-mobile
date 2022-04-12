@@ -1638,6 +1638,7 @@ class _EventAddState extends State<EventAdd> {
 
   Future<void> eventsDetail() async {
     String countryFinal = '';
+    String subBadges = '';
 
     if (isLocationBtnClicked) {
       countryFinal = _country.text;
@@ -1669,6 +1670,17 @@ class _EventAddState extends State<EventAdd> {
       setState(() {
         _isSubmit = true;
       });
+
+      if (subActivities1 != null) {
+        subBadges = subActivities1.id;
+      }
+      if (subActivities2 != null) {
+        subBadges = '$subBadges,${subActivities2.id}';
+      }
+      if (subActivities3 != null) {
+        subBadges = '$subBadges,${subActivities3.id}';
+      }
+
       final String? userId = UserSingleton.instance.user.user!.id;
 
       final Map<String, dynamic> eventDetails = {
@@ -1677,8 +1689,7 @@ class _EventAddState extends State<EventAdd> {
         'title': _title.text,
         'free_service': services.join(','),
         'main_activities': mainActivity.name,
-        'sub_activities':
-            '${subActivities1.id},${subActivities2.id},${subActivities3.id}',
+        'sub_activities': subBadges,
         'country': countryFinal,
         'address':
             '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
