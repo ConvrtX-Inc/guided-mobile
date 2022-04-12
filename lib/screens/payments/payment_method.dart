@@ -17,8 +17,6 @@ import 'package:guided/utils/services/static_data_services.dart';
 
 import 'package:pay/pay.dart' as pay;
 
-
-
 /// returns google wallet
 String googleWallet = 'assets/images/png/google_wallet.png';
 
@@ -35,7 +33,7 @@ Future<dynamic> paymentMethod(
     {required BuildContext context,
     required Function onContinueBtnPressed,
     Function? onCreditCardSelected,
-    double? price }) {
+    double? price}) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -50,19 +48,19 @@ Future<dynamic> paymentMethod(
         final List<PaymentMode> paymentModes =
             StaticDataService.getPaymentModes();
         int selectedPaymentMode = 0;
-        Stripe.publishableKey =
-            dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
+        Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
 
         /// For pay Plugin
-         final _paymentItems = [
+        final _paymentItems = [
           pay.PaymentItem(
             label: 'Total',
-            amount:  price.toString(),
+            amount: price.toString(),
             status: pay.PaymentItemStatus.final_price,
           )
         ];
 
-        debugPrint('Publishable Key ${dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString()}');
+        debugPrint(
+            'Publishable Key ${dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString()}');
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return ScreenUtilInit(
@@ -140,16 +138,17 @@ Future<dynamic> paymentMethod(
                                       onPaymentModePressed: () {
                                         debugPrint('Selected');
 
-                                        setState((){
+                                        setState(() {
                                           selectedPaymentMode = i;
                                         });
 
-                                        if(selectedPaymentMode == 1){
+                                        if (selectedPaymentMode == 1) {
                                           // Google Pay
                                           debugPrint('Google Pay');
                                           // handleGooglePay(context);
-                                        }else{
+                                        } else {
                                           // apple pay
+
                                         }
                                       }),
                               ]),
@@ -157,8 +156,9 @@ Future<dynamic> paymentMethod(
                           SizedBox(
                             height: 20.h,
                           ),
+
                           ///Bank Card Payment Mode
-                          if(selectedPaymentMode == 0)
+                          if (selectedPaymentMode == 0)
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
@@ -183,7 +183,7 @@ Future<dynamic> paymentMethod(
                                 ),
                                 CarouselSlider(
                                   options: CarouselOptions(
-                                      height: 190.h,
+                                      height: 170.h,
                                       enableInfiniteScroll: false,
                                       onPageChanged: (int index,
                                           CarouselPageChangedReason reason) {
@@ -217,17 +217,14 @@ Future<dynamic> paymentMethod(
                                 ),
                               ],
                             ),
-                          
-
                         ],
                       ),
                     ),
 
-
                     SizedBox(
                       height: 40.h,
                     ),
-                    if(selectedPaymentMode == 0)
+                    if (selectedPaymentMode == 0)
                       CustomRoundedButton(
                         title: 'Continue',
                         onpressed: () {
@@ -236,34 +233,26 @@ Future<dynamic> paymentMethod(
                             return onContinueBtnPressed(selectedCard);
                           }
                         },
-                        /* onpressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                  builder: (BuildContext context) =>
-                                      const PaymentManageCard()),
-                            );
-                          }*/
                       ),
-                    if(selectedPaymentMode == 1)
+
+                    ///Google Pay
+                    if (selectedPaymentMode == 1)
                       Container(
                           height: 100.h,
                           width: MediaQuery.of(context).size.width,
-                          // width: 100.w,
-                          child:
-
-                          pay.GooglePayButton(
-                            paymentConfigurationAsset: 'google_pay_payment_profile.json',
+                          child: pay.GooglePayButton(
+                            paymentConfigurationAsset:
+                                'google_pay_payment_profile.json',
                             paymentItems: _paymentItems,
                             margin: const EdgeInsets.only(top: 15),
                             onPaymentResult: (result) async {
-                              final token =
-                              result['paymentMethodData']['tokenizationData']['token'];
-                              final tokenJson = Map.castFrom(json.decode(token));
+                              final token = result['paymentMethodData']
+                                  ['tokenizationData']['token'];
+                              final tokenJson =
+                                  Map.castFrom(json.decode(token));
                               debugPrint('Result ${result}');
-                              debugPrint('payment method ${tokenJson['card']['id']}');
-
-
+                              debugPrint(
+                                  'payment method ${tokenJson['card']['id']}');
 
                               // debugPrint('Params ${params}');
                               onContinueBtnPressed(tokenJson);
@@ -275,7 +264,8 @@ Future<dynamic> paymentMethod(
                               // 1. Add your stripe publishable key to assets/google_pay_payment_profile.json
                               // await debugChangedStripePublishableKey();
                             },
-                            childOnError: Text('Google Pay is not available in this device'),
+                            childOnError: Text(
+                                'Google Pay is not available in this device'),
                             onError: (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -284,10 +274,48 @@ Future<dynamic> paymentMethod(
                                 ),
                               );
                             },
-                          )
+                          )),
 
+                    if (selectedPaymentMode == 2)
+                      Container(
+                        height: 50.h,
+                        width: MediaQuery.of(context).size.width * 0.85,
 
+                        child: pay.ApplePayButton(
+
+                          paymentConfigurationAsset:
+                              'apple_pay_payment_profile.json',
+                          paymentItems: _paymentItems,
+                          // margin: const EdgeInsets.only(top: 15),
+                          onPaymentResult: (result) async {
+
+                            debugPrint('Apple Pay Result ${result}');
+
+                            final TokenData token = await Stripe.instance.createApplePayToken(result);
+                            debugPrint('Apple Token $token');
+
+                            onContinueBtnPressed(token);
+
+                            // debugPrint('Params ${params}');
+                            // onContinueBtnPressed(tokenJson);
+
+                          },
+                          loadingIndicator: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          childOnError:
+                              Text('Apple Pay is not available in this device'),
+                          onError: (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'There was an error while trying to perform the payment'),
+                              ),
+                            );
+                          },
+                        ),
                       ),
+
                     SizedBox(
                       height: 20.h,
                     ),
@@ -343,64 +371,63 @@ Widget buildcardImage(String cardImage, int index) => Container(
     );
 
 /// widet for payment method
-Widget getMethods({required PaymentMode data, required VoidCallback onPaymentModePressed, bool isSelected = false,}) {
-
-    return InkWell(
-      onTap: data.isEnabled ?  onPaymentModePressed : null,
-      child: Container(
-        height: 65.h,
-        width: 95.w,
-        decoration: BoxDecoration(
-            color: Colors.white,
-            border:  isSelected
-                ? Border.all(width: 1.w,color: AppColors.deepGreen)
-                : Border.all(
-                    width: 1.w,
-                    color: Colors.grey.withOpacity(0.5),
-                  ),
-            borderRadius: BorderRadius.circular(12)),
-        child: Stack(clipBehavior: Clip.none, children: <Widget>[
-          Center(child: Container(decoration: BoxDecoration(
-              // child: Image.asset(data.logo)
-              image: DecorationImage(image: AssetImage(data.logo)),
-          ),)),
-          if (isSelected)
-            Positioned(
-              right: -5,
-              top: -7,
-              child: Container(
-                height: 20.h,
-                width: 20.h,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.green,
+Widget getMethods({
+  required PaymentMode data,
+  required VoidCallback onPaymentModePressed,
+  bool isSelected = false,
+}) {
+  return InkWell(
+    onTap: data.isEnabled ? onPaymentModePressed : null,
+    child: Container(
+      height: 65.h,
+      width: 95.w,
+      decoration: BoxDecoration(
+          color: Colors.white,
+          border: isSelected
+              ? Border.all(width: 1.w, color: AppColors.deepGreen)
+              : Border.all(
+                  width: 1.w,
+                  color: Colors.grey.withOpacity(0.5),
                 ),
-                child: Center(
-                    child: Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 12.sp,
-                )),
+          borderRadius: BorderRadius.circular(12)),
+      child: Stack(clipBehavior: Clip.none, children: <Widget>[
+        Center(
+            child: Container(
+          decoration: BoxDecoration(
+            // child: Image.asset(data.logo)
+            image: DecorationImage(image: AssetImage(data.logo)),
+          ),
+        )),
+        if (isSelected)
+          Positioned(
+            right: -5,
+            top: -7,
+            child: Container(
+              height: 20.h,
+              width: 20.h,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.green,
               ),
-            )
-        ]),
-      ),
-    );
-
-
-
-
+              child: Center(
+                  child: Icon(
+                Icons.check,
+                color: Colors.white,
+                size: 12.sp,
+              )),
+            ),
+          )
+      ]),
+    ),
+  );
 }
 
 /// For Google Pay
 Future<void> handleGooglePay(context) async {
   debugPrint('Handle Google Pay');
 
-
   try {
     // 1. fetch Intent Client Secret from backend
-
-
 
     // 2.present google pay sheet
     await Stripe.instance.initGooglePay(GooglePayInitParams(
@@ -409,11 +436,12 @@ Future<void> handleGooglePay(context) async {
         countryCode: 'us'));
 
     await Stripe.instance.presentGooglePay(
-      const PresentGooglePayParams(clientSecret: 'sk_test_51K6QgjKn5tIlJ89hpKNuYDHqBxmc6l2BRG2REm11slivu6QzrRdyYB8DbGa3ObMTo2dyskjQ83GClkk5DVWrRRuO00RKZQAYm1'),
+      const PresentGooglePayParams(
+          clientSecret:
+              'sk_test_51K6QgjKn5tIlJ89hpKNuYDHqBxmc6l2BRG2REm11slivu6QzrRdyYB8DbGa3ObMTo2dyskjQ83GClkk5DVWrRRuO00RKZQAYm1'),
     );
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text('Google Pay payment succesfully completed')),
+      const SnackBar(content: Text('Google Pay payment succesfully completed')),
     );
   } catch (e) {
     debugPrint('ERROR ${e}');
@@ -421,6 +449,4 @@ Future<void> handleGooglePay(context) async {
       SnackBar(content: Text('Error: $e')),
     );
   }
-
-
 }

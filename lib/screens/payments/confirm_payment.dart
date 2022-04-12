@@ -96,21 +96,34 @@ Future<dynamic> confirmPaymentModal(
                         });
                         //Handle Payment for Credit Cards
                         if (paymentMethod is CardModel) {
-                          debugPrint('Payment Method ${paymentMethod.cardNo}');
 
                           handleCardPayment(context, paymentMethod,
                               onPaymentSuccessful, price);
                         }
 
+                        //handle payment for google pay
                         if (paymentMode.toLowerCase() == 'google pay') {
-                          debugPrint('GOOGLE Pay ${paymentMethod}');
-                          handleGooglePayment(paymentMethod,
+
+                          final PaymentMethodParams paymentMethodParams = PaymentMethodParams.cardFromToken(
+                            token: paymentMethod['id'],
+                          );
+
+                          handleWalletPayment(paymentMethodParams,
                               onPaymentSuccessful, context, price);
-                          // handleChargePayment(price, paymentMethod['id'], context, onPaymentSuccessful);
+                        }
+
+                        //handle payment for apple pay
+                        if (paymentMode.toLowerCase() == 'apple pay') {
+                           final TokenData tokenData  = paymentMethod;
+
+                          final PaymentMethodParams paymentMethodParams = PaymentMethodParams.cardFromToken(
+                            token: tokenData.id,
+                          );
+
+                          handleWalletPayment(paymentMethodParams,
+                              onPaymentSuccessful, context, price);
                         }
                       },
-                      /*onpressed: () => confirmPayment(context, paymentDetails,
-                          paymentMode, paymentMethod, onPaymentSuccessful),*/
                     ),
                     SizedBox(
                       height: 20.h,
@@ -151,7 +164,7 @@ Future<void> handleCardPayment(BuildContext context, CardModel card,
 ///Charge Payment
 Future<void> handleChargePayment(
     double price, paymentMethodId, context, onPaymentSuccess) async {
-  debugPrint('payment method id : ${paymentMethodId}');
+
   final int amount = (price * 100).round();
 
   //Call Payment Api
@@ -167,31 +180,30 @@ Future<void> handleChargePayment(
   }
 }
 
-Future<void> handleGooglePayment(
-    paymentToken, onPaymentSuccess, context, double price) async {
+///Handle Google And Apple Payment Method
+Future<void> handleWalletPayment(
+    dynamic paymentMethodParams, Function onPaymentSuccess, BuildContext context, double price) async {
+  debugPrint('Wallet Payment ${paymentMethodParams}');
+  //amount to pay
   final int amount = (price * 100).round();
-
   try {
-    final PaymentMethodParams params = PaymentMethodParams.cardFromToken(
-      token: paymentToken['id'],
-    );
+
 
     //get client secret by creating payment intent
     final String clientSecret = await createPaymentIntent(amount);
 
-    debugPrint('Client Secret : $clientSecret');
 
-    //  Confirm Google pay payment method
+    debugPrint('client secret $clientSecret');
+
+    //  Confirm wallet payment
     await Stripe.instance.confirmPayment(
       clientSecret,
-      params,
+      paymentMethodParams,
     );
 
     Navigator.of(context).pop();
-    debugPrint('Payment success!');
     onPaymentSuccess();
   } on Exception catch (e) {
-    debugPrint('error::: ${e}');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Error: $e')),
     );

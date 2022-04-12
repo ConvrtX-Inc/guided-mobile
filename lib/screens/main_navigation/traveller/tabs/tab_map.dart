@@ -21,9 +21,11 @@ import 'dart:async';
 
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/guide.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/models/user_subscription.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
 import 'package:guided/screens/payments/payment_method.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
@@ -634,11 +636,14 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           GlobalMixin().generateTransactionNumber();
                       confirmPaymentModal(
                           context: context,
-                          serviceName: 'Discovery Subscription',
+                          serviceName: 'Premium Subscription',
                           paymentMethod: data,
                           paymentMode: mode,
                           price: price,
                           onPaymentSuccessful: () {
+
+                            saveSubscription(transactionNumber, 'Premium Subscription');
+                            //Save Subscription
                             paymentSuccessful(
                                 context: context,
                                 paymentDetails: DiscoveryPaymentDetails(
@@ -661,4 +666,23 @@ class _TabMapScreenState extends State<TabMapScreen> {
               },
             ));
   }
+
+  Future<void> saveSubscription(String transactionNumber, String subscriptionName) async {
+    final DateTime startDate = DateTime.now();
+
+    final DateTime endDate = GlobalMixin().getEndDate(startDate);
+
+    final UserSubscription subscriptionParams = UserSubscription(
+      paymentReferenceNo: transactionNumber,
+      name: subscriptionName,
+      startDate: startDate.toString(),
+      endDate:  endDate.toString()
+    );
+
+    final APIStandardReturnFormat result = await APIServices().addUserSubscription(subscriptionParams);
+
+    debugPrint('subscription result ${result.successResponse}');
+
+  }
+
 }

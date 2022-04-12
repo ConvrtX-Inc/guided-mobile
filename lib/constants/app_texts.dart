@@ -912,6 +912,7 @@ class AppTextConstants {
   ///Returns hint for waiver
   static String hintWaiver =
       'Last update: August 28, 2021\n            RELEASE OF LIABILITY, WAIVER OF CLAIMS AND ASSUMPTION OF RISK AGREEMENT\n            BY SIGNING THIS DOCUMENT, YOU WILL WAIVE CERTAIN LEGAL RIGHTS, INCLUDING THE\n            RIGHT TO SUE OR CLAIM COMPENSATION FOLLOWING AN ACCIDENT OR INJURY.\n            PLEASE READ CAREFULLY!\n            This Traveler Release and Waiver is made pursuant to the GuidED Terms of Service, last updated June\n            1, 2021, which govern the use of GuidED, including any content, functionality and services offered on or\n            through www.guided.ca or any other website through which GuidED makes its services available (the\n            “Website”), and to any mobile, tablet and other smart device applications, and application program\n            interfaces (the “Application”) (collectively, the “Services”). All Adventures booked via the Services create\n            an agreement between registered users seeking adventures (“Travelers”) and other registered users\n            offering authentic adventures in the community (“Guides”).';
+
   ///Returns Ending in Text
   static String endingIn = 'Ending in';
 
@@ -935,8 +936,9 @@ class AppTextConstants {
 
   ///Returns cvc text
   static String cvc = 'CVC';
+
   ///Returns billing information text
- static String billingInformation = 'Billing Information';
+  static String billingInformation = 'Billing Information';
 
   ///Returns card information text
   static String cardInformation = 'Card Information';
@@ -946,6 +948,7 @@ class AppTextConstants {
 
   /// Returns transaction number
   static String transactionNumber = 'Transaction Number';
+
   /// Returns Switch User Type text
   static String switchUserType = 'Switch User Type';
 
@@ -955,6 +958,8 @@ class AppTextConstants {
   /// Returns Switch to Traveler text
   static String switchToTraveler = 'Switch to Traveler';
 
+  ///Returns payment method text
+  static String paymentMethod = 'Payment Method';
 }
 
 /// Class for error messages text
@@ -1063,5 +1068,6 @@ class ErrorMessageConstants {
   static String selectTime = 'Please select a time in order to proceed';
 
   /// Returns 'Confirm Terms and Condition to proceed' text
-  static String confirmTermsAndCondition = 'Confirm Terms and Condition to proceed';
+  static String confirmTermsAndCondition =
+      'Confirm Terms and Condition to proceed';
 }

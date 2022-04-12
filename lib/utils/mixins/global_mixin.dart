@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:guided/constants/asset_path.dart';
 
-
 ///Global Mixin
 class GlobalMixin {
   Random random = Random();
@@ -54,5 +53,8 @@ class GlobalMixin {
         random.nextInt(9999).toString();
   }
 
-
+  ///Get Yearly Subscription End Date
+  DateTime getEndDate(DateTime date) {
+    return DateTime(date.year, date.month + 12, date.day);
+  }
 }
