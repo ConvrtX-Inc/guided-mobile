@@ -1800,7 +1800,7 @@ class _PackageEditState extends State<PackageEdit> {
     final String? userId = UserSingleton.instance.user.user!.id;
 
     String mainBadge;
-    String subBadges;
+    String subBadges = '';
     String imageByte;
 
     if (_street.text.isEmpty ||
@@ -1821,11 +1821,25 @@ class _PackageEditState extends State<PackageEdit> {
       }
 
       if (_isSubActivityEdited) {
-        subBadges =
-            '${subActivities1.id},${subActivities2.id},${subActivities3.id}';
+        if (subActivities1 != null) {
+          subBadges = subActivities1.id;
+        }
+        if (subActivities2 != null) {
+          subBadges = '$subBadges,${subActivities2.id}';
+        }
+        if (subActivities3 != null) {
+          subBadges = '$subBadges,${subActivities3.id}';
+        }
       } else {
-        subBadges =
-            '${subActivityId[0]},${subActivityId[1]},${subActivityId[2]}';
+        if (subActivityId[0] != '') {
+          subBadges = subActivityId[0];
+        }
+        if (subActivityId[1] != '') {
+          subBadges = '$subBadges,${subActivityId[1]}';
+        }
+        if (subActivityId[2] != '') {
+          subBadges = '$subBadges,${subActivityId[2]}';
+        }
       }
 
       if (image1 != null) {

@@ -77,6 +77,7 @@ class _EventFeaturesState extends State<EventFeatures> {
   late List<String> splitAddress;
   late List<String> splitSubActivities;
   late List<String> splitServices;
+  bool isDateRangeClicked = false;
   @override
   void initState() {
     super.initState();
@@ -246,36 +247,6 @@ class _EventFeaturesState extends State<EventFeatures> {
                             right: 15,
                             child: Row(
                               children: <Widget>[
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: AppColors.duckEggBlue,
-                                    border: Border.all(
-                                      color: AppColors.duckEggBlue,
-                                    ),
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 10),
-                                  child: Row(
-                                    children: <Widget>[
-                                      SvgPicture.asset(
-                                        AssetsPath.homeFeatureCalendarIcon,
-                                        height: 15,
-                                        width: 15,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        widget._dateRange,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            color: AppColors.tropicalRainForest,
-                                            fontSize: 12),
-                                      ),
-                                    ],
-                                  ),
-                                ),
                                 GestureDetector(
                                   onTap: () => navigateEventDetailsEdit(
                                       context,
@@ -297,7 +268,7 @@ class _EventFeaturesState extends State<EventFeatures> {
                                 )
                               ],
                             ),
-                          )
+                          ),
                         ],
                       );
                     }

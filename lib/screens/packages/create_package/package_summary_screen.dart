@@ -1762,7 +1762,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     final String? userId = UserSingleton.instance.user.user!.id;
     List<String> list = screenArguments['services'];
     dynamic mainBadge;
-    String subBadges;
+    String subBadges = '';
 
     setState(() {
       _isSubmit = true;
@@ -1775,11 +1775,25 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     }
 
     if (_isSubActivityEdited) {
-      subBadges =
-          '${subActivities1.id},${subActivities2.id},${subActivities3.id}';
+      if (subActivities1 != null) {
+        subBadges = subActivities1.id;
+      }
+      if (subActivities2 != null) {
+        subBadges = '$subBadges,${subActivities2.id}';
+      }
+      if (subActivities3 != null) {
+        subBadges = '$subBadges,${subActivities3.id}';
+      }
     } else {
-      subBadges =
-          '${preSubActivities1.id},${preSubActivities2.id},${preSubActivities3.id}';
+      if (preSubActivities1 != null) {
+        subBadges = preSubActivities1.id;
+      }
+      if (preSubActivities2 != null) {
+        subBadges = '$subBadges,${preSubActivities2.id}';
+      }
+      if (preSubActivities3 != null) {
+        subBadges = '$subBadges,${preSubActivities3.id}';
+      }
     }
 
     Map<String, dynamic> packageDetails = {
