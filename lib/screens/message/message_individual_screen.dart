@@ -1,19 +1,93 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/message.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 /// Notification Screen
 class MessageIndividual extends StatefulWidget {
+  final Message? message;
+
   /// Constructor
-  const MessageIndividual({Key? key}) : super(key: key);
+  const MessageIndividual({Key? key, this.message}) : super(key: key);
 
   @override
   _MessageIndividualState createState() => _MessageIndividualState();
 }
 
 class _MessageIndividualState extends State<MessageIndividual> {
+  late IO.Socket socket;
+  String message = 'test';
+  final TextEditingController _textMessageController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    connectToServer();
+    super.initState();
+  }
+
+  void connectToServer() {
+    socket = IO
+        .io('https://guided-api-dev.herokuapp.com/messenger', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false,
+    });
+    // Connect to websocket
+    socket.connect();
+    // Handle socket events
+    // ignore: cascade_invocations
+    socket.onConnect((_) {
+      debugPrint('connected');
+      socket.emit('msg', 'test');
+    });
+
+    // ignore: cascade_invocations
+    socket.onError((data) {
+      debugPrint('error $data');
+    });
+
+    // ignore: cascade_invocations
+    socket.emit('connect_users', {
+      'receiver_id': widget.message?.id,
+      'sender_id': UserSingleton.instance.user.user?.id,
+    });
+
+    socket.on('msgToClient', handleMessage);
+  }
+
+  void sendMessage(e) {
+    // prevent frm submission refreshing page
+    e.preventDefault();
+    // send input value to server as type 'message'
+    socket.emit('message', 'test');
+  }
+
+  handleMessage(payload) {
+    final Message message = Message.fromJson(payload);
+    debugPrint('PAYLOAD MESSAGE FROM SERVER: ${message.message} ');
+  }
+
+  void sendMessageToServer() {
+    try {
+      socket.emit('msgToServer', {
+        'receiver_id': widget.message?.id,
+        'sender_id': UserSingleton.instance.user.user?.id,
+        'text': _textMessageController.text
+      });
+      print('success');
+      _textMessageController.clear();
+    } catch (e) {
+      print('error');
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,6 +184,8 @@ class _MessageIndividualState extends State<MessageIndividual> {
               child: ListView.builder(
                 itemCount: 5 + 1,
                 itemBuilder: (BuildContext context, int index) {
+                  // final Message message = message.message[index] as Message;
+
                   return index == 0 || index == 3
                       ? _senderMessage()
                       : index == 5
@@ -137,6 +213,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
                             left: 25.w, top: 25.h, bottom: 20.h, right: 20.w),
                         child: TextField(
                           maxLines: null,
+                          controller: _textMessageController,
                           decoration: InputDecoration.collapsed(
                             hintText: 'Type a message...',
                             hintStyle: TextStyle(
@@ -150,7 +227,8 @@ class _MessageIndividualState extends State<MessageIndividual> {
                     bottom: 15.h,
                     right: 15.w,
                     child: TextButton(
-                      onPressed: null,
+                      //! send message to socket iox
+                      onPressed: sendMessageToServer,
                       child: Container(
                         width: 79.w,
                         height: 41.h,
@@ -405,6 +483,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
               ),
             ),
             child: const Text(
+              // message.message,
               'Sample tourist text message goes here to receive tourist guide Sample tourist text message goes here to receive tourist guide',
               style: TextStyle(
                 fontSize: 12,
