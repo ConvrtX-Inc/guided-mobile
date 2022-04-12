@@ -128,7 +128,8 @@ class RouteGenerator {
             builder: (_) => const CreatePackageScreen());
       case '/calendar_availability':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const CalendarAvailabilityScreen());
+            builder: (_) => const CalendarAvailabilityScreen(),
+            settings: settings);
       case '/set_booking_date':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SetBookingDateScreen(), settings: settings);
@@ -213,7 +214,8 @@ class RouteGenerator {
             builder: (_) => const CancellationPolicy(), settings: settings);
       case '/waiver_form':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TravelerReleaseAndWaiverForm(), settings: settings);
+            builder: (_) => const TravelerReleaseAndWaiverForm(),
+            settings: settings);
       case '/verification_code':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ResetVerifyPhone(), settings: settings);
@@ -232,7 +234,8 @@ class RouteGenerator {
             builder: (_) => const SettingsContactUs());
       case '/guide_payment_payout_terms':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const GuidedPaymentPayoutTerms(), settings: settings);
+            builder: (_) => const GuidedPaymentPayoutTerms(),
+            settings: settings);
       case '/local_laws_taxes_form':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const LocalLawsTaxesForm(), settings: settings);
@@ -285,7 +288,8 @@ class RouteGenerator {
             builder: (_) => const EventEdit(), settings: settings);
       case '/availability_booking_dates':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const AvailabilityBookingDateScreen());
+            builder: (_) => const AvailabilityBookingDateScreen(),
+            settings: settings);
       case '/payment':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PaymentManageCard());
@@ -312,7 +316,7 @@ class RouteGenerator {
       case '/goToPaymentMethod':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const GoToPaymentMethod(), settings: settings);
-  case '/add_bank_account':
+      case '/add_bank_account':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AddBankAccountScreen());
       case '/manage_bank_account':
@@ -320,7 +324,7 @@ class RouteGenerator {
             builder: (_) => const ManageBankAccountScreen());
       case '/payment_edit_card':
         return MaterialPageRoute<dynamic>(
-            builder: (_) =>   PaymentEditCard(card: args! as CardModel));
+            builder: (_) => PaymentEditCard(card: args! as CardModel));
 
       case '/switch_user_type':
         return MaterialPageRoute<dynamic>(

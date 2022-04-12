@@ -1,4 +1,4 @@
-// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings
+// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings, diagnostic_describe_all_properties, always_specify_types, unused_field
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

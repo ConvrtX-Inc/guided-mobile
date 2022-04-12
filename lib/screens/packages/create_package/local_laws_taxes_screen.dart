@@ -1,4 +1,6 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable
+import 'dart:ffi';
+
 import 'package:advance_notification/advance_notification.dart';
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:flutter/foundation.dart';
@@ -27,7 +29,7 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
   String _waiver = '';
   String _waiver_id = '';
   final FocusNode _localLawsTaxesFocus = FocusNode();
-
+  bool _isSubmit = false;
   @override
   void initState() {
     super.initState();
@@ -36,7 +38,8 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-      _localLawsTaxes = TextEditingController(text: screenArguments['preset_local_law']);
+      _localLawsTaxes =
+          TextEditingController(text: screenArguments['preset_local_law']);
     });
   }
 
@@ -176,9 +179,13 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () {
-              if (isChecked == true) {
-                navigateWaiverScreen(context, screenArguments);
+            onPressed: () async {
+              if (isChecked) {
+                if (_isSubmit) {
+                  null;
+                } else {
+                  await navigateWaiverScreen(context, screenArguments);
+                }
               }
             },
             style: ElevatedButton.styleFrom(
@@ -191,10 +198,13 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.next,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.next,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -203,6 +213,10 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
 
   Future<void> navigateWaiverScreen(
       BuildContext context, Map<String, dynamic> data) async {
+    setState(() {
+      _isSubmit = true;
+    });
+
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
     final List<PresetFormModel> resForm =

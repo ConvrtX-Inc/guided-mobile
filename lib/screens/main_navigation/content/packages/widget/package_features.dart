@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable, unrelated_type_equality_checks
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -69,11 +72,42 @@ class _PackageFeaturesState extends State<PackageFeatures> {
   bool isDateRangeClicked = false;
   late List<String> splitSubActivitiesId;
   late List<String> splitAddress;
+  List<String> splitId = [];
+  List<String> splitAvailabilityDate = [];
+  String dateStart = '';
+  String dateEnd = '';
   @override
   void initState() {
     super.initState();
     splitSubActivitiesId = widget._subBadgeId.split(',');
     splitAddress = widget._address.split(',');
+    getActivityAvailability(widget._id);
+  }
+
+  Future<void> getActivityAvailability(String activityPackageId) async {
+    List<String> dateList = [];
+    List<String> dayList = [];
+    List<String> monthList = [];
+    DateTime month = DateTime.now();
+    final List<ActivityAvailability> resForm =
+        await APIServices().getActivityAvailability(activityPackageId);
+
+    for (int index = 0; index < resForm.length; index++) {
+      splitId.add(resForm[index].id);
+      splitAvailabilityDate.add(resForm[index].availability_date);
+      dateList = resForm[index].availability_date.split('-');
+      if (dateList[1] == month.month.toString().padLeft(2, '0')) {
+        dayList.add(dateList[2]);
+      }
+    }
+
+    if (dayList.isNotEmpty) {
+      dayList.sort((a, b) => a.compareTo(b));
+      setState(() {
+        dateStart = dayList[0];
+        dateEnd = dayList[dayList.length - 1];
+      });
+    }
   }
 
   @override
@@ -230,49 +264,72 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                   right: 0,
                   child: Row(
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (isDateRangeClicked) {
-                              setState(() {
-                                isDateRangeClicked = false;
-                              });
-                            } else {
-                              isDateRangeClicked = true;
-                            }
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.duckEggBlue,
-                            border: Border.all(
+                      if (dateStart.isEmpty && dateEnd.isEmpty)
+                        Container()
+                      else
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (isDateRangeClicked) {
+                                setState(() {
+                                  isDateRangeClicked = false;
+                                });
+                              } else {
+                                isDateRangeClicked = true;
+                              }
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
                               color: AppColors.duckEggBlue,
+                              border: Border.all(
+                                color: AppColors.duckEggBlue,
+                              ),
+                              borderRadius: BorderRadius.circular(18),
                             ),
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 5, horizontal: 10),
-                          child: Row(
-                            children: <Widget>[
-                              SvgPicture.asset(
-                                AssetsPath.homeFeatureCalendarIcon,
-                                height: 15,
-                                width: 15,
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                widget._dateRange,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.tropicalRainForest,
-                                    fontSize: 12),
-                              ),
-                            ],
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: dateStart == dateEnd
+                                ? Row(
+                                    children: <Widget>[
+                                      SvgPicture.asset(
+                                        AssetsPath.homeFeatureCalendarIcon,
+                                        height: 15,
+                                        width: 15,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        dateStart,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.tropicalRainForest,
+                                            fontSize: 12),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    children: <Widget>[
+                                      SvgPicture.asset(
+                                        AssetsPath.homeFeatureCalendarIcon,
+                                        height: 15,
+                                        width: 15,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        '$dateStart-$dateEnd',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.tropicalRainForest,
+                                            fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
                           ),
                         ),
-                      ),
                       SizedBox(
                         width: 50,
                         height: 30,
@@ -300,8 +357,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                       children: <Widget>[
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(
-                                context, '/calendar_availability');
+                            navigateEditAvailability(context);
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -378,5 +434,15 @@ class _PackageFeaturesState extends State<PackageFeatures> {
     };
 
     await Navigator.pushNamed(context, '/package_edit', arguments: details);
+  }
+
+  Future<void> navigateEditAvailability(BuildContext context) async {
+    final Map<String, dynamic> details = {
+      'id': splitId,
+      'availability_date': splitAddress
+    };
+
+    await Navigator.pushNamed(context, '/calendar_availability',
+        arguments: details);
   }
 }

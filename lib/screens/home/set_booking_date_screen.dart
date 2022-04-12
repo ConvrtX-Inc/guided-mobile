@@ -132,52 +132,6 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                       Expanded(
                         child: TableCalendar(
                           locale: 'en',
-                          // onDaySelected: (selectedDay, focusedDay) {
-                          //   // if (setbookingtime.isNotEmpty) {
-                          //   //   showDialog(
-                          //   //       context: context,
-                          //   //       builder: (_) => AlertDialog(
-                          //   //             title:
-                          //   //                 Text(AppTextConstants.saveChanges),
-                          //   //             content: Text(
-                          //   //                 AppTextConstants.saveChangesDesc),
-                          //   //             actions: [
-                          //   //               TextButton(
-                          //   //                   onPressed: () {
-                          //   //                     Navigator.pop(context);
-                          //   //                   },
-                          //   //                   child: Text('No')),
-                          //   //               TextButton(
-                          //   //                   onPressed: setInitialDate,
-                          //   //                   child: const Text('Yes')),
-                          //   //             ],
-                          //   //           ),
-                          //   //       barrierDismissible: false);
-                          //   // } else {
-                          //   setState(() {
-                          //     setState(() {
-                          //       _selectedDay = selectedDay;
-                          //       _focusedDay = focusedDay;
-                          //       isRefreshing = true;
-                          //       _didPickedDate = true;
-                          //     });
-
-                          //     Future.delayed(const Duration(milliseconds: 100),
-                          //         () {
-                          //       isRefreshing = false;
-                          //     });
-                          //   });
-
-                          //   // for (int index = 0;
-                          //   //     index < listTime.length;
-                          //   //     index++) {
-                          //   //   setState(() {
-                          //   //     listTime[index][1] = false;
-                          //   //     listTime[index][2] = 0;
-                          //   //   });
-                          //   // }
-                          //   // }
-                          // },
                           onDaySelected: (selectedDay, focusedDay) {
                             if (setbookingtime.isNotEmpty) {
                               showDialog(

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:guided/constants/api_path.dart';
 
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/activity_destination_model.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/models/activity_package.dart';
@@ -882,5 +883,26 @@ class APIServices {
     debugPrint('payment response:: ${response.body}');
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for terms and condition form
+  Future<List<ActivityAvailability>> getActivityAvailability(
+      String activityPackageId) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityAvailability}?s={"activity_package_id":\"$activityPackageId\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    final List<dynamic> res = jsonDecode(response.body);
+    final List<ActivityAvailability> forms = <ActivityAvailability>[];
+
+    for (final dynamic data in res) {
+      final ActivityAvailability form = ActivityAvailability.fromJson(data);
+      forms.add(form);
+    }
+
+    return forms;
   }
 }

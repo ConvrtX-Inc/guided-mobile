@@ -37,6 +37,8 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
   String _local_law = '';
   String _local_law_id = '';
 
+  bool _isSubmit = false;
+
   void setCurrency(dynamic value) {
     setState(() {
       _currency = value;
@@ -219,8 +221,9 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () =>
-                navigateLocalLawTaxesScreen(context, screenArguments),
+            onPressed: () async => _isSubmit
+                ? null
+                : navigateLocalLawTaxesScreen(context, screenArguments),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -231,10 +234,13 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.next,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.next,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -243,10 +249,18 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
 
   Future<void> navigateLocalLawTaxesScreen(
       BuildContext context, Map<String, dynamic> data) async {
+    setState(() {
+      _isSubmit = true;
+    });
     final List<PresetFormModel> resForm =
         await APIServices().getTermsAndCondition('local_laws');
-    _local_law = resForm[0].description;
-    _local_law_id = resForm[0].id;
+    if (resForm.isNotEmpty) {
+      _local_law = resForm[0].description;
+      _local_law_id = resForm[0].id;
+    } else {
+      _local_law = AppTextConstants.longLoremIpsum;
+      _local_law_id = '';
+    }
 
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
