@@ -331,15 +331,19 @@ class _PopularGuidesState extends State<PopularGuides> {
                                       (TravellerMonthController controller) {
                                     print(controller.currentDate);
                                     return Container(
-                                        padding: EdgeInsets.fromLTRB(
-                                            20.w, 0.h, 20.w, 0.h),
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.4,
-                                        child: Sfcalendar(
-                                            context,
-                                            travellerMonthController
-                                                .currentDate));
+                                      padding: EdgeInsets.fromLTRB(
+                                          20.w, 0.h, 20.w, 0.h),
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.4,
+                                      child: Sfcalendar(
+                                        context,
+                                        travellerMonthController.currentDate,
+                                        ((value) {
+                                          print(value);
+                                        }),
+                                      ),
+                                    );
                                   }),
                               // SizedBox(
                               //   height: 20.h,

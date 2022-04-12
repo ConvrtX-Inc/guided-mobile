@@ -88,7 +88,7 @@ Future<dynamic> paymentSuccessful(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     PaymentDetail(
-                                        label: AppTextConstants.card,
+                                        label: AppTextConstants.paymentMethod,
                                         content: paymentMethod),
                                   ],
                                 ),

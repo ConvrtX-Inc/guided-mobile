@@ -1,0 +1,161 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../constants/app_colors.dart';
+
+Padding backButton(BuildContext context) {
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        IconButton(
+          icon: SvgPicture.asset('assets/images/svg/arrow_back_with_tail.svg',
+              height: 40.h, width: 40.w),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ),
+  );
+}
+
+Padding divider() {
+  return const Padding(
+    padding: EdgeInsets.only(left: 20, right: 20),
+    child: Divider(),
+  );
+}
+
+Center buildCircleAvatar() {
+  return Center(
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+              blurRadius: 2, color: AppColors.galleryWhite, spreadRadius: 2)
+        ],
+      ),
+      child: const CircleAvatar(
+        radius: 55,
+        backgroundColor: Colors.white,
+        child: CircleAvatar(
+          radius: 50,
+          backgroundImage: AssetImage('assets/images/profile-photos-2.png'),
+        ),
+      ),
+    ),
+  );
+}
+
+Padding buildImageWithFilter(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.only(left: 20, right: 20),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: 110,
+        width: MediaQuery.of(context).size.width * 0.4,
+        decoration: BoxDecoration(
+          color: AppColors.codGray,
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.6), BlendMode.dstATop),
+            image: const AssetImage(
+              'assets/images/profile-photos-2.png',
+            ),
+          ),
+        ),
+        child: const Center(
+          child: Text(
+            '4+',
+            style: TextStyle(
+                color: Colors.white, fontSize: 28, fontWeight: FontWeight.w500),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+Padding buildImage(BuildContext context, String asset) {
+  return Padding(
+    padding: const EdgeInsets.only(left: 20, right: 20),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Image.asset(
+        asset,
+        width: MediaQuery.of(context).size.width * 0.4,
+        height: 110,
+        fit: BoxFit.cover,
+      ),
+    ),
+  );
+}
+
+Column buildReviewContent() {
+  return Column(
+    children: [
+      Row(
+        children: [
+          Container(
+            padding: EdgeInsets.only(left: 20, right: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                    blurRadius: 2,
+                    color: AppColors.galleryWhite,
+                    spreadRadius: 2)
+              ],
+            ),
+            child: const CircleAvatar(
+              radius: 32,
+              backgroundColor: Colors.white,
+              child: CircleAvatar(
+                radius: 30,
+                backgroundImage: AssetImage('assets/images/image1.png'),
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const <Widget>[
+              Padding(
+                padding: EdgeInsets.only(bottom: 5),
+                child: Text(
+                  'Ronald Mcdonald',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 5),
+                child: Text(
+                  'May 6, 2021',
+                  style: TextStyle(
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      const SizedBox(
+        height: 15,
+      ),
+      const Padding(
+        padding: EdgeInsets.only(left: 20, right: 20, bottom: 30),
+        child: Text(
+            'Prosciutto bacon burgdoggen tongue, bresaola frankfurter beef sirloin ball tip. Chuck alcatra shank chislic salami jowl. Hamburger rump pig shoulder sirloin kevin filet mignon short ribs boudin bacon turducken. Drumstick pork loin kevin bacon.'),
+      ),
+      divider(),
+    ],
+  );
+}

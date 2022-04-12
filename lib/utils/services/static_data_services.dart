@@ -1,5 +1,7 @@
 //ignore_for_file: avoid_classes_with_only_static_members
 
+import 'dart:io';
+
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/guide.dart';
@@ -162,10 +164,12 @@ class StaticDataService {
         isSelected: true
       ),  PaymentMode(
           mode: 'Google_Pay',
-          logo: 'assets/images/png/google_wallet.png'
+          logo: 'assets/images/png/google_wallet.png',
+        isEnabled:  Platform.isAndroid
       ),  PaymentMode(
           mode: 'Apple_Pay',
-          logo: 'assets/images/png/wallet_app_icon.png'
+          logo: 'assets/images/png/wallet_app_icon.png',
+          isEnabled:  Platform.isIOS
       )
     ];
   }

@@ -83,12 +83,19 @@ dependencies:
   path_provider: ^2.0.9
   animated_splash_screen: ^1.2.0
   sign_in_with_apple: ^3.3.0
+  socket_io_client: ^2.0.0-beta
+  google_static_maps_controller: ^1.0.0
+  location: ^4.3.0
   intl_phone_field: ^3.0.1
   flutter_multi_formatter: ^2.5.1
   url_launcher: ^6.0.20
   share_plus: ^4.0.3
   screenshot: ^1.2.3
+  flutter_stripe: ^2.4.0 #for stripe payment integration
+  pay: ^1.0.8
+# flutter_expanded_tile: ^0.3.6
   awesome_dialog: ^2.2.0
+
   # flutter_expanded_tile: ^0.3.6
 dev_dependencies:
   build_runner: ^2.0.0
@@ -96,7 +103,7 @@ dev_dependencies:
 
   flutter_test:
     sdk: flutter
-  
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -126,6 +133,8 @@ flutter:
     - assets/images/jpg/
     - ./.env
     - assets/currencies.json
+    - assets/google_pay_payment_profile.json
+    - assets/apple_pay_payment_profile.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

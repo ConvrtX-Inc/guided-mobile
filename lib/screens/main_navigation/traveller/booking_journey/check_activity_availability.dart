@@ -1,3 +1,5 @@
+// ignore_for_file: sort_constructors_first, public_member_api_docs, diagnostic_describe_all_properties
+
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,7 +20,7 @@ import '../../../widgets/reusable_widgets/easy_scroll_to_index.dart';
 
 ///
 class CheckActivityAvailabityScreen extends StatefulWidget {
-  ///
+  ////
   const CheckActivityAvailabityScreen({Key? key}) : super(key: key);
 
   @override
@@ -50,6 +52,8 @@ class _CheckActivityAvailabityScreenState
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -72,7 +76,9 @@ class _CheckActivityAvailabityScreenState
                         color: Colors.black,
                         size: 25,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
                 ),
@@ -264,12 +270,18 @@ class _CheckActivityAvailabityScreenState
             GetBuilder<TravellerMonthController>(
                 id: 'calendar',
                 builder: (TravellerMonthController controller) {
-                  print(controller.currentDate);
                   return Container(
-                      padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
-                      height: MediaQuery.of(context).size.height * 0.4,
-                      child: Sfcalendar(
-                          context, travellerMonthController.currentDate));
+                    padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: Sfcalendar(
+                      context,
+                      travellerMonthController.currentDate,
+                      (List<DateTime> value) {
+                        travellerMonthController.selectedDates.clear();
+                        travellerMonthController.setSelectedDates(value);
+                      },
+                    ),
+                  );
                 }),
             SizedBox(
               height: 20.h,
@@ -279,7 +291,8 @@ class _CheckActivityAvailabityScreenState
               height: 60.h,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed('/checkAvailability');
+                  checkAvailability(context, screenArguments['packageid'],
+                      travellerMonthController.selectedDates);
                 },
                 style: AppTextStyle.activeGreen,
                 child: const Text(
@@ -295,5 +308,19 @@ class _CheckActivityAvailabityScreenState
         ),
       ),
     );
+  }
+
+  /// Navigate to Advertisement View
+  Future<void> checkAvailability(BuildContext context, String packageID,
+      List<DateTime> selectedDates) async {
+    selectedDates.sort((a, b) => a.compareTo(b));
+    final Map<String, dynamic> details = {
+      'packageid': packageID,
+      'selectedDates': selectedDates,
+    };
+    if (selectedDates.length > 0) {
+      await Navigator.pushNamed(context, '/checkAvailability',
+          arguments: details);
+    }
   }
 }
