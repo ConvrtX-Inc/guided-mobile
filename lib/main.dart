@@ -12,7 +12,11 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/routes/route_generator.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
+import 'package:guided/screens/main_navigation/home/screens/home_main.dart';
+import 'package:guided/screens/message/message_filter_screen.dart';
+import 'package:guided/screens/message/message_inbox.dart';
 import 'package:intl/date_symbol_data_local.dart';
+
 
 String _defaultHome = '/';
 
@@ -45,9 +49,11 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
+
           return const MaterialApp(
               // home: Splash(),
               );
+
         } else {
           return ScreenUtilInit(
             builder: () => KeyboardDismissOnTap(

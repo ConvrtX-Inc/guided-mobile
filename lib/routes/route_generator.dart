@@ -71,8 +71,13 @@ import 'package:guided/screens/packages/create_package/package_photos_screen.dar
 import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
+
+import 'package:guided/screens/profile/main_profile.dart';
+import 'package:guided/screens/profile/reviews_profile.dart';
+
 import 'package:guided/screens/payments/payment_edit_card.dart';
 import 'package:guided/screens/payments/payment_manage_card.dart';
+
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
@@ -102,15 +107,16 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const NotificationScreen());
       case '/login':
-        return MaterialPageRoute<dynamic>(builder: (_) => const LoginScreen());
+        return MaterialPageRoute<dynamic>(
+          builder: (_) => const LoginScreen(),
+        );
       case '/message_filter':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const MessageFilterScreen());
       case '/message_inbox':
         return MaterialPageRoute<dynamic>(builder: (_) => const MessageInbox());
       case '/message_individual':
-        return MaterialPageRoute<dynamic>(
-            builder: (_) => const MessageIndividual());
+        return MaterialPageRoute<dynamic>(builder: (_) => MessageIndividual());
       case '/message_custom_offer':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const MessageCustomOffer());
@@ -288,16 +294,27 @@ class RouteGenerator {
             builder: (_) => const EventEdit(), settings: settings);
       case '/availability_booking_dates':
         return MaterialPageRoute<dynamic>(
+
+            builder: (_) => const AvailabilityBookingDateScreen());
+      case '/main_profile':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const MainProfileScreen());
+      case '/reviews_profile':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ReviewsProfileScreen());
+
             builder: (_) => const AvailabilityBookingDateScreen(),
             settings: settings);
       case '/payment':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PaymentManageCard());
+
       case '/':
         return MaterialPageRoute<dynamic>(builder: (_) => const Splash());
       case '/package_edit':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PackageEdit(), settings: settings);
+
       case '/settingsCalendarManagement':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsCalendarManagement(),
@@ -336,6 +353,7 @@ class RouteGenerator {
       case '/availability':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsAvailability());
+
       default:
         return _errorRoute();
     }
