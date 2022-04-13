@@ -5,12 +5,14 @@ import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:guided/common/widgets/borderless_textfield.dart';
 import 'package:guided/common/widgets/country_dropdown.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/bank_account_controller.dart';
 import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/country_currency_model.dart';
 import 'package:guided/models/country_model.dart';
@@ -45,17 +47,18 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
   List<CountryCurrencyModel> currencies = [];
   CountryCurrencyModel _currency = CountryCurrencyModel();
 
+  final BankAccountController _bankAccountController =
+      Get.put(BankAccountController());
+
   @override
   void initState() {
     super.initState();
 
-      getCurrencies();
-
+    getCurrencies();
 
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final List<CountryModel> resCountries =
           await APIServices().getCountries();
-
 
       setState(() {
         listCountry = resCountries;
@@ -224,10 +227,21 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
           countryCode: _country.code,
           currency: _currency.currencyCode);
 
+      final BankAccountModel existingBankModel =
+          _bankAccountController.bankAccounts.firstWhere(
+              (item) => item.accountNumber == bankAccountParams.accountNumber,orElse: () => BankAccountModel());
+
+      if (existingBankModel.id.isNotEmpty) {
+        _showToast(context, 'Bank Account Already Exists');
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
+
       ///Validate details on stripe
       final dynamic stripeValidationResult =
           await StripeServices().createBankAccountToken(bankAccountParams);
-      debugPrint('Save account ${stripeValidationResult}');
 
       if (stripeValidationResult['id'] != null) {
         // Save bank account to db
@@ -238,6 +252,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
           setState(() {
             isLoading = false;
           });
+          _bankAccountController.addBankAccount(result);
           await _showDialog(context);
         } else {
           debugPrint('error in saving to databse');
@@ -332,5 +347,17 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
     for (dynamic res in data) {
       currencies.add(CountryCurrencyModel.fromJson(res));
     }
+  }
+
+  void _showToast(BuildContext context, String message) {
+    final ScaffoldMessengerState scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 1),
+        action: SnackBarAction(
+            label: 'OK', onPressed: scaffold.hideCurrentSnackBar),
+      ),
+    );
   }
 }

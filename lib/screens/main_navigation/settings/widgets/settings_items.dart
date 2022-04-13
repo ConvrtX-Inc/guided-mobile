@@ -80,6 +80,9 @@ class _SettingsItemsState extends State<SettingsItems> {
           case 'availability':
             Navigator.pushNamed(context, '/availability');
             break;
+          case 'manage_payment':
+            Navigator.pushNamed(context, '/manage_payment');
+            break;
         }
       },
       leading: SvgPicture.asset(widget._imgUrl),

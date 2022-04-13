@@ -57,4 +57,9 @@ class GlobalMixin {
   DateTime getEndDate(DateTime date) {
     return DateTime(date.year, date.month + 12, date.day);
   }
+
+  ///Get Formatted Card Number
+  String getFormattedCardNumber({required String cardNumber, int startingNumber = 5}){
+    return cardNumber.replaceRange(startingNumber, cardNumber.length - 4, '*' * (cardNumber.length - 4 - startingNumber));
+  }
 }

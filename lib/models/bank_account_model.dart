@@ -45,7 +45,7 @@ class BankAccountModel {
           id: json['id'],
           accountName: json['account_name'],
           accountNumber: json['account_no'],
-          bankName: json['account_no'],
+          bankName: json['bank_name'],
           userId: json['user_id'],
           countryId: json['country_id'],
           bankRoutingNumber: json['bank_routing_number']);

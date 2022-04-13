@@ -772,7 +772,7 @@ class AppTextConstants {
 
   /// Returns are you sure you want to remove card
   static String areYouSureYouWantToRemoveCard =
-      'Are you sure you want to remove card';
+      'Are you sure you want to remove card?';
 
   /// Returns confirm
   static String confirm = 'Confirm';
@@ -984,6 +984,13 @@ class AppTextConstants {
 
   /// Returns Why Optional text in Availability screen
   static String why = 'Why? (Optional)';
+
+  /// Returns are you sure you want to remove bsnk text
+  static String areYouSureYouWantToRemoveBank =
+      'Are you sure you want to remove Bank?';
+
+  ///Returns remove bank string
+  static String removeBank = 'Remove Bank';
 }
 
 /// Class for error messages text
