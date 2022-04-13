@@ -991,6 +991,11 @@ class AppTextConstants {
 
   ///Returns remove bank string
   static String removeBank = 'Remove Bank';
+  /// Returns Become A Member of GuidED Family! text
+  static String becomeAGuide = 'Become A Member of GuidED Family!';
+
+  /// Returns Basic Info text
+  static String basicInfo = 'Basic Info';
 }
 
 /// Class for error messages text

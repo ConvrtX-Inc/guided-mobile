@@ -55,6 +55,7 @@ import 'package:guided/screens/main_navigation/settings/screens/settings_guided_
 import 'package:guided/screens/main_navigation/settings/screens/settings_local_laws_taxes_form.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_switch_user_type.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_availability.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_become_a_guide.dart';
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
@@ -295,7 +296,6 @@ class RouteGenerator {
             builder: (_) => const EventEdit(), settings: settings);
       case '/availability_booking_dates':
         return MaterialPageRoute<dynamic>(
-
             builder: (_) => const AvailabilityBookingDateScreen());
       case '/main_profile':
         return MaterialPageRoute<dynamic>(
@@ -303,17 +303,14 @@ class RouteGenerator {
       case '/reviews_profile':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ReviewsProfileScreen());
-
       case '/payment':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PaymentManageCard());
-
       case '/':
         return MaterialPageRoute<dynamic>(builder: (_) => const Splash());
       case '/package_edit':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PackageEdit(), settings: settings);
-
       case '/settingsCalendarManagement':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsCalendarManagement(),
@@ -341,14 +338,12 @@ class RouteGenerator {
       case '/payment_edit_card':
         return MaterialPageRoute<dynamic>(
             builder: (_) => PaymentEditCard(card: args! as CardModel));
-
       case '/switch_user_type':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsSwitchUserType());
-      case '/switch_to_guide':
+      case '/become_a_guide':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const SettingsSwitchUserType());
-
+            builder: (_) => const SettingsBecomeAGuide());
       case '/availability':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsAvailability());
