@@ -58,7 +58,7 @@ class _SettingsSwitchUserType extends State<SettingsSwitchUserType> {
             .pushNamed('/traveller_tab', arguments: details);
       });
     } else if (userType == 'guide') {
-      setState(() => _isTraveler = false);
+      // setState(() => _isTraveler = false);
         final Map<String, dynamic> details = {
         'user_type': 'guide'
       };
@@ -67,7 +67,7 @@ class _SettingsSwitchUserType extends State<SettingsSwitchUserType> {
               key: AppTextConstants.userType, value: 'guide')
           .then((_) {
         Navigator.of(context)
-            .pushNamed('/main_navigation', arguments: details);
+            .pushNamed('/become_a_guide', arguments: details);
       });
     }
   }
