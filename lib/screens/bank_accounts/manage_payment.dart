@@ -249,11 +249,7 @@ class _ManagePaymentState extends State<ManagePayment> {
     });
 
   }
-
-  Future<void> getCards() async {
-
-  }
-
+  
   void _showRemoveDialog(
       {required String type,
       required String id,
