@@ -984,6 +984,12 @@ class AppTextConstants {
 
   /// Returns Why Optional text in Availability screen
   static String why = 'Why? (Optional)';
+
+  /// Returns Become A Member of GuidED Family! text
+  static String becomeAGuide = 'Become A Member of GuidED Family!';
+
+  /// Returns Basic Info text
+  static String basicInfo = 'Basic Info';
 }
 
 /// Class for error messages text
