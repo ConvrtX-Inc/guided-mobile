@@ -93,8 +93,11 @@ dependencies:
   screenshot: ^1.2.3
   flutter_stripe: ^2.4.0 #for stripe payment integration
   pay: ^1.0.8
+  dotted_border: ^2.0.0+2
 # flutter_expanded_tile: ^0.3.6
   awesome_dialog: ^2.2.0
+  skeleton_text: ^3.0.0
+
 
   # flutter_expanded_tile: ^0.3.6
 dev_dependencies:
