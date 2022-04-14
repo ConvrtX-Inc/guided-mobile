@@ -334,7 +334,10 @@ class _SignupScreenState extends State<SignupScreen> {
                               'user_type': isTraveller ? 'Traveller' : 'Guide',
                               'phone_no': _phonenumber,
                               'country_code': _countryCode,
-                              'is_traveller': isTraveller
+                              'is_traveller': isTraveller,
+                              'user_type_id': '',
+                              'is_for_the_planet': true,
+                              'is_first_aid_trained': true,
                             };
                             print(details);
                             // final dynamic response = await APIServices()
