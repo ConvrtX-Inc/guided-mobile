@@ -147,7 +147,8 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
               padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
               height: MediaQuery.of(context).size.height * 0.4,
               child: SfDateRangePicker(
-                minDate: DateTime.now().subtract(Duration(days: 0)),
+                enablePastDates: false,
+                minDate: DateTime.parse(travellerMonthController.currentDate),
                 maxDate: Indate.DateUtils.lastDayOfMonth(
                     DateTime.parse(travellerMonthController.currentDate)),
                 initialDisplayDate:
@@ -172,6 +173,38 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
               ),
             ),
           ),
+          // Container(
+          //   decoration: BoxDecoration(
+          //       border: Border.all(color: AppColors.dustyGrey),
+          //       borderRadius: BorderRadius.circular(10.r)),
+          //   child: Container(
+          //     padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+          //     height: MediaQuery.of(context).size.height * 0.4,
+          //     child: SfDateRangePicker(
+          //       minDate: DateTime(2010, 03, 05, 10, 0, 0),
+          //       maxDate: DateTime(DateTime.now().year, 12, 31, 10, 0, 0),
+          //       initialDisplayDate:
+          //           DateTime.parse(travellerMonthController.currentDate),
+          //       navigationMode: DateRangePickerNavigationMode.none,
+          //       monthViewSettings: const DateRangePickerMonthViewSettings(
+          //         dayFormat: 'E',
+          //       ),
+          //       monthCellStyle: DateRangePickerMonthCellStyle(
+          //         textStyle: TextStyle(color: HexColor('#3E4242')),
+          //         todayTextStyle: TextStyle(
+          //             fontWeight: FontWeight.bold, color: HexColor('#3E4242')),
+          //       ),
+          //       selectionTextStyle: const TextStyle(
+          //         fontWeight: FontWeight.bold,
+          //         color: Colors.black,
+          //       ),
+          //       selectionColor: HexColor('#FFC74A'),
+          //       todayHighlightColor: HexColor('#FFC74A'),
+          //       headerHeight: 0,
+          //       onSelectionChanged: _onSelectionChanged,
+          //     ),
+          //   ),
+          // ),
           Padding(
             padding: const EdgeInsets.all(20),
             child: SizedBox(

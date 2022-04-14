@@ -960,6 +960,7 @@ class AppTextConstants {
 
   ///Returns payment method text
   static String paymentMethod = 'Payment Method';
+
   /// Returns Traveler hint text
   static String hintTraveler =
       'Last update: August 28, 2021\n            RELEASE OF LIABILITY, WAIVER OF CLAIMS AND ASSUMPTION OF RISK AGREEMENT\n            BY SIGNING THIS DOCUMENT, YOU WILL WAIVE CERTAIN LEGAL RIGHTS, INCLUDING THE\n            RIGHT TO SUE OR CLAIM COMPENSATION FOLLOWING AN ACCIDENT OR INJURY.\n            PLEASE READ CAREFULLY!\n            This Traveler Release and Waiver is made pursuant to the GuidED Terms of Service, last updated June\n            1, 2021, which govern the use of GuidED, including any content, functionality and services offered on or\n            through www.guided.ca or any other website through which GuidED makes its services available (the\n            “Website”), and to any mobile, tablet and other smart device applications, and application program\n            interfaces (the “Application”) (collectively, the “Services”). All Adventures booked via the Services create\n            an agreement between registered users seeking adventures (“Travelers”) and other registered users\n            offering authentic adventures in the community (“Guides”)';
@@ -985,12 +986,28 @@ class AppTextConstants {
   /// Returns Why Optional text in Availability screen
   static String why = 'Why? (Optional)';
 
+  /// Returns 'Popular Guides Near You!' text
+  static String popularGuidesNearYou = 'Popular Guides Near You!';
+
+  /// Returns 'Traveler Limit & Schedules' text
+  static String travelerLimitAndSchedule = 'Traveler Limit & Schedules';
+
+  /// Returns 'Reviews' text
+  static String reviews = 'Reviews';
+
+  /// Returns 'Health & Safety' text
+  static String healthSafety = 'Health & Safety';
+
+  /// Returns 'Check Availability' text
+  static String checkAvailability = 'Check Availability';
+
   /// Returns are you sure you want to remove bsnk text
   static String areYouSureYouWantToRemoveBank =
       'Are you sure you want to remove Bank?';
 
   ///Returns remove bank string
   static String removeBank = 'Remove Bank';
+
   /// Returns Become A Member of GuidED Family! text
   static String becomeAGuide = 'Become A Member of GuidED Family!';
 

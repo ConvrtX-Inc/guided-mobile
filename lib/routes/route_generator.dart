@@ -30,6 +30,8 @@ import 'package:guided/screens/main_navigation/content/packages/package_view.dar
 import 'package:guided/screens/main_navigation/content/packages/packages_edit.dart';
 import 'package:guided/screens/main_navigation/traveller/booking_journey/details.dart';
 import 'package:guided/screens/main_navigation/traveller/check_availability/check_availability.dart';
+import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
+import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_view.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_view.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
@@ -347,11 +349,18 @@ class RouteGenerator {
       case '/availability':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsAvailability());
-
+      case '/popular_guides_list':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PopularGuidesList());
+      case '/popular_guides_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PopularGuidesView(
+                  initIndex: 0,
+                ),
+            settings: settings);
       case '/add_card':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PaymentAddCard());
-
 
       default:
         return _errorRoute();
