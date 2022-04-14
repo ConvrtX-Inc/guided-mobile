@@ -21,8 +21,8 @@ class SettingsUtils {
           imgUrl: 'assets/images/svg/settings_icon_schedule.svg',
           subSettings: []),
       SettingsModel(
-          keyName: 'bank_account',
-          name: 'Bank Account',
+          keyName: 'manage_payment',
+          name: 'Payment',
           icon: 'test',
           color: Colors.black,
           imgUrl: 'assets/images/svg/settings_icon_payment.svg',
@@ -103,7 +103,7 @@ class SettingsUtils {
   /// generate mock data for traveller settings
   static List<SettingsModel> getMockedTravellerDataSettings() {
     return <SettingsModel>[
-    SettingsModel(
+      SettingsModel(
           keyName: 'availability',
           name: 'Availability',
           icon: 'calendar',
@@ -124,7 +124,6 @@ class SettingsUtils {
           color: Colors.black,
           imgUrl: 'assets/images/svg/settings_icon_person.svg',
           subSettings: []),
-
       SettingsModel(
           keyName: 'payment',
           name: 'Payment',
@@ -218,6 +217,4 @@ class SettingsUtils {
           subSettings: []),
     ];
   }
-
-  
 }

@@ -3,7 +3,7 @@ import 'package:guided/models/card_model.dart';
 import 'package:guided/screens/activities/activities.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/bank_accounts/add_bank_account.dart';
-import 'package:guided/screens/bank_accounts/manage_bank_account.dart';
+import 'package:guided/screens/bank_accounts/manage_payment.dart';
 
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/dicovery/discovery.dart';
@@ -57,6 +57,7 @@ import 'package:guided/screens/main_navigation/settings/screens/settings_guided_
 import 'package:guided/screens/main_navigation/settings/screens/settings_local_laws_taxes_form.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_switch_user_type.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_availability.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_become_a_guide.dart';
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
@@ -73,6 +74,7 @@ import 'package:guided/screens/packages/create_package/package_photos_screen.dar
 import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
+import 'package:guided/screens/payments/payment_add_card.dart';
 
 import 'package:guided/screens/profile/main_profile.dart';
 import 'package:guided/screens/profile/reviews_profile.dart';
@@ -332,18 +334,18 @@ class RouteGenerator {
       case '/add_bank_account':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AddBankAccountScreen());
-      case '/manage_bank_account':
+      case '/manage_payment':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const ManageBankAccountScreen());
+            builder: (_) => const ManagePayment());
       case '/payment_edit_card':
         return MaterialPageRoute<dynamic>(
             builder: (_) => PaymentEditCard(card: args! as CardModel));
       case '/switch_user_type':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsSwitchUserType());
-      case '/switch_to_guide':
+      case '/become_a_guide':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const SettingsSwitchUserType());
+            builder: (_) => const SettingsBecomeAGuide());
       case '/availability':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsAvailability());
@@ -356,6 +358,10 @@ class RouteGenerator {
                   initIndex: 0,
                 ),
             settings: settings);
+      case '/add_card':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PaymentAddCard());
+
       default:
         return _errorRoute();
     }
