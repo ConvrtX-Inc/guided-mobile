@@ -6,6 +6,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/controller/traveller_controller.dart';
@@ -35,7 +36,11 @@ class _CalendarAvailabilityScreenState
   late DateTime _focusedDay = DateTime.now();
   DateTime _selectedDate = DateTime.now();
   bool _isSelectionChanged = false;
-
+  DateTime focusedYear = DateTime.now();
+  int selectedMonth = 0;
+  int selectedmonth = 0;
+  List<String> splitDates = [];
+  List<String> splitId = [];
   @override
   void initState() {
     super.initState();
@@ -45,8 +50,22 @@ class _CalendarAvailabilityScreenState
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-      
+      final DateTime dt = DateTime.parse(travellerMonthController.currentDate);
+      final int mon = dt.month;
+      travellerMonthController.setSelectedDate(mon);
+
+      DateTime currentDate =
+          DateTime.parse(travellerMonthController.currentDate);
+
+      final DateTime defaultDate = DateTime(currentDate.year, currentDate.month,
+          1, currentDate.hour, currentDate.minute);
+
+      travellerMonthController.setCurrentMonth(
+        defaultDate.toString(),
+      );
     });
+    selectedmonth = DateTime.now().month.toInt();
+    selectedMonth = AppListConstants.numberList[selectedmonth - 1];
   }
 
   @override
@@ -56,6 +75,8 @@ class _CalendarAvailabilityScreenState
 
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    List<DateTime> splitDates = screenArguments['availability_date'];
 
     return Scaffold(
       appBar: AppBar(
@@ -102,100 +123,101 @@ class _CalendarAvailabilityScreenState
                   //       }),
                   // ),
                   Container(
+                    height: 50.h,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 24.w, vertical: 2.h),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.r),
+                      color: Colors.white,
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        value: selectedMonth,
+                        onChanged: (int? intVal) => setState(() {
+                          selectedMonth = intVal!;
+                          DateTime dt = DateTime.parse(
+                              travellerMonthController.currentDate);
+
+                          final DateTime plustMonth = DateTime(dt.year,
+                              selectedMonth, dt.day, dt.hour, dt.minute);
+
+                          final DateTime setLastday = DateTime(
+                              plustMonth.year,
+                              plustMonth.month,
+                              1,
+                              plustMonth.hour,
+                              plustMonth.minute);
+
+                          travellerMonthController.setCurrentMonth(
+                            setLastday.toString(),
+                          );
+                        }),
+                        selectedItemBuilder: (BuildContext context) {
+                          return AppListConstants.numberList
+                              .map<Widget>((int item) {
+                            return Center(
+                                child: Text(
+                              '${AppListConstants.calendarMonths[item - 1]} ${focusedYear.year}',
+                              style: TextStyle(
+                                  fontFamily: 'Gilroy',
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.w600),
+                            ));
+                          }).toList();
+                        },
+                        items: AppListConstants.numberList.map((int item) {
+                          return DropdownMenuItem<int>(
+                            value: item,
+                            child: Center(
+                                child: Text(
+                                    '${AppListConstants.calendarMonths[item - 1]} ${focusedYear.year}',
+                                    style: TextStyle(
+                                        fontFamily: 'Gilroy',
+                                        fontSize: 18.sp,
+                                        fontWeight: FontWeight.w600))),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                  Container(
                     decoration: BoxDecoration(
                         border: Border.all(color: AppColors.dustyGrey),
                         borderRadius: BorderRadius.circular(10.r)),
-                    child: GetBuilder<TravellerMonthController>(
-                        id: 'calendar',
-                        builder: (TravellerMonthController controller) {
-                          return Sfcalendar(
-                            context,
-                            travellerMonthController.currentDate,
-                            ((value) {
-                              print(value);
-                            }),
-                          );
-                        }),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  HeaderText.headerText(AppTextConstants.headerNumberOfPeople),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(top: 5.h),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              if (minimum != 0) {
-                                minimum = minimum - 1;
-                                txtMinimum.text = minimum.toString();
-                              }
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: CircleBorder(
-                              side: BorderSide(color: AppColors.primaryGreen),
-                            ),
-                            padding: const EdgeInsets.all(8),
-                            primary: Colors.white, // <-- Button color
-                            onPrimary: Colors.green, // <-- Splash color
-                          ),
-                          child:
-                              Icon(Icons.remove, color: AppColors.primaryGreen),
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      child: SfDateRangePicker(
+                        enablePastDates: false,
+                        minDate: DateTime.parse(
+                            travellerMonthController.currentDate),
+                        maxDate: Indate.DateUtils.lastDayOfMonth(DateTime.parse(
+                            travellerMonthController.currentDate)),
+                        // initialDisplayDate: DateTime.parse(
+                        //     travellerMonthController.currentDate),
+                        initialSelectedDates: splitDates,
+                        navigationMode: DateRangePickerNavigationMode.none,
+                        monthViewSettings:
+                            const DateRangePickerMonthViewSettings(
+                          dayFormat: 'E',
                         ),
+                        monthCellStyle: DateRangePickerMonthCellStyle(
+                          textStyle: TextStyle(color: HexColor('#3E4242')),
+                          todayTextStyle: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: HexColor('#3E4242')),
+                        ),
+                        selectionTextStyle: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        selectionColor: HexColor('#FFC74A'),
+                        todayHighlightColor: HexColor('#FFC74A'),
+                        headerHeight: 0,
+                        // onSelectionChanged: _onSelectionChanged,
+                        selectionMode: DateRangePickerSelectionMode.multiple,
                       ),
-                      Expanded(
-                        child: Column(
-                          children: <Widget>[
-                            TextField(
-                              controller: txtMinimum,
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(top: 10.h),
-                                hintStyle: TextStyle(
-                                  color: AppColors.grey,
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.r),
-                                  borderSide: const BorderSide(
-                                      color: Colors.grey, width: 0.2),
-                                ),
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              minimum = minimum + 1;
-                              txtMinimum.text = minimum.toString();
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: CircleBorder(
-                              side: BorderSide(color: AppColors.primaryGreen),
-                            ),
-                            padding: const EdgeInsets.all(8),
-                            primary: Colors.white, // <-- Button color
-                            onPrimary: Colors.green, // <-- Splash color
-                          ),
-                          child: Icon(Icons.add, color: AppColors.primaryGreen),
-                        ),
-                      )
-                    ],
+                    ),
                   ),
                   // Padding(
                   //   padding: const EdgeInsets.all(20),
@@ -372,6 +394,7 @@ class _CalendarAvailabilityScreenState
   }
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    print(args.value);
     setState(() {
       if (args.value is DateTime) {
         _selectedDate = args.value;
