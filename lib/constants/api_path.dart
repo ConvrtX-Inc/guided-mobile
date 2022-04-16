@@ -167,6 +167,9 @@ class AppAPIPath {
 
   /// Returns activity availabilities url
   static String activityAvailability = 'api/v1/activity-availabilities';
+
+  ///Returns payment intent url
+ static String paymentIntentUrl = 'api/v1/payment-intent';
 }
 ///Get Api Base Url
 getBaseUrl(String mode){

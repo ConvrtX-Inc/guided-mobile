@@ -1048,4 +1048,28 @@ class APIServices {
 
     return response;
   }
+
+  ///Api service for Save Payment Intent (Booking Request)
+  Future<APIStandardReturnFormat> savePaymentIntent(String paymentIntentId,String bookingRequestId) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+
+    final http.Response response = await http.post(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.paymentIntentUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          'content-type': 'application/json'
+        },
+        body: jsonEncode({
+          'user_id': userId,
+          'booking_request_id': bookingRequestId,
+          'stripe_payment_intent_id': paymentIntentId
+        }));
+
+    debugPrint('save payment intent response:: ${response.body}');
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
 }
