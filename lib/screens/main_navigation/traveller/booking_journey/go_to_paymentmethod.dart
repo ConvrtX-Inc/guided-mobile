@@ -84,7 +84,10 @@ class _GoToPaymentMethodState extends State<GoToPaymentMethod> {
                     shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(15))),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context, 'openPaymentMethod');
+
+                  },
                   child: Padding(
                     padding: EdgeInsets.only(left: 10.w, right: 10.w),
                     child: Text(

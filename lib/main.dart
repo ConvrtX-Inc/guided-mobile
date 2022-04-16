@@ -18,7 +18,7 @@ import 'package:guided/screens/message/message_inbox.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 
-String _defaultHome = '/login';
+String _defaultHome = '/';
 
 void main() async {
   await dotenv.load(fileName: '.env');

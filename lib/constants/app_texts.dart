@@ -1013,6 +1013,9 @@ class AppTextConstants {
 
   /// Returns Basic Info text
   static String basicInfo = 'Basic Info';
+
+  ///Returns request to book text
+ static String requestToBook = 'Request To Book';
 }
 
 /// Class for error messages text

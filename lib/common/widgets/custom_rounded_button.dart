@@ -15,6 +15,7 @@ class CustomRoundedButton extends StatelessWidget {
       this.isLoading = false,
       this.buttonHeight = 60,
       this.buttonWidth,
+        this.isEnabled = true,
       Key? key})
       : super(key: key);
 
@@ -32,6 +33,9 @@ class CustomRoundedButton extends StatelessWidget {
 
   ///width
   final double? buttonWidth;
+
+  ///Is enabled
+  final bool isEnabled;
 
   @override
   Widget build(BuildContext context) {
