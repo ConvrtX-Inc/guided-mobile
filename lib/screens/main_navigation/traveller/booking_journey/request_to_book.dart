@@ -941,10 +941,17 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
       paymentMethodId = await createCreditCardPaymentMethodId();
     } else {
       /// For google pay and apple
+        String tokenId = '';
+      if(paymentMode =='Google Pay'){
+        tokenId = paymentMethodDetails['id'];
 
+      }else{
+        final TokenData tokenData  = paymentMethodDetails;
+        tokenId = tokenData.id;
+      }
       //create payment method first
       paymentMethodId = await StripeServices()
-          .createPaymentMethodFromToken(paymentMethodDetails['id']);
+          .createPaymentMethodFromToken(tokenId);
     }
 
     //please update price when api is integrated
