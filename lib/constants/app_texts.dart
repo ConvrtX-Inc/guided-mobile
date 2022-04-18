@@ -1016,6 +1016,42 @@ class AppTextConstants {
 
   ///Returns request to book text
  static String requestToBook = 'Request To Book';
+
+  /// Returns Notification  text
+  static String notif = 'Notification';
+
+  ///Returns date of transaction text
+ static String dateOfTransaction = 'Date of Transaction';
+
+  /// Returns travel limit text
+  static String travelLimit= 'Traveler Limit';
+
+  ///Returns credit card number text
+ static String creditCardNumber = 'Credit Card Number';
+
+ ///Returns Refund text
+ static String refund = 'Refund';
+
+  ///Returns approve text
+  static String approve = 'Approve';
+
+  ///Returns refund and cancellation of payment text
+  static String refundAndCancellationOfPayment='Refund & Cancelation Of Payment';
+
+  ///Returns  refund booking question
+  static String refundBookingQuestion = 'Are you sure, Do you want to refund this booking?';
+
+  ///Returns refundable amount text
+ static String refundableAmount  = 'Refundable Amount';
+
+ ///Returns refund and cancel traveler's payment
+ static String refundAndCancelTravelerPayment ='Refund & Cancel Traveler’s Payment';
+
+  ///Returns refund instruction text
+ static String refundInstruction = 'Admin will review your cancelled booking and process the refundable amount within next 5 business days';
+
+ ///Returns package price text
+ static String packagePrice = 'Package Price';
 }
 
 /// Class for error messages text
