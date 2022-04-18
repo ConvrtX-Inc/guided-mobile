@@ -133,4 +133,7 @@ class AppColors {
 
   /// herx color for white
   static HexColor white = HexColor('#FFFFFF');
+
+  ///hex color for islandSpice
+ static HexColor islandSpice = HexColor('#FFFAED');
 }
