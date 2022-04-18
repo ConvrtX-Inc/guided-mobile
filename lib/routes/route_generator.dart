@@ -81,6 +81,7 @@ import 'package:guided/screens/profile/reviews_profile.dart';
 
 import 'package:guided/screens/payments/payment_edit_card.dart';
 import 'package:guided/screens/payments/payment_manage_card.dart';
+import 'package:guided/screens/refunds/refund.dart';
 
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
@@ -361,6 +362,9 @@ class RouteGenerator {
       case '/add_card':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PaymentAddCard());
+      case '/refund':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const RefundScreen());
 
       default:
         return _errorRoute();
