@@ -27,6 +27,7 @@ import 'package:guided/models/guide.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
+import 'package:guided/screens/payments/payment_failed.dart';
 import 'package:guided/screens/payments/payment_method.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
@@ -641,10 +642,17 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           paymentMode: mode,
                           price: price,
                           onPaymentSuccessful: () {
-
+                            Navigator.of(context).pop();
                             saveSubscription(transactionNumber, 'Premium Subscription');
                             //Save Subscription
                             paymentSuccessful(
+                                context: context,
+                                paymentDetails: DiscoveryPaymentDetails(
+                                    transactionNumber: transactionNumber),
+                                paymentMethod: mode);
+                          },
+                          onPaymentFailed: (){
+                            paymentFailed(
                                 context: context,
                                 paymentDetails: DiscoveryPaymentDetails(
                                     transactionNumber: transactionNumber),

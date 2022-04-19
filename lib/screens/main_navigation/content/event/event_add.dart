@@ -20,10 +20,18 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/badgesModel.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/image_bulk.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/payments/confirm_payment.dart';
+import 'package:guided/screens/payments/payment_failed.dart';
+import 'package:guided/screens/payments/payment_method.dart';
+import 'package:guided/screens/payments/payment_set_date.dart';
+import 'package:guided/screens/payments/payment_successful.dart';
+import 'package:guided/screens/widgets/reusable_widgets/payment_details.dart';
+import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -1525,7 +1533,7 @@ class _EventAddState extends State<EventAdd> {
             onPressed: () {
               _formKey.currentState?.save();
               if (_formKey.currentState!.validate()) {
-                _isSubmit ? null : eventsDetail();
+                _isSubmit ? null : handlePayment();
               } else {
                 print('validation failed');
               }
@@ -1636,7 +1644,7 @@ class _EventAddState extends State<EventAdd> {
         needAccessToken: true, data: finalJson);
   }
 
-  Future<void> eventsDetail() async {
+  Future<void> eventsDetail(double price , String serviceName , String transactionNumber , String mode) async {
     String countryFinal = '';
     String subBadges = '';
 
@@ -1712,13 +1720,30 @@ class _EventAddState extends State<EventAdd> {
         await saveBulkImage(activityOutfitterId);
       }
 
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
-                    navIndex: 1,
-                    contentIndex: 1,
-                  )));
+      //Display payment successful when event is created
+      await paymentSuccessful(
+          context: context,
+          onOkBtnPressed: () async {
+             int count = 0;
+            Navigator.popUntil(context, (route) {
+              return count++ == 3;
+            });
+
+            await Navigator.pushReplacement(
+                context,
+                MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => const MainNavigationScreen(
+                      navIndex: 1,
+                      contentIndex: 1,
+                    )));
+          },
+          paymentDetails: PaymentDetails(
+              serviceName: serviceName,
+              price: price.toStringAsFixed(2),
+              transactionNumber: transactionNumber),
+          paymentMethod: mode);
+
+
     }
   }
 
@@ -1769,5 +1794,56 @@ class _EventAddState extends State<EventAdd> {
     } catch (e) {
       print(e);
     }
+  }
+
+///Payment integration
+  void handlePayment() {
+    paymentSetDate(
+        context: context,
+        onContinueBtnPressed: (data) {
+          paymentMethod(
+              context: context,
+              onContinueBtnPressed: (paymentData) {
+                Navigator.of(context).pop();
+
+                final double price = data['amount'];
+                const String serviceName = 'Create Event';
+
+                String mode = '';
+                if (paymentData is CardModel) {
+                  mode = 'Credit Card';
+                } else {
+                  mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
+                }
+
+                debugPrint('Mode $mode');
+                final String transactionNumber =
+                GlobalMixin().generateTransactionNumber();
+                confirmPaymentModal(
+                    context: context,
+                    serviceName: serviceName,
+                    paymentMethod: paymentData,
+                    paymentMode: mode,
+                    price: price,
+                    onPaymentSuccessful: () {
+                      // API Integration for create event..
+                      eventsDetail(price,serviceName,transactionNumber,mode);
+                    },
+                    onPaymentFailed: () {
+                      paymentFailed(
+                          context: context,
+                          paymentDetails: PaymentDetails(
+                              serviceName: serviceName,
+                              price: price.toStringAsFixed(2),
+                              transactionNumber: transactionNumber),
+                          paymentMethod: mode);
+                    },
+                    paymentDetails: PaymentDetails(
+                        serviceName: serviceName,
+                        price: price.toStringAsFixed(2),
+                        transactionNumber: transactionNumber));
+              },
+              price: data['amount']);
+        });
   }
 }

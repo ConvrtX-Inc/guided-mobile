@@ -3,15 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/screens/widgets/reusable_widgets/payment_detail.dart';
 
-/// Modal Bottom sheet for successful payment
-Future<dynamic> paymentSuccessful(
+/// Modal Bottom sheet for payment failed payment
+Future<dynamic> paymentFailed(
     {required BuildContext context,
     required Widget paymentDetails,
-    required String paymentMethod,
-    Function? onOkBtnPressed
-    }) {
+    required String paymentMethod}) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -50,7 +49,7 @@ Future<dynamic> paymentSuccessful(
                           )),
                       SizedBox(width: 20.w),
                       Text(
-                        AppTextConstants.paymentSuccessful,
+                        'Payment Failed',
                         style: TextStyle(
                             fontFamily: 'Gilroy',
                             fontSize: 28.sp,
@@ -60,7 +59,27 @@ Future<dynamic> paymentSuccessful(
                     SizedBox(
                       height: 40.h,
                     ),
-                    Center(child: Image.asset(AssetsPath.roundedCheck)),
+                    Center(
+                        child: Container(
+                            height: 128.h,
+                            width: 120.w,
+                            padding: EdgeInsets.all(18.w),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: HexColor('#FFC5C5'),
+                            ),
+                            child: Container(
+                              padding: EdgeInsets.all(10.w),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: HexColor('#FF4848'),
+                              ),
+                              child: Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 44,
+                              ),
+                            ))),
                     SizedBox(
                       height: 30.h,
                     ),
@@ -103,7 +122,7 @@ Future<dynamic> paymentSuccessful(
                     ),
                     CustomRoundedButton(
                         title: AppTextConstants.ok,
-                        onpressed: onOkBtnPressed ?? () {
+                        onpressed: () {
                           int count = 0;
                           Navigator.popUntil(context, (route) {
                             return count++ == 2;

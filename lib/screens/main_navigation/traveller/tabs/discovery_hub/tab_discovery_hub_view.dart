@@ -10,6 +10,7 @@ import 'package:guided/models/card_model.dart';
 import 'package:guided/models/discovery_hub.dart';
 import 'package:guided/models/hub_outfitter.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
+import 'package:guided/screens/payments/payment_failed.dart';
 import 'package:guided/screens/payments/payment_method.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
@@ -274,7 +275,15 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                           paymentMode: mode,
                           price: price,
                           onPaymentSuccessful: () {
+                            Navigator.of(context).pop();
                             paymentSuccessful(
+                                context: context,
+                                paymentDetails: DiscoveryPaymentDetails(
+                                    transactionNumber: transactionNumber),
+                                paymentMethod: mode);
+                          },
+                          onPaymentFailed: (){
+                            paymentFailed(
                                 context: context,
                                 paymentDetails: DiscoveryPaymentDetails(
                                     transactionNumber: transactionNumber),
