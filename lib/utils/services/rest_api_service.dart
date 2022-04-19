@@ -8,6 +8,7 @@ import 'package:guided/constants/api_path.dart';
 
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/activity_availability_hours.dart';
+import 'package:guided/models/activity_availability_hours_model.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/activity_destination_model.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
@@ -268,7 +269,7 @@ class APIServices {
   Future<ProfileModelData> getProfileData() async {
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}?s={"id": \"${UserSingleton.instance.user.user!.id}\"}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/${UserSingleton.instance.user.user!.id}'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
@@ -1047,5 +1048,26 @@ class APIServices {
     );
 
     return response;
+  }
+
+  /// API service for terms and condition form
+  Future<List<ActivityAvailabilityHour>> getActivityAvailabilityHour(
+      String activityAvailabilityId) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createSlotAvailabilityHour}?s={"activity_availability_id":\"$activityAvailabilityId\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    final List<dynamic> res = jsonDecode(response.body);
+    final List<ActivityAvailabilityHour> forms = <ActivityAvailabilityHour>[];
+
+    for (final dynamic data in res) {
+      final ActivityAvailabilityHour form = ActivityAvailabilityHour.fromJson(data);
+      forms.add(form);
+    }
+
+    return forms;
   }
 }

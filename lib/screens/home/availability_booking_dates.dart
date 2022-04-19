@@ -1,7 +1,5 @@
-// ignore_for_file: file_names, always_specify_types
 // ignore_for_file: file_names, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, cascade_invocations, cast_nullable_to_non_nullable, prefer_final_in_for_each
 import 'package:advance_notification/advance_notification.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +8,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/activity_availability_hours_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -36,11 +35,66 @@ class _AvailabilityBookingDateScreenState
   bool isSubmit = false;
 
   late List<dynamic> setbookingtime = [];
-  late List<dynamic> listTime = [];
+  late List<dynamic> listTime;
+  late List<dynamic> time = [];
+  List<String> splitId = [];
+  List<DateTime?> splitAvailabilityDateHour = [];
+  List<int> splitSlot = [];
   @override
   void initState() {
     super.initState();
     listTime = AppListConstants.timeList;
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      getActivityAvailabilityHours(
+          screenArguments['id'], listTime, screenArguments['selected_date']);
+    });
+  }
+
+  Future<void> getActivityAvailabilityHours(List<String> activityAvailabilityId,
+      List<dynamic> listTime, DateTime selectedDate) async {
+    String hourFormat;
+    String selectedDateFormat;
+    String splitDateFormat;
+    selectedDateFormat =
+        '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
+
+    for (int num = 0; num < activityAvailabilityId.length; num++) {
+      final List<ActivityAvailabilityHour> resForm = await APIServices()
+          .getActivityAvailabilityHour(activityAvailabilityId[num]);
+
+      for (int index = 0; index < resForm.length; index++) {
+        splitId.add(resForm[index].id);
+        splitAvailabilityDateHour.add(resForm[index].availability_date_hour);
+        splitSlot.add(resForm[index].slots);
+      }
+
+      for (int index = 0; index < splitAvailabilityDateHour.length; index++) {
+        splitDateFormat =
+            '${splitAvailabilityDateHour[index]?.year}-${splitAvailabilityDateHour[index]?.month}-${splitAvailabilityDateHour[index]?.day}';
+        if (selectedDateFormat == splitDateFormat) {
+          hourFormat =
+              '${splitAvailabilityDateHour[index]?.hour.toString()}:00:00';
+          for (int timeIndex = 0; timeIndex < listTime.length; timeIndex++) {
+            setState(() {
+              listTime[timeIndex][6] = activityAvailabilityId[num];
+            });
+            if (hourFormat == listTime[timeIndex][3]) {
+              setState(() {
+                listTime[timeIndex][1] = true;
+                listTime[timeIndex][2] = splitSlot[index];
+                listTime[timeIndex][5] = splitId[index];
+              });
+              setbookingtime.add(listTime[timeIndex]);
+            }
+          }
+        }
+      }
+      splitId.clear();
+      splitAvailabilityDateHour.clear();
+      splitSlot.clear();
+    }
   }
 
   @override
@@ -63,6 +117,13 @@ class _AvailabilityBookingDateScreenState
             color: Colors.black,
           ),
           onPressed: () {
+            for (int index = 0; index < listTime.length; index++) {
+              setState(() {
+                listTime[index][1] = false;
+                listTime[index][2] = 0;
+                listTime[index][5] = '';
+              });
+            }
             Navigator.pop(context);
           },
         ),
@@ -87,9 +148,7 @@ class _AvailabilityBookingDateScreenState
                     width: width,
                     height: 45.h,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Navigator.of(context).pushNamed('/guide_rule');
-                      },
+                      onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
@@ -422,10 +481,17 @@ class _AvailabilityBookingDateScreenState
     );
   }
 
-  void _onCheckedSelected(int id, bool selected, String time, int counter) {
+  Future<void> _onCheckedSelected(
+      int id, bool selected, String time, int counter) async {
     if (selected) {
       setbookingtime.add(listTime[id]);
     } else {
+      if (listTime[id][5].toString().isNotEmpty) {
+        final dynamic response = await APIServices().request(
+            '${AppAPIPath.createSlotAvailabilityHour}/${listTime[id][5]}',
+            RequestType.DELETE,
+            needAccessToken: true);
+      }
       setbookingtime.remove(listTime[id]);
     }
   }
@@ -501,43 +567,46 @@ class _AvailabilityBookingDateScreenState
         _date = _preSelectedDay;
       }
 
-      final Map<String, dynamic> availabilityDateDetails = {
-        'activity_package_id': screenArguments['id'],
-        'availability_date':
-            '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[0][3]}',
-        'slots': setbookingtime[0][2],
-      };
+      if (setbookingtime.isNotEmpty) {
+        for (var i = 0; i < setbookingtime.length; i++) {
+          if (setbookingtime[i][5].toString().isNotEmpty) {
+            final Map<String, dynamic> availabilityDateHourDetails = {
+              'activity_availability_id': setbookingtime[i][6],
+              'availability_date_hour':
+                  '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
+              'slots': setbookingtime[i][2],
+            };
 
-      final dynamic response = await APIServices().request(
-          AppAPIPath.createSlotAvailability, RequestType.POST,
-          needAccessToken: true, data: availabilityDateDetails);
+            final dynamic response = await APIServices().request(
+                '${AppAPIPath.createSlotAvailabilityHour}/${setbookingtime[i][5]}',
+                RequestType.PATCH,
+                needAccessToken: true,
+                data: availabilityDateHourDetails);
+          } else {
+            final Map<String, dynamic> availabilityDateDetails = {
+              'activity_availability_id': setbookingtime[i][6],
+              'availability_date_hour':
+                  '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
+              'slots': setbookingtime[i][2],
+            };
 
-      if (setbookingtime.length > 1) {
-        final String activityAvailabilityId =
-            response['response']['data']['details']['id'];
-
-        for (var i = 1; i < setbookingtime.length; i++) {
-          final Map<String, dynamic> availabilityDateHourDetails = {
-            'activity_availability_id': activityAvailabilityId,
-            'availability_date_hour':
-                '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
-            'slots': setbookingtime[i][2],
-          };
-
-          final dynamic response1 = await APIServices().request(
-              AppAPIPath.createSlotAvailabilityHour, RequestType.POST,
-              needAccessToken: true, data: availabilityDateHourDetails);
+            final dynamic response = await APIServices().request(
+                AppAPIPath.createSlotAvailabilityHour, RequestType.POST,
+                needAccessToken: true, data: availabilityDateDetails);
+          }
         }
-      }
 
-      for (var i = 0; i < setbookingtime.length; i++) {
-        int id = setbookingtime[i][4];
-        setState(() {
-          listTime[id][1] = false;
-          listTime[id][2] = 0;
-        });
+        for (var i = 0; i < setbookingtime.length; i++) {
+          int id = setbookingtime[i][4];
+          setState(() {
+            listTime[id][1] = false;
+            listTime[id][2] = 0;
+            listTime[id][5] = '';
+            listTime[id][6] = '';
+          });
+        }
+        setbookingtime.clear();
       }
-      setbookingtime.clear();
 
       await Navigator.pushReplacement(
           context,

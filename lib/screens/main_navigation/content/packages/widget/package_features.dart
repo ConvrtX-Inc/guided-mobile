@@ -89,6 +89,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
     List<String> dateList = [];
     List<String> dayList = [];
     List<String> monthList = [];
+    int tempInt;
     DateTime month = DateTime.now();
     final List<ActivityAvailability> resForm =
         await APIServices().getActivityAvailability(activityPackageId);
@@ -97,10 +98,11 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       splitId.add(resForm[index].id);
       splitAvailabilityDate
           .add(DateTime.parse(resForm[index].availability_date));
-      DateTime tempDate = DateTime.parse(resForm[index].availability_date);
-      if (now.compareTo(tempDate) < 0) {
-        dateList = resForm[index].availability_date.split('-');
-        if (dateList[1] == month.month.toString().padLeft(2, '0')) {
+
+      dateList = resForm[index].availability_date.split('-');
+      if (dateList[1] == month.month.toString().padLeft(2, '0')) {
+        tempInt = int.parse(dateList[2]) - DateTime.now().day;
+        if (tempInt >= 0) {
           dayList.add(dateList[2]);
         }
       }
@@ -444,7 +446,8 @@ class _PackageFeaturesState extends State<PackageFeatures> {
   Future<void> navigateEditAvailability(BuildContext context) async {
     final Map<String, dynamic> details = {
       'id': splitId,
-      'availability_date': splitAvailabilityDate
+      'availability_date': splitAvailabilityDate,
+      'count': splitAvailabilityDate.length
     };
 
     await Navigator.pushNamed(context, '/calendar_availability',

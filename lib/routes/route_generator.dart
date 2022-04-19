@@ -299,7 +299,8 @@ class RouteGenerator {
             builder: (_) => const EventEdit(), settings: settings);
       case '/availability_booking_dates':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const AvailabilityBookingDateScreen());
+            builder: (_) => const AvailabilityBookingDateScreen(),
+            settings: settings);
       case '/main_profile':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const MainProfileScreen());

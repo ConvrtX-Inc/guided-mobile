@@ -7,8 +7,6 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
-import 'package:guided/screens/main_navigation/content/content_main.dart';
-import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Widget for home features
@@ -72,12 +70,13 @@ class _HomeFeaturesState extends State<HomeFeatures>
   @override
   bool get wantKeepAlive => true;
   bool isDateRangeClicked = false;
-  String dateStart = '';
-  String dateEnd = '';
   late List<String> splitSubActivitiesId;
   late List<String> splitAddress;
   List<String> splitId = [];
-  List<String> splitAvailabilityDate = [];
+  List<DateTime> splitAvailabilityDate = [];
+  String dateStart = '';
+  String dateEnd = '';
+  DateTime now = DateTime.now();
   @override
   void initState() {
     super.initState();
@@ -90,16 +89,22 @@ class _HomeFeaturesState extends State<HomeFeatures>
     List<String> dateList = [];
     List<String> dayList = [];
     List<String> monthList = [];
+    int tempInt;
     DateTime month = DateTime.now();
     final List<ActivityAvailability> resForm =
         await APIServices().getActivityAvailability(activityPackageId);
 
     for (int index = 0; index < resForm.length; index++) {
       splitId.add(resForm[index].id);
-      splitAvailabilityDate.add(resForm[index].availability_date);
+      splitAvailabilityDate
+          .add(DateTime.parse(resForm[index].availability_date));
+
       dateList = resForm[index].availability_date.split('-');
       if (dateList[1] == month.month.toString().padLeft(2, '0')) {
-        dayList.add(dateList[2]);
+        tempInt = int.parse(dateList[2]) - DateTime.now().day;
+        if (tempInt >= 0) {
+          dayList.add(dateList[2]);
+        }
       }
     }
 
@@ -441,7 +446,7 @@ class _HomeFeaturesState extends State<HomeFeatures>
   Future<void> navigateEditAvailability(BuildContext context) async {
     final Map<String, dynamic> details = {
       'id': splitId,
-      'availability_date': splitAddress
+      'availability_date': splitAvailabilityDate
     };
 
     await Navigator.pushNamed(context, '/calendar_availability',

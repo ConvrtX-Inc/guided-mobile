@@ -1,4 +1,5 @@
-// ignore_for_file: file_names, cast_nullable_to_non_nullable, unused_local_variable
+// ignore_for_file: file_names, cast_nullable_to_non_nullable, unused_local_variable, avoid_dynamic_calls
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,11 +12,14 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/activity_availability_hours_model.dart';
 import 'package:guided/screens/home/set_booking_date_screen.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:in_date_utils/in_date_utils.dart' as Indate;
+
+import '../../utils/services/rest_api_service.dart';
 
 /// Calendar Availability Screen
 class CalendarAvailabilityScreen extends StatefulWidget {
@@ -41,6 +45,7 @@ class _CalendarAvailabilityScreenState
   int selectedmonth = 0;
   List<String> splitDates = [];
   List<String> splitId = [];
+  List<DateTime> listDate = [];
   @override
   void initState() {
     super.initState();
@@ -63,6 +68,7 @@ class _CalendarAvailabilityScreenState
       travellerMonthController.setCurrentMonth(
         defaultDate.toString(),
       );
+      _selectedDate = screenArguments['availability_date'][0];
     });
     selectedmonth = DateTime.now().month.toInt();
     selectedMonth = AppListConstants.numberList[selectedmonth - 1];
@@ -111,17 +117,6 @@ class _CalendarAvailabilityScreenState
                   SizedBox(
                     height: 20.h,
                   ),
-                  // Container(
-                  //   decoration: BoxDecoration(
-                  //       border: Border.all(color: Colors.grey.shade400),
-                  //       borderRadius: BorderRadius.circular(10.r)),
-                  //   child: GetBuilder<TravellerMonthController>(
-                  //       id: 'calendar',
-                  //       builder: (TravellerMonthController controller) {
-                  //         return Sfcalendar(
-                  //             context, travellerMonthController.currentDate);
-                  //       }),
-                  // ),
                   Container(
                     height: 50.h,
                     padding:
@@ -188,176 +183,37 @@ class _CalendarAvailabilityScreenState
                       padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
                       height: MediaQuery.of(context).size.height * 0.4,
                       child: SfDateRangePicker(
-                        enablePastDates: false,
-                        minDate: DateTime.parse(
-                            travellerMonthController.currentDate),
-                        maxDate: Indate.DateUtils.lastDayOfMonth(DateTime.parse(
-                            travellerMonthController.currentDate)),
-                        // initialDisplayDate: DateTime.parse(
-                        //     travellerMonthController.currentDate),
-                        initialSelectedDates: splitDates,
-                        navigationMode: DateRangePickerNavigationMode.none,
-                        monthViewSettings:
-                            const DateRangePickerMonthViewSettings(
-                          dayFormat: 'E',
-                        ),
-                        monthCellStyle: DateRangePickerMonthCellStyle(
-                          textStyle: TextStyle(color: HexColor('#3E4242')),
-                          todayTextStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: HexColor('#3E4242')),
-                        ),
-                        selectionTextStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                        selectionColor: HexColor('#FFC74A'),
-                        todayHighlightColor: HexColor('#FFC74A'),
-                        headerHeight: 0,
-                        // onSelectionChanged: _onSelectionChanged,
-                        selectionMode: DateRangePickerSelectionMode.multiple,
-                      ),
+                          enablePastDates: false,
+                          minDate: DateTime.parse(
+                              travellerMonthController.currentDate),
+                          maxDate: Indate.DateUtils.lastDayOfMonth(
+                              DateTime.parse(
+                                  travellerMonthController.currentDate)),
+                          // initialDisplayDate: DateTime.parse(
+                          //     travellerMonthController.currentDate),
+                          initialSelectedDates: splitDates,
+                          navigationMode: DateRangePickerNavigationMode.none,
+                          monthViewSettings:
+                              const DateRangePickerMonthViewSettings(
+                            dayFormat: 'E',
+                          ),
+                          monthCellStyle: DateRangePickerMonthCellStyle(
+                            textStyle: TextStyle(color: HexColor('#3E4242')),
+                            todayTextStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: HexColor('#3E4242')),
+                          ),
+                          selectionTextStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                          selectionColor: HexColor('#FFC74A'),
+                          todayHighlightColor: HexColor('#FFC74A'),
+                          headerHeight: 0,
+                          onSelectionChanged: _onSelectionChanged,
+                          selectionMode: DateRangePickerSelectionMode.multiple),
                     ),
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.all(20),
-                  //   child: SizedBox(
-                  //     width: MediaQuery.of(context).size.width,
-                  //     height: 60.h,
-                  //     child: ElevatedButton(
-                  //       onPressed: () {
-                  //         Navigator.pushNamed(context, '/set_booking_date');
-                  //       },
-                  //       style: ElevatedButton.styleFrom(
-                  //         shape: RoundedRectangleBorder(
-                  //           side: BorderSide(
-                  //             color: AppColors.silver,
-                  //           ),
-                  //           borderRadius: BorderRadius.circular(18.r),
-                  //         ),
-                  //         primary: AppColors.primaryGreen,
-                  //         onPrimary: Colors.white,
-                  //       ),
-                  //       child: Text(
-                  //         AppTextConstants.addSchedule,
-                  //         style: const TextStyle(
-                  //             fontWeight: FontWeight.bold, fontSize: 16),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  // Card(
-                  //   child: Padding(
-                  //     padding: EdgeInsets.fromLTRB(10.w, 10.h, 10.w, 0),
-                  //     child: TableCalendar(
-                  //       onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
-                  //         setState(() {
-                  //           _selectedDay = selectedDay;
-                  //           _focusedDay =
-                  //               focusedDay; // update `_focusedDay` here as well
-                  //         });
-                  //       },
-                  //       currentDay: _selectedDay,
-                  //       headerVisible: false,
-                  //       firstDay: DateTime.utc(2010, 10, 16),
-                  //       lastDay: DateTime.utc(2030, 3, 14),
-                  //       focusedDay: _focusedDay,
-                  //       calendarStyle: CalendarStyle(
-                  //         todayDecoration: BoxDecoration(
-                  //           shape: BoxShape.circle,
-                  //           color: AppColors.brightSun,
-                  //         ),
-                  //         todayTextStyle: const TextStyle(
-                  //           color: Colors.black,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  // SizedBox(
-                  //   height: 20.h,
-                  // ),
-                  // HeaderText.headerText(
-                  //   AppTextConstants.headerNumberOfPeople
-                  // ),
-                  // SizedBox(
-                  //   height: 20.h,
-                  // ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: <Widget>[
-                  //     Padding(
-                  //       padding: EdgeInsets.only(top: 5.h),
-                  //       child: ElevatedButton(
-                  //         onPressed: () {
-                  //           setState(() {
-                  //             minimum = minimum - 1;
-                  //             txtMinimum.text = minimum.toString();
-                  //           });
-                  //         },
-                  //         style: ElevatedButton.styleFrom(
-                  //           shape: CircleBorder(
-                  //             side: BorderSide(
-                  //                 color: AppColors.primaryGreen),
-                  //           ),
-                  //           padding: const EdgeInsets.all(8),
-                  //           primary: Colors.white, // <-- Button color
-                  //           onPrimary: Colors.green, // <-- Splash color
-                  //         ),
-                  //         child: Icon(
-                  //             Icons.remove,
-                  //             color: AppColors.primaryGreen),
-                  //       ),
-                  //     ),
-                  //     Expanded(
-                  //       child: Column(
-                  //         children: <Widget>[
-                  //           TextField(
-                  //             controller: txtMinimum,
-                  //             decoration: InputDecoration(
-                  //               contentPadding: EdgeInsets.only(top: 10.h),
-                  //               hintStyle: TextStyle(
-                  //                 color: AppColors.grey,
-                  //               ),
-                  //               enabledBorder: OutlineInputBorder(
-                  //                 borderRadius: BorderRadius.circular(16.r),
-                  //                 borderSide: const BorderSide(
-                  //                     color: Colors.grey, width: 0.2),
-                  //               ),
-                  //             ),
-                  //             textAlign: TextAlign.center,
-                  //           ),
-                  //           const SizedBox(
-                  //             height: 5,
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //     Padding(
-                  //       padding: const EdgeInsets.only(top: 5),
-                  //       child: ElevatedButton(
-                  //         onPressed: () {
-                  //           setState(() {
-                  //             minimum = minimum + 1;
-                  //             txtMinimum.text = minimum.toString();
-                  //           });
-                  //         },
-                  //         style: ElevatedButton.styleFrom(
-                  //           shape: CircleBorder(
-                  //             side: BorderSide(
-                  //                 color: AppColors.primaryGreen),
-                  //           ),
-                  //           padding: const EdgeInsets.all(8),
-                  //           primary: Colors.white, // <-- Button color
-                  //           onPrimary: Colors.green, // <-- Splash color
-                  //         ),
-                  //         child: Icon(Icons.add,
-                  //             color: AppColors.primaryGreen),
-                  //       ),
-                  //     )
-                  //   ],
-                  // ),
                 ],
               ),
             ),
@@ -370,9 +226,7 @@ class _CalendarAvailabilityScreenState
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed('/availability_booking_dates');
-            },
+            onPressed: () => navigateAvailabilityBookingDates(context),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -393,14 +247,32 @@ class _CalendarAvailabilityScreenState
     );
   }
 
+  /// Navigate to Add Schedule
+  Future<void> navigateAvailabilityBookingDates(BuildContext context) async {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    // final List<ActivityAvailabilityHour> resForm = await APIServices()
+    //       .getActivityAvailabilityHour(activityPackageId[num]);
+
+    print(_selectedDate);
+    final Map<String, dynamic> details = {
+      'id': screenArguments['id'],
+      'selected_date': _selectedDate
+    };
+
+    await Navigator.pushNamed(context, '/availability_booking_dates',
+        arguments: details);
+  }
+
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    print(args.value);
+    // print(args.value);
     setState(() {
-      if (args.value is DateTime) {
-        _selectedDate = args.value;
-        _isSelectionChanged = true;
-      }
+      listDate = args.value;
+      _selectedDate = listDate[listDate.length - 1];
+      _isSelectionChanged = true;
     });
+    print(_selectedDate);
   }
 
   @override
