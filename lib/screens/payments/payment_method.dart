@@ -33,7 +33,9 @@ Future<dynamic> paymentMethod(
     {required BuildContext context,
     required Function onContinueBtnPressed,
     Function? onCreditCardSelected,
-    double? price}) {
+    double? price,
+    int paymentMode = 0
+    }) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -47,7 +49,7 @@ Future<dynamic> paymentMethod(
         CardModel selectedCard = _cardController.cards[0];
         final List<PaymentMode> paymentModes =
             StaticDataService.getPaymentModes();
-        int selectedPaymentMode = 0;
+        int selectedPaymentMode = paymentMode;
         Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
 
         /// For pay Plugin

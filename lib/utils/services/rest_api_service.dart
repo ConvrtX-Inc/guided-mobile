@@ -55,7 +55,6 @@ class APIServices {
   final String staticToken =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJiN2NmNDM1LTQwOTAtNGEzOC1hYzVhLTUzNzA3ZTQ0YmMwMCIsImlhdCI6MTYzOTEwOTY4OSwiZXhwIjoxNjQwNDA1Njg5fQ._YUI1FFHJoF76NLb6JP02Q8HgLxnvKwG9V9PILnA-8U';
 
-
   /// Getting the activity outfitter details
   Future<ActivityOutfitterModel> getActivityOutfitterDetails() async {
     final http.Response response = await http
@@ -1018,7 +1017,6 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-
     debugPrint('params R$queryParameters');
     final http.Response response = await http.get(
         Uri.http(apiBaseUrl, AppAPIPath.bankAccountUrl, queryParameters),
@@ -1037,7 +1035,8 @@ class APIServices {
 
   /// API service for Remove Bank Account
   Future<http.Response> removeBankAccount(String id) async {
-    debugPrint('base ${Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}/$id')}');
+    debugPrint(
+        'base ${Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}/$id')}');
     final String? token = UserSingleton.instance.user.token;
     final http.Response response = await http.delete(
       Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}/$id'),
@@ -1064,10 +1063,34 @@ class APIServices {
     final List<ActivityAvailabilityHour> forms = <ActivityAvailabilityHour>[];
 
     for (final dynamic data in res) {
-      final ActivityAvailabilityHour form = ActivityAvailabilityHour.fromJson(data);
+      final ActivityAvailabilityHour form =
+          ActivityAvailabilityHour.fromJson(data);
       forms.add(form);
     }
 
     return forms;
+  }
+
+  ///Api service for Save Payment Intent (Booking Request)
+  Future<APIStandardReturnFormat> savePaymentIntent(
+      String paymentIntentId, String bookingRequestId) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.paymentIntentUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          'content-type': 'application/json'
+        },
+        body: jsonEncode({
+          'user_id': userId,
+          'booking_request_id': bookingRequestId,
+          'stripe_payment_intent_id': paymentIntentId
+        }));
+
+    debugPrint('save payment intent response:: ${response.body}');
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 }
