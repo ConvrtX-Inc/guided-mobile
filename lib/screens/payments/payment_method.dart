@@ -26,16 +26,13 @@ String walletAppIcon = 'assets/images/png/wallet_app_icon.png';
 /// returns bank card icon
 String bankCardIcon = 'assets/images/png/bank_card.png';
 
-final CardController _cardController = Get.put(CardController());
-
 /// Modal Bottom sheet for payment method
 Future<dynamic> paymentMethod(
     {required BuildContext context,
     required Function onContinueBtnPressed,
     Function? onCreditCardSelected,
     double? price,
-    int paymentMode = 0
-    }) {
+    int paymentMode = 0}) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -45,8 +42,11 @@ Future<dynamic> paymentMethod(
       ),
       isScrollControlled: true,
       builder: (BuildContext context) {
+        final CardController _cardController = Get.put(CardController());
+
         ///Initializations
-        CardModel selectedCard = _cardController.cards[0];
+        CardModel selectedCard = CardModel();
+
         final List<PaymentMode> paymentModes =
             StaticDataService.getPaymentModes();
         int selectedPaymentMode = paymentMode;
@@ -183,40 +183,42 @@ Future<dynamic> paymentMethod(
                                 SizedBox(
                                   height: 20.h,
                                 ),
-                                CarouselSlider(
-                                  options: CarouselOptions(
-                                      height: 170.h,
-                                      enableInfiniteScroll: false,
-                                      onPageChanged: (int index,
-                                          CarouselPageChangedReason reason) {
-                                        setState(() {
-                                          selectedCard =
-                                              _cardController.cards[index];
-                                        });
+                                GetBuilder<CardController>(
+                                    builder: (CardController _controller) {
+                                  debugPrint('Cards:: ${_controller.cards}');
+                                  if (_controller.cards.isNotEmpty) {
+                                    selectedCard = _controller.cards[0];
+                                  }
+                                  return CarouselSlider(
+                                    options: CarouselOptions(
+                                        height: 178.h,
+                                        enableInfiniteScroll: false,
+                                        onPageChanged: (int index,
+                                            CarouselPageChangedReason reason) {
+                                          setState(() {
+                                            selectedCard =
+                                                _controller.cards[index];
+                                          });
 
-                                        if (onCreditCardSelected != null) {
-                                          return onCreditCardSelected(
-                                              selectedCard);
-                                        }
-
-                                        // setState(() {
-                                        //   currentCard = index;
-                                        //   selectedCard = myCards[currentCard];
-                                        // });
-                                      }),
-                                  items: _cardController.cards
-                                      .map((CardModel card) {
-                                    return Builder(
-                                      builder: (
-                                        BuildContext context,
-                                      ) {
-                                        return CreditCard(
-                                            cardDetails: card,
-                                            showRemoveBtn: false);
-                                      },
-                                    );
-                                  }).toList(),
-                                ),
+                                          if (onCreditCardSelected != null) {
+                                            return onCreditCardSelected(
+                                                selectedCard);
+                                          }
+                                        }),
+                                    items:
+                                        _controller.cards.map((CardModel card) {
+                                      return Builder(
+                                        builder: (
+                                          BuildContext context,
+                                        ) {
+                                          return CreditCard(
+                                              cardDetails: card,
+                                              showRemoveBtn: false);
+                                        },
+                                      );
+                                    }).toList(),
+                                  );
+                                })
                               ],
                             ),
                         ],
@@ -231,8 +233,11 @@ Future<dynamic> paymentMethod(
                         title: 'Continue',
                         onpressed: () {
                           ///For bank card
-                          if (selectedPaymentMode == 0) {
+                          if (selectedPaymentMode == 0 &&
+                              selectedCard.id.isNotEmpty) {
                             return onContinueBtnPressed(selectedCard);
+                          } else {
+                            Navigator.of(context).pushNamed('/add_card');
                           }
                         },
                       ),
@@ -282,25 +287,22 @@ Future<dynamic> paymentMethod(
                       Container(
                         height: 50.h,
                         width: MediaQuery.of(context).size.width * 0.85,
-
                         child: pay.ApplePayButton(
-
                           paymentConfigurationAsset:
                               'apple_pay_payment_profile.json',
                           paymentItems: _paymentItems,
                           // margin: const EdgeInsets.only(top: 15),
                           onPaymentResult: (result) async {
-
                             debugPrint('Apple Pay Result ${result}');
 
-                            final TokenData token = await Stripe.instance.createApplePayToken(result);
+                            final TokenData token = await Stripe.instance
+                                .createApplePayToken(result);
                             debugPrint('Apple Token $token');
 
                             onContinueBtnPressed(token);
 
                             // debugPrint('Params ${params}');
                             // onContinueBtnPressed(tokenJson);
-
                           },
                           loadingIndicator: const Center(
                             child: CircularProgressIndicator(),
@@ -342,29 +344,6 @@ Future<dynamic> paymentMethod(
 //     );
 
 final List<String> _cardImage = AppListConstants.cardImage;
-
-/// Bank card
-Widget getBankCard() => Container(
-        child: CarouselSlider(
-      options: CarouselOptions(
-          height: 190.h,
-          enableInfiniteScroll: false,
-          onPageChanged: (int index, CarouselPageChangedReason reason) {
-            // setState(() {
-            //   currentCard = index;
-            //   selectedCard = myCards[currentCard];
-            // });
-          }),
-      items: _cardController.cards.map((CardModel card) {
-        return Builder(
-          builder: (
-            BuildContext context,
-          ) {
-            return CreditCard(cardDetails: card, showRemoveBtn: false);
-          },
-        );
-      }).toList(),
-    ));
 
 /// widget for carousel
 Widget buildcardImage(String cardImage, int index) => Container(

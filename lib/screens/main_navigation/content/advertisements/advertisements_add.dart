@@ -21,10 +21,18 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/badgesModel.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/image_bulk.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/payments/confirm_payment.dart';
+import 'package:guided/screens/payments/payment_failed.dart';
+import 'package:guided/screens/payments/payment_method.dart';
+import 'package:guided/screens/payments/payment_set_date.dart';
+import 'package:guided/screens/payments/payment_successful.dart';
+import 'package:guided/screens/widgets/reusable_widgets/payment_details.dart';
+import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -835,11 +843,12 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
             onPressed: () {
               _formKey.currentState?.save();
               if (_formKey.currentState!.validate()) {
-                _isSubmit ? null : advertisementDetail();
+                _isSubmit ? null : handlePayment();
               } else {
                 print('validation failed');
               }
             },
+
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -1389,7 +1398,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         needAccessToken: true, data: finalJson);
   }
 
-  Future<void> advertisementDetail() async {
+  Future<void> advertisementDetail(double price , String serviceName , String transactionNumber , String mode) async {
     if (image1 == null) {
       AdvanceSnackBar(message: ErrorMessageConstants.advertisementImageEmpty)
           .show(context);
@@ -1460,6 +1469,30 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         await saveBulkImage(activityOutfitterId);
       }
 
+
+      //Display payment successful when advertisement is created
+      await paymentSuccessful(
+          context: context,
+          onOkBtnPressed: () async {
+            int count = 0;
+            Navigator.popUntil(context, (route) {
+              return count++ == 3;
+            });
+
+            await Navigator.pushReplacement(
+                context,
+                MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => const MainNavigationScreen(
+                      navIndex: 1,
+                      contentIndex: 1,
+                    )));
+          },
+          paymentDetails: PaymentDetails(
+              serviceName: serviceName,
+              price: price.toStringAsFixed(2),
+              transactionNumber: transactionNumber),
+          paymentMethod: mode);
+
       await Navigator.pushReplacement(
           context,
           MaterialPageRoute<dynamic>(
@@ -1517,5 +1550,58 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     } catch (e) {
       print(e);
     }
+  }
+
+
+  ///Payment integration
+  void handlePayment() {
+    paymentSetDate(
+        context: context,
+        onContinueBtnPressed: (data) {
+          paymentMethod(
+              context: context,
+              onContinueBtnPressed: (paymentData) {
+                Navigator.of(context).pop();
+
+                final double price = data['amount'];
+                const String serviceName = 'Create Advertisement';
+
+                String mode = '';
+                if (paymentData is CardModel) {
+                  mode = 'Credit Card';
+                } else {
+                  mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
+                }
+
+                debugPrint('Mode $mode');
+                final String transactionNumber =
+                GlobalMixin().generateTransactionNumber();
+                confirmPaymentModal(
+                    context: context,
+                    serviceName: serviceName,
+                    paymentMethod: paymentData,
+                    paymentMode: mode,
+                    price: price,
+                    onPaymentSuccessful: () {
+                      // API Integration for create advertisement..
+                      advertisementDetail(price, serviceName, transactionNumber, mode);
+
+                    },
+                    onPaymentFailed: () {
+                      paymentFailed(
+                          context: context,
+                          paymentDetails: PaymentDetails(
+                              serviceName: serviceName,
+                              price: price.toStringAsFixed(2),
+                              transactionNumber: transactionNumber),
+                          paymentMethod: mode);
+                    },
+                    paymentDetails: PaymentDetails(
+                        serviceName: serviceName,
+                        price: price.toStringAsFixed(2),
+                        transactionNumber: transactionNumber));
+              },
+              price: data['amount']);
+        });
   }
 }

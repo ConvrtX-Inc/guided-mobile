@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/screens/main_navigation/traveller/nearby_activities/nearby_activities.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_home.dart';
@@ -30,7 +31,7 @@ class TravellerTabScreen extends StatefulWidget {
 class _TravellerTabScreenState extends State<TravellerTabScreen> {
   int _selectedIndex = 0;
   late Widget _selectedWidget;
-  final CardController  _creditCardController  = Get.put(CardController());
+  final CardController _creditCardController = Get.put(CardController());
 
   @override
   void initState() {
@@ -73,6 +74,11 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
         _selectedWidget = PopularGuides(
           onItemPressed: popularGuideds,
         );
+      } else if (screen == 'nearbyActivities') {
+        _selectedIndex = 0;
+        _selectedWidget = NearbyActivitiesScreen(
+          onItemPressed: popularGuideds,
+        );
       } else {
         _selectedIndex = 0;
         _selectedWidget = const TabDiscoveryHub();
@@ -106,7 +112,7 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     if (cards.isNotEmpty) {
       debugPrint('cards $cards');
       final CardModel card = cards.firstWhere(
-              (CardModel c) => c.isDefault == true,
+          (CardModel c) => c.isDefault == true,
           orElse: () => CardModel());
 
       if (card.id != '') {
