@@ -1,7 +1,21 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:guided/common/widgets/custom_rounded_button.dart';
+import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/card_model.dart';
+import 'package:guided/screens/payments/confirm_payment.dart';
+import 'package:guided/screens/payments/payment_method.dart';
+import 'package:guided/screens/widgets/reusable_widgets/credit_card.dart';
+import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/services/stripe_service.dart';
 
 import '../../../../constants/app_colors.dart';
 
@@ -15,6 +29,9 @@ class RequestToBookScreen extends StatefulWidget {
 }
 
 class _RequestToBookScreenState extends State<RequestToBookScreen> {
+  dynamic paymentMethodDetails;
+  String paymentMode = '';
+
   @override
   void initState() {
     super.initState();
@@ -49,7 +66,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                           Container(
                             width: MediaQuery.of(context).size.width * 0.8,
                             child: Text(
-                              'Request to book',
+                              AppTextConstants.requestToBook,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
@@ -442,7 +459,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
-      height: 210.h,
+      // height: 210.h,
       width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -472,14 +489,16 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 ),
               ),
               const Spacer(),
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: Colors.white,
-                  backgroundColor: HexColor('#007749'),
-                ),
-                onPressed: () {},
-                child: const Text('Add'),
-              )
+              OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: paymentMode.isNotEmpty
+                        ? Colors.white
+                        : HexColor('#007749'),
+                  ),
+                  onPressed: paymentMode.isEmpty ? selectPaymentMethod : null,
+                  child: Text('Add',
+                      style: TextStyle(
+                          color: paymentMode.isNotEmpty ? null : Colors.white)))
             ],
           ),
           SizedBox(
@@ -488,50 +507,73 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Container(
-                height: 36.h,
-                width: 84.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10.r),
-                  ),
-                  image: const DecorationImage(
-                    image: AssetImage('assets/images/png/card1.png'),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Container(
-                height: 36.h,
-                width: 84.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10.r),
-                  ),
-                  image: const DecorationImage(
-                    image: AssetImage('assets/images/png/card2.png'),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Container(
-                height: 36.h,
-                width: 84.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10.r),
-                  ),
-                  image: const DecorationImage(
-                    image: AssetImage('assets/images/png/card3.png'),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
+              GestureDetector(
+                  onTap: selectPaymentMethod,
+                  child: Container(
+                    height: 36.h,
+                    width: 84.w,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10.r),
+                      ),
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/png/card1.png'),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  )),
+              GestureDetector(
+                  onTap: Platform.isAndroid
+                      ? () {
+                          selectPaymentMethod(selectedPaymentMode: 1);
+                        }
+                      : null,
+                  child: Container(
+                    height: 36.h,
+                    width: 84.w,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10.r),
+                      ),
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/png/card2.png'),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  )),
+              GestureDetector(
+                  onTap: Platform.isIOS
+                      ? () {
+                          selectPaymentMethod(selectedPaymentMode: 2);
+                        }
+                      : null,
+                  child: Container(
+                    height: 36.h,
+                    width: 84.w,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10.r),
+                      ),
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/png/card3.png'),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  )),
             ],
           ),
           SizedBox(
             height: 10.h,
           ),
+          Divider(color: Colors.grey),
+          if (paymentMode.isNotEmpty)
+            Container(
+                margin: EdgeInsets.only(top: 20.h, bottom: 20.h),
+                child: Text(paymentMethodDetails is CardModel
+                    ? GlobalMixin().getFormattedCardNumber(
+                        startingNumber: 0,
+                        cardNumber: paymentMethodDetails.cardNo)
+                    : paymentMode)),
           Text(
             'Enter a coupon',
             style: TextStyle(
@@ -792,30 +834,153 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           SizedBox(
             height: 20.h,
           ),
-          SizedBox(
-            height: 60.h,
-            width: MediaQuery.of(context).size.width * 0.9,
-            child: TextButton(
-              style: TextButton.styleFrom(
-                primary: HexColor('#979B9B'),
-                backgroundColor: HexColor('#ECEFF0'),
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/goToPaymentMethod');
-              },
-              child: Text(
-                'Request to book',
-                style: TextStyle(
-                  fontFamily: 'Gilroy',
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
-                  color: HexColor('#979B9B'),
+          if (paymentMode.isEmpty)
+            SizedBox(
+              height: 60.h,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  primary: HexColor('#979B9B'),
+                  backgroundColor: HexColor('#ECEFF0'),
+                ),
+                onPressed: () async {
+                  final args =
+                      await Navigator.pushNamed(context, '/goToPaymentMethod');
+                  debugPrint('Go To payment method $args ');
+                  if (args == 'openPaymentMethod') {
+                    selectPaymentMethod();
+                  }
+                },
+                child: Text(
+                  AppTextConstants.requestToBook,
+                  style: TextStyle(
+                    fontFamily: 'Gilroy',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w700,
+                    color: HexColor('#979B9B'),
+                  ),
                 ),
               ),
-            ),
-          )
+            )
+          else
+            SizedBox(
+                height: 60.h,
+                child: CustomRoundedButton(
+                    title: AppTextConstants.requestToBook,
+                    onpressed: () async {
+                      //please update price when api is integrated
+                      final double price = 354;
+
+                      //Add Api Integration for Booking Request here ...
+
+                      /*
+                      *Add Creation of Payment Intent
+                      *  Save this payment intent when booking request is inserted to db
+                       */
+                      final paymentIntent = await handlePayment(price);
+                      debugPrint('payment intent id $paymentIntent');
+
+                      //Static for now - please update this w/ response from booking request api ...
+                      String bookingRequestId =
+                          'c90b4a6e-c83a-4b40-b853-cf339f702a7d';
+                      /// save payment intent - uncomment when  booking request api is integrated
+                     /* await saveStripePaymentIntent(
+                          paymentIntent, bookingRequestId);*/
+                    }))
         ],
       ),
     );
+  }
+
+  selectPaymentMethod({int selectedPaymentMode = 0}) {
+    debugPrint('select Payment Method');
+    //please update price when api is integrated
+    final double price = 354;
+    paymentMethod(
+        context: context,
+        onCreditCardSelected: (CardModel card) {
+          debugPrint('Payment Method:: ${card.cardNo}');
+        },
+        onContinueBtnPressed: (dynamic data) {
+          String mode = '';
+          if (data is CardModel) {
+            mode = 'Credit Card';
+          } else {
+            mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
+          }
+
+          setState(() {
+            paymentMethodDetails = data;
+            paymentMode = mode;
+          });
+          Navigator.of(context).pop();
+          debugPrint('Payment Method details $paymentMethodDetails');
+        },
+        price: price,
+        paymentMode: selectedPaymentMode);
+  }
+
+  // Create payment method id first for Credit Card Payments
+  Future<String> createCreditCardPaymentMethodId() async {
+    final CardModel card = paymentMethodDetails;
+    final String paymentMethodId =
+        await StripeServices().createPaymentMethod(card);
+
+    debugPrint('Payment Method id: $paymentMethodId ');
+
+    return paymentMethodId;
+  }
+
+  // Handle payment
+  Future<String> handlePayment(double price) async {
+    String paymentMethodId = '';
+
+    ///For Credit Card Payments
+    if (paymentMethodDetails is CardModel) {
+      // create payment method first before creating payment intent
+      paymentMethodId = await createCreditCardPaymentMethodId();
+    } else {
+      /// For google pay and apple
+        String tokenId = '';
+      if(paymentMode =='Google Pay'){
+        tokenId = paymentMethodDetails['id'];
+
+      }else{
+        final TokenData tokenData  = paymentMethodDetails;
+        tokenId = tokenData.id;
+      }
+      //create payment method first
+      paymentMethodId = await StripeServices()
+          .createPaymentMethodFromToken(tokenId);
+    }
+
+    //please update price when api is integrated
+    final int amount = (price * 100).round();
+
+    final String paymentIntentId =
+        await createPaymentIntent(amount, paymentMethodId);
+
+    return paymentIntentId;
+  }
+
+  ///Create Payment Intent Stripe
+  Future<String> createPaymentIntent(int amount, paymentMethodId) async {
+    final APIStandardReturnFormat result =
+        await APIServices().createPaymentIntent(amount);
+
+    debugPrint('Payment Method id : $paymentMethodId');
+
+    final dynamic data = json.decode(result.successResponse);
+
+    return data['id'];
+  }
+
+  ///save stripe payment intent to database
+  Future<void> saveStripePaymentIntent(
+      String paymentIntentId, String bookingRequestId) async {
+    final result = await APIServices()
+        .savePaymentIntent(paymentIntentId, bookingRequestId);
+
+    debugPrint('Result ${result}');
   }
 }

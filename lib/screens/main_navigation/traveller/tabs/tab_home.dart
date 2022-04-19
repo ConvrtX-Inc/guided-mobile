@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, use_named_constants, diagnostic_describe_all_properties, no_default_cases
+// ignore_for_file: public_member_api_docs, use_named_constants, diagnostic_describe_all_properties, no_default_cases, unused_element
 
 import 'dart:convert';
 
@@ -20,11 +20,12 @@ import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/guide.dart';
 import 'package:guided/models/popular_guide.dart';
+import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
-
+import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -1115,93 +1116,97 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else {
-                      return ListView(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        children: List<Widget>.generate(2, (int i) {
-                          return Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 5.w, vertical: 20.h),
-                            height: 180.h,
-                            width: 220.w,
-                            decoration: const BoxDecoration(
-                              color: Colors.transparent,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Container(
-                                  height: 112.h,
-                                  width: 220.w,
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(15.r),
+                      return GestureDetector(
+                        onTap: () {},
+                        child: ListView(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          children: List<Widget>.generate(2, (int i) {
+                            return Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 5.w, vertical: 20.h),
+                              height: 180.h,
+                              width: 220.w,
+                              decoration: const BoxDecoration(
+                                color: Colors.transparent,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    height: 112.h,
+                                    width: 220.w,
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(15.r),
+                                      ),
+                                      image: DecorationImage(
+                                        image:
+                                            AssetImage(guides[i].featureImage),
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                                    image: DecorationImage(
-                                      image: AssetImage(guides[i].featureImage),
-                                      fit: BoxFit.cover,
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Positioned(
+                                          bottom: 0,
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.transparent,
+                                            radius: 30,
+                                            backgroundImage:
+                                                AssetImage(guides[i].path),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  child: Stack(
+                                  SizedBox(
+                                    height: 5.h,
+                                  ),
+                                  Text(
+                                    snapshot.data![i].userFirstName!,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16.sp,
+                                        fontFamily: 'Gilroy',
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  Row(
                                     children: <Widget>[
-                                      Positioned(
-                                        bottom: 0,
-                                        child: CircleAvatar(
-                                          backgroundColor: Colors.transparent,
-                                          radius: 30,
-                                          backgroundImage:
-                                              AssetImage(guides[i].path),
+                                      Container(
+                                        height: 10.h,
+                                        width: 10.w,
+                                        decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(15.r),
+                                          ),
+                                          image: const DecorationImage(
+                                            image: AssetImage(
+                                                'assets/images/png/marker.png'),
+                                            fit: BoxFit.contain,
+                                          ),
                                         ),
+                                      ),
+                                      SizedBox(
+                                        width: 2.w,
+                                      ),
+                                      Text(
+                                        guides[i].distance,
+                                        style: TextStyle(
+                                            color: HexColor('#696D6D'),
+                                            fontSize: 11.sp,
+                                            fontFamily: 'Gilroy',
+                                            fontWeight: FontWeight.normal),
                                       ),
                                     ],
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 5.h,
-                                ),
-                                Text(
-                                  snapshot.data![i].userFirstName!,
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.sp,
-                                      fontFamily: 'Gilroy',
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    Container(
-                                      height: 10.h,
-                                      width: 10.w,
-                                      decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(15.r),
-                                        ),
-                                        image: const DecorationImage(
-                                          image: AssetImage(
-                                              'assets/images/png/marker.png'),
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 2.w,
-                                    ),
-                                    Text(
-                                      guides[i].distance,
-                                      style: TextStyle(
-                                          color: HexColor('#696D6D'),
-                                          fontSize: 11.sp,
-                                          fontFamily: 'Gilroy',
-                                          fontWeight: FontWeight.normal),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
+                                ],
+                              ),
+                            );
+                          }),
+                        ),
                       );
                     }
                 }
@@ -1282,6 +1287,20 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
               )),
         ],
       ),
+    );
+  }
+
+  void _settingModalBottomSheet() {
+    show_avatar.showAvatarModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      expand: false,
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) => const PopularGuidesList(),
     );
   }
 }

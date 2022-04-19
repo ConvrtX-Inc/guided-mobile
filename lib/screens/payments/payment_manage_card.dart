@@ -397,8 +397,10 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
               ),
               content: SizedBox(
                 width: MediaQuery.of(context).size.width,
-                height: 85.h,
+
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text(
                       AppTextConstants.areYouSureYouWantToRemoveCard,

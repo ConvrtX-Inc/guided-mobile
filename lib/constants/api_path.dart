@@ -9,11 +9,11 @@ class AppAPIPath {
   /// Returns API mode
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
 
-  /// Returns API base url
-  static String apiBaseUrl = 'guided-api-dev.herokuapp.com';
+  ///Returns mode : (dev | staging | local )
+  static String mode = 'dev';
 
-  /// Returns API base url - staging
-  // static String apiBaseUrl = 'guided-api-staging.herokuapp.com';
+  /// Returns API base url
+  static String  apiBaseUrl = getBaseUrl(mode);
 
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
@@ -161,6 +161,24 @@ class AppAPIPath {
   ///Returns  payment url
   static String paymentUrl = '/api/v1/charge';
 
+
+  ///Returns  subscription url
+  static String userSubscription = '/api/v1/user-subscription';
+
   /// Returns activity availabilities url
   static String activityAvailability = 'api/v1/activity-availabilities';
+
+  ///Returns payment intent url
+ static String paymentIntentUrl = 'api/v1/payment-intent';
+}
+///Get Api Base Url
+getBaseUrl(String mode){
+  switch(mode){
+    case 'local':
+      return '192.168.100.55:3000';
+    case 'dev':
+      return 'guided-api-dev.herokuapp.com';
+    case 'staging':
+      return 'guided-api-staging.herokuapp.com';
+  }
 }

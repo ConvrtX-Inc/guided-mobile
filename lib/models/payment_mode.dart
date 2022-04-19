@@ -1,7 +1,11 @@
 ///Payment Mode
 class PaymentMode {
   ///Constructor
-  PaymentMode({this.mode = '', this.isSelected = false, this.logo = ''});
+  PaymentMode(
+      {this.mode = '',
+      this.isSelected = false,
+      this.logo = '',
+      this.isEnabled = true});
 
   ///Initialization for mode
   String mode;
@@ -11,4 +15,7 @@ class PaymentMode {
 
   ///Initialization for logo
   String logo;
+
+  ///Initialization for isEnabled
+  bool isEnabled;
 }

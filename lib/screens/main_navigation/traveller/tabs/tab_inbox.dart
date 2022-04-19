@@ -9,6 +9,8 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/message.dart';
 
+import '../../../message/message_individual_screen.dart';
+
 /// TabInboxScreen Screen
 class TabInboxScreen extends StatefulWidget {
   /// Constructor
@@ -70,14 +72,16 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
                       hintStyle: TextStyle(fontSize: 16.sp),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16.r),
-                        borderSide: BorderSide(
+                        // ignore: use_named_constants
+                        borderSide: const BorderSide(
                           width: 0,
                           style: BorderStyle.none,
                           // color: HexColor('#F8F7F6'),
                         ),
                       ),
                       filled: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 10), //Ch
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 10), //Ch
                       fillColor: HexColor('#F8F7F6'),
                     ),
                   ),
@@ -236,41 +240,57 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
                                   SizedBox(
                                     height: 6.h,
                                   ),
-                                  Row(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.6,
-                                        child: Text(
-                                          messages[index].message,
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            color: AppColors.dustyGrey,
+                                  //! added this
+                                  InkWell(
+                                    onTap: () {
+                                      print(messages[index].name);
+                                      print(messages[index].id);
+                                      Navigator.push(
+                                          context,
+                                          // ignore: always_specify_types
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  MessageIndividual(
+                                                    message: messages[index],
+                                                  )));
+                                    },
+                                    child: Row(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.6,
+                                          child: Text(
+                                            messages[index].message,
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              color: AppColors.dustyGrey,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      if (index == 0)
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(5),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.mediumGreen,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                '3',
-                                                style: TextStyle(
-                                                  fontSize: 12.sp,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
+                                        if (index == 0)
+                                          Expanded(
+                                            child: Container(
+                                              padding: const EdgeInsets.all(5),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.mediumGreen,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '3',
+                                                  style: TextStyle(
+                                                    fontSize: 12.sp,
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        )
-                                    ],
+                                          )
+                                      ],
+                                    ),
                                   ),
                                   SizedBox(
                                     height: 6.h,

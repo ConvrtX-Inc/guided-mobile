@@ -94,4 +94,29 @@ class StripeServices {
     return jsonData['id'];
   }
 
+
+
+  /// API service for Stripe Payment method  from token
+  Future<String> createPaymentMethodFromToken(String token) async {
+
+    Map<String, String> cardDetails = {
+      'type': 'card',
+      'card[token]': token,
+
+    };
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Bearer ${apiKey}'
+    };
+
+    final http.Response response =
+    await http.post(Uri.parse('$stripeApiUrl/payment_methods'), body: cardDetails, headers: headers);
+
+    final Map<String, dynamic> jsonData = jsonDecode(response.body);
+    debugPrint('Stripe Payment Method ID ${jsonData}');
+
+    return jsonData['id'];
+  }
+
 }

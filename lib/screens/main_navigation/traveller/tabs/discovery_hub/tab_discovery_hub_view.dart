@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,6 +10,7 @@ import 'package:guided/models/card_model.dart';
 import 'package:guided/models/discovery_hub.dart';
 import 'package:guided/models/hub_outfitter.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
+import 'package:guided/screens/payments/payment_failed.dart';
 import 'package:guided/screens/payments/payment_method.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
@@ -233,7 +236,9 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                 padding: EdgeInsets.only(
                     left: 20.w, right: 20.w, top: 10.h, bottom: 12.h),
                 child: CustomRoundedButton(
-                    title: 'Know More About This Event', onpressed:() => _showDiscoveryBottomSheet(features[screenArguments['id']].img1)))
+                    title: 'Know More About This Event',
+                    onpressed: () => _showDiscoveryBottomSheet(
+                        features[screenArguments['id']].img1)))
         ],
       ),
     );
@@ -248,45 +253,56 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
         enableDrag: true,
         backgroundColor: Colors.transparent,
         builder: (BuildContext ctx) => DiscoveryBottomSheet(
-          backgroundImage: backgroundImage,
-          onSubscribeBtnPressed: () {
-            Navigator.of(ctx).pop();
-            paymentMethod(
-                context: context,
-
-                onContinueBtnPressed: (dynamic data) {
-                  String mode = '';
-                  if (data is CardModel) {
-                    mode = 'Credit Card';
-                  }
-                  final String transactionNumber =
-                  GlobalMixin().generateTransactionNumber();
-                  confirmPaymentModal(
-                      context: context,
-                      serviceName: 'Discovery Subscription',
-                      paymentMethod: data,
-                      paymentMode: mode,
-                      price: 5.99,
-                      onPaymentSuccessful: () {
-                        paymentSuccessful(
-                            context: context,
-                            paymentDetails: DiscoveryPaymentDetails(
-                                transactionNumber: transactionNumber),
-                            paymentMethod: mode);
-                      },
-                      paymentDetails: DiscoveryPaymentDetails(
-                          transactionNumber: transactionNumber));
-                });
-          },
-          onSkipBtnPressed: () {
-            Navigator.of(context).pop();
-          },
-          onCloseBtnPressed: () {
-            Navigator.of(context).pop();
-          },
-          onBackBtnPressed: () {
-            Navigator.of(context).pop();
-          },
-        ));
+              backgroundImage: backgroundImage,
+              onSubscribeBtnPressed: () {
+                const double price = 5.99;
+                Navigator.of(ctx).pop();
+                paymentMethod(
+                    context: context,
+                    onContinueBtnPressed: (dynamic data) {
+                      String mode = '';
+                      if (data is CardModel) {
+                        mode = 'Credit Card';
+                      } else {
+                        mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
+                      }
+                      final String transactionNumber =
+                          GlobalMixin().generateTransactionNumber();
+                      confirmPaymentModal(
+                          context: context,
+                          serviceName: 'Discovery Subscription',
+                          paymentMethod: data,
+                          paymentMode: mode,
+                          price: price,
+                          onPaymentSuccessful: () {
+                            Navigator.of(context).pop();
+                            paymentSuccessful(
+                                context: context,
+                                paymentDetails: DiscoveryPaymentDetails(
+                                    transactionNumber: transactionNumber),
+                                paymentMethod: mode);
+                          },
+                          onPaymentFailed: (){
+                            paymentFailed(
+                                context: context,
+                                paymentDetails: DiscoveryPaymentDetails(
+                                    transactionNumber: transactionNumber),
+                                paymentMethod: mode);
+                          },
+                          paymentDetails: DiscoveryPaymentDetails(
+                              transactionNumber: transactionNumber));
+                    },
+                    price: price);
+              },
+              onSkipBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+              onCloseBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+              onBackBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+            ));
   }
 }

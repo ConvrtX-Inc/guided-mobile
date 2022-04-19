@@ -130,4 +130,10 @@ class AppColors {
 
   /// hex colr for dirty white
   static HexColor dirtyWhite = HexColor('#F2F2F2');
+
+  /// herx color for white
+  static HexColor white = HexColor('#FFFFFF');
+
+  ///hex color for islandSpice
+ static HexColor islandSpice = HexColor('#FFFAED');
 }

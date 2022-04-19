@@ -9,7 +9,9 @@ import 'package:guided/screens/widgets/reusable_widgets/payment_detail.dart';
 Future<dynamic> paymentSuccessful(
     {required BuildContext context,
     required Widget paymentDetails,
-    required String paymentMethod}) {
+    required String paymentMethod,
+    Function? onOkBtnPressed
+    }) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -88,7 +90,7 @@ Future<dynamic> paymentSuccessful(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     PaymentDetail(
-                                        label: AppTextConstants.card,
+                                        label: AppTextConstants.paymentMethod,
                                         content: paymentMethod),
                                   ],
                                 ),
@@ -101,7 +103,7 @@ Future<dynamic> paymentSuccessful(
                     ),
                     CustomRoundedButton(
                         title: AppTextConstants.ok,
-                        onpressed: () {
+                        onpressed: onOkBtnPressed ?? () {
                           int count = 0;
                           Navigator.popUntil(context, (route) {
                             return count++ == 2;

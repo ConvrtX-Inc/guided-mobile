@@ -226,4 +226,13 @@ class AssetsPath {
 
   /// returns heart outlined image
   static String heartOutlined = 'assets/images/png/heart_outlined.png';
+
+  /// return guide image
+  static String guide1 = 'assets/images/png/guide1.png';
+
+  /// return person message 3 image
+  static String pmessage3 = 'assets/images/png/pmessage3.png';
+
+  /// return icon verified
+  static String iconVerified = 'assets/images/png/icon_verified.png';
 }

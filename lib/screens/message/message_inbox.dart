@@ -19,6 +19,7 @@ class _MessageInboxState extends State<MessageInbox> {
   double _height = 94.h;
   double _width = 309.w;
   final List<Message> messages = AppListConstants.getMessages();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

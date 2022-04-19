@@ -58,13 +58,13 @@ class DiscoveryPaymentDetails extends StatelessWidget {
               height: 20.h,
             ),
             PaymentDetail(
-                label: AppTextConstants.orderNumber,
+                label: AppTextConstants.transactionNumber,
                 content: transactionNumber),
             SizedBox(
               height: 20.h,
             ),
             PaymentDetail(
-                label: AppTextConstants.service, content: 'Discovery Subscription'),
+                label: AppTextConstants.service, content: 'Premium Subscription'),
 
             ],
         ));
