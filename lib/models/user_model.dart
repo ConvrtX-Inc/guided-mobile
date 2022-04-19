@@ -24,6 +24,7 @@ class UserModel {
 
 class User {
   String? id;
+  String? fullName;
   String? firstName;
   String? lastName;
   String? email;
@@ -50,6 +51,7 @@ class User {
 
   User(
       {this.id,
+      this.fullName,
       this.firstName,
       this.lastName,
       this.email,
@@ -76,6 +78,7 @@ class User {
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    fullName = json['full_name'];
     firstName = json['first_name'];
     lastName = json['last_name'];
     email = json['email'];
@@ -104,6 +107,7 @@ class User {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = id;
+    data['full_name'] = fullName;
     data['first_name'] = firstName;
     data['last_name'] = lastName;
     data['email'] = email;

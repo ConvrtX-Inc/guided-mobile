@@ -1,10 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/activity_package.dart';
+import 'package:guided/models/badge_model.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
+import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../../constants/app_text_style.dart';
@@ -23,8 +30,29 @@ class _TravellerBookingDetailsScreenState
     extends State<TravellerBookingDetailsScreen> {
   final List<Activity> activities = StaticDataService.getActivityList();
   final PageController page_indicator_controller = PageController();
+
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
+    final ActivityPackage activityPackage =
+        screenArguments['package'] as ActivityPackage;
+    final String bookingDate = screenArguments['selectedDate'] as String;
+    final int numberOfTraveller = screenArguments['numberOfTraveller'] as int;
+
+    String getTime(String date) {
+      final DateTime parseDate =
+          DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+      final DateTime inputDate = DateTime.parse(parseDate.toString());
+      final DateTime addHour = inputDate.add(const Duration(hours: 1));
+      final DateFormat outputFormat = DateFormat('HH:mm');
+      final DateFormat outputFormatDate = DateFormat('dd MMM');
+      final String date1 = outputFormatDate.format(inputDate);
+      final String hour1 = outputFormat.format(inputDate);
+      final String hour2 = outputFormat.format(addHour);
+      return '$date1 $hour1-$hour2';
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -47,11 +75,18 @@ class _TravellerBookingDetailsScreenState
                             height: 280.h,
                             decoration: BoxDecoration(
                               color: Colors.transparent,
+                              // image: DecorationImage(
+                              //   image:
+                              //       AssetImage(activities[index].featureImage),
+                              //   fit: BoxFit.cover,
+                              // ),
                               image: DecorationImage(
-                                image:
-                                    AssetImage(activities[index].featureImage),
+                                  image: Image.memory(
+                                base64.decode(
+                                    activityPackage.coverImg!.split(',').last),
                                 fit: BoxFit.cover,
-                              ),
+                                gaplessPlayback: true,
+                              ).image),
                             ),
                           ),
                         ),
@@ -155,7 +190,7 @@ class _TravellerBookingDetailsScreenState
             child: Align(
               alignment: Alignment.topLeft,
               child: Text(
-                'Grassland Outfitting',
+                activityPackage.name!,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 24.sp,
@@ -168,6 +203,7 @@ class _TravellerBookingDetailsScreenState
             child: Align(
               alignment: Alignment.topLeft,
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Container(
                     height: 15.h,
@@ -179,12 +215,14 @@ class _TravellerBookingDetailsScreenState
                       ),
                     ),
                   ),
-                  Text(
-                    'Toronto, Canada',
-                    style: TextStyle(
-                        color: HexColor('#979B9B'),
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.normal),
+                  Expanded(
+                    child: Text(
+                      activityPackage.address!,
+                      style: TextStyle(
+                          color: HexColor('#979B9B'),
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.normal),
+                    ),
                   ),
                 ],
               ),
@@ -200,48 +238,69 @@ class _TravellerBookingDetailsScreenState
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 0.h),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                  ),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 35.r,
-                    backgroundImage: const AssetImage(
-                        '${AssetsPath.assetsPNGPath}/student_profile.png'),
-                  ),
-                ),
-                title: Text(
-                  'Ethan Hunt',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.w600),
-                ),
-                subtitle: Row(
-                  children: <Widget>[
-                    Icon(
-                      Icons.star,
-                      size: 14,
-                      color: AppColors.deepGreen,
+          FutureBuilder<User>(
+            future: APIServices().getUserDetails(activityPackage.userId!),
+            builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+              if (snapshot.hasData) {
+                return Padding(
+                  padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 0.h),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Container(
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 35.r,
+                          backgroundImage: const AssetImage(
+                              '${AssetsPath.assetsPNGPath}/student_profile.png'),
+                        ),
+                      ),
+                      title: Text(
+                        '${snapshot.data!.fullName}',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.star,
+                            size: 14,
+                            color: AppColors.deepGreen,
+                          ),
+                          Text(
+                            '16 reviews',
+                            style: TextStyle(
+                                color: HexColor('#979B9B'),
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(
-                      '16 reviews',
-                      style: TextStyle(
-                          color: HexColor('#979B9B'),
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
+                );
+              }
+              if (snapshot.connectionState != ConnectionState.done) {
+                return Padding(
+                  padding: EdgeInsets.only(left: 10.w),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(
+                          height: 14.h,
+                          width: 14.w,
+                          child: const CircularProgressIndicator()),
+                    ],
+                  ),
+                );
+              }
+              return Container();
+            },
           ),
           Padding(
             padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 0.h),
@@ -257,16 +316,41 @@ class _TravellerBookingDetailsScreenState
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    Container(
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                      ),
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 14.r,
-                        backgroundImage: const AssetImage(
-                            '${AssetsPath.assetsPNGPath}/activity_icon0.png'),
-                      ),
+                    FutureBuilder<BadgeModelData>(
+                      future: APIServices()
+                          .getBadgesModelById(activityPackage.mainBadgeId!),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<BadgeModelData> snapshot) {
+                        if (snapshot.hasData) {
+                          return Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                            ),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              radius: 14.r,
+                              backgroundImage: MemoryImage(base64.decode(
+                                  snapshot.data!.badgeDetails.first.imgIcon
+                                      .split(',')
+                                      .last)), //here
+                            ),
+                          );
+                        }
+                        if (snapshot.connectionState != ConnectionState.done) {
+                          return Padding(
+                            padding: EdgeInsets.only(left: 10.w),
+                            child: Column(
+                              children: <Widget>[
+                                SizedBox(
+                                    height: 14.h,
+                                    width: 14.w,
+                                    child: const CircularProgressIndicator()),
+                              ],
+                            ),
+                          );
+                        }
+                        return Container();
+                      },
                     ),
                     Padding(
                       padding: EdgeInsets.only(right: 5.w),
@@ -301,7 +385,7 @@ class _TravellerBookingDetailsScreenState
             child: Align(
               alignment: Alignment.topLeft,
               child: Text(
-                'Located northwest if Montreal in Quebec’s the Laurentian Mountains, Mont-Tremblant is best known for its skiing, specifically Mont Treamblent Ski Resort, which occupies the highest peak in ',
+                activityPackage.description!,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 14.sp,
@@ -328,6 +412,7 @@ class _TravellerBookingDetailsScreenState
                 Container(
                   margin: EdgeInsets.only(left: 15.w, top: 8.h),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Row(
                         children: <Widget>[
@@ -348,7 +433,8 @@ class _TravellerBookingDetailsScreenState
                         ],
                       ),
                       Text(
-                        '8 Jun 7:00-9:00',
+                        getTime(bookingDate),
+                        // '8 Jun 7:00-9:00',
                         style: TextStyle(
                             color: HexColor('#3E4242'),
                             fontSize: 14.sp,

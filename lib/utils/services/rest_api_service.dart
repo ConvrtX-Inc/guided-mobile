@@ -285,6 +285,23 @@ class APIServices {
     return ProfileModelData(profileDetails: details);
   }
 
+  /// API service for profile model
+  Future<User> getUserDetails(String id) async {
+    print(id);
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/$id'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final dynamic parsedJson = json.decode(response.body);
+    print(response.request!.url);
+    print(parsedJson);
+    return User.fromJson(parsedJson);
+  }
+
   /// API service for currencies
   Future<List<Currency>> getCurrencies() async {
     final http.Response response = await http.get(
@@ -497,7 +514,7 @@ class APIServices {
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
         body: jsonEncode(
-            {'latitude': '40.71', 'longitude': '-74.01', 'distance': '20'}),
+            {'latitude': '53.59', 'longitude': '-113.60', 'distance': '20'}),
         headers: headers);
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -552,16 +569,16 @@ class APIServices {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
         });
-    print(response.request!.url);
+
     final dynamic jsonData = jsonDecode(response.body);
-    print(jsonData);
+
     final List<ActivityHourAvailability> activityHours =
         <ActivityHourAvailability>[];
     final activityHour = (jsonData as List)
         .map((i) => ActivityHourAvailability.fromJson(i))
         .toList();
     activityHours.addAll(activityHour);
-    print(activityHours.length);
+
     return activityHours;
   }
 
