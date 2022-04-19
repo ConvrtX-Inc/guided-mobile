@@ -7,9 +7,11 @@ import 'package:get/get.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/activity_package.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../../constants/app_list.dart';
@@ -34,6 +36,8 @@ class _CheckActivityAvailabityScreenState
   final PageController page_indicator_controller = PageController();
   final ScrollToIndexController _scrollController = ScrollToIndexController();
   final travellerMonthController = Get.put(TravellerMonthController());
+  final DateTime now = DateTime.now();
+
   @override
   void initState() {
     initializeDateFormatting('en', null);
@@ -51,9 +55,19 @@ class _CheckActivityAvailabityScreenState
   }
 
   @override
+  void dispose() {
+    travellerMonthController.setSelectedDate(0);
+    travellerMonthController.setCurrentMonth(DateTime.now().toString());
+    travellerMonthController.selectedDates.clear();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final ActivityPackage activityPackage =
+        screenArguments['package'] as ActivityPackage;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -149,11 +163,22 @@ class _CheckActivityAvailabityScreenState
                   },
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
-                    child: Text('1/March/ 2021',
+                    child: Obx(
+                      () => Text(
+                        travellerMonthController.selectedDates.isNotEmpty
+                            ? travellerMonthController.selectedDates.length > 1
+                                ? '${DateFormat('d/MMMM/yyyy').format(travellerMonthController.selectedDates.first)} - ${DateFormat('d/MMMM/yyyy').format(travellerMonthController.selectedDates.last)}'
+                                : DateFormat('d/MMMM/yyyy').format(
+                                    travellerMonthController
+                                        .selectedDates.first)
+                            : DateFormat('d/MMMM/yyyy')
+                                .format(now), // 28/03/2020,
                         style: TextStyle(
                             color: AppColors.tealGreen,
                             fontSize: 14,
-                            fontWeight: FontWeight.w700)),
+                            fontWeight: FontWeight.w700),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -291,7 +316,7 @@ class _CheckActivityAvailabityScreenState
               height: 60.h,
               child: ElevatedButton(
                 onPressed: () {
-                  checkAvailability(context, screenArguments['packageid'],
+                  checkAvailability(context, activityPackage,
                       travellerMonthController.selectedDates);
                 },
                 style: AppTextStyle.activeGreen,
@@ -310,12 +335,11 @@ class _CheckActivityAvailabityScreenState
     );
   }
 
-  /// Navigate to Advertisement View
-  Future<void> checkAvailability(BuildContext context, String packageID,
+  Future<void> checkAvailability(BuildContext context, ActivityPackage package,
       List<DateTime> selectedDates) async {
     selectedDates.sort((a, b) => a.compareTo(b));
     final Map<String, dynamic> details = {
-      'packageid': packageID,
+      'package': package,
       'selectedDates': selectedDates,
     };
     if (selectedDates.length > 0) {

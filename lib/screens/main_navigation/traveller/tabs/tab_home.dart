@@ -27,6 +27,7 @@ import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 /// TabHomeScreen
@@ -48,6 +49,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   final ScrollToIndexController _scrollController = ScrollToIndexController();
   final travellerMonthController = Get.put(TravellerMonthController());
   final SwiperController _cardController = SwiperController();
+
   var result;
   @override
   void initState() {
@@ -636,12 +638,29 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          'Explore Nearby Activities/Packages',
-          style: TextStyle(
-              color: Colors.black,
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w700),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              'Explore Nearby Activities/Packages',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w700),
+            ),
+            GestureDetector(
+              onTap: exploreNearbyActivities,
+              child: Text(
+                'See All',
+                style: TextStyle(
+                  color: HexColor('#3E4242'),
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w700,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ],
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.26,
@@ -677,7 +696,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                 GestureDetector(
                                   onTap: () {
                                     checkAvailability(
-                                        context, snapshot.data![index].id!);
+                                        context, snapshot.data![index]);
                                   },
                                   child: Container(
                                     height: 112.h,
@@ -705,8 +724,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                     child: Stack(
                                       children: <Widget>[
                                         Positioned(
-                                          bottom: 30,
-                                          left: 15,
+                                          bottom: 10,
+                                          left: 20,
                                           child: FutureBuilder<BadgeModelData>(
                                             future: APIServices()
                                                 .getBadgesModelById(snapshot
@@ -813,13 +832,237 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
     );
   }
 
+  void exploreNearbyActivities() {
+    showMaterialModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      expand: false,
+      context: context,
+      backgroundColor: Colors.white,
+      builder: (BuildContext context) => SafeArea(
+        top: false,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.9,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                height: 15.h,
+              ),
+              Align(
+                child: Image.asset(
+                  AssetsPath.horizontalLine,
+                  width: 60.w,
+                  height: 5.h,
+                ),
+              ),
+              SizedBox(
+                height: 15.h,
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.arrow_back),
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15.w),
+                child: Text(
+                  'Explore Nearby Activities/Packages',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15.w),
+                child: Text(
+                  "Can't find anything nearby? Try using the map and discover what else is available.",
+                  style: TextStyle(
+                      color: AppColors.doveGrey,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.normal),
+                ),
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              Expanded(
+                child: ListView(
+                  children: List<Widget>.generate(
+                    3,
+                    (int index) => Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15.w),
+                      child: sideShow(index),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget sideShow(int index) {
+    final PageController pageIndicatorController =
+        PageController(initialPage: index);
+    return SizedBox(
+      height: 250.h,
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            height: 200.h,
+            child: Stack(
+              children: <Widget>[
+                PageView.builder(
+                  controller: pageIndicatorController,
+                  itemCount: activities.length,
+                  itemBuilder: (_, int index) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            widget.onItemPressed('nearbyActivities');
+                          },
+                          child: Container(
+                            height: 200.h,
+                            // width:
+                            //     315.w,
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.r),
+                              ),
+                              image: DecorationImage(
+                                image:
+                                    AssetImage(activities[index].featureImage),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child: Stack(
+                              children: <Widget>[
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.favorite_border),
+                                    onPressed: () {},
+                                    color: HexColor('#ffffff'),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    radius: 30,
+                                    backgroundImage:
+                                        AssetImage(activities[index].path),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Align(
+                  child: SmoothPageIndicator(
+                      controller: pageIndicatorController,
+                      count: activities.length,
+                      effect: const ScrollingDotsEffect(
+                        activeDotColor: Colors.white,
+                        dotColor: Colors.white,
+                        activeStrokeWidth: 2.6,
+                        activeDotScale: 1.6,
+                        maxVisibleDots: 5,
+                        radius: 8,
+                        spacing: 10,
+                        dotHeight: 6,
+                        dotWidth: 6,
+                      )),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 5.w),
+            child: Row(
+              children: <Widget>[
+                Text(
+                  activities[index].name,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+                Spacer(),
+                Expanded(
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        height: 10.h,
+                        width: 10.w,
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15.r),
+                          ),
+                          image: const DecorationImage(
+                            image: AssetImage('assets/images/png/clock.png'),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      // SizedBox(
+                      //   width: 2.w,
+                      // ),
+                      Text(
+                        activities[index].distance,
+                        style: TextStyle(
+                            color: HexColor('#696D6D'),
+                            fontSize: 11.sp,
+                            fontFamily: 'Gilroy',
+                            fontWeight: FontWeight.normal),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   /// Navigate to Advertisement View
   Future<void> checkAvailability(
     BuildContext context,
-    String packageID,
+    ActivityPackage package,
   ) async {
     final Map<String, dynamic> details = {
-      'packageid': packageID,
+      'package': package,
     };
 
     await Navigator.pushNamed(context, '/checkActivityAvailabityScreen',
@@ -839,7 +1082,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
               'Popular guides near you!',
               style: TextStyle(
                   color: Colors.black,
-                  fontSize: 18.sp,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w700),
             ),
             GestureDetector(
