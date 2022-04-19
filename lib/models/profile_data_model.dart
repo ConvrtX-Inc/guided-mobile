@@ -1,15 +1,6 @@
-// ignore_for_file:, sort_constructors_first
-
-/// Profile Model
-class ProfileModelData {
-  /// Constructor
-  ProfileModelData({required this.profileDetails});
-
-  /// profile details
-  late List<ProfileDetailsModel> profileDetails = <ProfileDetailsModel>[];
-}
-
 /// Profile Details Model
+// ignore_for_file: sort_constructors_first
+
 class ProfileDetailsModel {
   /// Constructor
   ProfileDetailsModel(

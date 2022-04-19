@@ -265,26 +265,18 @@ class APIServices {
   }
 
   /// API service for profile model
-  Future<ProfileModelData> getProfileData() async {
-    final http.Response response = await http.get(
-        Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/${UserSingleton.instance.user.user!.id}'),
-        headers: {
-          HttpHeaders.authorizationHeader:
-              'Bearer ${UserSingleton.instance.user.token}',
-        });
+  Future<ProfileDetailsModel> getProfileData() async {
+    final String url =
+        '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/${UserSingleton.instance.user.user!.id}';
 
-    final List<ProfileDetailsModel> details = <ProfileDetailsModel>[];
+    final http.Response response = await http.get(Uri.parse(url), headers: {
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+    });
 
-    final List<dynamic> res = jsonDecode(response.body);
-
-    for (final dynamic data in res) {
-      final ProfileDetailsModel profileModel =
-          ProfileDetailsModel.fromJson(data);
-      details.add(profileModel);
-    }
-
-    return ProfileModelData(profileDetails: details);
+    final ProfileDetailsModel dataSummary =
+        ProfileDetailsModel.fromJson(json.decode(response.body));
+    return dataSummary;
   }
 
   /// API service for currencies

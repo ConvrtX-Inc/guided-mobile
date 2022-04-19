@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, cascade_invocations, cast_nullable_to_non_nullable, prefer_final_in_for_each
+// ignore_for_file: file_names, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, cascade_invocations, cast_nullable_to_non_nullable, prefer_final_in_for_each, type_annotate_public_apis, always_declare_return_types, unnecessary_statements
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +33,7 @@ class _AvailabilityBookingDateScreenState
   bool isRefreshing = false;
   bool _didPickedDate = false;
   bool isSubmit = false;
+  bool _didInitialSave = false;
 
   late List<dynamic> setbookingtime = [];
   late List<dynamic> listTime;
@@ -122,6 +123,7 @@ class _AvailabilityBookingDateScreenState
                 listTime[index][1] = false;
                 listTime[index][2] = 0;
                 listTime[index][5] = '';
+                listTime[index][6] = '';
               });
             }
             Navigator.pop(context);
@@ -198,23 +200,123 @@ class _AvailabilityBookingDateScreenState
                             if (setbookingtime.isNotEmpty) {
                               showDialog(
                                   context: context,
-                                  builder: (_) => AlertDialog(
-                                        title:
-                                            Text(AppTextConstants.saveChanges),
-                                        content: Text(
-                                            AppTextConstants.saveChangesDesc),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text('No')),
-                                          TextButton(
-                                              onPressed: setInitialDate,
-                                              child: const Text('Yes')),
-                                        ],
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text(AppTextConstants.saveChanges),
+                                      content: StatefulBuilder(
+                                        builder: (BuildContext context,
+                                            StateSetter setState) {
+                                          return Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              SizedBox(height: 5.h),
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 24.w,
+                                                    vertical: 2.h),
+                                                child: Text(AppTextConstants
+                                                    .saveChangesDesc),
+                                              ),
+                                              SizedBox(
+                                                height: 20.h,
+                                              ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        _didInitialSave = true;
+                                                      });
+                                                      setInitialDate(
+                                                          selectedDay,
+                                                          focusedDay);
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        side: BorderSide(
+                                                          color:
+                                                              AppColors.silver,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10.r),
+                                                      ),
+                                                      primary: AppColors
+                                                          .primaryGreen,
+                                                      onPrimary: Colors.white,
+                                                    ),
+                                                    child: _didInitialSave
+                                                        ? const Center(
+                                                            child: Padding(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    8),
+                                                            child:
+                                                                CircularProgressIndicator(),
+                                                          ))
+                                                        : const Text(
+                                                            'Yes',
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16),
+                                                          ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 20.w,
+                                                  ),
+                                                  if (_didInitialSave)
+                                                    Container()
+                                                  else
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          side: BorderSide(
+                                                            color: AppColors
+                                                                .silver,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.r),
+                                                        ),
+                                                        primary: AppColors
+                                                            .primaryGreen,
+                                                        onPrimary: Colors.white,
+                                                      ),
+                                                      child: const Text(
+                                                        'No',
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16),
+                                                      ),
+                                                    ),
+                                                ],
+                                              )
+                                            ],
+                                          );
+                                        },
                                       ),
+                                    );
+                                  },
                                   barrierDismissible: false);
+                              getActivityAvailabilityHours(
+                                  screenArguments['id'], listTime, selectedDay);
                             } else {
                               setState(() {
                                 setState(() {
@@ -237,8 +339,15 @@ class _AvailabilityBookingDateScreenState
                                   setState(() {
                                     listTime[index][1] = false;
                                     listTime[index][2] = 0;
+                                    listTime[index][5] = '';
+                                    listTime[index][6] = '';
                                   });
                                 }
+
+                                getActivityAvailabilityHours(
+                                    screenArguments['id'],
+                                    listTime,
+                                    _selectedDay);
                               });
                             }
                           },
@@ -496,7 +605,7 @@ class _AvailabilityBookingDateScreenState
     }
   }
 
-  Future<void> setInitialDate() async {
+  Future<void> timeSave() async {
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
@@ -508,43 +617,55 @@ class _AvailabilityBookingDateScreenState
       _date = _preSelectedDay;
     }
 
-    final Map<String, dynamic> availabilityDateDetails = {
-      'activity_package_id': screenArguments['id'],
-      'availability_date':
-          '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[0][3]}',
-      'slots': setbookingtime[0][2],
-    };
+    if (setbookingtime.isNotEmpty) {
+      for (var i = 0; i < setbookingtime.length; i++) {
+        if (setbookingtime[i][5].toString().isNotEmpty) {
+          final Map<String, dynamic> availabilityDateHourDetails = {
+            'activity_availability_id': setbookingtime[i][6],
+            'availability_date_hour':
+                '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
+            'slots': setbookingtime[i][2],
+          };
 
-    final dynamic response = await APIServices().request(
-        AppAPIPath.createSlotAvailability, RequestType.POST,
-        needAccessToken: true, data: availabilityDateDetails);
+          final dynamic response = await APIServices().request(
+              '${AppAPIPath.createSlotAvailabilityHour}/${setbookingtime[i][5]}',
+              RequestType.PATCH,
+              needAccessToken: true,
+              data: availabilityDateHourDetails);
+        } else {
+          final Map<String, dynamic> availabilityDateDetails = {
+            'activity_availability_id': setbookingtime[i][6],
+            'availability_date_hour':
+                '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
+            'slots': setbookingtime[i][2],
+          };
 
-    if (setbookingtime.length > 1) {
-      final String activityAvailabilityId =
-          response['response']['data']['details']['id'];
-
-      for (var i = 1; i < setbookingtime.length; i++) {
-        final Map<String, dynamic> availabilityDateHourDetails = {
-          'activity_availability_id': activityAvailabilityId,
-          'availability_date_hour':
-              '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
-          'slots': setbookingtime[i][2],
-        };
-
-        final dynamic response1 = await APIServices().request(
-            AppAPIPath.createSlotAvailabilityHour, RequestType.POST,
-            needAccessToken: true, data: availabilityDateHourDetails);
+          final dynamic response = await APIServices().request(
+              AppAPIPath.createSlotAvailabilityHour, RequestType.POST,
+              needAccessToken: true, data: availabilityDateDetails);
+        }
       }
-    }
 
-    for (var i = 0; i < setbookingtime.length; i++) {
-      int id = setbookingtime[i][4];
-      setState(() {
-        listTime[id][1] = false;
-        listTime[id][2] = 0;
-      });
+      for (var i = 0; i < setbookingtime.length; i++) {
+        int id = setbookingtime[i][4];
+        setState(() {
+          listTime[id][1] = false;
+          listTime[id][2] = 0;
+          listTime[id][5] = '';
+          listTime[id][6] = '';
+        });
+      }
+      setbookingtime.clear();
     }
-    setbookingtime.clear();
+  }
+
+  Future<void> setInitialDate(DateTime selectedDay, DateTime focusedDay) async {
+    await timeSave();
+    setState(() {
+      _selectedDay = selectedDay;
+      _focusedDay = focusedDay;
+      _didInitialSave = false;
+    });
     Navigator.pop(context);
   }
 
@@ -555,59 +676,7 @@ class _AvailabilityBookingDateScreenState
       setState(() {
         isSubmit = true;
       });
-
-      final Map<String, dynamic> screenArguments =
-          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
-      DateTime _date;
-
-      if (_didPickedDate) {
-        _date = _selectedDay;
-      } else {
-        _date = _preSelectedDay;
-      }
-
-      if (setbookingtime.isNotEmpty) {
-        for (var i = 0; i < setbookingtime.length; i++) {
-          if (setbookingtime[i][5].toString().isNotEmpty) {
-            final Map<String, dynamic> availabilityDateHourDetails = {
-              'activity_availability_id': setbookingtime[i][6],
-              'availability_date_hour':
-                  '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
-              'slots': setbookingtime[i][2],
-            };
-
-            final dynamic response = await APIServices().request(
-                '${AppAPIPath.createSlotAvailabilityHour}/${setbookingtime[i][5]}',
-                RequestType.PATCH,
-                needAccessToken: true,
-                data: availabilityDateHourDetails);
-          } else {
-            final Map<String, dynamic> availabilityDateDetails = {
-              'activity_availability_id': setbookingtime[i][6],
-              'availability_date_hour':
-                  '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
-              'slots': setbookingtime[i][2],
-            };
-
-            final dynamic response = await APIServices().request(
-                AppAPIPath.createSlotAvailabilityHour, RequestType.POST,
-                needAccessToken: true, data: availabilityDateDetails);
-          }
-        }
-
-        for (var i = 0; i < setbookingtime.length; i++) {
-          int id = setbookingtime[i][4];
-          setState(() {
-            listTime[id][1] = false;
-            listTime[id][2] = 0;
-            listTime[id][5] = '';
-            listTime[id][6] = '';
-          });
-        }
-        setbookingtime.clear();
-      }
-
+      await timeSave();
       await Navigator.pushReplacement(
           context,
           MaterialPageRoute<dynamic>(

@@ -258,26 +258,10 @@ class _HomeScreenState extends State<HomeScreen>
                     borderRadius: BorderRadius.circular(8.r),
                     // color: ConstantHelpers.platinum,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            OverlappingAvatars(),
-                            SizedBox(width: 15.w),
-                            ConcatStrings()
-                          ],
-                        ),
-                        SizedBox(height: 10.h),
-                        Text(
-                          AppTextConstants.homeMainHeader,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.grey),
-                        )
-                      ],
-                    ),
+                  child: const Center(
+                    child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text('Nothing to show here')),
                   ),
                 ),
               ),
@@ -289,13 +273,63 @@ class _HomeScreenState extends State<HomeScreen>
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(6.r),
                       color: AppColors.lightningYellow),
-                  child: Text('${customerRequests.length} Pending request',
-                      style: const TextStyle(
+                  child: const Text('0 Pending request',
+                      style: TextStyle(
                           fontWeight: FontWeight.w600, color: Colors.white)),
                 ),
               )
             ],
           ),
+          // Stack(
+          //   children: <Widget>[
+          //     Container(
+          //       padding: EdgeInsets.only(top: 12.h),
+          //       // decoration: BoxDecoration(border: Border.all()),
+          //       width: double.infinity,
+          //       child: Container(
+          //         decoration: BoxDecoration(
+          //           border: Border.all(color: AppColors.platinum),
+          //           borderRadius: BorderRadius.circular(8.r),
+          //           // color: ConstantHelpers.platinum,
+          //         ),
+          //         child: Padding(
+          //           padding: const EdgeInsets.all(10),
+          //           child: Column(
+          //             children: <Widget>[
+          //               Row(
+          //                 children: <Widget>[
+          //                   OverlappingAvatars(),
+          //                   SizedBox(width: 15.w),
+          //                   ConcatStrings()
+          //                 ],
+          //               ),
+          //               SizedBox(height: 10.h),
+          //               Text(
+          //                 AppTextConstants.homeMainHeader,
+          //                 style: TextStyle(
+          //                     fontWeight: FontWeight.w500,
+          //                     color: AppColors.grey),
+          //               )
+          //             ],
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //     Positioned(
+          //       top: 0,
+          //       right: 0,
+          //       child: Container(
+          //         padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 9.w),
+          //         decoration: BoxDecoration(
+          //             borderRadius: BorderRadius.circular(6.r),
+          //             color: AppColors.lightningYellow),
+          //         child: Text('${customerRequests.length} Pending request',
+          //             style: const TextStyle(
+          //                 fontWeight: FontWeight.w600, color: Colors.white)),
+          //       ),
+          //     )
+          //   ],
+          // ),
           const SizedBox(
             height: 15,
           ),
