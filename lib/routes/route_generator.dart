@@ -32,6 +32,7 @@ import 'package:guided/screens/main_navigation/traveller/booking_journey/details
 import 'package:guided/screens/main_navigation/traveller/check_availability/check_availability.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_view.dart';
+import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_traveler_limit_schedules.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_view.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
@@ -299,7 +300,8 @@ class RouteGenerator {
             builder: (_) => const EventEdit(), settings: settings);
       case '/availability_booking_dates':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const AvailabilityBookingDateScreen());
+            builder: (_) => const AvailabilityBookingDateScreen(),
+            settings: settings);
       case '/main_profile':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const MainProfileScreen());
@@ -362,6 +364,9 @@ class RouteGenerator {
       case '/add_card':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PaymentAddCard());
+      case '/popular_guides_traveler_limit_schedules':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PopularGuidesTravelerLimitSchedules());
       case '/refund':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RefundScreen());

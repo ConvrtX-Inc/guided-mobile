@@ -12,6 +12,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:guided/common/widgets/country_dropdown.dart';
+import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
@@ -810,9 +811,19 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(context),
                       ]),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: false),
+                      inputFormatters: [
+                        DecimalTextInputFormatter(decimalRange: 2),
+                        FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          try {
+                            final text = newValue.text;
+                            if (text.isNotEmpty) double.parse(text);
+                            return newValue;
+                          } catch (e) {}
+                          return oldValue;
+                        }),
                       ],
                     ),
                     SizedBox(height: 20.h),
@@ -1397,7 +1408,8 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         _city.text.isEmpty ||
         _province.text.isEmpty ||
         _postalCode.text.isEmpty) {
-      AdvanceSnackBar(message: ErrorMessageConstants.locationEmpty).show(context);
+      AdvanceSnackBar(message: ErrorMessageConstants.locationEmpty)
+          .show(context);
     } else if (subActivities1 == null) {
       AdvanceSnackBar(message: ErrorMessageConstants.subActivityEmpty)
           .show(context);
@@ -1440,7 +1452,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         'zip_code': _postalCode.text,
         'ad_date': _date.text,
         'description': _description.text,
-        'price': int.parse(_price.text),
+        'price': double.parse(_price.text),
         'is_published': true
       };
 

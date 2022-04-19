@@ -29,8 +29,15 @@ class HomeEarnings extends StatelessWidget {
             children: <Widget>[
               Column(
                 children: <Widget>[
+                  // Center(
+                  //   child: Text('\$${earnings[0].personalBalance}',
+                  //       style: TextStyle(
+                  //           color: AppColors.aquaGreen,
+                  //           fontWeight: FontWeight.w700,
+                  //           fontSize: 18)),
+                  // ),
                   Center(
-                    child: Text('\$${earnings[0].personalBalance}',
+                    child: Text('-',
                         style: TextStyle(
                             color: AppColors.aquaGreen,
                             fontWeight: FontWeight.w700,
@@ -52,7 +59,7 @@ class HomeEarnings extends StatelessWidget {
               Column(
                 children: <Widget>[
                   Center(
-                    child: Text('\$${earnings[0].pendingOrders}',
+                    child: Text('-',
                         style: TextStyle(
                             color: AppColors.butterScotch,
                             fontWeight: FontWeight.w700,
@@ -74,7 +81,7 @@ class HomeEarnings extends StatelessWidget {
               Column(
                 children: <Widget>[
                   Center(
-                    child: Text('\$${earnings[0].totalEarnings}',
+                    child: Text('-',
                         style: TextStyle(
                             color: AppColors.pineCone,
                             fontWeight: FontWeight.w700,

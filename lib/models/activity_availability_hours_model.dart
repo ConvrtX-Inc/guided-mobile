@@ -1,9 +1,9 @@
 /// Model for Preset Form Model
 // ignore_for_file: prefer_constructors_over_static_methods, public_member_api_docs, non_constant_identifier_names
 
-class ActivityAvailability {
+class ActivityAvailabilityHour {
   /// Constructor
-  ActivityAvailability(
+  ActivityAvailabilityHour(
       {this.id = '',
       this.activity_availability_id = '',
       this.availability_date_hour,
@@ -20,8 +20,8 @@ class ActivityAvailability {
 
   final int slots;
 
-  static ActivityAvailability fromJson(Map<String, dynamic> json) =>
-      ActivityAvailability(
+  static ActivityAvailabilityHour fromJson(Map<String, dynamic> json) =>
+      ActivityAvailabilityHour(
           id: json['id'],
           activity_availability_id: json['activity_availability_id'] ?? '',
           availability_date_hour:

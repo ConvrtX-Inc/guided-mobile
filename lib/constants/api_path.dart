@@ -13,7 +13,7 @@ class AppAPIPath {
   static String mode = 'dev';
 
   /// Returns API base url
-  static String  apiBaseUrl = getBaseUrl(mode);
+  static String apiBaseUrl = getBaseUrl(mode);
 
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
@@ -161,7 +161,6 @@ class AppAPIPath {
   ///Returns  payment url
   static String paymentUrl = '/api/v1/charge';
 
-
   ///Returns  subscription url
   static String userSubscription = '/api/v1/user-subscription';
 
@@ -171,9 +170,10 @@ class AppAPIPath {
   ///Returns payment intent url
  static String paymentIntentUrl = 'api/v1/payment-intent';
 }
+
 ///Get Api Base Url
-getBaseUrl(String mode){
-  switch(mode){
+getBaseUrl(String mode) {
+  switch (mode) {
     case 'local':
       return '192.168.100.55:3000';
     case 'dev':

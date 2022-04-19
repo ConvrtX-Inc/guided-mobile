@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_raw_strings, always_specify_types, curly_braces_in_flow_control_structures, cast_nullable_to_non_nullable, avoid_dynamic_calls
+// ignore_for_file: unnecessary_raw_strings, always_specify_types, curly_braces_in_flow_control_structures, cast_nullable_to_non_nullable, avoid_dynamic_calls, avoid_catches_without_on_clauses, always_put_control_body_on_new_line
 
 import 'dart:convert';
 import 'dart:io';
@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -1140,7 +1141,6 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                       enabled: _isEnabledPrice,
                       controller: _price,
                       focusNode: _priceFocus,
-                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         hintText: '\$${screenArguments['price']}',
                         hintStyle: TextStyle(
@@ -1148,8 +1148,19 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                         ),
                       ),
                       style: txtStyle,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: false),
+                      inputFormatters: [
+                        DecimalTextInputFormatter(decimalRange: 2),
+                        FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          try {
+                            final text = newValue.text;
+                            if (text.isNotEmpty) double.parse(text);
+                            return newValue;
+                          } catch (e) {}
+                          return oldValue;
+                        }),
                       ],
                     )
                   ],
@@ -1738,7 +1749,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
         'zip_code': _postalCode.text,
         'ad_date': _date.text,
         'description': _description.text,
-        'price': int.parse(_price.text)
+        'price': double.parse(_price.text)
       };
 
       final dynamic response = await APIServices().request(

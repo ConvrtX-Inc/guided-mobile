@@ -17,6 +17,7 @@ import 'package:guided/screens/main_navigation/content/packages/tab/tab_descript
 import 'package:guided/screens/main_navigation/content/packages/tab/tab_slots_and_schedule.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_description_tab.dart';
+import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_traveler_limit_schedules.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -227,7 +228,7 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                   ),
                   SafeArea(
                     child: Container(
-                      height: 2250.h,
+                      height: 600.h,
                       padding: const EdgeInsets.all(15),
                       color: Colors.white,
                       child: ContainedTabBarView(
@@ -254,11 +255,9 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                           labelColor: Colors.black,
                           unselectedLabelColor: Colors.grey,
                         ),
-                        views: <Widget>[
+                        views: const <Widget>[
                           PopularGuidesTabDescription(),
-                          TabSlotsAndScheduleView(
-                            id: screenArguments['id'],
-                          )
+                          PopularGuidesTravelerLimitSchedules(),
                         ],
                         onChange: setTitle,
                         initialIndex: initIndex,

@@ -100,7 +100,7 @@ class _TravelerReleaseAndWaiverFormState
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
                 child: SizedBox(
-                  height: 600.h,
+                  height: 450.h,
                   child: SingleChildScrollView(
                     physics: const ScrollPhysics(),
                     child: TextField(
