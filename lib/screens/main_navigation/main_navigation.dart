@@ -1,11 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:guided/common/widgets/bottom_navigation_bar.dart';
+import 'package:guided/controller/card_controller.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/home/screens/home_main.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_main.dart';
 import 'package:guided/screens/message/message_inbox.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Screen for home
 class MainNavigationScreen extends StatefulWidget {
@@ -35,6 +39,8 @@ class _HomeScreenState extends State<MainNavigationScreen>
   int contentIndex;
 
   _HomeScreenState(this.navIndex, this.contentIndex);
+  final CardController  _creditCardController  = Get.put(CardController());
+
 
   void setBottomNavigationIndexHandler(int value) {
     setState(() {
@@ -50,6 +56,8 @@ class _HomeScreenState extends State<MainNavigationScreen>
       _selectedContent = contentIndex;
     });
     super.initState();
+
+    getUserCards();
   }
 
   static const TextStyle optionStyle =
@@ -75,6 +83,24 @@ class _HomeScreenState extends State<MainNavigationScreen>
         bottomNavigationBar: GuidedBottomNavigationBar(
             selectedIndex: _selectedIndex,
             setBottomNavigationIndex: setBottomNavigationIndexHandler));
+  }
+
+  Future<void> getUserCards() async {
+    final List<CardModel> cards = await APIServices().getCards();
+    await _creditCardController.initCards(cards);
+
+    if (cards.isNotEmpty) {
+      debugPrint('cards $cards');
+      final CardModel card = cards.firstWhere(
+              (CardModel c) => c.isDefault == true,
+          orElse: () => CardModel());
+
+      if (card.id != '') {
+        _creditCardController.setDefaultCard(card);
+      } else {
+        _creditCardController.setDefaultCard(cards[0]);
+      }
+    }
   }
 
   @override

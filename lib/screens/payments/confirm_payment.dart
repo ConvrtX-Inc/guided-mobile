@@ -20,7 +20,8 @@ Future<dynamic> confirmPaymentModal(
     required String paymentMode,
     required dynamic paymentMethod,
     required Function onPaymentSuccessful,
-    required double price}) {
+    required double price,
+    Function? onPaymentFailed}) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -96,32 +97,40 @@ Future<dynamic> confirmPaymentModal(
                         });
                         //Handle Payment for Credit Cards
                         if (paymentMethod is CardModel) {
-
                           handleCardPayment(context, paymentMethod,
-                              onPaymentSuccessful, price);
+                              onPaymentSuccessful, price, onPaymentFailed!);
                         }
 
                         //handle payment for google pay
                         if (paymentMode.toLowerCase() == 'google pay') {
-
-                          final PaymentMethodParams paymentMethodParams = PaymentMethodParams.cardFromToken(
+                          final PaymentMethodParams paymentMethodParams =
+                              PaymentMethodParams.cardFromToken(
                             token: paymentMethod['id'],
                           );
 
-                          handleWalletPayment(paymentMethodParams,
-                              onPaymentSuccessful, context, price);
+                          handleWalletPayment(
+                              paymentMethodParams,
+                              onPaymentSuccessful,
+                              context,
+                              price,
+                              onPaymentFailed!);
                         }
 
                         //handle payment for apple pay
                         if (paymentMode.toLowerCase() == 'apple pay') {
-                           final TokenData tokenData  = paymentMethod;
+                          final TokenData tokenData = paymentMethod;
 
-                          final PaymentMethodParams paymentMethodParams = PaymentMethodParams.cardFromToken(
+                          final PaymentMethodParams paymentMethodParams =
+                              PaymentMethodParams.cardFromToken(
                             token: tokenData.id,
                           );
 
-                          handleWalletPayment(paymentMethodParams,
-                              onPaymentSuccessful, context, price);
+                          handleWalletPayment(
+                              paymentMethodParams,
+                              onPaymentSuccessful,
+                              context,
+                              price,
+                              onPaymentFailed!);
                         }
                       },
                     ),
@@ -148,13 +157,13 @@ Future<dynamic> confirmPaymentModal(
 }
 
 Future<void> handleCardPayment(BuildContext context, CardModel card,
-    Function onPaymentSuccess, double price) async {
+    Function onPaymentSuccess, double price, Function onPaymentFailed) async {
   final String paymentMethodId =
       await StripeServices().createPaymentMethod(card);
 
   if (paymentMethodId != '') {
     await handleChargePayment(
-        price, paymentMethodId, context, onPaymentSuccess);
+        price, paymentMethodId, context, onPaymentSuccess, onPaymentFailed);
   } else {
     ///Payment Failed Notif
     debugPrint('Payment Failed!');
@@ -162,9 +171,8 @@ Future<void> handleCardPayment(BuildContext context, CardModel card,
 }
 
 ///Charge Payment
-Future<void> handleChargePayment(
-    double price, paymentMethodId, context, onPaymentSuccess) async {
-
+Future<void> handleChargePayment(double price, paymentMethodId, context,
+    onPaymentSuccess, onPaymentFailed) async {
   final int amount = (price * 100).round();
 
   //Call Payment Api
@@ -172,26 +180,28 @@ Future<void> handleChargePayment(
       await APIServices().pay(amount, paymentMethodId);
 
   if (paymentResponse.statusCode == 201) {
-    Navigator.of(context).pop();
+    // Navigator.of(context).pop();
     //Add function to saving other data / transactions / subscriptions on your current screen for this call back
     onPaymentSuccess();
   } else {
     ///Show payment failed modal
+    onPaymentFailed();
   }
 }
 
 ///Handle Google And Apple Payment Method
 Future<void> handleWalletPayment(
-    dynamic paymentMethodParams, Function onPaymentSuccess, BuildContext context, double price) async {
+    dynamic paymentMethodParams,
+    Function onPaymentSuccess,
+    BuildContext context,
+    double price,
+    Function onPaymentFailed) async {
   debugPrint('Wallet Payment ${paymentMethodParams}');
   //amount to pay
   final int amount = (price * 100).round();
   try {
-
-
     //get client secret by creating payment intent
     final String clientSecret = await createPaymentIntent(amount);
-
 
     debugPrint('client secret $clientSecret');
 
@@ -201,9 +211,10 @@ Future<void> handleWalletPayment(
       paymentMethodParams,
     );
 
-    Navigator.of(context).pop();
     onPaymentSuccess();
   } on Exception catch (e) {
+    ///Show payment failed modal
+    onPaymentFailed();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Error: $e')),
     );
