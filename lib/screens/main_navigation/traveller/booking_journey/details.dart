@@ -417,7 +417,7 @@ class _TravellerBookingDetailsScreenState
                       Row(
                         children: <Widget>[
                           Text(
-                            '\$60',
+                            '\$${activityPackage.basePrice}',
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 30.sp,
@@ -450,7 +450,8 @@ class _TravellerBookingDetailsScreenState
                   height: 53.h,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/requestToBookScreen');
+                      requestToBookScreen(context, activityPackage, bookingDate,
+                          numberOfTraveller);
                     },
                     style: AppTextStyle.active,
                     child: const Text(
@@ -467,5 +468,21 @@ class _TravellerBookingDetailsScreenState
         ),
       ),
     );
+  }
+
+  Future<void> requestToBookScreen(
+      BuildContext context,
+      ActivityPackage package,
+      String? selectedDate,
+      int numberOfTraveller) async {
+    final Map<String, dynamic> details = {
+      'package': package,
+      'selectedDate': selectedDate,
+      'numberOfTraveller': numberOfTraveller,
+    };
+    if (selectedDate != null) {
+      await Navigator.pushNamed(context, '/requestToBookScreen',
+          arguments: details);
+    }
   }
 }

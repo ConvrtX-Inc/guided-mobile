@@ -17,6 +17,13 @@ import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/stripe_service.dart';
 
+import 'package:guided/models/activity_package.dart';
+import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/user_model.dart';
+
+import 'package:intl/intl.dart';
+
+
 import '../../../../constants/app_colors.dart';
 
 /// Screen for RequestToBookScreen
@@ -39,6 +46,13 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
+    final ActivityPackage activityPackage =
+        screenArguments['package'] as ActivityPackage;
+
+    final int numberOfTraveller = screenArguments['numberOfTraveller'] as int;
+
     return Scaffold(
       backgroundColor: HexColor('#ECEFF0'),
       body: SafeArea(
@@ -82,6 +96,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 16.w, vertical: 10.h),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Container(
                               height: 100.h,
@@ -91,67 +106,77 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10.r),
                                 ),
-                                image: const DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/png/activity1.png'),
-                                  fit: BoxFit.cover,
-                                ),
+                                // image: const DecorationImage(
+                                //   image: AssetImage(
+                                //       'assets/images/png/activity1.png'),
+                                //   fit: BoxFit.cover,
+                                // ),
+                                image: DecorationImage(
+                                    image: Image.memory(
+                                  base64.decode(activityPackage.coverImg!
+                                      .split(',')
+                                      .last),
+                                  fit: BoxFit.fill,
+                                  gaplessPlayback: true,
+                                ).image),
                               ),
                             ),
                             SizedBox(
                               width: 10.w,
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  'Toronto, Canada',
-                                  style: TextStyle(
-                                      color: HexColor('#979B9B'),
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                                SizedBox(
-                                  height: 10.w,
-                                ),
-                                Text(
-                                  'The Basho Wayfarer',
-                                  style: TextStyle(
-                                      color: HexColor('#181B1B'),
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                SizedBox(
-                                  height: 5.w,
-                                ),
-                                Text(
-                                  'Hunt',
-                                  style: TextStyle(
-                                      color: HexColor('#181B1B'),
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                                SizedBox(
-                                  height: 10.w,
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.star,
-                                      size: 14,
-                                      color: AppColors.deepGreen,
-                                    ),
-                                    Text(
-                                      '16 reviews',
-                                      style: TextStyle(
-                                          color: HexColor('#979B9B'),
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    activityPackage.address!,
+                                    style: TextStyle(
+                                        color: HexColor('#979B9B'),
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                  SizedBox(
+                                    height: 10.w,
+                                  ),
+                                  Text(
+                                    activityPackage.name!,
+                                    style: TextStyle(
+                                        color: HexColor('#181B1B'),
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  SizedBox(
+                                    height: 5.w,
+                                  ),
+                                  Text(
+                                    'Hunt',
+                                    style: TextStyle(
+                                        color: HexColor('#181B1B'),
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                  SizedBox(
+                                    height: 10.w,
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.star,
+                                        size: 14,
+                                        color: AppColors.deepGreen,
+                                      ),
+                                      Text(
+                                        '16 reviews',
+                                        style: TextStyle(
+                                            color: HexColor('#979B9B'),
+                                            fontSize: 12.sp,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -160,12 +185,12 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                   ],
                 ),
               ),
-              sectionTwo(),
+              sectionTwo(screenArguments),
               sectionThree(),
               sectionFour(),
               sectionFive(),
               sectionSix(),
-              sectionSeven(),
+              sectionSeven(screenArguments),
             ],
           ),
         ),
@@ -173,7 +198,21 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionTwo() {
+  String getTime(String date) {
+    final DateTime parseDate =
+        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+    final DateTime inputDate = DateTime.parse(parseDate.toString());
+    final DateTime addHour = inputDate.add(const Duration(hours: 1));
+    final DateFormat outputFormat = DateFormat('HH:mm');
+    final DateFormat outputFormatDate = DateFormat('dd MMM');
+    final String date1 = outputFormatDate.format(inputDate);
+    final String hour1 = outputFormat.format(inputDate);
+    final String hour2 = outputFormat.format(addHour);
+    return '$date1 $hour1 - $hour2';
+  }
+
+  Widget sectionTwo(Map<String, dynamic> screenArguments) {
+    final String bookingDate = screenArguments['selectedDate'] as String;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
@@ -213,7 +252,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                     height: 5.h,
                   ),
                   Text(
-                    '8 Jun-12 Jun',
+                    getTime(bookingDate),
                     style: TextStyle(
                       color: HexColor('#696D6D'),
                       fontSize: 14.sp,
@@ -792,7 +831,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionSeven() {
+  Widget sectionSeven(Map<String, dynamic> screenArguments) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),

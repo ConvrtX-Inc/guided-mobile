@@ -47,6 +47,9 @@ class AppAPIPath {
   /// Returns sign up url
   static String signupUrl = 'api/v1/auth/email/register';
 
+  /// Returns request booking
+  static String requestBooking = 'api/v1/booking-requests';
+
   /// Returns create advertisement url
   static String createAdvertisementUrl = 'api/v1/activity-advertisement';
 
