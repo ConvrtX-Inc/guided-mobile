@@ -451,7 +451,7 @@ class AppTextConstants {
 
   /// Returns package description text
   static String packageDescr =
-      'Hi Tourist Guide,\nLets Get Started To Build Your Tour Package';
+      'Hi Guide,\nLets Get Started To Build Your Tour Package';
 
   /// Returns select badge text
   static String selectBadge =
@@ -1015,43 +1015,74 @@ class AppTextConstants {
   static String basicInfo = 'Basic Info';
 
   ///Returns request to book text
- static String requestToBook = 'Request To Book';
+  static String requestToBook = 'Request To Book';
 
   /// Returns Notification  text
   static String notif = 'Notification';
 
   ///Returns date of transaction text
- static String dateOfTransaction = 'Date of Transaction';
+  static String dateOfTransaction = 'Date of Transaction';
 
   /// Returns travel limit text
-  static String travelLimit= 'Traveler Limit';
+  static String travelLimit = 'Traveler Limit';
 
   ///Returns credit card number text
- static String creditCardNumber = 'Credit Card Number';
+  static String creditCardNumber = 'Credit Card Number';
 
- ///Returns Refund text
- static String refund = 'Refund';
+  ///Returns Refund text
+  static String refund = 'Refund';
 
   ///Returns approve text
   static String approve = 'Approve';
 
   ///Returns refund and cancellation of payment text
-  static String refundAndCancellationOfPayment='Refund & Cancelation Of Payment';
+  static String refundAndCancellationOfPayment =
+      'Refund & Cancelation Of Payment';
 
   ///Returns  refund booking question
-  static String refundBookingQuestion = 'Are you sure, Do you want to refund this booking?';
+  static String refundBookingQuestion =
+      'Are you sure, Do you want to refund this booking?';
 
   ///Returns refundable amount text
- static String refundableAmount  = 'Refundable Amount';
+  static String refundableAmount = 'Refundable Amount';
 
- ///Returns refund and cancel traveler's payment
- static String refundAndCancelTravelerPayment ='Refund & Cancel Traveler’s Payment';
+  ///Returns refund and cancel traveler's payment
+  static String refundAndCancelTravelerPayment =
+      'Refund & Cancel Traveler’s Payment';
 
   ///Returns refund instruction text
- static String refundInstruction = 'Admin will review your cancelled booking and process the refundable amount within next 5 business days';
+  static String refundInstruction =
+      'Admin will review your cancelled booking and process the refundable amount within next 5 business days';
 
- ///Returns package price text
- static String packagePrice = 'Package Price';
+  ///Returns package price text
+  static String packagePrice = 'Package Price';
+
+  ///Returns transaction details text
+  static String transactionDetails = 'Transaction Details';
+
+  ///Returns re-schedule text
+  static String reschedule = 'Re-schedule';
+
+  ///Returns cancel and refund? text
+  static String cancelAndRefund = 'Cancel & Refund?';
+
+  ///Returns request for cancellation and refund text
+  static String requestForCancelAndRefund = 'Request For Cancellation & Refund';
+
+  ///Returns upgrade to premium and discover more text
+  static String upgradeToPremiumAndDiscoverMore =
+      'Upgrade to Premium and Discover more on GuidED!';
+
+  ///Returns Book your next adventure on guided text
+  static String bookYourNextAdventureOnApp =
+      'Book your next Adventure with GuidED mobile app!';
+
+  ///Returns find amazing wilderness text
+  static String findAmazingWilderness =
+      'Find amazing Wilderness Retreats and Hidden Gems!';
+
+  ///Returns get guided text
+  static String getGuided = 'Get GuidED and Get Outside!';
 }
 
 /// Class for error messages text
