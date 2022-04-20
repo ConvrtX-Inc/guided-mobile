@@ -523,6 +523,26 @@ class APIServices {
     return activityPackages;
   }
 
+  /// API service for register
+  Future<APIStandardReturnFormat> requestBooking(
+      Map<String, dynamic> data) async {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': '*/*',
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+    };
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.requestBooking}'),
+        body: jsonEncode(data),
+        headers: headers);
+    print(jsonEncode(data));
+    print(response.request);
+    print(response.body);
+    print(response.statusCode);
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
   // /// API service for getActivityHours
   // Future<List<ActivityAvailability>> getActivityHours(
   //     String startDate, String endDate, String packageId) async {

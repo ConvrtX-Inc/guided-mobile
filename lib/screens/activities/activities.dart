@@ -19,7 +19,7 @@ class ActivitiesScreen extends StatefulWidget {
 }
 
 class _ActivitiesScreenState extends State<ActivitiesScreen> {
-  int _selectedIndex = 0;
+  List<int> _selectedIndex = <int>[];
   @override
   Widget build(BuildContext context) {
     final List<Activity> activities = StaticDataService.getActivityList();
@@ -83,7 +83,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         return Stack(
                           children: <Widget>[
                             actitivitiesCard(activities[index], index),
-                            if (index == _selectedIndex)
+                            if (_selectedIndex.contains(index))
                               Positioned(
                                 top: -5,
                                 right: -5,
@@ -153,12 +153,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   Widget actitivitiesCard(Activity activity, int index) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _selectedIndex = index;
-        });
+        if (_selectedIndex.contains(index)) {
+          setState(() {
+            _selectedIndex.removeWhere((int item) => item == index);
+          });
+        } else {
+          setState(() {
+            _selectedIndex.add(index);
+          });
+        }
       },
       child: Card(
-        color: index == _selectedIndex
+        color: _selectedIndex.contains(index)
             ? AppColors.brightSun
             : Colors.white, //AppColors.brightSun,
         shape: RoundedRectangleBorder(
