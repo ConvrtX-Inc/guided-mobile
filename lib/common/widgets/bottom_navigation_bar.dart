@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:guided/helpers/constant.dart';
+import 'package:guided/constants/asset_path.dart';
 
 /// Common widgets for bottom navigation bar
 class GuidedBottomNavigationBar extends StatelessWidget {
@@ -28,34 +28,34 @@ class GuidedBottomNavigationBar extends StatelessWidget {
         BottomNavigationBarItem(
             icon: _selectedIndex == 0
                 ? SvgPicture.asset(
-                    ConstantHelpers.bottomNavigationIconHomeSelected)
-                : SvgPicture.asset(ConstantHelpers.bottomNavigationIconHome),
+                    AssetsPath.bottomNavigationIconHomeSelected)
+                : SvgPicture.asset(AssetsPath.bottomNavigationIconHome),
             label: 'Home'),
         BottomNavigationBarItem(
             icon: _selectedIndex == 1
                 ? SvgPicture.asset(
-                    ConstantHelpers.bottomNavigationIconUnionSelected)
-                : SvgPicture.asset(ConstantHelpers.bottomNavigationIconUnion),
+                AssetsPath.bottomNavigationIconUnionSelected)
+                : SvgPicture.asset(AssetsPath.bottomNavigationIconUnion),
             label: 'Union'),
         BottomNavigationBarItem(
             icon: _selectedIndex == 2
                 ? SvgPicture.asset(
-                    ConstantHelpers.bottomNavigationIconAddPersonSelected)
+                AssetsPath.bottomNavigationIconAddPersonSelected)
                 : SvgPicture.asset(
-                    ConstantHelpers.bottomNavigationIconAddPerson),
+                AssetsPath.bottomNavigationIconAddPerson),
             label: 'Add Person'),
         BottomNavigationBarItem(
             icon: _selectedIndex == 3
                 ? SvgPicture.asset(
-                    ConstantHelpers.bottomNavigationIconChatSelected)
-                : SvgPicture.asset(ConstantHelpers.bottomNavigationIconChat),
+                AssetsPath.bottomNavigationIconChatSelected)
+                : SvgPicture.asset(AssetsPath.bottomNavigationIconChat),
             label: 'Add Person'),
         BottomNavigationBarItem(
             icon: _selectedIndex == 4
                 ? SvgPicture.asset(
-                    ConstantHelpers.bottomNavigationIconSettingsSelected)
+                AssetsPath.bottomNavigationIconSettingsSelected)
                 : SvgPicture.asset(
-                    ConstantHelpers.bottomNavigationIconSettings),
+                AssetsPath.bottomNavigationIconSettings),
             label: 'Add Person'),
       ],
     );

@@ -1,31 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/home.dart';
+import 'package:guided/models/popular_guide_model.dart';
 
 /// Settings items data generator
 class HomeUtils {
   static List<HomeModel> getMockFeatures() {
     return [
       HomeModel(
-        featureName: 'Tour to India',
-        featureImageUrl: 'https://random.imagecdn.app/270/202',
-        featureStarRating: 3.2,
-        featureFee: 200,
-        featureNumberOfTourists: 5,
-      ),
+          featureName: 'Tour to India',
+          featureImageUrl: 'assets/images/png/package1.png',
+          featureStarRating: 3.2,
+          featureFee: 200,
+          featureNumberOfTourists: 5,
+          dateRange: '1-9',
+          path: AssetsPath.hiking),
       HomeModel(
-        featureName: 'Cebu is my province',
-        featureImageUrl: 'https://random.imagecdn.app/270/202',
-        featureStarRating: 5.0,
-        featureFee: 100,
-        featureNumberOfTourists: 2,
-      ),
+          featureName: 'Cebu is my province',
+          featureImageUrl: 'assets/images/png/package2.png',
+          featureStarRating: 5.0,
+          featureFee: 100,
+          featureNumberOfTourists: 2,
+          dateRange: '11-19',
+          path: AssetsPath.hiking),
       HomeModel(
-        featureName: 'Welcome to Philippines',
-        featureImageUrl: 'https://random.imagecdn.app/270/202',
-        featureStarRating: 2,
-        featureFee: 500,
-        featureNumberOfTourists: 100,
-      ),
+          featureName: 'Welcome to Philippines',
+          featureImageUrl: 'assets/images/png/package3.png',
+          featureStarRating: 2,
+          featureFee: 500,
+          featureNumberOfTourists: 100,
+          dateRange: '5-9',
+          path: AssetsPath.hiking),
     ];
   }
 
@@ -63,6 +68,39 @@ class HomeUtils {
         personalBalance: 780,
         pendingOrders: 200,
         totalEarnings: 2000,
+      ),
+    ];
+  }
+
+  /// Mock data for Popular Guides Near You!
+  static List<PopularGuideModel> getPopularGuideNearYou() {
+    return <PopularGuideModel>[
+      PopularGuideModel(
+        id: '0',
+        name: 'John Mark',
+        mainBadgeId: AssetsPath.hiking,
+        location: "St. John's, Newfoundland, Canada",
+        coverImg: AssetsPath.guide1,
+        starRating: '0',
+        profileImg: AssetsPath.pmessage3,
+      ),
+      PopularGuideModel(
+          id: '1',
+          name: 'Ethan Hunt',
+          mainBadgeId: AssetsPath.hunt,
+          location: 'Willboard Avenue, Newfoundland, Canada',
+          coverImg: 'assets/images/png/activity1.png',
+          starRating: '0',
+          profileImg: 'assets/images/png/student_profile.png',
+          isFirstAid: true),
+      PopularGuideModel(
+        id: '2',
+        name: 'Jesika Ann',
+        mainBadgeId: AssetsPath.hiking,
+        location: "St. John's, Newfoundland, Canada",
+        coverImg: 'assets/images/png/activity3.png',
+        starRating: '0',
+        profileImg: 'assets/images/png/pmessage1.png',
       ),
     ];
   }

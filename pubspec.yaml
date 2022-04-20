@@ -30,23 +30,83 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_switch: ^0.3.2
+  flutter_staggered_grid_view: ^0.4.1
+  js: ^0.6.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   flutter_native_splash: ^1.2.4
   introduction_screen: ^2.1.0
-  dots_indicator: ^2.0.0
-  carousel_slider: ^4.0.0
-  country_code_picker: ^2.0.2
+  dots_indicator: ^2.0.0 #this library is for the dots indicator
+  carousel_slider: ^4.0.0 #this library is for the carousel
+  country_code_picker: ^2.0.2 #this library is for the list of phone country code
   custom_check_box: ^0.0.4
-  table_calendar: ^3.0.3
+  table_calendar: ^3.0.4 #this library is for calendar api
   flutter_screenutil: ^5.0.0+2
-  flutter_svg: ^0.22.0
+  flutter_svg: ^1.0.3
+  get: ^4.6.1  #this library is for state management
+  flutter_keyboard_visibility: ^5.1.0 #this library is for checking keyboard visibility 
+  badges: ^2.0.1 #this library is for badges model
+  twilio_flutter: ^0.0.9 #this library is for phone verification using twilio api
+  flutter_image_slideshow: ^0.1.2 #this library is for slideshow
+  http: ^0.13.4 #this library is for http client
+  email_validator: ^2.0.1 #this library is for email validator
+  flutter_secure_storage: ^5.0.2 #this library is for secure storage for token
+  advance_notification: ^1.0.5 #this library is for notification
+  pinput: ^1.2.2 #this library is for the 4-digit code
+  flutter_slidable: ^1.1.0 #this is for the slidable list item 
+  date_time_picker: ^2.1.0
+  image_picker: ^0.8.4+11
+  modal_bottom_sheet: ^2.0.0
+  flutter_image_compress: ^1.1.0
+  smooth_page_indicator: ^1.0.0+2
+  google_maps_flutter: ^2.1.1
+  custom_marker: ^1.0.0
+  flutter_form_builder: ^7.0.0
+  form_builder_validators: ^7.3.0
+  intl: ^0.17.0
+  syncfusion_flutter_datepicker: ^19.4.53
+  in_date_utils: ^1.0.2
+  card_swiper: ^2.0.1
+  flutter_login_facebook: ^1.4.1
+  loading_elevated_button: ^1.0.0+2
+  google_sign_in: ^5.2.4
+  geolocator: ^8.2.0 # for getting the latitude and longitude
+  geocoding: ^2.0.4 # for converting latitude and longitude into address
+  geolocator_web: ^2.1.4
+  flutter_google_places: ^0.3.0
+  google_maps_webservice: ^0.0.20-nullsafety.5
+  google_api_headers: ^1.1.1
+  flutter_dotenv: ^5.0.2
+  json_annotation: ^4.4.0
+  path_provider: ^2.0.9
+  animated_splash_screen: ^1.2.0
+  sign_in_with_apple: ^3.3.0
+  socket_io_client: ^2.0.0-beta
+  google_static_maps_controller: ^1.0.0
+  location: ^4.3.0
+  intl_phone_field: ^3.0.1
+  flutter_multi_formatter: ^2.5.1
+  url_launcher: ^6.0.20
+  share_plus: ^4.0.3
+  screenshot: ^1.2.3
+  flutter_stripe: ^2.4.0 #for stripe payment integration
+  pay: ^1.0.8
+  dotted_border: ^2.0.0+2
+# flutter_expanded_tile: ^0.3.6
+  awesome_dialog: ^2.2.0
+  skeleton_text: ^3.0.0
 
+
+  # flutter_expanded_tile: ^0.3.6
 dev_dependencies:
+  build_runner: ^2.0.0
+  json_serializable: ^6.0.0
+
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -70,8 +130,14 @@ flutter:
     - assets/images/
     - assets/images/no_user.png
     - assets/images/svg/
+    - assets/images/png/
     - assets/images/2x/
     - assets/images/3x/
+    - assets/images/jpg/
+    - ./.env
+    - assets/currencies.json
+    - assets/google_pay_payment_profile.json
+    - assets/apple_pay_payment_profile.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -93,6 +159,9 @@ flutter:
       fonts:
         - asset: fonts/Gilroy-ExtraBold.otf
         # - asset: fonts/Gilroy-Light.otf
+    - family: Poppins
+      fonts:
+        - asset: fonts/Poppins-Light.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
