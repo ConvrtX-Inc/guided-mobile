@@ -23,7 +23,6 @@ import 'package:guided/models/user_model.dart';
 
 import 'package:intl/intl.dart';
 
-
 import '../../../../constants/app_colors.dart';
 
 /// Screen for RequestToBookScreen
@@ -903,32 +902,87 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
             )
           else
             SizedBox(
-                height: 60.h,
-                child: CustomRoundedButton(
-                    title: AppTextConstants.requestToBook,
-                    onpressed: () async {
-                      //please update price when api is integrated
-                      final double price = 354;
+              height: 60.h,
+              child: CustomRoundedButton(
+                title: AppTextConstants.requestToBook,
+                onpressed: () async {
+                  await goToPaymentMethod(context, screenArguments);
+                  //please update price when api is integrated
+                  // final double price = 354;
 
-                      //Add Api Integration for Booking Request here ...
+                  //Add Api Integration for Booking Request here ...
 
-                      /*
+                  /*
                       *Add Creation of Payment Intent
                       *  Save this payment intent when booking request is inserted to db
                        */
-                      final paymentIntent = await handlePayment(price);
-                      debugPrint('payment intent id $paymentIntent');
+                  // final paymentIntent = await handlePayment(price);
+                  // debugPrint('payment intent id $paymentIntent');
 
-                      //Static for now - please update this w/ response from booking request api ...
-                      String bookingRequestId =
-                          'c90b4a6e-c83a-4b40-b853-cf339f702a7d';
-                      /// save payment intent - uncomment when  booking request api is integrated
-                     /* await saveStripePaymentIntent(
+                  //Static for now - please update this w/ response from booking request api ...
+                  // String bookingRequestId =
+                  //     'c90b4a6e-c83a-4b40-b853-cf339f702a7d';
+
+                  /// save payment intent - uncomment when  booking request api is integrated
+                  /* await saveStripePaymentIntent(
                           paymentIntent, bookingRequestId);*/
-                    }))
+                },
+              ),
+            )
         ],
       ),
     );
+  }
+
+  Future<void> goToPaymentMethod(
+      BuildContext context, Map<String, dynamic> screenArguments) async {
+    final ActivityPackage activityPackage =
+        screenArguments['package'] as ActivityPackage;
+    final String bookingDate = screenArguments['selectedDate'] as String;
+    final int numberOfTraveller = screenArguments['numberOfTraveller'] as int;
+    final Map<String, dynamic> details = {
+      'user_id': UserSingleton.instance.user.user!.id,
+      'from_user_id': activityPackage.userId,
+      'request_msg': activityPackage.name,
+      'activity_package_id': activityPackage.id,
+      'status_id': 'b0d8e728-e0f3-4db2-af0f-f90d124c482c',
+      'booking_date_start': bookingDateStart(bookingDate),
+      'booking_date_end': bookingDateEend(bookingDate),
+      'number_of_person': numberOfTraveller,
+      'is_approved': false
+    };
+    print(details);
+    await APIServices()
+        .requestBooking(details)
+        .then((APIStandardReturnFormat value) {
+      print(value.status);
+    });
+
+    // if (selectedDate != null) {
+    //   await Navigator.pushNamed(context, '/goToPaymentMethod',
+    //       arguments: details);
+    // }
+  }
+
+  String bookingDateStart(String date) {
+    final DateTime parseDate =
+        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+    final DateTime inputDate = DateTime.parse(parseDate.toString());
+
+    final DateFormat outputFormatDate = DateFormat('yyyy-dd-mm HH:mm:ss');
+    final String bookingDateStart = outputFormatDate.format(inputDate);
+
+    return bookingDateStart;
+  }
+
+  String bookingDateEend(String date) {
+    final DateTime parseDate =
+        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+    final DateTime inputDate = DateTime.parse(parseDate.toString());
+    final DateTime addHour = inputDate.add(const Duration(hours: 1));
+    final DateFormat outputFormat = DateFormat('yyyy-dd-mm HH:mm:ss');
+    final String bookingDateEend = outputFormat.format(addHour);
+    return bookingDateEend;
   }
 
   selectPaymentMethod({int selectedPaymentMode = 0}) {
@@ -980,17 +1034,16 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
       paymentMethodId = await createCreditCardPaymentMethodId();
     } else {
       /// For google pay and apple
-        String tokenId = '';
-      if(paymentMode =='Google Pay'){
+      String tokenId = '';
+      if (paymentMode == 'Google Pay') {
         tokenId = paymentMethodDetails['id'];
-
-      }else{
-        final TokenData tokenData  = paymentMethodDetails;
+      } else {
+        final TokenData tokenData = paymentMethodDetails;
         tokenId = tokenData.id;
       }
       //create payment method first
-      paymentMethodId = await StripeServices()
-          .createPaymentMethodFromToken(tokenId);
+      paymentMethodId =
+          await StripeServices().createPaymentMethodFromToken(tokenId);
     }
 
     //please update price when api is integrated
