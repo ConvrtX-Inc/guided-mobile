@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, unused_element, always_declare_return_types, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, curly_braces_in_flow_control_structures, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, avoid_catches_without_on_clauses, unnecessary_lambdas
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
@@ -846,6 +847,14 @@ class _EventAddState extends State<EventAdd> {
     );
   }
 
+  // Format File Size
+  static String getFileSizeString({required int bytes, int decimals = 0}) {
+    if (bytes <= 0) return "0 Bytes";
+    const suffixes = [" Bytes", "KB", "MB", "GB", "TB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -878,6 +887,19 @@ class _EventAddState extends State<EventAdd> {
                               }
 
                               final File imageTemporary = File(image1.path);
+                              String file;
+                              int fileSize;
+                              file = getFileSizeString(
+                                  bytes: imageTemporary.lengthSync());
+                              fileSize = int.parse(
+                                  file.substring(0, file.indexOf('K')));
+                              if (fileSize >= 100) {
+                                AdvanceSnackBar(
+                                        message: ErrorMessageConstants
+                                            .imageFileToSize)
+                                    .show(context);
+                                return;
+                              }
                               setState(() {
                                 this.image1 = imageTemporary;
                                 _uploadCount += 1;
@@ -902,6 +924,19 @@ class _EventAddState extends State<EventAdd> {
                               }
 
                               final File imageTemporary = File(image1.path);
+                              String file;
+                              int fileSize;
+                              file = getFileSizeString(
+                                  bytes: imageTemporary.lengthSync());
+                              fileSize = int.parse(
+                                  file.substring(0, file.indexOf('K')));
+                              if (fileSize >= 100) {
+                                AdvanceSnackBar(
+                                        message: ErrorMessageConstants
+                                            .imageFileToSize)
+                                    .show(context);
+                                return;
+                              }
                               setState(() {
                                 this.image1 = imageTemporary;
                                 _uploadCount += 1;
@@ -981,6 +1016,19 @@ class _EventAddState extends State<EventAdd> {
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -1004,6 +1052,19 @@ class _EventAddState extends State<EventAdd> {
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -1084,6 +1145,19 @@ class _EventAddState extends State<EventAdd> {
                                     return;
                                   }
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -1108,6 +1182,19 @@ class _EventAddState extends State<EventAdd> {
                                   }
 
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
