@@ -278,9 +278,7 @@ class _EventFeaturesState extends State<EventFeatures> {
               ],
             ),
           )
-        : Container(
-            child: Text('Ako budoy'),
-          );
+        : Container();
   }
 
   /// Navigate to Event View

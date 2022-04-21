@@ -102,12 +102,9 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
 
       final String removedDollar =
           screenArguments['price'].toString().substring(0);
-      final String removedDecimal =
-          removedDollar.substring(0, removedDollar.indexOf('.'));
-      final String price = removedDecimal.replaceAll(RegExp(r'[,]'), '');
 
       _title = TextEditingController(text: screenArguments['title']);
-      _price = TextEditingController(text: price);
+      _price = TextEditingController(text: removedDollar);
       _description =
           TextEditingController(text: screenArguments['description']);
       _country = TextEditingController(text: screenArguments['country']);
@@ -1690,7 +1687,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
           'zip_code': _postalCode.text,
           'ad_date': _date.text,
           'description': _description.text,
-          'price': int.parse(_price.text)
+          'price': double.parse(_price.text)
         };
 
         final dynamic response = await APIServices().request(

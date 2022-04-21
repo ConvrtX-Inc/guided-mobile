@@ -234,6 +234,8 @@ class _AvailabilityBookingDateScreenState
                                                         _didInitialSave = true;
                                                       });
                                                       setInitialDate(
+                                                          screenArguments['id'],
+                                                          listTime,
                                                           selectedDay,
                                                           focusedDay);
                                                     },
@@ -315,8 +317,6 @@ class _AvailabilityBookingDateScreenState
                                     );
                                   },
                                   barrierDismissible: false);
-                              getActivityAvailabilityHours(
-                                  screenArguments['id'], listTime, selectedDay);
                             } else {
                               setState(() {
                                 setState(() {
@@ -659,11 +659,14 @@ class _AvailabilityBookingDateScreenState
     }
   }
 
-  Future<void> setInitialDate(DateTime selectedDay, DateTime focusedDay) async {
+  Future<void> setInitialDate(List<String> id, List<dynamic> listTime,
+      DateTime selectedDay, DateTime focusedDay) async {
     await timeSave();
+    await getActivityAvailabilityHours(id, listTime, selectedDay);
     setState(() {
       _selectedDay = selectedDay;
       _focusedDay = focusedDay;
+      _didPickedDate = true;
       _didInitialSave = false;
     });
     Navigator.pop(context);
