@@ -490,7 +490,7 @@ class AppTextConstants {
   static String save = 'Save';
 
   /// Returns header local laws text
-  static String headerLocalLaws = 'Your local laws and taxes';
+  static String headerLocalLaws = 'LOCAL LAWS';
 
   /// Returns header location text
   static String headerLocation = 'Where is your location?';
@@ -1057,6 +1057,12 @@ class AppTextConstants {
   ///Returns package price text
   static String packagePrice = 'Package Price';
 
+  ///Returns province/state text
+  static String provinceState = 'Province/State';
+
+  /// Returns header
+  static String serviceHeader = "What's included?";
+
   ///Returns transaction details text
   static String transactionDetails = 'Transaction Details';
 
@@ -1205,4 +1211,7 @@ class ErrorMessageConstants {
 
   /// Returns 'You must pick a day to proceed' text
   static String datePick = 'You must pick a day to proceed';
+
+  /// Returns 'Image file is too large' text
+  static String imageFileToSize = 'Image file is too large';
 }

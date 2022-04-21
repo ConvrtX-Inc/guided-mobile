@@ -734,20 +734,20 @@ class APIServices {
   Future<List<PresetFormModel>> getPresetTermsAndCondition(String type) async {
     String id = '';
     if (type == 'terms_and_condition') {
-      id = 'c726b58d-f8bf-4777-a7c8-11b3882dcd9b';
+      id = 'terms and conditions';
     } else if (type == 'traveler_waiver_form') {
-      id = '4c33d045-e881-4d93-a7b2-3ffa2a44c82c';
+      id = 'traveler release and waiver form';
     } else if (type == 'cancellation_policy') {
-      id = '9c165381-1c82-4e6c-8d17-18beed8d1171';
+      id = 'cancellationpolicy';
     } else if (type == 'guided_payment_payout') {
-      id = '73851b0c-f333-4d56-aac4-0f18235396e2';
+      id = 'paymentandpayoutterms';
     } else if (type == 'local_laws') {
-      id = 'fd5fd2a7-7599-42b4-9a60-0dd9d9a980bd';
+      id = 'locallawsandtaxes';
     }
 
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}?s={"id":\"$id\"}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}/$id'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
