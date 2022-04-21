@@ -213,6 +213,19 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   }
 
                                   final File imageTemporary = File(image1.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image1 = imageTemporary;
                                     _uploadCount += 1;
@@ -237,8 +250,19 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   }
 
                                   final File imageTemporary = File(image1.path);
-                                  print(
-                                      'File Size is: ${getFileSizeString(bytes: imageTemporary.lengthSync())}');
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image1 = imageTemporary;
                                     _uploadCount += 1;
@@ -318,6 +342,19 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -341,6 +378,19 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -419,6 +469,19 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                     return;
                                   }
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -443,6 +506,19 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   }
 
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;

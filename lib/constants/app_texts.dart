@@ -1062,6 +1062,7 @@ class AppTextConstants {
 
   /// Returns header
   static String serviceHeader = "What's included?";
+
   ///Returns transaction details text
   static String transactionDetails = 'Transaction Details';
 
@@ -1201,4 +1202,7 @@ class ErrorMessageConstants {
 
   /// Returns 'You must pick a day to proceed' text
   static String datePick = 'You must pick a day to proceed';
+
+  /// Returns 'Image file is too large' text
+  static String imageFileToSize = 'Image file is too large';
 }
