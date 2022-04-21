@@ -35,6 +35,7 @@ import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/models/user_terms_and_condition_model.dart';
+import 'package:guided/models/user_transaction_model.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 
 import 'package:guided/utils/secure_storage.dart';
@@ -1121,5 +1122,38 @@ class APIServices {
     debugPrint('save payment intent response:: ${response.body}');
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for Add User Transaction
+  Future<UserTransaction> addUserTransaction(UserTransaction params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.userTransactionsUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'activity_package_id': params.activityPackageId,
+          'total': params.total,
+          'tour_guide_id': params.tourGuideId,
+          'number_of_people': params.numberOfPeople,
+          'service_name': params.serviceName,
+          'transaction_number': params.transactionNumber,
+          'status_id': params.statusId,
+          'book_date': params.bookDate
+        }));
+
+    final jsonData = json.decode(response.body);
+
+    debugPrint('JsonData $jsonData');
+    if (response.statusCode == 201) {
+      return UserTransaction.fromJson(jsonData);
+    } else {
+      return UserTransaction();
+    }
   }
 }

@@ -888,7 +888,7 @@ class AppTextConstants {
   static String bankInformation = 'Bank Information';
 
   ///Returns account name text
-  static String accountName = 'Account Name';
+  static String accountName = 'Name on Account';
 
   ///Returns bank name text
   static String bankName = 'Bank Name';
@@ -900,7 +900,7 @@ class AppTextConstants {
   static String typeHere = 'Type Here';
 
   ///Returns Bank routing number text
-  static String bankRoutingNumber = 'Bank Routing Number';
+  static String bankRoutingNumber = 'Institution Number';
 
   /// Returns Please Wait text
   static String pleaseWait = 'Please Wait';
@@ -1089,6 +1089,15 @@ class AppTextConstants {
 
   ///Returns get guided text
   static String getGuided = 'Get GuidED and Get Outside!';
+
+  ///Returns tour text
+ static String tour = 'Tour';
+
+ ///Returns tour guide text
+ static String tourGuide = 'Tour Guide';
+
+ ///Returns number of people text
+ static String numberOfPeople = 'Number of People';
 }
 
 /// Class for error messages text
