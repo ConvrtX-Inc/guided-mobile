@@ -490,7 +490,7 @@ class AppTextConstants {
   static String save = 'Save';
 
   /// Returns header local laws text
-  static String headerLocalLaws = 'Your local laws and taxes';
+  static String headerLocalLaws = 'LOCAL LAWS';
 
   /// Returns header location text
   static String headerLocation = 'Where is your location?';
