@@ -7,7 +7,7 @@ import 'package:guided/screens/transaction_notifications/transaction_cards.dart'
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_texts.dart';
-import '../../models/transaction_modelv2.dart';
+import '../../models/transaction_model.dart';
 
 class TransactionCustomerList extends StatefulWidget {
   late VoidCallback refreshData;
@@ -23,8 +23,8 @@ class TransactionCustomerList extends StatefulWidget {
 class TransactionCustomerListState extends State<TransactionCustomerList>
 with SingleTickerProviderStateMixin{
 
-  List<Transaction2> transactions = List.empty(growable: true);
-  List<Transaction2> displayed = List.empty(growable: true);
+  List<Transaction> transactions = List.empty(growable: true);
+  List<Transaction> displayed = List.empty(growable: true);
   bool isLoading = false;
   bool _isFirstLoad = true;
   int statusSelectedIndex = 0;
@@ -38,9 +38,8 @@ TransactionCustomerListState(VoidCallback refreshData)
   this.refreshData = refreshData;
 }
 
-  void setTransactions(List<Transaction2> transactions){
+  void setTransactions(List<Transaction> transactions){
     setState(() => this.transactions = transactions);
-    filter();
   }
 
   int getFilter(){
@@ -99,31 +98,17 @@ TransactionCustomerListState(VoidCallback refreshData)
     return Container(
       child: ListView.separated(
         shrinkWrap:true,
-            itemCount: displayed.length,
+            itemCount: transactions.length,
             physics: NeverScrollableScrollPhysics(),
             separatorBuilder: (BuildContext context, int index) {return Divider(height: 10.0.h,color: Colors.transparent);},
-            itemBuilder: (BuildContext context, int index) {return TransactionCustomerCard(displayed[index]);}
+            itemBuilder: (BuildContext context, int index) {
+              return TransactionCustomerCard(transactions[index]);
+            }
         ));
   }
 
 
-  void filter() {
 
-    displayed.clear();
-    if (statusSelectedIndex == 0) {
-      print("Displaying all");
-      setState(() {
-        displayed.addAll(transactions);
-      });
-    }
-    else {
-      print("Displaying filtered:" + statusSelectedIndex.toString());
-      setState(() {
-        displayed.addAll(transactions.where((element) => element.statusId == statusId()).toList()) ;
-      });
-    }
-    setState(() => this.isLoading = false);
-  }
   
   
   Widget noData()

@@ -1,3 +1,7 @@
+
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,12 +9,11 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:intl/intl.dart';
 import '../../constants/app_colors.dart';
 import '../../models/transaction_model.dart';
-import '../../models/transaction_modelv2.dart';
 
 
 class TransactionCustomerCard extends StatefulWidget {
-  late Transaction2 transaction;
-  TransactionCustomerCard(Transaction2 transaction,{Key? key}) {
+  late Transaction transaction;
+  TransactionCustomerCard(Transaction transaction,{Key? key}) {
     this.transaction = transaction;
   }
 
@@ -20,9 +23,9 @@ class TransactionCustomerCard extends StatefulWidget {
 
 class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
 
-  late Transaction2 transaction;
+  late Transaction transaction;
 
-   _TransactionCustomerCardState(Transaction2 transaction)
+   _TransactionCustomerCardState(Transaction transaction)
   {
     this.transaction = transaction;
   }
@@ -71,8 +74,15 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
     );
 
   }
+
   Widget getDisplayPicture()
   {
+    Uint8List? profile;
+    if(transaction.user?.profilePhoto!=null)
+      {
+        profile = base64.decode(transaction.user!.profilePhoto!);
+      }
+
      return Container(
        decoration: BoxDecoration(
          color: Colors.white,
@@ -82,9 +92,15 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
        child: CircleAvatar(
          backgroundColor: Colors.white,
          radius: 30.0,
-         child: CircleAvatar(
-           radius: 28.0,
-           backgroundImage: AssetImage('assets/images/profile-2.jpg'),
+         child: FutureBuilder(
+           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+             return  CircleAvatar(
+               radius: 26.0,
+               backgroundColor:  Colors.white,
+               foregroundImage: MemoryImage(profile!),
+             );
+           },
+
          ),
        ),
      );
@@ -92,10 +108,19 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
 
   Widget getMessage()
   {
+    String name = '';
+    if(transaction.user?.fullname!=null)
+      {
+          name='${transaction.user?.fullname!}';
+
+
+      }
+
+
     return Row(
       children: [
         Text(
-         "${transaction.user?.firstName!} ${transaction.user?.lastName!}\'s purchase is ",
+         "${name}\'s purchase is ",
           style: TextStyle(
               fontFamily: AppTextConstants.fontPoppins,
               fontWeight: FontWeight.w600,
@@ -160,7 +185,7 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
   }
   Color statusColor()
   {
-    switch(transaction.statusId)
+    switch(transaction.status!.statusName!)
     {
 
       case Transaction.COMPLETED:
@@ -175,9 +200,8 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
 
   Image statusImage()
   {
-    switch(transaction.statusId)
+    switch(transaction.status!.statusName!)
     {
-
       case Transaction.COMPLETED:
         return Image.asset("assets/images/complete.png");
       case Transaction.PENDING:
@@ -191,12 +215,12 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
 
   String statusMessage()
   {
-    switch(transaction.statusId)
+    switch(transaction.status!.statusName!)
     {
       case Transaction.COMPLETED:
         return "Payment Completed";
       case Transaction.PENDING:
-        return "Patment Pending";
+        return "Payment Pending";
       case Transaction.REJECTED:
         return "Payment Rejected";
     }
@@ -205,7 +229,7 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
 
   String status()
   {
-    switch(transaction.statusId)
+    switch(transaction.status!.statusName!)
     {
       case Transaction.COMPLETED:
         return "completed";

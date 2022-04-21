@@ -22,7 +22,6 @@ import 'package:guided/models/package_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
-import 'package:guided/models/transaction_model.dart';
 import 'package:guided/models/user_model.dart';
 
 import 'package:guided/utils/secure_storage.dart';
@@ -459,6 +458,9 @@ class APIServices {
     var statusName = "";
     switch(status)
     {
+      case 0:
+        statusName = "all";
+        break;
       case 1:
         statusName = "completed";
         break;
@@ -470,15 +472,15 @@ class APIServices {
         break;
     }
     var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/${tour_guide_id}\/${statusName}');
-    print("url:"+url);
+    // var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/678036c1-9da6-43ae-bb21-253a5e9b54d5\/${statusName}');
+    // var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/21ca70b3-9eee-4285-9473-fb518caa67be\/${statusName}');
+    print("url2:"+url);
     final http.Response response = await http.get(
         Uri.parse(url),
         headers: {
           HttpHeaders.authorizationHeader:
           'Bearer ${UserSingleton.instance.user.token}',
         });
-    // print('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}?s={"tour_guide_id": \"${UserSingleton.instance.user.user!.id}\"}');
-    print("response:"+response.body);
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 

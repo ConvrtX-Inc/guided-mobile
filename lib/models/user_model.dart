@@ -1,3 +1,4 @@
+
 /// User
 // ignore_for_file: public_member_api_docs, sort_constructors_first, prefer_collection_literals, unnecessary_question_mark, prefer_void_to_null
 
@@ -24,6 +25,8 @@ class UserModel {
 
 class User {
   String? id;
+  String? fullname;
+  String? password;
   String? firstName;
   String? lastName;
   String? email;
@@ -47,9 +50,12 @@ class User {
   Null? photo;
   Null? status;
   String? sEntity;
+  String? profilePhoto;
 
   User(
       {this.id,
+      this.fullname,
+      this.password,
       this.firstName,
       this.lastName,
       this.email,
@@ -72,10 +78,14 @@ class User {
       this.deletedAt,
       this.photo,
       this.status,
-      this.sEntity});
+      this.sEntity,
+      this.profilePhoto
+      });
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    fullname = json['full_name'];
+    password = json['password'];
     firstName = json['first_name'];
     lastName = json['last_name'];
     email = json['email'];
@@ -99,11 +109,13 @@ class User {
     photo = json['photo'];
     status = json['status'];
     sEntity = json['__entity'];
+    profilePhoto = json['profile_photo'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = id;
+    data['full_name'] = fullname;
     data['first_name'] = firstName;
     data['last_name'] = lastName;
     data['email'] = email;
@@ -127,6 +139,7 @@ class User {
     data['photo'] = photo;
     data['status'] = status;
     data['__entity'] = sEntity;
+    data['profile_photo'] = profilePhoto;
     return data;
   }
 }

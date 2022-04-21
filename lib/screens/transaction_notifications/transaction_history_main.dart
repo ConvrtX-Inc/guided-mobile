@@ -15,7 +15,6 @@ import '../../constants/app_colors.dart';
 import '../../constants/app_texts.dart';
 import '../../models/api/api_standard_return.dart';
 import '../../models/transaction_model.dart';
-import '../../models/transaction_modelv2.dart';
 import '../../models/user_model.dart';
 import '../../utils/services/rest_api_service.dart';
 
@@ -41,62 +40,8 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
   int _selectedIndex = 0;
   bool isLoading = false;
 
-  Future<void> login() async {
-    final Map<String, String> credentials = <String, String>{
-      'email': 'touristguide.dummy@gmail.com',
-      'password': '123xswcde'
-    };
-    await APIServices()
-        .login(credentials)
-        .then((APIStandardReturnFormat response) async {
-      print("EMAIL:"+credentials.toString());
-      if (response.status == 'error') {
-        print("Response:"+response.errorResponse);
-        AdvanceSnackBar(
-            message: ErrorMessageConstants.loginWrongEmailorPassword)
-            .show(context);
-        setState(() => isLoading = false);
-      }
-      else {
-        print("Response:"+response.successResponse);
 
-        final UserModel user =
-        UserModel.fromJson(json.decode(response.successResponse));
-        UserSingleton.instance.user = user;
 
-        if (user.user?.isTraveller != true) {
-        } else {
-        }
-      }
-    });
-  }
-  Future<void> loginTraveller() async {
-    final Map<String, String> credentials = <String, String>{
-      'email': 'mraraullo_travel.gmail.com',
-      'password': 'string'
-    };
-    await APIServices()
-        .login(credentials)
-        .then((APIStandardReturnFormat response) async {
-      print("EMAIL:"+credentials.toString());
-      if (response.status == 'error') {
-        print("Response:"+response.errorResponse);
-        AdvanceSnackBar(
-            message: ErrorMessageConstants.loginWrongEmailorPassword)
-            .show(context);
-        setState(() => isLoading = false);
-      }
-      else {
-        print("Response:"+response.successResponse);
-        final UserModel user =
-        UserModel.fromJson(json.decode(response.successResponse));
-        UserSingleton.instance.user = user;
-        if (user.user?.isTraveller != true) {
-        } else {
-        }
-      }
-    });
-  }
   Future<void> getTransactions(int filter) async {
     print("Refreshing transactions data");
     setState(() {
@@ -110,14 +55,14 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
         print("Error:"+response.errorResponse);
       }
       else {
-        final List<Transaction2> details = <Transaction2>[];
+        final List<Transaction> details = <Transaction>[];
         print("RESPONSE:"+response.successResponse);
         final List<dynamic> res = jsonDecode(response.successResponse).cast<dynamic>();
         for (final dynamic data in res) {
-          final Transaction2 transactionModel =
-          Transaction2.fromJson(data);
+          final Transaction transactionModel = Transaction.fromJson(data);
           details.add(transactionModel);
         }
+
         _myKey.currentState?.setLoading(false);
         setState(() => this.isLoading = false);
         _myKey.currentState?.setTransactions(details);
@@ -146,7 +91,7 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
             Post.fromJson(data);
             posts.add(post);
         }
-        posts.addAll(AppListConstants.posts);
+        // posts.addAll(AppListConstants.posts);
         print("Posts:"+posts.length.toString());
         _postKey.currentState?.setLoading(false);
         setState(() => this.isLoading = false);
@@ -178,7 +123,7 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
             }
           }
     });
-    login();
+
     getTransactions(0);
   }
 
