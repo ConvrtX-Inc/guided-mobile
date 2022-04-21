@@ -679,6 +679,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -716,6 +717,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {

@@ -840,6 +840,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {

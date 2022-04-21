@@ -219,11 +219,13 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                       bytes: imageTemporary.lengthSync());
                                   fileSize = int.parse(
                                       file.substring(0, file.indexOf('K')));
+
                                   if (fileSize >= 100) {
                                     AdvanceSnackBar(
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -256,11 +258,13 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                       bytes: imageTemporary.lengthSync());
                                   fileSize = int.parse(
                                       file.substring(0, file.indexOf('K')));
+                                  print('Filesize: $fileSize');
                                   if (fileSize >= 100) {
                                     AdvanceSnackBar(
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -353,6 +357,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -389,6 +394,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -480,6 +486,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -517,6 +524,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {

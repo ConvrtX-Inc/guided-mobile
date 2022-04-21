@@ -170,6 +170,7 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
                                                         ErrorMessageConstants
                                                             .imageFileToSize)
                                                 .show(context);
+                                                Navigator.pop(context);
                                             return;
                                           }
                                           setState(() {
@@ -209,6 +210,7 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
                                                         ErrorMessageConstants
                                                             .imageFileToSize)
                                                 .show(context);
+                                                Navigator.pop(context);
                                             return;
                                           }
                                           setState(() {
