@@ -1057,6 +1057,11 @@ class AppTextConstants {
   ///Returns package price text
   static String packagePrice = 'Package Price';
 
+  ///Returns province/state text
+  static String provinceState = 'Province/State';
+
+  /// Returns header
+  static String serviceHeader = "What's included?";
   ///Returns transaction details text
   static String transactionDetails = 'Transaction Details';
 

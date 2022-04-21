@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -1493,7 +1494,6 @@ class _EventEditState extends State<EventEdit> {
                       enabled: _isEnabledPrice,
                       controller: _price,
                       focusNode: _priceFocus,
-                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         hintText: '\$${screenArguments['price']}',
                         hintStyle: TextStyle(
@@ -1501,8 +1501,19 @@ class _EventEditState extends State<EventEdit> {
                         ),
                       ),
                       style: txtStyle,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: false),
+                      inputFormatters: [
+                        DecimalTextInputFormatter(decimalRange: 2),
+                        FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          try {
+                            final text = newValue.text;
+                            if (text.isNotEmpty) double.parse(text);
+                            return newValue;
+                          } catch (e) {}
+                          return oldValue;
+                        }),
                       ],
                     )
                   ],
@@ -2029,7 +2040,7 @@ class _EventEditState extends State<EventEdit> {
           'address':
               '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
           'description': _description.text,
-          'price': int.parse(_price.text),
+          'price': double.parse(_price.text),
           'event_date':
               isNewDate ? _eventDate.text : screenArguments['date_format'],
           'is_published': true,

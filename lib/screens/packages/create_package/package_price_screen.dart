@@ -3,6 +3,7 @@ import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -123,9 +124,19 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
                             BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.digitsOnly
+                    keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true, signed: false),
+                    inputFormatters: [
+                      DecimalTextInputFormatter(decimalRange: 2),
+                      FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                      TextInputFormatter.withFunction((oldValue, newValue) {
+                        try {
+                          final text = newValue.text;
+                          if (text.isNotEmpty) double.parse(text);
+                          return newValue;
+                        } catch (e) {}
+                        return oldValue;
+                      }),
                     ],
                   ),
                   SizedBox(
@@ -147,9 +158,19 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
                             BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.digitsOnly
+                    keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true, signed: false),
+                    inputFormatters: [
+                      DecimalTextInputFormatter(decimalRange: 2),
+                      FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                      TextInputFormatter.withFunction((oldValue, newValue) {
+                        try {
+                          final text = newValue.text;
+                          if (text.isNotEmpty) double.parse(text);
+                          return newValue;
+                        } catch (e) {}
+                        return oldValue;
+                      }),
                     ],
                   ),
                   SizedBox(
@@ -270,6 +291,9 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
         _additionalNotes.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
           .show(context);
+      setState(() {
+        _isSubmit = false;
+      });
     } else {
       details['base_price'] = _basePrice.text;
       details['extra_cost'] = _extraCost.text;
