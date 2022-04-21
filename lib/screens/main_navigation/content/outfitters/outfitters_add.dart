@@ -225,6 +225,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
+                                    Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -262,6 +263,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
+                                    Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -352,6 +354,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -388,6 +391,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -479,6 +483,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -516,6 +521,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
