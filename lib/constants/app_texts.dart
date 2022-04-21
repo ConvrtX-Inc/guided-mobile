@@ -451,7 +451,7 @@ class AppTextConstants {
 
   /// Returns package description text
   static String packageDescr =
-      'Hi Tourist Guide,\nLets Get Started To Build Your Tour Package';
+      'Hi Guide,\nLets Get Started To Build Your Tour Package';
 
   /// Returns select badge text
   static String selectBadge =
@@ -1062,6 +1062,32 @@ class AppTextConstants {
 
   /// Returns header
   static String serviceHeader = "What's included?";
+  ///Returns transaction details text
+  static String transactionDetails = 'Transaction Details';
+
+  ///Returns re-schedule text
+  static String reschedule = 'Re-schedule';
+
+  ///Returns cancel and refund? text
+  static String cancelAndRefund = 'Cancel & Refund?';
+
+  ///Returns request for cancellation and refund text
+  static String requestForCancelAndRefund = 'Request For Cancellation & Refund';
+
+  ///Returns upgrade to premium and discover more text
+  static String upgradeToPremiumAndDiscoverMore =
+      'Upgrade to Premium and Discover more on GuidED!';
+
+  ///Returns Book your next adventure on guided text
+  static String bookYourNextAdventureOnApp =
+      'Book your next Adventure with GuidED mobile app!';
+
+  ///Returns find amazing wilderness text
+  static String findAmazingWilderness =
+      'Find amazing Wilderness Retreats and Hidden Gems!';
+
+  ///Returns get guided text
+  static String getGuided = 'Get GuidED and Get Outside!';
 }
 
 /// Class for error messages text
