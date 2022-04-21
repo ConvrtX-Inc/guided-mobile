@@ -67,7 +67,7 @@ Future<dynamic> paymentSuccessful(
                     Center(
                       child: Container(
                           width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height / 1.5,
+                          // height: MediaQuery.of(context).size.height / 1.5,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),

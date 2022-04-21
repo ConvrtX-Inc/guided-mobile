@@ -52,7 +52,7 @@ class _TravellerBookingDetailsScreenState
       final String hour2 = outputFormat.format(addHour);
       return '$date1 $hour1-$hour2';
     }
-
+    User tourGuideDetails = User();
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -242,6 +242,7 @@ class _TravellerBookingDetailsScreenState
             future: APIServices().getUserDetails(activityPackage.userId!),
             builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
               if (snapshot.hasData) {
+                tourGuideDetails = snapshot.data!;
                 return Padding(
                   padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 0.h),
                   child: Align(
@@ -450,8 +451,9 @@ class _TravellerBookingDetailsScreenState
                   height: 53.h,
                   child: ElevatedButton(
                     onPressed: () {
+
                       requestToBookScreen(context, activityPackage, bookingDate,
-                          numberOfTraveller);
+                          numberOfTraveller, tourGuideDetails.fullName!);
                     },
                     style: AppTextStyle.active,
                     child: const Text(
@@ -474,11 +476,14 @@ class _TravellerBookingDetailsScreenState
       BuildContext context,
       ActivityPackage package,
       String? selectedDate,
-      int numberOfTraveller) async {
+      int numberOfTraveller,
+      String tourGuide) async {
+
     final Map<String, dynamic> details = {
       'package': package,
       'selectedDate': selectedDate,
       'numberOfTraveller': numberOfTraveller,
+      'tourGuide': tourGuide,
     };
     if (selectedDate != null) {
       await Navigator.pushNamed(context, '/requestToBookScreen',

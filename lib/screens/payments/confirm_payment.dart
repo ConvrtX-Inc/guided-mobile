@@ -21,7 +21,9 @@ Future<dynamic> confirmPaymentModal(
     required dynamic paymentMethod,
     required Function onPaymentSuccessful,
     required double price,
-    Function? onPaymentFailed}) {
+    Function? onPaymentFailed,
+    Function? onConfirmPaymentPressed
+    }) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -69,7 +71,7 @@ Future<dynamic> confirmPaymentModal(
                     Center(
                       child: Container(
                         width: 300.w,
-                        height: MediaQuery.of(context).size.height / 2,
+                        // height: MediaQuery.of(context).size.height / 2,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -88,7 +90,19 @@ Future<dynamic> confirmPaymentModal(
                     SizedBox(
                       height: 40.h,
                     ),
-                    CustomRoundedButton(
+                    if(onConfirmPaymentPressed != null)
+                      CustomRoundedButton(
+                        title: 'Pay $price USD',
+                        isLoading: isPaymentProcessing,
+                        onpressed: () {
+                          setState(() {
+                            isPaymentProcessing = true;
+                          });
+                         return onConfirmPaymentPressed();
+                        },
+                      )
+                    else
+                      CustomRoundedButton(
                       title: 'Pay $price USD',
                       isLoading: isPaymentProcessing,
                       onpressed: () {
