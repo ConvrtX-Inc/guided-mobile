@@ -4,7 +4,7 @@ class PopularGuide {
   String? userFirstName;
   String? userLastName;
   String? userEmail;
-  Null? userPhoneNo;
+  String? userPhoneNo;
   bool? userIsForThePlanet;
   bool? userIsFirstAidTrained;
   String? activityId;
@@ -18,7 +18,7 @@ class PopularGuide {
   int? activityMinTraveller;
   String? activityCountry;
   String? activityAddress;
-  Null? activityServices;
+  String? activityServices;
   String? activityCreatedDate;
   String? activityUpdatedDate;
   String? activityBasePrice;
@@ -36,7 +36,7 @@ class PopularGuide {
   bool? badgeIsSubActivity;
   Null? badgeDeletedAt;
   int? reviews;
-  double? distance;
+  int? distance;
 
   PopularGuide(
       {this.userId,

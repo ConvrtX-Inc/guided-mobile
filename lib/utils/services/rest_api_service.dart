@@ -509,7 +509,7 @@ class APIServices {
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
         body: jsonEncode(
-            {'latitude': '53.59', 'longitude': '-113.60', 'distance': '20'}),
+            {'latitude': '45.00', 'longitude': '-81.33', 'distance': '20'}),
         headers: headers);
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -620,22 +620,31 @@ class APIServices {
 
   /// API service for get Popular guides
 
-  Future<List<PopularGuide>> getPopularGuides() async {
+  Future<List<User>> getPopularGuides() async {
     final http.Response response = await http.get(
+        // Uri.parse(
+        //     '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.popularGuides}/51.43/-122.21/20'),
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.popularGuides}/9.30/19.67/20'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
         });
     final dynamic jsonData = jsonDecode(response.body);
-    print(jsonData);
-    final List<PopularGuide> popularGuides = <PopularGuide>[];
+
+    final List<User> popularGuides = <User>[];
     final activityPackage =
-        (jsonData as List).map((i) => PopularGuide.fromJson(i)).toList();
-    popularGuides.addAll(activityPackage);
-    print(popularGuides.length);
-    return popularGuides;
+        (jsonData['data'] as List).map((i) => User.fromJson(i)).toList();
+
+    final List<User> guides = activityPackage.where(
+      (User element) {
+        return element.isTraveller == false;
+      },
+    ).toList();
+    print(guides.length);
+    popularGuides.addAll(guides);
+
+    return guides;
   }
 
   /// API service for outfitter image model
