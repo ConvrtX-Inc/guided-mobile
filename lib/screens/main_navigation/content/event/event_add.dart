@@ -127,7 +127,6 @@ class _EventAddState extends State<EventAdd> {
   void setCountry(dynamic value) {
     setState(() {
       _countryDropdown = value;
-      debugPrint(_countryDropdown.id);
     });
   }
 

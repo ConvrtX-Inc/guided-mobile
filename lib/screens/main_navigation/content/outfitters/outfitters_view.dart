@@ -228,7 +228,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                   children: <Widget>[
                     Text(AppTextConstants.location,
                         style: AppTextStyle.semiBoldStyle),
-                    SizedBox(width: 55.w),
+                    SizedBox(width: 49.w),
                     Text(
                       '${AppTextConstants.country} : ${screenArguments['country']}',
                       style: AppTextStyle.greyStyle,
@@ -240,8 +240,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                 padding: EdgeInsets.only(top: 20.h, left: 25.w),
                 child: Row(
                   children: <Widget>[
-                    const Text(''),
-                    SizedBox(width: 105.w),
+                    SizedBox(width: 80.w),
                     Text(
                       '${AppTextConstants.street} : ${screenArguments['street']}',
                       style: AppTextStyle.greyStyle,
@@ -253,8 +252,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                 padding: EdgeInsets.only(top: 20.h, left: 25.w),
                 child: Row(
                   children: <Widget>[
-                    const Text(''),
-                    SizedBox(width: 105.w),
+                    SizedBox(width: 80.w),
                     Text(
                       '${AppTextConstants.city} : ${screenArguments['city']}',
                       style: AppTextStyle.greyStyle,
@@ -270,7 +268,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                       AppTextConstants.province,
                       style: AppTextStyle.semiBoldStyle,
                     ),
-                    SizedBox(width: 60.w),
+                    SizedBox(width: 49.w),
                     Text(
                       screenArguments['province'],
                       style: AppTextStyle.greyStyle,
@@ -286,7 +284,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                       AppTextConstants.date,
                       style: AppTextStyle.semiBoldStyle,
                     ),
-                    SizedBox(width: 80.w),
+                    SizedBox(width: 60.w),
                     Text(
                       screenArguments['date'],
                       style: AppTextStyle.greyStyle,
@@ -302,7 +300,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                       AppTextConstants.price,
                       style: AppTextStyle.semiBoldStyle,
                     ),
-                    SizedBox(width: 80.w),
+                    SizedBox(width: 60.w),
                     Text(
                       'USD ${screenArguments['price'].toString().substring(1, 6)}',
                       style: AppTextStyle.greyStyle,

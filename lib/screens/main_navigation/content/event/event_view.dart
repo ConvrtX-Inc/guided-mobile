@@ -87,7 +87,7 @@ class _EventViewState extends State<EventView> {
                         ),
                         onPressed: () {
                           _takeScreenshot(screenArguments['title'],
-                              '\$${screenArguments['price'].toString().substring(0, screenArguments['price'].toString().indexOf('.'))}');
+                              '\$${screenArguments['price'].toString()}');
                         },
                       ),
                     ),
@@ -224,8 +224,7 @@ class _EventViewState extends State<EventView> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(
-                            '\$${screenArguments['price'].toString().substring(0, screenArguments['price'].toString().indexOf('.'))}',
+                        Text('\$${screenArguments['price'].toString()}',
                             style: AppTextStyle.txtStyle),
                       ],
                     ),
@@ -247,7 +246,7 @@ class _EventViewState extends State<EventView> {
                     children: <Widget>[
                       Text(AppTextConstants.activities,
                           style: AppTextStyle.semiBoldStyle),
-                      SizedBox(width: 20.w),
+                      SizedBox(width: 30.w),
                       Expanded(
                         child: ListView.builder(
                             scrollDirection: Axis.horizontal,
@@ -359,7 +358,7 @@ class _EventViewState extends State<EventView> {
                   children: <Widget>[
                     Text(AppTextConstants.location,
                         style: AppTextStyle.semiBoldStyle),
-                    SizedBox(width: 55.w),
+                    SizedBox(width: 35.w),
                     Text(
                       '${AppTextConstants.country} : ${screenArguments['country']}',
                       style: AppTextStyle.greyStyle,
@@ -371,8 +370,7 @@ class _EventViewState extends State<EventView> {
                 padding: EdgeInsets.only(top: 20.h, left: 25.w),
                 child: Row(
                   children: <Widget>[
-                    const Text(''),
-                    SizedBox(width: 105.w),
+                    SizedBox(width: 66.w),
                     Text(
                       '${AppTextConstants.street} : ${screenArguments['street']}',
                       style: AppTextStyle.greyStyle,
@@ -384,8 +382,7 @@ class _EventViewState extends State<EventView> {
                 padding: EdgeInsets.only(top: 20.h, left: 25.w),
                 child: Row(
                   children: <Widget>[
-                    const Text(''),
-                    SizedBox(width: 105.w),
+                    SizedBox(width: 66.w),
                     Text(
                       '${AppTextConstants.city} : ${screenArguments['city']}',
                       style: AppTextStyle.greyStyle,
@@ -401,7 +398,7 @@ class _EventViewState extends State<EventView> {
                       AppTextConstants.province,
                       style: AppTextStyle.semiBoldStyle,
                     ),
-                    SizedBox(width: 55.w),
+                    SizedBox(width: 35.w),
                     Text(
                       screenArguments['province'],
                       style: AppTextStyle.greyStyle,
@@ -417,7 +414,7 @@ class _EventViewState extends State<EventView> {
                       AppTextConstants.date,
                       style: AppTextStyle.semiBoldStyle,
                     ),
-                    SizedBox(width: 75.w),
+                    SizedBox(width: 48.w),
                     Text(
                       screenArguments['event_date'],
                       style: AppTextStyle.greyStyle,
@@ -433,9 +430,9 @@ class _EventViewState extends State<EventView> {
                       AppTextConstants.price,
                       style: AppTextStyle.semiBoldStyle,
                     ),
-                    SizedBox(width: 75.w),
+                    SizedBox(width: 48.w),
                     Text(
-                      'USD ${screenArguments['price'].toString().substring(0, screenArguments['price'].toString().indexOf('.'))}',
+                      'USD ${screenArguments['price'].toString()}',
                       style: AppTextStyle.greyStyle,
                     )
                   ],
@@ -650,9 +647,7 @@ class _EventViewState extends State<EventView> {
     final Map<String, dynamic> details = {
       'id': screenArguments['id'],
       'title': screenArguments['title'],
-      'price': screenArguments['price']
-          .toString()
-          .substring(0, screenArguments['price'].toString().indexOf('.')),
+      'price': screenArguments['price'].toString(),
       'country': screenArguments['country'],
       'description': screenArguments['description'],
       'event_date': screenArguments['event_date'],
