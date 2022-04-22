@@ -269,7 +269,7 @@ class AppTextConstants {
   static String state = 'State';
 
   /// Returns postal code text
-  static String postalCode = 'Postal Code';
+  static String postalCode = 'Postal/Zip';
 
   /// Returns sample post code text
   static String postCode = '102000';
@@ -503,7 +503,7 @@ class AppTextConstants {
   static String placeHint = 'Your place name/number + Street/ Road';
 
   /// Returns zip code text
-  static String zipCode = 'Zip code';
+  static String zipCode = 'Postal/Zip';
 
   /// Returns minimum and maximum number
   static String headerMinMax = 'Minimum & Maximum Number of Travelers';
@@ -1091,13 +1091,16 @@ class AppTextConstants {
   static String getGuided = 'Get GuidED and Get Outside!';
 
   ///Returns tour text
- static String tour = 'Tour';
+  static String tour = 'Tour';
 
- ///Returns tour guide text
- static String tourGuide = 'Tour Guide';
+  ///Returns tour guide text
+  static String tourGuide = 'Tour Guide';
 
- ///Returns number of people text
- static String numberOfPeople = 'Number of People';
+  ///Returns number of people text
+  static String numberOfPeople = 'Number of People';
+
+  ///Returns you've got an adventure request! text
+  static String adventureRequest = "You've got an Adventure Request!";
 }
 
 /// Class for error messages text
@@ -1197,7 +1200,7 @@ class ErrorMessageConstants {
   static String productEmpty = 'Product field is empty';
 
   /// Returns 'Fill all location field' text
-  static String locationEmpty = 'Fill all location field';
+  static String locationEmpty = 'Fill all location details field';
 
   /// Returns 'Number of Tourist is Zero (0)' text
   static String slotIsZero = 'Number of Tourist is Zero (0)';

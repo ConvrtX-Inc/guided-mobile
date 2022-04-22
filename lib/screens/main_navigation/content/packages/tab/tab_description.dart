@@ -111,9 +111,9 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
               child: Row(
                 children: <Widget>[
                   Text('Team', style: AppTextStyle.semiBoldStyle),
-                  SizedBox(width: 55.w),
+                  SizedBox(width: 35.w),
                   Text(
-                    '${widget.numberOfTourist} Tourists',
+                    '${widget.numberOfTourist} Traveller',
                     style: TextStyle(
                         fontFamily: 'Gilroy',
                         fontSize: 12.sp,
@@ -124,7 +124,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 20.h, left: 25.w),
+              padding: EdgeInsets.only(top: 5.h, left: 25.w),
               child: SizedBox(
                 height: 50.h,
                 child: Row(
@@ -195,14 +195,14 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 20.h, left: 25.w),
+              padding: EdgeInsets.only(top: 5.h, left: 25.w),
               child: SizedBox(
                 height: 50.h,
                 child: Row(
                   children: <Widget>[
                     Text(AppTextConstants.freeServices,
                         style: AppTextStyle.semiBoldStyle),
-                    SizedBox(width: 5.w),
+                    SizedBox(width: 10.w),
                     Expanded(
                       child: ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -687,13 +687,16 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
               return Container();
             },
           ),
-          Text(
-            details.description,
-            style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w400,
-                fontSize: 14.sp,
-                color: AppColors.osloGrey),
+          Padding(
+            padding: EdgeInsets.only(top: 20.h, left: 25.w),
+            child: Text(
+              details.description,
+              style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14.sp,
+                  color: AppColors.osloGrey),
+            ),
           )
         ],
       );
