@@ -54,7 +54,6 @@ class APIServices {
   final String staticToken =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJiN2NmNDM1LTQwOTAtNGEzOC1hYzVhLTUzNzA3ZTQ0YmMwMCIsImlhdCI6MTYzOTEwOTY4OSwiZXhwIjoxNjQwNDA1Njg5fQ._YUI1FFHJoF76NLb6JP02Q8HgLxnvKwG9V9PILnA-8U';
 
-
   /// Getting the activity outfitter details
   Future<ActivityOutfitterModel> getActivityOutfitterDetails() async {
     final http.Response response = await http
@@ -516,7 +515,7 @@ class APIServices {
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
         body: jsonEncode(
-            {'latitude': '53.59', 'longitude': '-113.60', 'distance': '20'}),
+            {'latitude': '45.00', 'longitude': '-81.33', 'distance': '20'}),
         headers: headers);
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -627,22 +626,31 @@ class APIServices {
 
   /// API service for get Popular guides
 
-  Future<List<PopularGuide>> getPopularGuides() async {
+  Future<List<User>> getPopularGuides() async {
     final http.Response response = await http.get(
+        // Uri.parse(
+        //     '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.popularGuides}/51.43/-122.21/20'),
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.popularGuides}/9.30/19.67/20'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
         });
     final dynamic jsonData = jsonDecode(response.body);
-    print(jsonData);
-    final List<PopularGuide> popularGuides = <PopularGuide>[];
+
+    final List<User> popularGuides = <User>[];
     final activityPackage =
-        (jsonData as List).map((i) => PopularGuide.fromJson(i)).toList();
-    popularGuides.addAll(activityPackage);
-    print(popularGuides.length);
-    return popularGuides;
+        (jsonData['data'] as List).map((i) => User.fromJson(i)).toList();
+
+    final List<User> guides = activityPackage.where(
+      (User element) {
+        return element.isTraveller == false;
+      },
+    ).toList();
+    print(guides.length);
+    popularGuides.addAll(guides);
+
+    return guides;
   }
 
   /// API service for outfitter image model
@@ -1054,7 +1062,6 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-
     debugPrint('params R$queryParameters');
     final http.Response response = await http.get(
         Uri.http(apiBaseUrl, AppAPIPath.bankAccountUrl, queryParameters),
@@ -1073,7 +1080,8 @@ class APIServices {
 
   /// API service for Remove Bank Account
   Future<http.Response> removeBankAccount(String id) async {
-    debugPrint('base ${Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}/$id')}');
+    debugPrint(
+        'base ${Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}/$id')}');
     final String? token = UserSingleton.instance.user.token;
     final http.Response response = await http.delete(
       Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.bankAccountUrl}/$id'),
@@ -1087,14 +1095,13 @@ class APIServices {
   }
 
   ///Api service for Save Payment Intent (Booking Request)
-  Future<APIStandardReturnFormat> savePaymentIntent(String paymentIntentId,String bookingRequestId) async {
+  Future<APIStandardReturnFormat> savePaymentIntent(
+      String paymentIntentId, String bookingRequestId) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-
     final http.Response response = await http.post(
-        Uri.parse(
-            '$apiBaseMode$apiBaseUrl/${AppAPIPath.paymentIntentUrl}'),
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.paymentIntentUrl}'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           'content-type': 'application/json'

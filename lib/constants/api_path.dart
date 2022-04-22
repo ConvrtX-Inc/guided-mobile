@@ -10,10 +10,10 @@ class AppAPIPath {
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
 
   ///Returns mode : (dev | staging | local )
-  static String mode = 'dev';
+  static String mode = 'staging';
 
   /// Returns API base url
-  static String  apiBaseUrl = getBaseUrl(mode);
+  static String apiBaseUrl = getBaseUrl(mode);
 
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
@@ -164,7 +164,6 @@ class AppAPIPath {
   ///Returns  payment url
   static String paymentUrl = '/api/v1/charge';
 
-
   ///Returns  subscription url
   static String userSubscription = '/api/v1/user-subscription';
 
@@ -172,11 +171,12 @@ class AppAPIPath {
   static String activityAvailability = 'api/v1/activity-availabilities';
 
   ///Returns payment intent url
- static String paymentIntentUrl = 'api/v1/payment-intent';
+  static String paymentIntentUrl = 'api/v1/payment-intent';
 }
+
 ///Get Api Base Url
-getBaseUrl(String mode){
-  switch(mode){
+getBaseUrl(String mode) {
+  switch (mode) {
     case 'local':
       return '192.168.100.55:3000';
     case 'dev':
