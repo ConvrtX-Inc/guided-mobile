@@ -459,7 +459,7 @@ class _PopularGuidesTabDescriptionState
                   Padding(
                     padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
                     child: Text(
-                      "I'm available over phone 24/7 for Tourists",
+                      "I'm available over phone 24/7 for Traveller",
                       style: TextStyle(
                           fontFamily: 'Gilroy',
                           fontSize: 14.sp,

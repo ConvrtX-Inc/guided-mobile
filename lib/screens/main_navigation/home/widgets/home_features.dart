@@ -188,7 +188,7 @@ class _HomeFeaturesState extends State<HomeFeatures>
                                       fontSize: 14),
                                 ),
                               ),
-                              Text('${widget._numberOfTourist} Tourists')
+                              Text('${widget._numberOfTourist} Traveller')
                             ],
                           ),
                         ),

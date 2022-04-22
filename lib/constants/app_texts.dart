@@ -269,7 +269,7 @@ class AppTextConstants {
   static String state = 'State';
 
   /// Returns postal code text
-  static String postalCode = 'Postal Code';
+  static String postalCode = 'Postal/Zip';
 
   /// Returns sample post code text
   static String postCode = '102000';
@@ -503,7 +503,7 @@ class AppTextConstants {
   static String placeHint = 'Your place name/number + Street/ Road';
 
   /// Returns zip code text
-  static String zipCode = 'Zip code';
+  static String zipCode = 'Postal/Zip';
 
   /// Returns minimum and maximum number
   static String headerMinMax = 'Minimum & Maximum Number of Travelers';

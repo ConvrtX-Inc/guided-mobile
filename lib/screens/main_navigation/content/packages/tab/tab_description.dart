@@ -113,7 +113,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                   Text('Team', style: AppTextStyle.semiBoldStyle),
                   SizedBox(width: 35.w),
                   Text(
-                    '${widget.numberOfTourist} Tourists',
+                    '${widget.numberOfTourist} Traveller',
                     style: TextStyle(
                         fontFamily: 'Gilroy',
                         fontSize: 12.sp,
