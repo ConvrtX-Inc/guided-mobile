@@ -1118,7 +1118,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else {
                       return GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pushNamed(context, '/popular_guides_list');
+                        },
                         child: ListView(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,

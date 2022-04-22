@@ -25,7 +25,14 @@ import 'package:intl/intl.dart';
 /// screen for payment manage card
 class PaymentManageCard extends StatefulWidget {
   /// constructor
-  const PaymentManageCard({Key? key}) : super(key: key);
+  const PaymentManageCard({Key? key, this.price = '', this.selectedCard, this.onPaymentClicked})
+      : super(key: key);
+
+  final String? price;
+
+  final CardModel? selectedCard;
+
+  final VoidCallback? onPaymentClicked;
 
   @override
   _PaymentManageCardState createState() => _PaymentManageCardState();
@@ -119,12 +126,14 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
               ? Center(
                   child: CircularProgressIndicator(color: AppColors.deepGreen))
               : buildBody()),
-      /*     bottomNavigationBar: Padding(
+           bottomNavigationBar: widget.price != '' ?  Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
           child: CustomRoundedButton(
-              title: 'Pay P200.00 USD',
-              onpressed: () => paymentSuccessful(context)),
-        )*/
+              title: 'Pay ${widget.price} USD',
+              onpressed: ()  {
+                Navigator.pop(context,true);
+              }),
+        ) : null
     );
   }
 
@@ -397,7 +406,6 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
               ),
               content: SizedBox(
                 width: MediaQuery.of(context).size.width,
-
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,

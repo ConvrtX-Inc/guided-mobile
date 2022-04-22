@@ -37,6 +37,7 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
   DateTime focusedYear = DateTime.now();
   DateTime _selectedDate = DateTime.now();
   bool _isSelectionChanged = false;
+  
   @override
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((_) async {

@@ -60,7 +60,7 @@ Widget getBody(BuildContext context) {
           SizedBox(
             height: 14.h,
           ),
-          FutureBuilder<ProfileModelData>(
+          FutureBuilder<ProfileDetailsModel>(
               future: APIServices().getProfileData(),
               builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                 Widget _displayWidget;
@@ -98,39 +98,38 @@ Widget getBody(BuildContext context) {
   ));
 }
 
-Widget buildProfileData(BuildContext context, ProfileModelData profileData) =>
+Widget buildProfileData(BuildContext context, ProfileDetailsModel profileData) =>
     Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          if (profileData.profileDetails.isEmpty)
+          if (profileData.fullName.isEmpty)
             const Text('Unknown User')
           else
-            for (ProfileDetailsModel detail in profileData.profileDetails)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  getProfile(context, '${detail.fullName}'),
-                  SizedBox(
-                    height: 9.h,
-                  ),
-                  Text(
-                    'About Me',
-                    style:
-                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(
-                    height: 9.h,
-                  ),
-                  Text(
-                    detail.about,
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14.sp),
-                  ),
-                ],
-              )
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                getProfile(context, profileData.fullName),
+                SizedBox(
+                  height: 9.h,
+                ),
+                Text(
+                  'About Me',
+                  style:
+                      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+                ),
+                SizedBox(
+                  height: 9.h,
+                ),
+                Text(
+                  profileData.about,
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14.sp),
+                ),
+              ],
+            )
         ]);
 
 /// profile image

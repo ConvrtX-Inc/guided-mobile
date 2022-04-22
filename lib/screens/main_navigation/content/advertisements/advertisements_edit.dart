@@ -1,7 +1,8 @@
-// ignore_for_file: unnecessary_raw_strings, always_specify_types, curly_braces_in_flow_control_structures, cast_nullable_to_non_nullable, avoid_dynamic_calls
+// ignore_for_file: unnecessary_raw_strings, always_specify_types, curly_braces_in_flow_control_structures, cast_nullable_to_non_nullable, avoid_dynamic_calls, avoid_catches_without_on_clauses, always_put_control_body_on_new_line
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -101,12 +103,9 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
 
       final String removedDollar =
           screenArguments['price'].toString().substring(0);
-      final String removedDecimal =
-          removedDollar.substring(0, removedDollar.indexOf('.'));
-      final String price = removedDecimal.replaceAll(RegExp(r'[,]'), '');
 
       _title = TextEditingController(text: screenArguments['title']);
-      _price = TextEditingController(text: price);
+      _price = TextEditingController(text: removedDollar);
       _description =
           TextEditingController(text: screenArguments['description']);
       _country = TextEditingController(text: screenArguments['country']);
@@ -624,6 +623,14 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
     );
   }
 
+  // Format File Size
+  static String getFileSizeString({required int bytes, int decimals = 0}) {
+    if (bytes <= 0) return "0 Bytes";
+    const suffixes = [" Bytes", "KB", "MB", "GB", "TB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -661,6 +668,20 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                   }
 
                                   final File imageTemporary = File(image1.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image1 = imageTemporary;
                                     _uploadCount += 1;
@@ -685,6 +706,20 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                   }
 
                                   final File imageTemporary = File(image1.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image1 = imageTemporary;
                                     _uploadCount += 1;
@@ -1140,7 +1175,6 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                       enabled: _isEnabledPrice,
                       controller: _price,
                       focusNode: _priceFocus,
-                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         hintText: '\$${screenArguments['price']}',
                         hintStyle: TextStyle(
@@ -1148,8 +1182,19 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                         ),
                       ),
                       style: txtStyle,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: false),
+                      inputFormatters: [
+                        DecimalTextInputFormatter(decimalRange: 2),
+                        FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          try {
+                            final text = newValue.text;
+                            if (text.isNotEmpty) double.parse(text);
+                            return newValue;
+                          } catch (e) {}
+                          return oldValue;
+                        }),
                       ],
                     )
                   ],
@@ -1679,7 +1724,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
           'zip_code': _postalCode.text,
           'ad_date': _date.text,
           'description': _description.text,
-          'price': int.parse(_price.text)
+          'price': double.parse(_price.text)
         };
 
         final dynamic response = await APIServices().request(
@@ -1738,7 +1783,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
         'zip_code': _postalCode.text,
         'ad_date': _date.text,
         'description': _description.text,
-        'price': int.parse(_price.text)
+        'price': double.parse(_price.text)
       };
 
       final dynamic response = await APIServices().request(

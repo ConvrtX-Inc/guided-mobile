@@ -8,6 +8,7 @@ import 'package:guided/constants/api_path.dart';
 
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/activity_availability_hours.dart';
+import 'package:guided/models/activity_availability_hours_model.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/activity_destination_model.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
@@ -34,6 +35,7 @@ import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/models/user_terms_and_condition_model.dart';
+import 'package:guided/models/user_transaction_model.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 
 import 'package:guided/utils/secure_storage.dart';
@@ -264,26 +266,18 @@ class APIServices {
   }
 
   /// API service for profile model
-  Future<ProfileModelData> getProfileData() async {
-    final http.Response response = await http.get(
-        Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}?s={"id": \"${UserSingleton.instance.user.user!.id}\"}'),
-        headers: {
-          HttpHeaders.authorizationHeader:
-              'Bearer ${UserSingleton.instance.user.token}',
-        });
+  Future<ProfileDetailsModel> getProfileData() async {
+    final String url =
+        '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/${UserSingleton.instance.user.user!.id}';
 
-    final List<ProfileDetailsModel> details = <ProfileDetailsModel>[];
+    final http.Response response = await http.get(Uri.parse(url), headers: {
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+    });
 
-    final List<dynamic> res = jsonDecode(response.body);
-
-    for (final dynamic data in res) {
-      final ProfileDetailsModel profileModel =
-          ProfileDetailsModel.fromJson(data);
-      details.add(profileModel);
-    }
-
-    return ProfileModelData(profileDetails: details);
+    final ProfileDetailsModel dataSummary =
+        ProfileDetailsModel.fromJson(json.decode(response.body));
+    return dataSummary;
   }
 
   /// API service for profile model
@@ -749,20 +743,20 @@ class APIServices {
   Future<List<PresetFormModel>> getPresetTermsAndCondition(String type) async {
     String id = '';
     if (type == 'terms_and_condition') {
-      id = 'c726b58d-f8bf-4777-a7c8-11b3882dcd9b';
+      id = 'terms and conditions';
     } else if (type == 'traveler_waiver_form') {
-      id = '4c33d045-e881-4d93-a7b2-3ffa2a44c82c';
+      id = 'traveler release and waiver form';
     } else if (type == 'cancellation_policy') {
-      id = '9c165381-1c82-4e6c-8d17-18beed8d1171';
+      id = 'cancellationpolicy';
     } else if (type == 'guided_payment_payout') {
-      id = '73851b0c-f333-4d56-aac4-0f18235396e2';
+      id = 'paymentandpayoutterms';
     } else if (type == 'local_laws') {
-      id = 'fd5fd2a7-7599-42b4-9a60-0dd9d9a980bd';
+      id = 'locallawsandtaxes';
     }
 
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}?s={"id":\"$id\"}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}/$id'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
@@ -1094,6 +1088,28 @@ class APIServices {
     return response;
   }
 
+  /// API service for terms and condition form
+  Future<List<ActivityAvailabilityHour>> getActivityAvailabilityHour(
+      String activityAvailabilityId) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createSlotAvailabilityHour}?s={"activity_availability_id":\"$activityAvailabilityId\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    final List<dynamic> res = jsonDecode(response.body);
+    final List<ActivityAvailabilityHour> forms = <ActivityAvailabilityHour>[];
+
+    for (final dynamic data in res) {
+      final ActivityAvailabilityHour form =
+          ActivityAvailabilityHour.fromJson(data);
+      forms.add(form);
+    }
+
+    return forms;
+  }
+
   ///Api service for Save Payment Intent (Booking Request)
   Future<APIStandardReturnFormat> savePaymentIntent(
       String paymentIntentId, String bookingRequestId) async {
@@ -1115,5 +1131,38 @@ class APIServices {
     debugPrint('save payment intent response:: ${response.body}');
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for Add User Transaction
+  Future<UserTransaction> addUserTransaction(UserTransaction params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.userTransactionsUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'activity_package_id': params.activityPackageId,
+          'total': params.total,
+          'tour_guide_id': params.tourGuideId,
+          'number_of_people': params.numberOfPeople,
+          'service_name': params.serviceName,
+          'transaction_number': params.transactionNumber,
+          'status_id': params.statusId,
+          'book_date': params.bookDate
+        }));
+
+    final jsonData = json.decode(response.body);
+
+    debugPrint('JsonData $jsonData');
+    if (response.statusCode == 201) {
+      return UserTransaction.fromJson(jsonData);
+    } else {
+      return UserTransaction();
+    }
   }
 }

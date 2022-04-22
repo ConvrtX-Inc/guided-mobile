@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, unused_element, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, always_declare_return_types, always_specify_types, avoid_redundant_argument_values, prefer_final_locals, avoid_catches_without_on_clauses, unnecessary_lambdas
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
@@ -13,6 +14,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:guided/common/widgets/country_dropdown.dart';
+import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -171,6 +173,14 @@ class _OutfitterAddState extends State<OutfitterAdd> {
     );
   }
 
+  // Format File Size
+  static String getFileSizeString({required int bytes, int decimals = 0}) {
+    if (bytes <= 0) return "0 Bytes";
+    const suffixes = [" Bytes", "KB", "MB", "GB", "TB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -204,6 +214,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               }
 
                               final File imageTemporary = File(image1.path);
+                              String file;
+                              int fileSize;
+                              file = getFileSizeString(
+                                  bytes: imageTemporary.lengthSync());
+                              fileSize = int.parse(
+                                  file.substring(0, file.indexOf('K')));
+                              if (fileSize >= 100) {
+                                AdvanceSnackBar(
+                                        message: ErrorMessageConstants
+                                            .imageFileToSize)
+                                    .show(context);
+                                    Navigator.pop(context);
+                                return;
+                              }
                               setState(() {
                                 this.image1 = imageTemporary;
                                 _uploadCount += 1;
@@ -228,6 +252,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               }
 
                               final File imageTemporary = File(image1.path);
+                              String file;
+                              int fileSize;
+                              file = getFileSizeString(
+                                  bytes: imageTemporary.lengthSync());
+                              fileSize = int.parse(
+                                  file.substring(0, file.indexOf('K')));
+                              if (fileSize >= 100) {
+                                AdvanceSnackBar(
+                                        message: ErrorMessageConstants
+                                            .imageFileToSize)
+                                    .show(context);
+                                    Navigator.pop(context);
+                                return;
+                              }
                               setState(() {
                                 this.image1 = imageTemporary;
                                 _uploadCount += 1;
@@ -305,6 +343,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -328,6 +380,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -406,6 +472,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                     return;
                                   }
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -430,6 +510,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   }
 
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -587,9 +681,19 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(context),
                       ]),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: false),
+                      inputFormatters: [
+                        DecimalTextInputFormatter(decimalRange: 2),
+                        FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          try {
+                            final text = newValue.text;
+                            if (text.isNotEmpty) double.parse(text);
+                            return newValue;
+                          } catch (e) {}
+                          return oldValue;
+                        }),
                       ],
                     ),
                     SizedBox(height: 20.h),
@@ -727,7 +831,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                       decoration: InputDecoration(
                         contentPadding:
                             EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                        hintText: AppTextConstants.province,
+                        hintText: AppTextConstants.provinceState,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
                         ),
@@ -975,7 +1079,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
       final Map<String, dynamic> outfitterDetails = {
         'user_id': userId,
         'title': _title.text,
-        'price': int.parse(price),
+        'price': double.parse(price),
         'product_link': _productLink.text,
         'country': countryFinal,
         'address':
