@@ -1,19 +1,26 @@
 // ignore_for_file: file_names, unused_element, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, always_declare_return_types, always_specify_types, avoid_redundant_argument_values, prefer_final_locals, avoid_catches_without_on_clauses, unnecessary_lambdas
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:guided/common/widgets/country_dropdown.dart';
+import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/country_model.dart';
 import 'package:guided/models/image_bulk.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
@@ -46,6 +53,18 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   final TextEditingController _date = TextEditingController();
   final TextEditingController _description = TextEditingController();
 
+  final FocusNode _titleFocus = FocusNode();
+  final FocusNode _priceFocus = FocusNode();
+  final FocusNode _productLinkFocus = FocusNode();
+  final FocusNode _useCurrentLocationFocus = FocusNode();
+  final FocusNode _countryFocus = FocusNode();
+  final FocusNode _streetFocus = FocusNode();
+  final FocusNode _cityFocus = FocusNode();
+  final FocusNode _provinceFocus = FocusNode();
+  final FocusNode _postalCodeFocus = FocusNode();
+  final FocusNode _dateFocus = FocusNode();
+  final FocusNode _descriptionFocus = FocusNode();
+
   File? image1;
   File? image2;
   File? image3;
@@ -56,9 +75,34 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   Position? _currentPosition;
   String _currentAddress = '';
 
+  late List<CountryModel> listCountry;
+  late CountryModel _countryDropdown;
+  bool isLocationBtnClicked = false;
+  bool _isSubmit = false;
+
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   @override
   void initState() {
     super.initState();
+    listCountry = <CountryModel>[CountryModel()];
+    _countryDropdown = listCountry[0];
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final List<CountryModel> resCountries =
+          await APIServices().getCountries();
+
+      setState(() {
+        listCountry = resCountries;
+        _countryDropdown = listCountry[38];
+      });
+    });
+  }
+
+  void setCountry(dynamic value) {
+    setState(() {
+      _countryDropdown = value;
+      debugPrint(_countryDropdown.id);
+    });
   }
 
   @override
@@ -129,6 +173,14 @@ class _OutfitterAddState extends State<OutfitterAdd> {
     );
   }
 
+  // Format File Size
+  static String getFileSizeString({required int bytes, int decimals = 0}) {
+    if (bytes <= 0) return "0 Bytes";
+    const suffixes = [" Bytes", "KB", "MB", "GB", "TB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -162,6 +214,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               }
 
                               final File imageTemporary = File(image1.path);
+                              String file;
+                              int fileSize;
+                              file = getFileSizeString(
+                                  bytes: imageTemporary.lengthSync());
+                              fileSize = int.parse(
+                                  file.substring(0, file.indexOf('K')));
+                              if (fileSize >= 100) {
+                                AdvanceSnackBar(
+                                        message: ErrorMessageConstants
+                                            .imageFileToSize)
+                                    .show(context);
+                                    Navigator.pop(context);
+                                return;
+                              }
                               setState(() {
                                 this.image1 = imageTemporary;
                                 _uploadCount += 1;
@@ -186,6 +252,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                               }
 
                               final File imageTemporary = File(image1.path);
+                              String file;
+                              int fileSize;
+                              file = getFileSizeString(
+                                  bytes: imageTemporary.lengthSync());
+                              fileSize = int.parse(
+                                  file.substring(0, file.indexOf('K')));
+                              if (fileSize >= 100) {
+                                AdvanceSnackBar(
+                                        message: ErrorMessageConstants
+                                            .imageFileToSize)
+                                    .show(context);
+                                    Navigator.pop(context);
+                                return;
+                              }
                               setState(() {
                                 this.image1 = imageTemporary;
                                 _uploadCount += 1;
@@ -263,6 +343,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -286,6 +380,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -364,6 +472,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                     return;
                                   }
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -388,6 +510,20 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                   }
 
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -478,217 +614,155 @@ class _OutfitterAddState extends State<OutfitterAdd> {
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  HeaderText.headerText(AppTextConstants.outfitters),
-                  SizedBox(height: 50.h),
-                  Text(
-                    AppTextConstants.uploadImages,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: AppColors.osloGrey),
-                  ),
-                  SizedBox(height: 20.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      image1Placeholder(context),
-                      image2Placeholder(context),
-                      image3Placeholder(context),
-                    ],
-                  ),
-                  SizedBox(height: 20.h),
-                  TextField(
-                    controller: _title,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.title,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+              child: FormBuilder(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    HeaderText.headerText(AppTextConstants.outfitters),
+                    SizedBox(height: 50.h),
+                    Text(
+                      AppTextConstants.uploadImages,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: AppColors.osloGrey),
                     ),
-                  ),
-                  SizedBox(height: 20.h),
-                  TextField(
-                    controller: _price,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.price,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
-                    ),
-                    keyboardType: TextInputType.number,
-                  ),
-                  SizedBox(height: 20.h),
-                  TextField(
-                    controller: _productLink,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.productLink,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  ElevatedButton(
-                    onPressed: () => _getCurrentLocation(),
-                    style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              side: BorderSide(color: AppColors.osloGrey)),
-                        ),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                        elevation: MaterialStateProperty.all<double>(0)),
-                    child: Row(
+                    SizedBox(height: 20.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        const Icon(
-                          Icons.pin_drop,
-                          color: Colors.black,
-                        ),
-                        Text(
-                          AppTextConstants.useCurrentLocation,
-                          style: const TextStyle(color: Colors.black),
-                        )
+                        image1Placeholder(context),
+                        image2Placeholder(context),
+                        image3Placeholder(context),
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  TextField(
-                    controller: _country,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.country,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
+                    SizedBox(height: 20.h),
+                    FormBuilderTextField(
+                      controller: _title,
+                      focusNode: _titleFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.title,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
+                      name: 'title',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
+                    ),
+                    SizedBox(height: 20.h),
+                    FormBuilderTextField(
+                      controller: _price,
+                      focusNode: _priceFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.price,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                      name: 'price',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: false),
+                      inputFormatters: [
+                        DecimalTextInputFormatter(decimalRange: 2),
+                        FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          try {
+                            final text = newValue.text;
+                            if (text.isNotEmpty) double.parse(text);
+                            return newValue;
+                          } catch (e) {}
+                          return oldValue;
+                        }),
+                      ],
+                    ),
+                    SizedBox(height: 20.h),
+                    FormBuilderTextField(
+                      controller: _productLink,
+                      focusNode: _productLinkFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.productLink,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                      name: 'productLink',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
+                    ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    ElevatedButton(
+                      onPressed: () => _getCurrentLocation(),
+                      style: ButtonStyle(
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.r),
+                                side: BorderSide(color: AppColors.osloGrey)),
+                          ),
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                          elevation: MaterialStateProperty.all<double>(0)),
+                      child: Row(
+                        children: <Widget>[
+                          const Icon(
+                            Icons.pin_drop,
+                            color: Colors.black,
+                          ),
+                          if (isLocationBtnClicked)
+                            Text(
+                              AppTextConstants.removeCurrentLocation,
+                              style: const TextStyle(color: Colors.black),
+                            )
+                          else
+                            Text(
+                              AppTextConstants.useCurrentLocation,
+                              style: const TextStyle(color: Colors.black),
+                            )
+                        ],
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20.h),
-                  TextField(
-                    controller: _street,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.street,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
+                    SizedBox(
+                      height: 20.h,
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Text(
-                      AppTextConstants.streetHint,
-                      style: AppTextStyle.greyStyle,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  TextField(
-                    controller: _city,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.city,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  TextField(
-                    controller: _province,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.provinceHint,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  TextField(
-                    controller: _postalCode,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.postalCodeHint,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  GestureDetector(
-                    onTap: () => _showDate(context),
-                    child: AbsorbPointer(
-                      child: TextField(
-                        controller: _date,
+                    if (isLocationBtnClicked)
+                      TextField(
+                        controller: _country,
+                        readOnly: true,
                         decoration: InputDecoration(
                           contentPadding:
                               EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                          hintText: AppTextConstants.date,
+                          hintText: AppTextConstants.country,
                           hintStyle: TextStyle(
                             color: AppColors.grey,
                           ),
@@ -698,31 +772,148 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                 BorderSide(color: Colors.grey, width: 0.2.w),
                           ),
                         ),
+                      )
+                    else
+                      DropDownCountry(
+                        value: _countryDropdown,
+                        setCountry: setCountry,
+                        list: listCountry,
+                      ),
+                    SizedBox(height: 20.h),
+                    TextField(
+                      controller: _street,
+                      focusNode: _streetFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.street,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20.h),
-                  TextField(
-                    controller: _description,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.description,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        AppTextConstants.streetHint,
+                        style: AppTextStyle.greyStyle,
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                ],
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    TextField(
+                      controller: _city,
+                      focusNode: _cityFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.city,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    TextField(
+                      controller: _province,
+                      focusNode: _provinceFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.provinceState,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    TextField(
+                      controller: _postalCode,
+                      focusNode: _postalCodeFocus,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.postalCode,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    GestureDetector(
+                      onTap: () => _showDate(context),
+                      child: AbsorbPointer(
+                        child: TextField(
+                          controller: _date,
+                          decoration: InputDecoration(
+                            contentPadding:
+                                EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                            hintText: AppTextConstants.date,
+                            hintStyle: TextStyle(
+                              color: AppColors.grey,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14.r),
+                              borderSide:
+                                  BorderSide(color: Colors.grey, width: 0.2.w),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    FormBuilderTextField(
+                      controller: _description,
+                      focusNode: _descriptionFocus,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        hintText: AppTextConstants.description,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                      name: 'description',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
+                    ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -734,7 +925,14 @@ class _OutfitterAddState extends State<OutfitterAdd> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () async => outfitterDetail(),
+            onPressed: () {
+              _formKey.currentState?.save();
+              if (_formKey.currentState!.validate()) {
+                _isSubmit ? null : outfitterDetail();
+              } else {
+                print('validation failed');
+              }
+            },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -745,10 +943,13 @@ class _OutfitterAddState extends State<OutfitterAdd> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.createOutfitter,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.createOutfitter,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -848,48 +1049,72 @@ class _OutfitterAddState extends State<OutfitterAdd> {
   }
 
   Future<void> outfitterDetail() async {
-    final String? userId = UserSingleton.instance.user.user!.id;
+    String countryFinal = '';
 
-    String price = _price.text.replaceAll(new RegExp(r'[,]'), '');
-
-    final Map<String, dynamic> outfitterDetails = {
-      'user_id': userId,
-      'title': _title.text,
-      'price': int.parse(price),
-      'product_link': _productLink.text,
-      'country': _country.text,
-      'address':
-          '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, ${_country.text}',
-      'street': _street.text,
-      'city': _city.text,
-      'province': _province.text,
-      'zip_code': _postalCode.text,
-      'availability_date': _date.text,
-      'description': _description.text,
-      'is_published': true
-    };
-
-    final dynamic response = await APIServices().request(
-        AppAPIPath.createOutfitterUrl, RequestType.POST,
-        needAccessToken: true, data: outfitterDetails);
-
-    // ignore: avoid_dynamic_calls
-    final String activityOutfitterId = response['id'];
-    if (_uploadCount == 1) {
-      await saveImage(activityOutfitterId);
-    } else if (_uploadCount == 2) {
-      await save2Image(activityOutfitterId);
-    } else if (_uploadCount == 3) {
-      await saveBulkImage(activityOutfitterId);
+    if (isLocationBtnClicked) {
+      countryFinal = _country.text;
+    } else {
+      countryFinal = _countryDropdown.name;
     }
 
-    await Navigator.pushReplacement(
-        context,
-        MaterialPageRoute<dynamic>(
-            builder: (BuildContext context) => const MainNavigationScreen(
-                  navIndex: 1,
-                  contentIndex: 2,
-                )));
+    if (image1 == null) {
+      AdvanceSnackBar(message: ErrorMessageConstants.outfitterImageEmpty)
+          .show(context);
+    } else if (_date.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
+    } else if (_street.text.isEmpty ||
+        _city.text.isEmpty ||
+        _province.text.isEmpty ||
+        _postalCode.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.locationEmpty)
+          .show(context);
+    } else {
+      setState(() {
+        _isSubmit = true;
+      });
+      final String? userId = UserSingleton.instance.user.user!.id;
+
+      String price = _price.text.replaceAll(new RegExp(r'[,]'), '');
+
+      final Map<String, dynamic> outfitterDetails = {
+        'user_id': userId,
+        'title': _title.text,
+        'price': double.parse(price),
+        'product_link': _productLink.text,
+        'country': countryFinal,
+        'address':
+            '${_street.text}, ${_city.text}, ${_province.text}, ${_postalCode.text}, $countryFinal',
+        'street': _street.text,
+        'city': _city.text,
+        'province': _province.text,
+        'zip_code': _postalCode.text,
+        'availability_date': _date.text,
+        'description': _description.text,
+        'is_published': true
+      };
+
+      final dynamic response = await APIServices().request(
+          AppAPIPath.createOutfitterUrl, RequestType.POST,
+          needAccessToken: true, data: outfitterDetails);
+
+      // ignore: avoid_dynamic_calls
+      final String activityOutfitterId = response['id'];
+      if (_uploadCount == 1) {
+        await saveImage(activityOutfitterId);
+      } else if (_uploadCount == 2) {
+        await save2Image(activityOutfitterId);
+      } else if (_uploadCount == 3) {
+        await saveBulkImage(activityOutfitterId);
+      }
+
+      await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const MainNavigationScreen(
+                    navIndex: 1,
+                    contentIndex: 2,
+                  )));
+    }
   }
 
   _getCurrentLocation() {
@@ -916,14 +1141,26 @@ class _OutfitterAddState extends State<OutfitterAdd> {
       Placemark place = placemarks[0];
 
       setState(() {
-        _currentAddress =
-            '${place.locality}, ${place.postalCode}, ${place.country}';
+        if (isLocationBtnClicked) {
+          isLocationBtnClicked = false;
+          _currentAddress = '';
 
-        _country = TextEditingController(text: place.country);
-        _postalCode = TextEditingController(text: place.postalCode);
-        _city = TextEditingController(text: place.locality);
-        _street = TextEditingController(text: place.street);
-        _province = TextEditingController(text: place.administrativeArea);
+          _country = TextEditingController(text: '');
+          _postalCode = TextEditingController(text: '');
+          _city = TextEditingController(text: '');
+          _street = TextEditingController(text: '');
+          _province = TextEditingController(text: '');
+        } else {
+          isLocationBtnClicked = true;
+          _currentAddress =
+              '${place.locality}, ${place.postalCode}, ${place.country}';
+
+          _country = TextEditingController(text: place.country);
+          _postalCode = TextEditingController(text: place.postalCode);
+          _city = TextEditingController(text: place.locality);
+          _street = TextEditingController(text: place.street);
+          _province = TextEditingController(text: place.administrativeArea);
+        }
       });
     } catch (e) {
       print(e);

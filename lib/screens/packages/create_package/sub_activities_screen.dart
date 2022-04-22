@@ -1,4 +1,6 @@
 // ignore_for_file: file_names, always_specify_types, avoid_bool_literals_in_conditional_expressions, avoid_dynamic_calls, always_put_required_named_parameters_first
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,7 +8,8 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/models/badgesModel.dart';
+import 'package:guided/models/badge_model.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Sub Activities Screen
 class SubActivitiesScreen extends StatefulWidget {
@@ -15,7 +18,7 @@ class SubActivitiesScreen extends StatefulWidget {
       : super(key: key);
 
   /// Main Activity
-  final BadgesModel mainActivity;
+  final BadgeDetailsModel mainActivity;
 
   @override
   _SubActivitiesScreenState createState() => _SubActivitiesScreenState();
@@ -23,8 +26,8 @@ class SubActivitiesScreen extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(DiagnosticsProperty<BadgesModel>('mainActivity', mainActivity));
+    properties.add(
+        DiagnosticsProperty<BadgeDetailsModel>('mainActivity', mainActivity));
   }
 }
 
@@ -44,31 +47,17 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
   String subActivities3Txt = '';
 
   final TextEditingController _note = TextEditingController();
+  late Future<BadgeModelData> _loadingData;
 
   @override
   void initState() {
     super.initState();
     mainActivity = widget.mainActivity;
-    mainActivityTxt = widget.mainActivity.title;
+    mainActivityTxt = widget.mainActivity.name;
+    _loadingData = APIServices().getBadgesModel();
   }
 
-  GridView _choicesGridMainActivity() {
-    return GridView.count(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      crossAxisCount: 2,
-      childAspectRatio: 2.5,
-      children: List.generate(AppListConstants.badges.length, (int index) {
-        return SizedBox(
-          height: 10.h,
-          width: 100.w,
-          child: _choicesMainActivity(AppListConstants.badges[index]),
-        );
-      }),
-    );
-  }
-
-  ListTile _choicesMainActivity(BadgesModel badges) {
+  ListTile _choicesMainActivity(BadgeDetailsModel badges) {
     return ListTile(
       onTap: () {
         setState(() {
@@ -76,12 +65,14 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
         });
       },
       minLeadingWidth: 20,
-      leading: Image.asset(
-        badges.imageUrl,
-        width: 25.w,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
       ),
       title: Text(
-        badges.title,
+        badges.name,
         style: const TextStyle(
           fontSize: 15,
         ),
@@ -89,7 +80,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
     );
   }
 
-  ListTile _chosenMainActivity(BadgesModel badges) {
+  ListTile _chosenMainActivity(BadgeDetailsModel badges) {
     return ListTile(
       onTap: () {
         setState(() {
@@ -97,12 +88,14 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
         });
       },
       minLeadingWidth: 20,
-      leading: Image.asset(
-        badges.imageUrl,
-        width: 25.w,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
       ),
       title: Text(
-        badges.title,
+        badges.name,
         style: const TextStyle(
           fontSize: 15,
         ),
@@ -110,23 +103,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
     );
   }
 
-  GridView _choicesGridSubActivity() {
-    return GridView.count(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      crossAxisCount: 2,
-      childAspectRatio: 2.5,
-      children: List.generate(AppListConstants.badges.length, (int index) {
-        return SizedBox(
-          height: 10.h,
-          width: 100.w,
-          child: _choicesSubActivities(AppListConstants.badges[index]),
-        );
-      }),
-    );
-  }
-
-  ListTile _disabledSubActivities(BadgesModel badges) {
+  ListTile _disabledSubActivities(BadgeDetailsModel badges) {
     return ListTile(
       enabled: false,
       onTap: () {
@@ -134,19 +111,19 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
           switch (count) {
             case 0:
               subActivities1 = badges;
-              subActivities1Txt = badges.title;
+              subActivities1Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               break;
             case 1:
               subActivities2 = badges;
-              subActivities2Txt = badges.title;
+              subActivities2Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               break;
             case 2:
               subActivities3 = badges;
-              subActivities3Txt = badges.title;
+              subActivities3Txt = badges.name;
               count++;
               showSubActivityChoices = false;
               break;
@@ -156,36 +133,38 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
         });
       },
       minLeadingWidth: 20,
-      leading: Image.asset(
-        badges.imageUrl,
-        width: 25.w,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
       ),
-      title: Text(badges.title),
+      title: Text(badges.name),
     );
   }
 
-  ListTile _enabledSubActivities(BadgesModel badges) {
+  ListTile _enabledSubActivities(BadgeDetailsModel badges) {
     return ListTile(
       onTap: () {
         setState(() {
           switch (count) {
             case 0:
               subActivities1 = badges;
-              subActivities1Txt = badges.title;
+              subActivities1Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               showLimitNote = false;
               break;
             case 1:
               subActivities2 = badges;
-              subActivities2Txt = badges.title;
+              subActivities2Txt = badges.name;
               count++;
               showSubActivityChoices = true;
               showLimitNote = false;
               break;
             case 2:
               subActivities3 = badges;
-              subActivities3Txt = badges.title;
+              subActivities3Txt = badges.name;
               count++;
               showSubActivityChoices = false;
               showLimitNote = true;
@@ -200,16 +179,18 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
         });
       },
       minLeadingWidth: 20,
-      leading: Image.asset(
-        badges.imageUrl,
-        width: 25.w,
+      leading: Image.memory(
+        base64.decode(badges.imgIcon.split(',').last),
+        gaplessPlayback: true,
+        width: 30,
+        height: 30,
       ),
-      title: Text(badges.title),
+      title: Text(badges.name),
     );
   }
 
-  ListTile _choicesSubActivities(BadgesModel badges) {
-    if (badges.title == mainActivity.title) {
+  ListTile _choicesSubActivities(BadgeDetailsModel badges) {
+    if (badges.name == mainActivity.name) {
       return _disabledSubActivities(badges);
     }
     if (subActivities1 == badges) {
@@ -225,7 +206,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
     return _enabledSubActivities(badges);
   }
 
-  Padding _chosenSubActivities1(BadgesModel badges) {
+  Padding _chosenSubActivities1(BadgeDetailsModel badges) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Align(
@@ -233,7 +214,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
           onTap: () {
             setState(() {
               subActivities1 = badges;
-              subActivities1Txt = badges.title;
+              subActivities1Txt = badges.name;
               count++;
             });
           },
@@ -251,14 +232,24 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
                           child: Align(
                             child: Text(
-                              badges.title,
+                              badges.name,
                               textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 13.sp),
                             ),
                           ),
                         ),
@@ -270,16 +261,17 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                               setState(() {
                                 if (subActivities2 != null) {
                                   subActivities1 = subActivities2;
+                                  subActivities2 = null;
                                 } else {
                                   subActivities1 = null;
                                 }
-
                                 if (subActivities3 != null) {
                                   subActivities2 = subActivities3;
                                   subActivities3 = null;
                                 } else {
                                   subActivities2 = null;
                                 }
+
                                 count--;
                                 showLimitNote = false;
                               });
@@ -290,12 +282,6 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                       ),
                     ],
                   ),
-                  Positioned(
-                    left: 0,
-                    bottom: 2.h,
-                    child:
-                        Image.asset(badges.imageUrl, width: 28.w, height: 28.h),
-                  ),
                 ],
               ),
             ),
@@ -305,7 +291,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
     );
   }
 
-  Padding _chosenSubActivities2(BadgesModel badges) {
+  Padding _chosenSubActivities2(BadgeDetailsModel badges) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Align(
@@ -313,7 +299,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
           onTap: () {
             setState(() {
               subActivities2 = badges;
-              subActivities2Txt = badges.title;
+              subActivities2Txt = badges.name;
               count++;
             });
           },
@@ -331,14 +317,24 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
-                          width: 70.w,
+                          width: 60.w,
                           height: 30.h,
                           child: Align(
                             child: Text(
-                              badges.title,
+                              badges.name,
                               textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 13.sp),
                             ),
                           ),
                         ),
@@ -364,15 +360,6 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                       ),
                     ],
                   ),
-                  Positioned(
-                    left: 0,
-                    bottom: 2.h,
-                    child: Image.asset(
-                      badges.imageUrl,
-                      width: 28.w,
-                      height: 28.h,
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -382,7 +369,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
     );
   }
 
-  Padding _chosenSubActivities3(BadgesModel badges) {
+  Padding _chosenSubActivities3(BadgeDetailsModel badges) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Align(
@@ -390,7 +377,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
           onTap: () {
             setState(() {
               subActivities3 = badges;
-              subActivities3Txt = badges.title;
+              subActivities3Txt = badges.name;
               count++;
             });
           },
@@ -409,14 +396,24 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(30.w, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: SizedBox(
                           width: 70.w,
                           height: 30.h,
                           child: Align(
                             child: Text(
-                              badges.title,
+                              badges.name,
                               textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 13.sp),
                             ),
                           ),
                         ),
@@ -436,15 +433,6 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                             )),
                       ),
                     ],
-                  ),
-                  Positioned(
-                    left: 0,
-                    bottom: 2.h,
-                    child: Image.asset(
-                      badges.imageUrl,
-                      width: 28.w,
-                      height: 28.h,
-                    ),
                   ),
                 ],
               ),
@@ -479,9 +467,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                     height: 100.h,
                   )
                 else
-                  SizedBox(
-                    width: 140.w,
-                    height: 100.h,
+                  Expanded(
                     child: _chosenMainActivity(mainActivity),
                   ),
                 SizedBox(
@@ -510,7 +496,38 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
               width: width,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
-                child: _choicesGridMainActivity(),
+                child: FutureBuilder<BadgeModelData>(
+                  future: _loadingData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasData) {
+                      final BadgeModelData badgeData = snapshot.data;
+                      final int length = badgeData.badgeDetails.length;
+                      return GridView.count(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        crossAxisCount: 2,
+                        childAspectRatio: 2.5,
+                        children: List.generate(length, (int index) {
+                          final BadgeDetailsModel badgeDetails =
+                              badgeData.badgeDetails[index];
+                          return Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: SizedBox(
+                              height: 10.h,
+                              width: 100.w,
+                              child: _choicesMainActivity(badgeDetails),
+                            ),
+                          );
+                        }),
+                      );
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Container();
+                  },
+                ),
               ),
             ),
           )
@@ -542,8 +559,6 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
               ),
               borderRadius: BorderRadius.circular(16.r),
             ),
-            // width: width,
-            height: 130.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
@@ -551,26 +566,28 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Align(
-                      child: SizedBox(
-                        width: 340,
-                        height: 50.h,
-                        child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: <Widget>[
-                              if (subActivities1 == null)
-                                SizedBox(
-                                  height: 100.h,
-                                )
-                              else
-                                _chosenSubActivities1(subActivities1),
-                              if (subActivities2 == null)
-                                SizedBox(
-                                  height: 100.h,
-                                )
-                              else
-                                _chosenSubActivities2(subActivities2),
-                            ]),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: SizedBox(
+                          height: 50.h,
+                          child: ListView(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              children: <Widget>[
+                                if (subActivities1 == null)
+                                  SizedBox(
+                                    height: 100.h,
+                                  )
+                                else
+                                  _chosenSubActivities1(subActivities1),
+                                if (subActivities2 == null)
+                                  SizedBox(
+                                    height: 100.h,
+                                  )
+                                else
+                                  _chosenSubActivities2(subActivities2),
+                              ]),
+                        ),
                       ),
                     ),
                   ],
@@ -594,7 +611,32 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
               width: width,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
-                child: _choicesGridSubActivity(),
+                // child: _choicesGridSubActivity(),
+                child: FutureBuilder<BadgeModelData>(
+                  future: _loadingData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasData) {
+                      final BadgeModelData badgeData = snapshot.data;
+                      final int length = badgeData.badgeDetails.length;
+                      return GridView.count(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        crossAxisCount: 2,
+                        childAspectRatio: 2.5,
+                        children: List.generate(length, (int index) {
+                          final BadgeDetailsModel badgeDetails =
+                              badgeData.badgeDetails[index];
+                          return _choicesSubActivities(badgeDetails);
+                        }),
+                      );
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Container();
+                  },
+                ),
               ),
             ),
           )
@@ -684,7 +726,11 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                       width: width,
                       height: 60.h,
                       child: ElevatedButton(
-                        onPressed: () => navigatePackageInfoScreen(context),
+                        onPressed: () {
+                          if (subActivities1 != null) {
+                            navigatePackageInfoScreen(context);
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             side: BorderSide(
@@ -716,10 +762,10 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
   /// Navigate to Package Info
   Future<void> navigatePackageInfoScreen(BuildContext context) async {
     final Map<String, dynamic> details = {
-      'main_activity': mainActivityTxt,
-      'sub_activity_1': subActivities1Txt,
-      'sub_activity_2': subActivities2Txt,
-      'sub_activity_3': subActivities3Txt,
+      'main_activity': mainActivity,
+      'sub_activity_1': subActivities1,
+      'sub_activity_2': subActivities2,
+      'sub_activity_3': subActivities3,
       'note': _note.text,
       'activity_package_id': ''
     };

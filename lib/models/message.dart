@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 /// Class for settings items
 class Message {
   /// Constructor
@@ -11,14 +9,31 @@ class Message {
   });
 
   /// property for name
-  int id;
+  late int id;
 
   /// property for name
-  String name;
+  late String name;
 
   /// property for icon
-  String message;
+  late String message;
 
   /// property for image url
-  String imgUrl;
+  late String imgUrl;
+
+  Message.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? '';
+    name = json['name'] ?? '';
+    message = json['message'] ?? '';
+    imgUrl = json['imgUrl'] ?? '';
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['message'] = message;
+    data['imgUrl'] = imgUrl;
+
+    return data;
+  }
 }

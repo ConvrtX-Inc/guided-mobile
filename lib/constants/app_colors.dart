@@ -128,6 +128,7 @@ class AppColors {
   /// hex color for gallery white
   static HexColor galleryWhite = HexColor('#EBEBEB');
 
+
   /// hex color for tab border white
   static HexColor tabBorder = HexColor('#E4E4E4');
   static HexColor tabFill = HexColor('#FDFDFD');
@@ -137,4 +138,12 @@ class AppColors {
   static HexColor pendingText = HexColor('#FF961A');
   static HexColor completedText = HexColor('#34A853');
 
+  /// hex colr for dirty white
+  static HexColor dirtyWhite = HexColor('#F2F2F2');
+
+  /// herx color for white
+  static HexColor white = HexColor('#FFFFFF');
+
+  ///hex color for islandSpice
+ static HexColor islandSpice = HexColor('#FFFAED');
 }

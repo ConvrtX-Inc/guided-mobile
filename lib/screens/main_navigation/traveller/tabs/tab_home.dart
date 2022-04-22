@@ -1,4 +1,6 @@
-// ignore_for_file: public_member_api_docs, use_named_constants, diagnostic_describe_all_properties
+// ignore_for_file: public_member_api_docs, use_named_constants, diagnostic_describe_all_properties, no_default_cases, unused_element
+
+import 'dart:convert';
 
 import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
@@ -14,12 +16,19 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/activity_package.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/guide.dart';
+import 'package:guided/models/popular_guide.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
-
+import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 /// TabHomeScreen
@@ -41,6 +50,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   final ScrollToIndexController _scrollController = ScrollToIndexController();
   final travellerMonthController = Get.put(TravellerMonthController());
   final SwiperController _cardController = SwiperController();
+
   var result;
   @override
   void initState() {
@@ -64,26 +74,11 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-//     WidgetsBinding.instance?.addPostFrameCallback((_) async {
-//       final int mon = initialDate.month;
-//       listController.selectedDate = 1;
-//       // setState(() {
-//       //   selectedmonth = mon;
-//       // });
-// //       Future.delayed(const Duration(seconds: 2), () {
-// // // Here you can write your code
-
-// //         _scrollController.easyScrollToIndex(index: 7);
-
-// //         setState(() {
-// //           selectedmonth = 7;
-// //         });
-// //       });
-//     });
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(
                 children: <Widget>[
@@ -189,7 +184,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                           child: Align(
                                             alignment: Alignment.topLeft,
                                             child: Text(
-                                              'Select datesss',
+                                              'Select date',
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 24.sp,
@@ -346,25 +341,27 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                 controller) {
                                               print(controller.currentDate);
                                               return Container(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      20.w, 0.h, 20.w, 0.h),
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.4,
-                                                  child: Sfcalendar(
-                                                      context,
-                                                      travellerMonthController
-                                                          .currentDate));
+                                                padding: EdgeInsets.fromLTRB(
+                                                    20.w, 0.h, 20.w, 0.h),
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.4,
+                                                child: Sfcalendar(
+                                                  context,
+                                                  travellerMonthController
+                                                      .currentDate,
+                                                  ((value) {
+                                                    print(value);
+                                                  }),
+                                                ),
+                                              );
                                             }),
                                         // SizedBox(
                                         //   height: 20.h,
                                         // ),
                                         SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.3,
+                                          width: 153.w,
                                           height: 54.h,
                                           child: ElevatedButton(
                                             onPressed: () {
@@ -636,108 +633,441 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
     );
   }
 
-  void onSubmit() {}
   Widget nearbyActivities(BuildContext context, List<Activity> activities) {
+    //////
+    ///
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          'Explore Nearby Activities/Packages',
-          style: TextStyle(
-              color: Colors.black,
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w700),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              'Explore Nearby Activities/Packages',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w700),
+            ),
+            GestureDetector(
+              onTap: exploreNearbyActivities,
+              child: Text(
+                'See All',
+                style: TextStyle(
+                  color: HexColor('#3E4242'),
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w700,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ],
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.26,
-          child: ListView(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            children: List<Widget>.generate(activities.length, (int i) {
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 20.h),
-                height: 180.h,
-                width: 168.w,
-                decoration: const BoxDecoration(
-                  color: Colors.transparent,
+          child: FutureBuilder<List<ActivityPackage>>(
+            future: APIServices().getClosestActivity(), // async work
+            builder: (BuildContext context,
+                AsyncSnapshot<List<ActivityPackage>> snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting:
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                default:
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: snapshot.data!.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 5.w, vertical: 20.h),
+                            height: 180.h,
+                            width: 168.w,
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () {
+                                    checkAvailability(
+                                        context, snapshot.data![index]);
+                                  },
+                                  child: Container(
+                                    height: 112.h,
+                                    width: 168.w,
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(15.r),
+                                      ),
+                                      // image: DecorationImage(
+                                      //   image: AssetImage(
+                                      //       activities[index].featureImage),
+                                      //   fit: BoxFit.cover,
+                                      // ),
+                                      image: DecorationImage(
+                                          image: Image.memory(
+                                        base64.decode(snapshot
+                                            .data![index].coverImg!
+                                            .split(',')
+                                            .last),
+                                        fit: BoxFit.cover,
+                                        gaplessPlayback: true,
+                                      ).image),
+                                    ),
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Positioned(
+                                          bottom: 10,
+                                          left: 20,
+                                          child: FutureBuilder<BadgeModelData>(
+                                            future: APIServices()
+                                                .getBadgesModelById(snapshot
+                                                    .data![index].mainBadgeId!),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot<dynamic>
+                                                    snapshot) {
+                                              if (snapshot.hasData) {
+                                                final BadgeModelData badgeData =
+                                                    snapshot.data;
+                                                final int length = badgeData
+                                                    .badgeDetails.length;
+                                                // return CircleAvatar(
+                                                //   backgroundColor:
+                                                //       Colors.transparent,
+                                                //   radius: 30,
+                                                //   backgroundImage: AssetImage(
+                                                //       activities[index].path),
+                                                // );
+                                                return Image.memory(
+                                                  base64.decode(badgeData
+                                                      .badgeDetails[0].imgIcon
+                                                      .split(',')
+                                                      .last),
+                                                  width: 30,
+                                                  height: 30,
+                                                  gaplessPlayback: true,
+                                                );
+                                              }
+                                              if (snapshot.connectionState !=
+                                                  ConnectionState.done) {
+                                                return Padding(
+                                                  padding: EdgeInsets.only(
+                                                      left: 10.w),
+                                                  child: Column(
+                                                    children: <Widget>[
+                                                      SizedBox(
+                                                        height: 110.h,
+                                                      ),
+                                                      const CircularProgressIndicator(),
+                                                    ],
+                                                  ),
+                                                );
+                                              }
+                                              return Container();
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5.h,
+                                ),
+                                Text(
+                                  snapshot.data![index].name!,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16.sp,
+                                      fontFamily: 'Gilroy',
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Container(
+                                      height: 10.h,
+                                      width: 10.w,
+                                      decoration: BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(15.r),
+                                        ),
+                                        image: const DecorationImage(
+                                          image: AssetImage(
+                                              'assets/images/png/clock.png'),
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 2.w,
+                                    ),
+                                    Text(
+                                      snapshot.data![index].timeToTravel!,
+                                      style: TextStyle(
+                                          color: HexColor('#696D6D'),
+                                          fontSize: 11.sp,
+                                          fontFamily: 'Gilroy',
+                                          fontWeight: FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        });
+                  }
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void exploreNearbyActivities() {
+    showMaterialModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      expand: false,
+      context: context,
+      backgroundColor: Colors.white,
+      builder: (BuildContext context) => SafeArea(
+        top: false,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.9,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                height: 15.h,
+              ),
+              Align(
+                child: Image.asset(
+                  AssetsPath.horizontalLine,
+                  width: 60.w,
+                  height: 5.h,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              SizedBox(
+                height: 15.h,
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.arrow_back),
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15.w),
+                child: Text(
+                  'Explore Nearby Activities',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15.w),
+                child: Text(
+                  "Can't find anything nearby? Try using the map and discover what else is available.",
+                  style: TextStyle(
+                      color: AppColors.doveGrey,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.normal),
+                ),
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              Expanded(
+                child: ListView(
+                  children: List<Widget>.generate(
+                    3,
+                    (int index) => Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15.w),
+                      child: sideShow(index),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget sideShow(int index) {
+    final PageController pageIndicatorController =
+        PageController(initialPage: index);
+    return SizedBox(
+      height: 250.h,
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            height: 200.h,
+            child: Stack(
+              children: <Widget>[
+                PageView.builder(
+                  controller: pageIndicatorController,
+                  itemCount: activities.length,
+                  itemBuilder: (_, int index) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            widget.onItemPressed('nearbyActivities');
+                          },
+                          child: Container(
+                            height: 200.h,
+                            // width:
+                            //     315.w,
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.r),
+                              ),
+                              image: DecorationImage(
+                                image:
+                                    AssetImage(activities[index].featureImage),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child: Stack(
+                              children: <Widget>[
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.favorite_border),
+                                    onPressed: () {},
+                                    color: HexColor('#ffffff'),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    radius: 30,
+                                    backgroundImage:
+                                        AssetImage(activities[index].path),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Positioned(
+                  left: MediaQuery.of(context).size.width / 2.8,
+                  bottom: 20,
+                  child: SmoothPageIndicator(
+                      controller: pageIndicatorController,
+                      count: activities.length,
+                      effect: const ScrollingDotsEffect(
+                        activeDotColor: Colors.white,
+                        dotColor: Colors.white,
+                        activeStrokeWidth: 2.6,
+                        activeDotScale: 1.6,
+                        maxVisibleDots: 5,
+                        radius: 8,
+                        spacing: 10,
+                        dotHeight: 6,
+                        dotWidth: 6,
+                      )),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 5.w),
+            child: Row(
+              children: <Widget>[
+                Text(
+                  activities[index].name,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700),
+                ),
+                Spacer(),
+                Row(
                   children: <Widget>[
                     Container(
-                      height: 112.h,
-                      width: 168.w,
+                      height: 10.h,
+                      width: 10.w,
                       decoration: BoxDecoration(
                         color: Colors.transparent,
                         borderRadius: BorderRadius.all(
                           Radius.circular(15.r),
                         ),
-                        image: DecorationImage(
-                          image: AssetImage(activities[i].featureImage),
-                          fit: BoxFit.cover,
+                        image: const DecorationImage(
+                          image: AssetImage('assets/images/png/clock.png'),
+                          fit: BoxFit.contain,
                         ),
                       ),
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            bottom: 0,
-                            child: CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              radius: 30,
-                              backgroundImage: AssetImage(activities[i].path),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
-                    SizedBox(
-                      height: 5.h,
-                    ),
+                    // SizedBox(
+                    //   width: 2.w,
+                    // ),
                     Text(
-                      activities[i].name,
+                      activities[index].distance,
                       style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16.sp,
+                          color: HexColor('#696D6D'),
+                          fontSize: 11.sp,
                           fontFamily: 'Gilroy',
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          height: 10.h,
-                          width: 10.w,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15.r),
-                            ),
-                            image: const DecorationImage(
-                              image: AssetImage('assets/images/png/clock.png'),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 2.w,
-                        ),
-                        Text(
-                          activities[i].distance,
-                          style: TextStyle(
-                              color: HexColor('#696D6D'),
-                              fontSize: 11.sp,
-                              fontFamily: 'Gilroy',
-                              fontWeight: FontWeight.normal),
-                        ),
-                      ],
+                          fontWeight: FontWeight.normal),
                     ),
                   ],
                 ),
-              );
-            }),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
+  }
+
+  /// Navigate to Advertisement View
+  Future<void> checkAvailability(
+    BuildContext context,
+    ActivityPackage package,
+  ) async {
+    final Map<String, dynamic> details = {
+      'package': package,
+    };
+
+    await Navigator.pushNamed(context, '/checkActivityAvailabityScreen',
+        arguments: details);
   }
 
   Widget popularGuidesNearYou(
@@ -753,7 +1083,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
               'Popular guides near you!',
               style: TextStyle(
                   color: Colors.black,
-                  fontSize: 18.sp,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w700),
             ),
             GestureDetector(
@@ -774,91 +1104,117 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.25,
-          child: ListView(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            children: List<Widget>.generate(guides.length, (int i) {
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 20.h),
-                height: 180.h,
-                width: 220.w,
-                decoration: const BoxDecoration(
-                  color: Colors.transparent,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      height: 112.h,
-                      width: 220.w,
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(15.r),
+          child: FutureBuilder<List<User>>(
+              future: APIServices().getPopularGuides(), // async work
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  default:
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/popular_guides_list');
+                        },
+                        child: ListView(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          children: List<Widget>.generate(snapshot.data!.length,
+                              (int i) {
+                            return Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 5.w, vertical: 20.h),
+                              height: 180.h,
+                              width: 220.w,
+                              decoration: const BoxDecoration(
+                                color: Colors.transparent,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    height: 112.h,
+                                    width: 220.w,
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(15.r),
+                                      ),
+                                      image: DecorationImage(
+                                        image:
+                                            AssetImage(guides[1].featureImage),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Positioned(
+                                          bottom: 0,
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.transparent,
+                                            radius: 30,
+                                            backgroundImage:
+                                                AssetImage(guides[1].path),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5.h,
+                                  ),
+                                  Text(
+                                    snapshot.data![i].fullName ?? '',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16.sp,
+                                        fontFamily: 'Gilroy',
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Container(
+                                        height: 10.h,
+                                        width: 10.w,
+                                        decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(15.r),
+                                          ),
+                                          image: const DecorationImage(
+                                            image: AssetImage(
+                                                'assets/images/png/marker.png'),
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 2.w,
+                                      ),
+                                      Text(
+                                        '1 KM',
+                                        style: TextStyle(
+                                            color: HexColor('#696D6D'),
+                                            fontSize: 11.sp,
+                                            fontFamily: 'Gilroy',
+                                            fontWeight: FontWeight.normal),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
                         ),
-                        image: DecorationImage(
-                          image: AssetImage(guides[i].featureImage),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            bottom: 0,
-                            child: CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              radius: 30,
-                              backgroundImage: AssetImage(guides[i].path),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    Text(
-                      guides[i].name,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16.sp,
-                          fontFamily: 'Gilroy',
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          height: 10.h,
-                          width: 10.w,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15.r),
-                            ),
-                            image: const DecorationImage(
-                              image: AssetImage('assets/images/png/marker.png'),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 2.w,
-                        ),
-                        Text(
-                          guides[i].distance,
-                          style: TextStyle(
-                              color: HexColor('#696D6D'),
-                              fontSize: 11.sp,
-                              fontFamily: 'Gilroy',
-                              fontWeight: FontWeight.normal),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }),
-          ),
+                      );
+                    }
+                }
+              }),
         ),
       ],
     );
@@ -935,6 +1291,20 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
               )),
         ],
       ),
+    );
+  }
+
+  void _settingModalBottomSheet() {
+    show_avatar.showAvatarModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      expand: false,
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) => const PopularGuidesList(),
     );
   }
 }

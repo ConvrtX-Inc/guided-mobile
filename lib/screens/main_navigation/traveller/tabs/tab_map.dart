@@ -1,7 +1,8 @@
 // ignore_for_file: public_member_api_docs, use_named_constants
 
+import 'dart:io';
 import 'dart:math';
-
+import 'dart:ui';
 import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:custom_marker/marker_icon.dart';
@@ -14,14 +15,27 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'dart:async';
 
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/models/guide.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:guided/models/user_subscription.dart';
+import 'package:guided/screens/payments/confirm_payment.dart';
+import 'package:guided/screens/payments/payment_failed.dart';
+import 'package:guided/screens/payments/payment_method.dart';
+import 'package:guided/screens/payments/payment_successful.dart';
+import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
+import 'package:guided/screens/widgets/reusable_widgets/discovery_payment_details.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
+import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -41,6 +55,14 @@ class _TabMapScreenState extends State<TabMapScreen> {
   final SwiperController _cardController = SwiperController();
   final List<Guide> guides = StaticDataService.getGuideList();
   final List<Activity> activities = StaticDataService.getActivityList();
+  final List<Activity> tourList = StaticDataService.getTourList();
+  bool hideActivities = false;
+  bool showBottomScroll = true;
+  double activitiesContainer = 70;
+  int _selectedActivity = -1;
+
+  final CardController _creditCardController = Get.put(CardController());
+
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
   }
@@ -49,6 +71,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker(context));
     super.initState();
+
+/*    if (_creditCardController.cards.isEmpty) {
+      getUserCards();
+    }*/
   }
 
   Future<void> addMarker(BuildContext context) async {
@@ -57,33 +83,33 @@ class _TabMapScreenState extends State<TabMapScreen> {
         markerId: const MarkerId('marker1'),
         icon: await MarkerIcon.pictureAsset(
             assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
-        position: const LatLng(57.818582, -101.760181),
+            width: 90.w,
+            height: 90.h),
+        position: const LatLng(57.82224878819442, -101.7932965373715),
       ),
       Marker(
         markerId: const MarkerId('marker2'),
         icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
-        position: const LatLng(57.874333, -101.725262),
+            assetPath: 'assets/images/png/paddle_marker.png',
+            width: 120.w,
+            height: 120.h),
+        position: const LatLng(57.82402988598948, -101.79746701615878),
       ),
       Marker(
         markerId: const MarkerId('marker3'),
         icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
-        position: const LatLng(57.827880, -101.943505),
+            assetPath: 'assets/images/png/eco_marker1.png',
+            width: 120.w,
+            height: 120.h),
+        position: const LatLng(57.82263910866079, -101.78955246695332),
       ),
       Marker(
         markerId: const MarkerId('marker4'),
         icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/hunting_marker.png',
-            width: 150.w,
-            height: 150.h),
-        position: const LatLng(57.775161, -101.879487),
+            assetPath: 'assets/images/png/eco_marker2.png',
+            width: 120.w,
+            height: 120.h),
+        position: const LatLng(57.82432951675727, -101.7936172499416),
       ),
     ];
 
@@ -101,20 +127,22 @@ class _TabMapScreenState extends State<TabMapScreen> {
           children: <Widget>[
             GoogleMap(
               initialCameraPosition: const CameraPosition(
-                target: LatLng(57.818582, -101.760181),
-                zoom: 10,
+                target: LatLng(57.82288338460806, -101.78925425979324),
+                zoom: 12,
               ),
               markers: Set<Marker>.of(_markers),
               onMapCreated: _onMapCreated,
               zoomControlsEnabled: false,
             ),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20),
+              margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 color: HexColor('#F8F7F6'),
               ),
-              height: MediaQuery.of(context).size.height * 0.32,
+              height: hideActivities
+                  ? MediaQuery.of(context).size.height * 0.23
+                  : MediaQuery.of(context).size.height * 0.35,
               width: MediaQuery.of(context).size.width,
               child: Column(
                 children: <Widget>[
@@ -245,35 +273,54 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     ],
                   ),
                   SizedBox(
-                    height: 40.h,
+                    height: hideActivities ? 20 : 40.h,
                   ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
-                    height: 50,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: List.generate(activities.length, (int index) {
-                        return Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: AssetImage(activities[index].path),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
+                  // Container(
+                  //   margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
+                  //   height: 50,
+                  //   child: ListView(
+                  //     scrollDirection: Axis.horizontal,
+                  //     children: List.generate(activities.length, (int index) {
+                  //       return Container(
+                  //         height: 40,
+                  //         width: 40,
+                  //         decoration: BoxDecoration(
+                  //           color: Colors.transparent,
+                  //           shape: BoxShape.circle,
+                  //           image: DecorationImage(
+                  //             image: AssetImage(activities[index].path),
+                  //             fit: BoxFit.cover,
+                  //           ),
+                  //         ),
+                  //       );
+                  //     }),
+                  //   ),
+                  // ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: activitiesContainer,
+                    child:
+                        hideActivities ? Container() : overlapped(activities),
                   ),
-                  const Spacer(),
-                  const Align(
-                    child: Icon(
-                      Icons.expand_less,
-                      // color: HexColor('#979B9B'),
-                      size: 30,
+                  // const Spacer(),
+                  Align(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (hideActivities) {
+                            hideActivities = false;
+                            activitiesContainer = 70;
+                          } else {
+                            hideActivities = true;
+                            activitiesContainer = 0;
+                          }
+                        });
+                      },
+                      child: Icon(
+                        hideActivities ? Icons.expand_more : Icons.expand_less,
+                        // color: HexColor('#979B9B'),
+                        size: 30,
+                      ),
                     ),
                   ),
                 ],
@@ -284,79 +331,121 @@ class _TabMapScreenState extends State<TabMapScreen> {
               child: Container(
                   color: Colors.white,
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.24,
+                  height: showBottomScroll
+                      ? MediaQuery.of(context).size.height * 0.24
+                      : 40,
                   child: Column(
                     children: <Widget>[
                       SizedBox(
                         height: 5.h,
                       ),
-                      Icon(
-                        Icons.expand_more,
-                        color: HexColor('#979B9B'),
-                        size: 30,
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (showBottomScroll) {
+                              showBottomScroll = false;
+                            } else {
+                              showBottomScroll = true;
+                            }
+                          });
+                        },
+                        child: Icon(
+                          showBottomScroll
+                              ? Icons.expand_more
+                              : Icons.expand_less,
+                          color: HexColor('#979B9B'),
+                          size: 30,
+                        ),
                       ),
-                      Expanded(
-                        child: ListView(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          children:
-                              List<Widget>.generate(activities.length, (int i) {
-                            return Container(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 5.w, vertical: 20.h),
-                              height: 180.h,
-                              width: 135.w,
-                              decoration: const BoxDecoration(
-                                color: Colors.transparent,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    'Guided News Feed',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 12.sp,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 10.h,
-                                  ),
-                                  Container(
-                                    height: 90.h,
+                      if (showBottomScroll)
+                        Expanded(
+                          child: ListView(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            children:
+                                List<Widget>.generate(tourList.length, (int i) {
+                              return InkWell(
+                                  onTap: () {
+                                    // Navigator.of(context)
+                                    //     .pushNamed('/discovery_map');
+                                    _showDiscoveryBottomSheet(
+                                        tourList[i].featureImage);
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 5.w, vertical: 20.h),
+                                    height: 180.h,
                                     width: 135.w,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Colors.transparent,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(15.r),
-                                      ),
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                            activities[i].featureImage),
-                                        fit: BoxFit.cover,
-                                      ),
                                     ),
-                                    child: Stack(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        Positioned(
-                                          bottom: 0,
-                                          child: CircleAvatar(
-                                            backgroundColor: Colors.transparent,
-                                            radius: 17,
-                                            backgroundImage:
-                                                AssetImage(activities[i].path),
+                                        Text(
+                                          tourList[i].name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 11.sp,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 10.h,
+                                        ),
+                                        Container(
+                                          height: 90.h,
+                                          width: 135.w,
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(15.r),
+                                            ),
+                                            image: DecorationImage(
+                                              image: AssetImage(
+                                                  tourList[i].featureImage),
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          child: Stack(
+                                            children: <Widget>[
+                                              Positioned(
+                                                bottom: 0,
+                                                child: CircleAvatar(
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  radius: 17,
+                                                  backgroundImage: AssetImage(
+                                                      tourList[i].path),
+                                                ),
+                                              ),
+                                              // if (UserSingleton.instance.user
+                                              //         .user!.email ==
+                                              //     'traveller1@abc.com')
+                                              Container(
+                                                height: 90.h,
+                                                width: 135.w,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.8),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(15.r),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
+                                  ));
+                            }),
+                          ),
+                        )
+                      else
+                        Container()
                     ],
                   )),
             )
@@ -367,41 +456,279 @@ class _TabMapScreenState extends State<TabMapScreen> {
   }
 
   Widget overlapped(List<Activity> activities) {
-    final overlap = 27.0;
+    final overlap = 30.0;
     final r = 15;
     final items = <Widget>[];
     double minus = 0;
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < AppListConstants.activityIcons.length; i++) {
       if (i < 5) {
         items.add(
-          CircleAvatar(
-            child: FittedBox(
-              child: Image.asset(activities[i].path),
-              fit: BoxFit.cover,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedActivity = i;
+              });
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 20,
+                    offset: Offset(0, 8), // changes position of shadow
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedActivity == i
+                            ? Colors.black
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: r.toDouble() + i.toDouble() + 5,
+                      backgroundImage:
+                          ExactAssetImage(AppListConstants.activityIcons[i]),
+                    ),
+                  ),
+                  Positioned(
+                      top: 2,
+                      right: 8,
+                      child: _selectedActivity == i
+                          ? Container(
+                              padding: EdgeInsets.all(1),
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 2,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.check,
+                                size: 10.h,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const SizedBox()),
+                ],
+              ),
             ),
-            radius: r.toDouble() + i.toDouble() + 5,
           ),
         );
         minus = r.toDouble() + i.toDouble() + 5;
       } else {
         items.add(
-          CircleAvatar(
-            child: Text(i.toString()),
-            backgroundColor:
-                Colors.primaries[Random().nextInt(Colors.primaries.length)],
-            radius: minus - i.toDouble() + 5,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedActivity = i;
+              });
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 20,
+                    offset: Offset(0, 8), // changes position of shadow
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedActivity == i
+                            ? Colors.black
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      // backgroundColor:
+                      //     Colors.primaries[Random().nextInt(Colors.primaries.length)],
+                      radius: minus - i.toDouble() + 4,
+                      backgroundImage:
+                          ExactAssetImage(AppListConstants.activityIcons[i]),
+                    ),
+                  ),
+                  Positioned(
+                    top: 2,
+                    right: 8,
+                    child: _selectedActivity == i
+                        ? Container(
+                            padding: EdgeInsets.all(1),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 2,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.check,
+                              size: 10.h,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const SizedBox(),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       }
     }
 
-    List<Widget> stackLayers = List<Widget>.generate(items.length, (index) {
+    List<Widget> stackLayersLeft =
+        List<Widget>.generate(items.getRange(0, 4).length, (index) {
       return Padding(
         padding: EdgeInsets.fromLTRB(index.toDouble() * overlap, 0, 0, 0),
         child: items[index],
       );
     });
-
-    return Stack(children: stackLayers);
+    List<Widget> stackLayersRight =
+        List<Widget>.generate(items.getRange(5, 9).length, (index) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(index.toDouble() * overlap, 0, 0, 0),
+        child: items[5 + index],
+      );
+    });
+    List<Widget> stackLayersCenter =
+        List<Widget>.generate(items.getRange(5, 5).length, (index) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(index.toDouble() * overlap, 0, 0, 0),
+        child: items[5],
+      );
+    });
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Positioned(
+          left: MediaQuery.of(context).size.width * 0.1,
+          child: Stack(
+            children: stackLayersLeft,
+          ),
+        ),
+        Positioned(
+          right: MediaQuery.of(context).size.width * 0.1,
+          child: Stack(
+            children: stackLayersRight,
+          ),
+        ),
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment.center,
+            child: items[4],
+          ),
+        ),
+        // Positioned(child: items[4]),
+      ],
+    );
   }
+
+  void _showDiscoveryBottomSheet(String backgroundImage) {
+    showCupertinoModalBottomSheet(
+        context: context,
+        isDismissible: true,
+        barrierColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        enableDrag: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext ctx) => DiscoveryBottomSheet(
+              backgroundImage: backgroundImage,
+              onSubscribeBtnPressed: () {
+                const double price = 5.99;
+                Navigator.of(ctx).pop();
+
+                paymentMethod(
+                    context: context,
+                    onCreditCardSelected: (CardModel card) {
+                      debugPrint('Payment Method:: ${card.cardNo}');
+                    },
+                    onContinueBtnPressed: (dynamic data) {
+                      String mode = '';
+                      if (data is CardModel) {
+                        mode = 'Credit Card';
+                      } else {
+                        mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
+                      }
+                      final String transactionNumber =
+                          GlobalMixin().generateTransactionNumber();
+                      confirmPaymentModal(
+                          context: context,
+                          serviceName: 'Premium Subscription',
+                          paymentMethod: data,
+                          paymentMode: mode,
+                          price: price,
+                          onPaymentSuccessful: () {
+                            Navigator.of(context).pop();
+                            saveSubscription(transactionNumber, 'Premium Subscription');
+                            //Save Subscription
+                            paymentSuccessful(
+                                context: context,
+                                paymentDetails: DiscoveryPaymentDetails(
+                                    transactionNumber: transactionNumber),
+                                paymentMethod: mode);
+                          },
+                          onPaymentFailed: (){
+                            paymentFailed(
+                                context: context,
+                                paymentDetails: DiscoveryPaymentDetails(
+                                    transactionNumber: transactionNumber),
+                                paymentMethod: mode);
+                          },
+                          paymentDetails: DiscoveryPaymentDetails(
+                              transactionNumber: transactionNumber));
+                    },
+                    price: price);
+              },
+              onSkipBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+              onCloseBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+              onBackBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+            ));
+  }
+
+  Future<void> saveSubscription(String transactionNumber, String subscriptionName) async {
+    final DateTime startDate = DateTime.now();
+
+    final DateTime endDate = GlobalMixin().getEndDate(startDate);
+
+    final UserSubscription subscriptionParams = UserSubscription(
+      paymentReferenceNo: transactionNumber,
+      name: subscriptionName,
+      startDate: startDate.toString(),
+      endDate:  endDate.toString()
+    );
+
+    final APIStandardReturnFormat result = await APIServices().addUserSubscription(subscriptionParams);
+
+    debugPrint('subscription result ${result.successResponse}');
+
+  }
+
 }

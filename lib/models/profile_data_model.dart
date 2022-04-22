@@ -1,19 +1,11 @@
-// ignore_for_file:, sort_constructors_first
-
-/// Profile Model
-class ProfileModelData {
-  /// Constructor
-  ProfileModelData({required this.profileDetails});
-
-  /// profile details
-  late List<ProfileDetailsModel> profileDetails = <ProfileDetailsModel>[];
-}
-
 /// Profile Details Model
+// ignore_for_file: sort_constructors_first
+
 class ProfileDetailsModel {
   /// Constructor
   ProfileDetailsModel(
       {this.id = '',
+      this.fullName = '',
       this.firstName = '',
       this.lastName = '',
       this.email = '',
@@ -22,11 +14,19 @@ class ProfileDetailsModel {
       this.about = ''});
 
   /// String initialization
-  final String id, firstName, lastName, email, phoneNumber, countryCode, about;
+  final String id,
+      fullName,
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      countryCode,
+      about;
 
   /// mapping
   ProfileDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
+        fullName = parseJson['full_name'] ?? '',
         firstName = parseJson['first_name'] ?? '',
         lastName = parseJson['last_name'] ?? '',
         email = parseJson['email'] ?? '',

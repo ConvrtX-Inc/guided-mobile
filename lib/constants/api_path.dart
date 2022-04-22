@@ -10,12 +10,18 @@ class AppAPIPath {
   /// Returns API mode
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
 
+  ///Returns mode : (dev | staging | local )
+  static String mode = 'staging';
+
   /// Returns API base url
-  static String apiBaseUrl = 'guided-api-dev.herokuapp.com';
-  // static String apiBaseUrl = '192.168.1.7:3000';
+  static String apiBaseUrl = getBaseUrl(mode);
+
 
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
+
+  /// Returns facebook url
+  static String facebookLogin = 'api/v1/auth/facebook/login';
 
   /// Returns user Type url
   static String userTpye = 'api/v1/user-types';
@@ -42,6 +48,9 @@ class AppAPIPath {
 
   /// Returns sign up url
   static String signupUrl = 'api/v1/auth/email/register';
+
+  /// Returns request booking
+  static String requestBooking = 'api/v1/booking-requests';
 
   /// Returns create advertisement url
   static String createAdvertisementUrl = 'api/v1/activity-advertisement';
@@ -82,6 +91,16 @@ class AppAPIPath {
   /// Returns activity packages url
   static String activityPackagesUrl = 'api/v1/activity-packages';
 
+  /// Returns closest-activity url
+  static String closestActivity = 'api/v1/activity-packages/closest-activity';
+
+  /// Returns popular guides url
+  static String popularGuides = 'api/v1/nearby-activities/popular-guides-list';
+
+  /// Returns activity-availability-hours
+  static String activityAvailabilityHours =
+      'api/v1/activity-availability-hours/date-range';
+
   /// Returns activity destination image url
   static String activityDestinationImage =
       'api/v1/activity-package-destination-images';
@@ -112,9 +131,8 @@ class AppAPIPath {
   /// Returns activity event
   static String activityEventUrl = 'api/v1/activity-events';
 
-   /// Returns event image
+  /// Returns event image
   static String getEventImage = 'api/v1/activity-event-image';
-
 
   /// Returns transactions
   static String getTransactions = 'api/v1/transactions';
@@ -123,5 +141,60 @@ class AppAPIPath {
   ///Return transactions by-guide
   static String getTransactionsByGuide = 'api/v1/transactions/byguide/transaction';
 
+  /// Returns terms and condition url
+  static String getTermsAndCondtion = 'api/v1/terms-and-conditons';
+
+  /// Returns activity advertisement image url
+  static String eventImageUrl = 'api/v1/activity-event-image';
+
+  /// Returns badges url
+  static String badgesUrl = 'api/v1/badges';
+
+  /// Returns bank account url
+  static String bankAccountUrl = 'api/v1/bank-account';
+
+  /// Returns booking dates
+  static String createSlotAvailability =
+      'api/v1/activity-availabilities/create-slot-availability';
+
+  ///Returns  card url
+  static String cardUrl = '/api/v1/card';
+
+  /// Returns booking dates and hour
+  static String createSlotAvailabilityHour =
+      'api/v1/activity-availability-hours';
+
+  /// Returns Terms and Condition url
+  static String termsAndCondition = 'api/v1/terms-and-conditions';
+
+  /// Returns Users Terms and Condition url
+  static String usersTermsAndCondition = 'api/v1/users-terms-and-conditions';
+
+  ///Returns  payment url
+  static String paymentUrl = '/api/v1/charge';
+
+  ///Returns  subscription url
+  static String userSubscription = '/api/v1/user-subscription';
+
+  /// Returns activity availabilities url
+  static String activityAvailability = 'api/v1/activity-availabilities';
+
+  ///Returns payment intent url
+ static String paymentIntentUrl = 'api/v1/payment-intent';
+
+ ///Returns user transactions url
+ static String userTransactionsUrl = 'api/v1/transactions';
+}
+
+///Get Api Base Url
+getBaseUrl(String mode) {
+  switch (mode) {
+    case 'local':
+      return '192.168.100.55:3000';
+    case 'dev':
+      return 'guided-api-dev.herokuapp.com';
+    case 'staging':
+      return 'guided-api-staging.herokuapp.com';
+  }
 
 }

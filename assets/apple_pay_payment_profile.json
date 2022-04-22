@@ -1,0 +1,18 @@
+{
+  "provider": "apple_pay",
+  "data": {
+    "merchantIdentifier": "merchant.flutter.stripe.test",
+    "displayName": "Guided",
+    "merchantCapabilities": ["3DS"],
+    "supportedNetworks": [
+      "amex",
+      "visa",
+      "discover",
+      "mastercard"
+    ],
+    "countryCode": "US",
+    "currencyCode": "USD",
+    "shippingMethods": [
+    ]
+  }
+}

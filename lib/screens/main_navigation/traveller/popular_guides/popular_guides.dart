@@ -20,7 +20,9 @@ import 'package:guided/models/guide.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/utils/services/static_data_services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 /// PopularGuides
 class PopularGuides extends StatefulWidget {
@@ -39,12 +41,14 @@ class _PopularGuidesState extends State<PopularGuides> {
   final travellerMonthController = Get.put(TravellerMonthController());
   final SwiperController _cardController = SwiperController();
   final List<Guide> guides = StaticDataService.getGuideList();
+  final PageController page_indicator_controller = PageController();
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
   }
 
   @override
   void initState() {
+    initializeDateFormatting('en', null);
     WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker(context));
     super.initState();
   }
@@ -327,21 +331,25 @@ class _PopularGuidesState extends State<PopularGuides> {
                                       (TravellerMonthController controller) {
                                     print(controller.currentDate);
                                     return Container(
-                                        padding: EdgeInsets.fromLTRB(
-                                            20.w, 0.h, 20.w, 0.h),
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.4,
-                                        child: Sfcalendar(
-                                            context,
-                                            travellerMonthController
-                                                .currentDate));
+                                      padding: EdgeInsets.fromLTRB(
+                                          20.w, 0.h, 20.w, 0.h),
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.4,
+                                      child: Sfcalendar(
+                                        context,
+                                        travellerMonthController.currentDate,
+                                        ((value) {
+                                          print(value);
+                                        }),
+                                      ),
+                                    );
                                   }),
                               // SizedBox(
                               //   height: 20.h,
                               // ),
                               SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.3,
+                                width: 153.w,
                                 height: 54.h,
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -397,185 +405,156 @@ class _PopularGuidesState extends State<PopularGuides> {
                                                     ),
                                                   ),
                                                   Expanded(
-                                                      child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 20.w,
-                                                        right: 20.w),
-                                                    child: Swiper(
-                                                      controller:
-                                                          _cardController,
-                                                      itemBuilder:
-                                                          (BuildContext context,
-                                                              int index) {
-                                                        return Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
+                                                    child: Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 20.w,
+                                                                right: 20.w),
+                                                        child: Stack(
                                                           children: <Widget>[
-                                                            Container(
-                                                              height: 200.h,
-                                                              // width:
-                                                              //     315.w,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                color: Colors
-                                                                    .transparent,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          15.r),
-                                                                ),
-                                                                image:
-                                                                    DecorationImage(
-                                                                  image: AssetImage(
-                                                                      guides[index]
-                                                                          .featureImage),
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                ),
-                                                              ),
-                                                              child: Stack(
-                                                                children: <
-                                                                    Widget>[
-                                                                  Positioned(
-                                                                    top: 0,
-                                                                    right: 0,
-                                                                    child:
-                                                                        IconButton(
-                                                                      icon: const Icon(
-                                                                          Icons
-                                                                              .favorite_border),
-                                                                      onPressed:
-                                                                          () {},
-                                                                      color: HexColor(
-                                                                          '#ffffff'),
-                                                                    ),
-                                                                  ),
-                                                                  Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .centerLeft,
-                                                                    child:
-                                                                        Container(
-                                                                      transform:
-                                                                          Matrix4.translationValues(
-                                                                              -15,
-                                                                              0,
-                                                                              0),
+                                                            PageView.builder(
+                                                              controller:
+                                                                  page_indicator_controller,
+                                                              itemCount:
+                                                                  guides.length,
+                                                              itemBuilder: (_,
+                                                                  int index) {
+                                                                return Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    GestureDetector(
+                                                                      onTap:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pushNamed('/checkAvailability');
+                                                                      },
                                                                       child:
-                                                                          IconButton(
-                                                                        onPressed:
-                                                                            () async {
-                                                                          await _cardController
-                                                                              .previous();
-                                                                        },
-                                                                        icon:
-                                                                            const Icon(
-                                                                          Icons
-                                                                              .chevron_left,
-                                                                          size:
-                                                                              50,
+                                                                          Container(
+                                                                        height:
+                                                                            200.h,
+                                                                        // width:
+                                                                        //     315.w,
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          color:
+                                                                              Colors.transparent,
+                                                                          borderRadius:
+                                                                              BorderRadius.all(
+                                                                            Radius.circular(15.r),
+                                                                          ),
+                                                                          image:
+                                                                              DecorationImage(
+                                                                            image:
+                                                                                AssetImage(guides[index].featureImage),
+                                                                            fit:
+                                                                                BoxFit.cover,
+                                                                          ),
+                                                                        ),
+                                                                        child:
+                                                                            Stack(
+                                                                          children: <
+                                                                              Widget>[
+                                                                            Positioned(
+                                                                              top: 0,
+                                                                              right: 0,
+                                                                              child: IconButton(
+                                                                                icon: const Icon(Icons.favorite_border),
+                                                                                onPressed: () {},
+                                                                                color: HexColor('#ffffff'),
+                                                                              ),
+                                                                            ),
+                                                                          ],
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                  Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .centerRight,
-                                                                    child:
-                                                                        IconButton(
-                                                                      onPressed:
-                                                                          () async {
-                                                                        await _cardController
-                                                                            .next();
-                                                                      },
-                                                                      icon:
-                                                                          const Icon(
-                                                                        Icons
-                                                                            .chevron_right,
-                                                                        size:
-                                                                            50,
+                                                                    SizedBox(
+                                                                      height:
+                                                                          4.h,
+                                                                    ),
+                                                                    Padding(
+                                                                      padding:
+                                                                          const EdgeInsets.all(
+                                                                              8.0),
+                                                                      child:
+                                                                          Row(
+                                                                        children: <
+                                                                            Widget>[
+                                                                          Icon(
+                                                                            Icons.star,
+                                                                            color:
+                                                                                HexColor('#066028'),
+                                                                            size:
+                                                                                10,
+                                                                          ),
+                                                                          Text(
+                                                                            '16 review',
+                                                                            style: TextStyle(
+                                                                                color: HexColor('#979B9B'),
+                                                                                fontSize: 12.sp,
+                                                                                fontWeight: FontWeight.normal),
+                                                                          ),
+                                                                        ],
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                ],
-                                                              ),
+                                                                    Text(
+                                                                      "St. John's, Newfoundland",
+                                                                      style: TextStyle(
+                                                                          color: Colors
+                                                                              .black,
+                                                                          fontSize: 16
+                                                                              .sp,
+                                                                          fontWeight:
+                                                                              FontWeight.w700),
+                                                                    ),
+                                                                    Text(
+                                                                      '\$50/ Person',
+                                                                      style: TextStyle(
+                                                                          color: HexColor(
+                                                                              '#3E4242'),
+                                                                          fontSize: 16
+                                                                              .sp,
+                                                                          fontWeight:
+                                                                              FontWeight.normal),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              },
                                                             ),
-                                                            SizedBox(
-                                                              height: 4.h,
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child: Row(
-                                                                children: <
-                                                                    Widget>[
-                                                                  Icon(
-                                                                    Icons.star,
-                                                                    color: HexColor(
-                                                                        '#066028'),
-                                                                    size: 10,
-                                                                  ),
-                                                                  Text(
-                                                                    '16 review',
-                                                                    style: TextStyle(
-                                                                        color: HexColor(
-                                                                            '#979B9B'),
-                                                                        fontSize: 12
-                                                                            .sp,
-                                                                        fontWeight:
-                                                                            FontWeight.normal),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              "St. John's, Newfoundland",
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontSize:
-                                                                      16.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700),
-                                                            ),
-                                                            Text(
-                                                              '\$50/ Person',
-                                                              style: TextStyle(
-                                                                  color: HexColor(
-                                                                      '#3E4242'),
-                                                                  fontSize:
-                                                                      16.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .normal),
+                                                            Align(
+                                                              child:
+                                                                  SmoothPageIndicator(
+                                                                      controller:
+                                                                          page_indicator_controller,
+                                                                      count: guides
+                                                                          .length,
+                                                                      effect:
+                                                                          const ScrollingDotsEffect(
+                                                                        activeDotColor:
+                                                                            Colors.white,
+                                                                        dotColor:
+                                                                            Colors.white,
+                                                                        activeStrokeWidth:
+                                                                            2.6,
+                                                                        activeDotScale:
+                                                                            1.6,
+                                                                        maxVisibleDots:
+                                                                            5,
+                                                                        radius:
+                                                                            8,
+                                                                        spacing:
+                                                                            10,
+                                                                        dotHeight:
+                                                                            6,
+                                                                        dotWidth:
+                                                                            6,
+                                                                      )),
                                                             ),
                                                           ],
-                                                        );
-                                                      },
-                                                      autoplay: true,
-                                                      itemCount: guides.length,
-                                                      // pagination: const SwiperPagination(
-                                                      //     builder:
-                                                      //         SwiperPagination
-                                                      //             .fraction),
-                                                      // pagination: SwiperCustomPagination(builder:
-                                                      //     (BuildContext
-                                                      //             context,
-                                                      //         SwiperPluginConfig
-                                                      //             config) {
-                                                      //   return Container();
-                                                      // }),
-                                                      // control: const SwiperControl(
-                                                      //     color: Colors
-                                                      //         .black),
-                                                    ),
-                                                  )),
+                                                        )),
+                                                  ),
                                                 ],
                                               ),
                                             ),

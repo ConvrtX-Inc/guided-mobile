@@ -23,15 +23,31 @@ class EventDetailsModel {
     this.userId = '',
     this.badgeId = '',
     this.title = '',
+    this.freeService = '',
+    this.mainActivities = '',
+    this.subActivities = '',
     this.country = '',
     this.address = '',
     this.description = '',
     this.fee = '',
+    this.eventDate,
     this.isPublished = false,
   });
 
   /// String property initialization
-  final String id, userId, badgeId, title, country, address, description, fee;
+  final String id,
+      userId,
+      badgeId,
+      title,
+      country,
+      address,
+      description,
+      fee,
+      freeService,
+      mainActivities,
+      subActivities;
+
+  final DateTime? eventDate;
 
   /// boolean initialization
   final bool isPublished;
@@ -39,11 +55,15 @@ class EventDetailsModel {
   EventDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
         userId = parseJson['user_id'],
-        badgeId = parseJson['badge_id'],
-        title = parseJson['title'],
-        country = parseJson['country'],
-        address = parseJson['address'],
-        description = parseJson['description'],
-        fee = parseJson['price'],
+        badgeId = parseJson['badge_id'] ?? '',
+        title = parseJson['title'] ?? '',
+        freeService = parseJson['free_service'] ?? '',
+        mainActivities = parseJson['main_activities'] ?? '',
+        subActivities = parseJson['sub_activities'] ?? '',
+        country = parseJson['country'] ?? '',
+        address = parseJson['address'] ?? '',
+        description = parseJson['description'] ?? '',
+        fee = parseJson['price'] ?? '',
+        eventDate = DateTime.parse(parseJson['event_date']),
         isPublished = parseJson['is_published'];
 }

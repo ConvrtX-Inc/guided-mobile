@@ -25,8 +25,7 @@ class UserModel {
 
 class User {
   String? id;
-  String? fullname;
-  String? password;
+  String? fullName;
   String? firstName;
   String? lastName;
   String? email;
@@ -41,7 +40,7 @@ class User {
   Null? releaseWaiverData;
   String? userTypeId;
   String? provider;
-  Null? socialId;
+  String? socialId;
   bool? isVerified;
   bool? isOnline;
   String? createdDate;
@@ -54,8 +53,7 @@ class User {
 
   User(
       {this.id,
-      this.fullname,
-      this.password,
+      this.fullName,
       this.firstName,
       this.lastName,
       this.email,
@@ -84,8 +82,7 @@ class User {
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    fullname = json['full_name'];
-    password = json['password'];
+    fullName = json['full_name'];
     firstName = json['first_name'];
     lastName = json['last_name'];
     email = json['email'];
@@ -115,8 +112,9 @@ class User {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = id;
-    data['full_name'] = fullname;
-    data['first_name'] = firstName;
+    data['full_name'] = fullName;
+    data['first_name'
+        ''] = firstName;
     data['last_name'] = lastName;
     data['email'] = email;
     data['phone_no'] = phoneNo;
@@ -148,5 +146,5 @@ class UserSingleton {
   static final UserSingleton _singleton = UserSingleton._internal();
   UserSingleton._internal();
   static UserSingleton get instance => _singleton;
-  late UserModel user;
+  UserModel user = UserModel();
 }

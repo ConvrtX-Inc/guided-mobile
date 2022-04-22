@@ -10,7 +10,7 @@ class AdvertisementModelData {
       <AdvertisementDetailsModel>[];
 
   /// mapping
-  
+
   AdvertisementModelData.fromJson(List<dynamic> parseJson)
       : advertisementDetails = parseJson
             .map((i) => AdvertisementDetailsModel.fromJson(i))
@@ -26,6 +26,7 @@ class AdvertisementDetailsModel {
       this.title = '',
       this.country = '',
       this.address = '',
+      this.activities = '',
       this.street = '',
       this.city = '',
       this.province = '',
@@ -42,6 +43,7 @@ class AdvertisementDetailsModel {
       title,
       country,
       address,
+      activities,
       description,
       price,
       street,
@@ -58,16 +60,17 @@ class AdvertisementDetailsModel {
   AdvertisementDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
         userId = parseJson['user_id'],
-        title = parseJson['title'],
-        country = parseJson['country'],
-        address = parseJson['address'],
-        street = parseJson['street'],
-        city = parseJson['city'],
-        province = parseJson['province'],
-        zipCode = parseJson['zip_code'],
+        title = parseJson['title'] ?? '',
+        country = parseJson['country'] ?? '',
+        address = parseJson['address'] ?? '',
+        activities = parseJson['activities'] ?? '',
+        street = parseJson['street'] ?? '',
+        city = parseJson['city'] ?? '',
+        province = parseJson['province'] ?? '',
+        zipCode = parseJson['zip_code'] ?? '',
         adDate = DateTime.parse(parseJson['ad_date']),
-        description = parseJson['description'],
-        price = parseJson['price'],
+        description = parseJson['description'] ?? '',
+        price = parseJson['price'] ?? '',
         isPublished = parseJson['is_published'],
         createdDate = DateTime.parse(parseJson['created_date']);
 }

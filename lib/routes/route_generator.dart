@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/screens/activities/activities.dart';
+import 'package:guided/screens/auths/splashes/splash.dart';
+import 'package:guided/screens/bank_accounts/add_bank_account.dart';
+import 'package:guided/screens/bank_accounts/manage_payment.dart';
 
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/dicovery/discovery.dart';
+import 'package:guided/screens/dicovery/discovery_map.dart';
 import 'package:guided/screens/faq/faq.dart';
 
 import 'package:guided/screens/auths/logins/screens/login_screen.dart';
@@ -15,10 +20,23 @@ import 'package:guided/screens/auths/verifications/screens/reset_password_screen
 import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/faq/faq.dart';
+import 'package:guided/screens/home/availability_booking_dates.dart';
 
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
 import 'package:guided/screens/main_navigation/content/event/event_add.dart';
+import 'package:guided/screens/main_navigation/content/event/event_edit.dart';
+import 'package:guided/screens/main_navigation/content/event/event_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/package_view.dart';
+import 'package:guided/screens/main_navigation/content/packages/packages_edit.dart';
+import 'package:guided/screens/main_navigation/traveller/booking_journey/details.dart';
+import 'package:guided/screens/main_navigation/traveller/check_availability/check_availability.dart';
+import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
+import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_view.dart';
+import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_traveler_limit_schedules.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_view.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub_view.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_inbox.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_map.dart';
 
@@ -38,6 +56,9 @@ import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_contact_us.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_guided_payments_payout_terms.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_local_laws_taxes_form.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_switch_user_type.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_availability.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_become_a_guide.dart';
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
@@ -54,6 +75,16 @@ import 'package:guided/screens/packages/create_package/package_photos_screen.dar
 import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
+import 'package:guided/screens/payments/payment_add_card.dart';
+
+import 'package:guided/screens/profile/main_profile.dart';
+import 'package:guided/screens/profile/reviews_profile.dart';
+
+import 'package:guided/screens/payments/payment_edit_card.dart';
+import 'package:guided/screens/payments/payment_manage_card.dart';
+import 'package:guided/screens/refunds/guide/refund.dart';
+import 'package:guided/screens/refunds/traveler/request_refund.dart';
+
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
@@ -65,6 +96,12 @@ import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:guided/screens/transaction_notifications/transaction_history_main.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
+
+import '../screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
+import '../screens/main_navigation/traveller/booking_journey/check_activity_availability.dart';
+import '../screens/main_navigation/traveller/booking_journey/go_to_paymentmethod.dart';
+import '../screens/main_navigation/traveller/booking_journey/guide_screen.dart';
+import '../screens/main_navigation/traveller/booking_journey/request_to_book.dart';
 
 /// Route generator configuration
 class RouteGenerator {
@@ -78,15 +115,16 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const NotificationScreen());
       case '/login':
-        return MaterialPageRoute<dynamic>(builder: (_) => const LoginScreen());
+        return MaterialPageRoute<dynamic>(
+          builder: (_) => const LoginScreen(),
+        );
       case '/message_filter':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const MessageFilterScreen());
       case '/message_inbox':
         return MaterialPageRoute<dynamic>(builder: (_) => const MessageInbox());
       case '/message_individual':
-        return MaterialPageRoute<dynamic>(
-            builder: (_) => const MessageIndividual());
+        return MaterialPageRoute<dynamic>(builder: (_) => MessageIndividual());
       case '/message_custom_offer':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const MessageCustomOffer());
@@ -104,10 +142,11 @@ class RouteGenerator {
             builder: (_) => const CreatePackageScreen());
       case '/calendar_availability':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const CalendarAvailabilityScreen());
+            builder: (_) => const CalendarAvailabilityScreen(),
+            settings: settings);
       case '/set_booking_date':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const SetBookingDateScreen());
+            builder: (_) => const SetBookingDateScreen(), settings: settings);
       case '/guide_rule':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const GuideRulesScreen(), settings: settings);
@@ -180,16 +219,17 @@ class RouteGenerator {
 
       case '/terms_and_condition':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TermsAndCondition());
+            builder: (_) => const TermsAndCondition(), settings: settings);
       case '/faq':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const FrequentlyAskQuestion());
       case '/cancellation_policy':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const CancellationPolicy());
+            builder: (_) => const CancellationPolicy(), settings: settings);
       case '/waiver_form':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TravelerReleaseAndWaiverForm());
+            builder: (_) => const TravelerReleaseAndWaiverForm(),
+            settings: settings);
       case '/verification_code':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ResetVerifyPhone(), settings: settings);
@@ -208,10 +248,11 @@ class RouteGenerator {
             builder: (_) => const SettingsContactUs());
       case '/guide_payment_payout_terms':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const GuidedPaymentPayoutTerms());
+            builder: (_) => const GuidedPaymentPayoutTerms(),
+            settings: settings);
       case '/local_laws_taxes_form':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const LocalLawsTaxesForm());
+            builder: (_) => const LocalLawsTaxesForm(), settings: settings);
       case '/request_filter':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RequestFilterScreen());
@@ -221,6 +262,9 @@ class RouteGenerator {
       case '/discovery':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const DiscoveryScreen(), settings: settings);
+      case '/discovery_map':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const DiscoveryMapScreen(), settings: settings);
       case '/activities':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ActivitiesScreen(), settings: settings);
@@ -233,12 +277,108 @@ class RouteGenerator {
                   initIndex: 0,
                 ),
             settings: settings);
-      case '/traveller_map':
+      case '/checkAvailability':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CheckAvailability(), settings: settings);
+      case '/discovery_hub':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TabDiscoveryHub());
+      case '/discovery_hub_outfitter':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TabDiscoveryHubOutfitter());
+      case '/discovery_hub_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TabDiscoveryHubView(), settings: settings);
+      case '/discovery_hub_outfitter_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const HubOutfitterView(), settings: settings);
+      case '/event_add':
+        return MaterialPageRoute<dynamic>(builder: (_) => const EventAdd());
+      case '/event_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const EventView(), settings: settings);
+      case '/event_edit':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const EventEdit(), settings: settings);
+      case '/availability_booking_dates':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AvailabilityBookingDateScreen(),
+            settings: settings);
+      case '/main_profile':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const MainProfileScreen());
+      case '/reviews_profile':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ReviewsProfileScreen());
+      case '/payment':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TabMapScreen(), settings: settings);
       case '/transaction_history':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TransactionHistoryMain(), settings: settings);
+      case '/':
+        return MaterialPageRoute<dynamic>(builder: (_) => const Splash());
+      case '/package_edit':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PackageEdit(), settings: settings);
+      case '/settingsCalendarManagement':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsCalendarManagement(),
+            settings: settings);
+      case '/checkActivityAvailabityScreen':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CheckActivityAvailabityScreen(),
+            settings: settings);
+      case '/travellerBookingDetailsScreen':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TravellerBookingDetailsScreen(),
+            settings: settings);
+      case '/requestToBookScreen':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const RequestToBookScreen(), settings: settings);
+      case '/goToPaymentMethod':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const GoToPaymentMethod(), settings: settings);
+      case '/add_bank_account':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AddBankAccountScreen());
+      case '/manage_payment':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ManagePayment());
+      case '/payment_edit_card':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => PaymentEditCard(card: args! as CardModel));
+      case '/switch_user_type':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsSwitchUserType());
+      case '/become_a_guide':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsBecomeAGuide());
+      case '/availability':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SettingsAvailability());
+      case '/popular_guides_list':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PopularGuidesList());
+      case '/popular_guides_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PopularGuidesView(
+                  initIndex: 0,
+                ),
+            settings: settings);
+      case '/add_card':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PaymentAddCard());
+      case '/popular_guides_traveler_limit_schedules':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PopularGuidesTravelerLimitSchedules());
+      case '/refund':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const RefundScreen());
+      case '/request_refund':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const RequestRefund());
+
       default:
         return _errorRoute();
     }

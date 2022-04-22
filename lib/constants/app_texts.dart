@@ -38,7 +38,7 @@ class AppTextConstants {
   static String inbox = 'Inbox';
 
   /// Returns default country text
-  static String defaultCountry = 'US';
+  static String defaultCountry = 'CA';
 
   /// Returns font name Gilroy
   static String fontGilroy = 'Gilroy';
@@ -269,7 +269,7 @@ class AppTextConstants {
   static String state = 'State';
 
   /// Returns postal code text
-  static String postalCode = 'Postal Code';
+  static String postalCode = 'Postal/Zip';
 
   /// Returns sample post code text
   static String postCode = '102000';
@@ -451,7 +451,7 @@ class AppTextConstants {
 
   /// Returns package description text
   static String packageDescr =
-      'Hi Tourist Guide,\nLets Get Started To Build Your Tour Package';
+      'Hi Guide,\nLets Get Started To Build Your Tour Package';
 
   /// Returns select badge text
   static String selectBadge =
@@ -478,7 +478,7 @@ class AppTextConstants {
   static String headerGuideRules = 'Guide Rules & What To Bring';
 
   /// Returns I agree with local laws
-  static String agreeLocalLaws = 'I agree with local laws and taxes terms';
+  static String agreeLocalLaws = 'I agree with the Local laws and Taxes terms';
 
   /// Returns I agree with Terms & Conditions
   static String agreeWithTermsConditions = 'I Agree With Terms & Conditions';
@@ -490,7 +490,7 @@ class AppTextConstants {
   static String save = 'Save';
 
   /// Returns header local laws text
-  static String headerLocalLaws = 'Your local laws and taxes';
+  static String headerLocalLaws = 'LOCAL LAWS';
 
   /// Returns header location text
   static String headerLocation = 'Where is your location?';
@@ -503,7 +503,7 @@ class AppTextConstants {
   static String placeHint = 'Your place name/number + Street/ Road';
 
   /// Returns zip code text
-  static String zipCode = 'Zip code';
+  static String zipCode = 'Postal/Zip';
 
   /// Returns minimum and maximum number
   static String headerMinMax = 'Minimum & Maximum Number of Travelers';
@@ -772,7 +772,7 @@ class AppTextConstants {
 
   /// Returns are you sure you want to remove card
   static String areYouSureYouWantToRemoveCard =
-      'Are you sure you want to remove card';
+      'Are you sure you want to remove card?';
 
   /// Returns confirm
   static String confirm = 'Confirm';
@@ -852,6 +852,255 @@ class AppTextConstants {
 
   /// Returns Fee text
   static String fee = 'Fee (if applicable)';
+
+  /// Returns visit site text
+  static String visitSite = 'Visit Site';
+
+  /// Returns create event text
+  static String createEvent = 'Create Event';
+
+  /// Returns view more text
+  static String viewMore = 'View More';
+
+  /// Returns activity text
+  static String activity = 'Activity';
+
+  /// Returns post event text
+  static String postEvent1 = 'Post Event';
+
+  /// Returns remove current location text
+  static String removeCurrentLocation = 'Remove Current Location';
+
+  /// Returns I agree with Guide Rules
+  static String agreeWithGuideRules =
+      'I agree with the Guide Rules & What To Bring Condition';
+
+  /// Returns I agree with Terms & Conditions
+  static String agreeWithWaiver = 'I agree with the Waiver Condition';
+
+  /// Returns new splash screen
+  // static String theGreatOutdoors = 'The Great Outdoors Just';
+
+  ///Returns add bank account text
+  static String addBankAccount = 'Add Bank Account';
+
+  ///Returns bank information text
+  static String bankInformation = 'Bank Information';
+
+  ///Returns account name text
+  static String accountName = 'Name on Account';
+
+  ///Returns bank name text
+  static String bankName = 'Bank Name';
+
+  ///Returns Account Number text
+  static String accountNumber = 'Account Number';
+
+  ///Returns Type Here text
+  static String typeHere = 'Type Here';
+
+  ///Returns Bank routing number text
+  static String bankRoutingNumber = 'Institution Number';
+
+  /// Returns Please Wait text
+  static String pleaseWait = 'Please Wait';
+
+  ///Returns successfully linked your bank account text
+  static String successfullyLinkedYourBankAccount =
+      'Successfully Linked \n Your Bank Account';
+
+  ///Returns hint for waiver
+  static String hintWaiver =
+      'Last update: August 28, 2021\n            RELEASE OF LIABILITY, WAIVER OF CLAIMS AND ASSUMPTION OF RISK AGREEMENT\n            BY SIGNING THIS DOCUMENT, YOU WILL WAIVE CERTAIN LEGAL RIGHTS, INCLUDING THE\n            RIGHT TO SUE OR CLAIM COMPENSATION FOLLOWING AN ACCIDENT OR INJURY.\n            PLEASE READ CAREFULLY!\n            This Traveler Release and Waiver is made pursuant to the GuidED Terms of Service, last updated June\n            1, 2021, which govern the use of GuidED, including any content, functionality and services offered on or\n            through www.guided.ca or any other website through which GuidED makes its services available (the\n            “Website”), and to any mobile, tablet and other smart device applications, and application program\n            interfaces (the “Application”) (collectively, the “Services”). All Adventures booked via the Services create\n            an agreement between registered users seeking adventures (“Travelers”) and other registered users\n            offering authentic adventures in the community (“Guides”).';
+
+  ///Returns Ending in Text
+  static String endingIn = 'Ending in';
+
+  ///Returns add card text
+  static String addCard = 'Add Card';
+
+  ///Returns Full name text
+  static String fullName = 'Full Name';
+
+  ///Returns Address text
+  static String address = 'Address';
+
+  ///Returns name on card text
+  static String nameOnCard = 'Name on card';
+
+  ///Returns card number text
+  static String cardNumber = 'Card Number';
+
+  ///Returns expiryDate text
+  static String expiryDate = 'Expiry Date';
+
+  ///Returns cvc text
+  static String cvc = 'CVC';
+
+  ///Returns billing information text
+  static String billingInformation = 'Billing Information';
+
+  ///Returns card information text
+  static String cardInformation = 'Card Information';
+
+  ///Returns edit card text
+  static String editCard = 'Edit Card';
+
+  /// Returns transaction number
+  static String transactionNumber = 'Transaction Number';
+
+  /// Returns Switch User Type text
+  static String switchUserType = 'Switch User Type';
+
+  /// Returns Switch to Guide text
+  static String switchToGuide = 'Switch to Guide';
+
+  /// Returns Switch to Traveler text
+  static String switchToTraveler = 'Switch to Traveler';
+
+  ///Returns payment method text
+  static String paymentMethod = 'Payment Method';
+
+  /// Returns Traveler hint text
+  static String hintTraveler =
+      'Last update: August 28, 2021\n            RELEASE OF LIABILITY, WAIVER OF CLAIMS AND ASSUMPTION OF RISK AGREEMENT\n            BY SIGNING THIS DOCUMENT, YOU WILL WAIVE CERTAIN LEGAL RIGHTS, INCLUDING THE\n            RIGHT TO SUE OR CLAIM COMPENSATION FOLLOWING AN ACCIDENT OR INJURY.\n            PLEASE READ CAREFULLY!\n            This Traveler Release and Waiver is made pursuant to the GuidED Terms of Service, last updated June\n            1, 2021, which govern the use of GuidED, including any content, functionality and services offered on or\n            through www.guided.ca or any other website through which GuidED makes its services available (the\n            “Website”), and to any mobile, tablet and other smart device applications, and application program\n            interfaces (the “Application”) (collectively, the “Services”). All Adventures booked via the Services create\n            an agreement between registered users seeking adventures (“Travelers”) and other registered users\n            offering authentic adventures in the community (“Guides”)';
+
+  /// Returns Cancellation Policy hint text
+  static String hintCancellation =
+      'This Cancellation Policy is made pursuant to the GuidED Terms & Conditions (“Terms of Use\n              Agreement”), which govern the use of GuidED, including any content, functionality and\n              services offered on or through GuidED, and to any mobile, tablet and other smart device\n              applications, and application program. All Adventures (as defined below) booked via the\n              Services create an Agreement between registered users seeking adventures (“Travelers”)\n              and other registered users offering authentic adventures in the community (“Guides”)';
+
+  /// Returns Guided Payment hint text
+  static String hintGuidedPayment =
+      'Last update: August 31, 2021\n            These Payment and Payout Terms are made pursuant to the GuidED Terms &\n            Conditions (“Terms of Service”), which govern the use of GuidED, including any\n            content, functionality and services offered on or throughwww.guided.ca, and to any\n            mobile, tablet and other smart device applications, and application program interfaces\n            (the “Application”) (collectively, the “Services”)';
+
+  /// Returns 'Save Changes?' text
+  static String saveChanges = 'Save Changes?';
+
+  /// Returns 'You are about to save the selected date and time. Proceed?' text
+  static String saveChangesDesc =
+      'You are about to save the selected date and time. Proceed?';
+
+  /// Returns Availability text
+  static String availability = 'Availability';
+
+  /// Returns Why Optional text in Availability screen
+  static String why = 'Why? (Optional)';
+
+  /// Returns 'Popular Guides Near You!' text
+  static String popularGuidesNearYou = 'Popular Guides Near You!';
+
+  /// Returns 'Traveler Limit & Schedules' text
+  static String travelerLimitAndSchedule = 'Traveler Limit & Schedules';
+
+  /// Returns 'Reviews' text
+  static String reviews = 'Reviews';
+
+  /// Returns 'Health & Safety' text
+  static String healthSafety = 'Health & Safety';
+
+  /// Returns 'Check Availability' text
+  static String checkAvailability = 'Check Availability';
+
+  /// Returns are you sure you want to remove bsnk text
+  static String areYouSureYouWantToRemoveBank =
+      'Are you sure you want to remove Bank?';
+
+  ///Returns remove bank string
+  static String removeBank = 'Remove Bank';
+
+  /// Returns Become A Member of GuidED Family! text
+  static String becomeAGuide = 'Become A Member of GuidED Family!';
+
+  /// Returns Basic Info text
+  static String basicInfo = 'Basic Info';
+
+  ///Returns request to book text
+  static String requestToBook = 'Request To Book';
+
+  /// Returns Notification  text
+  static String notif = 'Notification';
+
+  ///Returns date of transaction text
+  static String dateOfTransaction = 'Date of Transaction';
+
+  /// Returns travel limit text
+  static String travelLimit = 'Traveler Limit';
+
+  ///Returns credit card number text
+  static String creditCardNumber = 'Credit Card Number';
+
+  ///Returns Refund text
+  static String refund = 'Refund';
+
+  ///Returns approve text
+  static String approve = 'Approve';
+
+  ///Returns refund and cancellation of payment text
+  static String refundAndCancellationOfPayment =
+      'Refund & Cancelation Of Payment';
+
+  ///Returns  refund booking question
+  static String refundBookingQuestion =
+      'Are you sure, Do you want to refund this booking?';
+
+  ///Returns refundable amount text
+  static String refundableAmount = 'Refundable Amount';
+
+  ///Returns refund and cancel traveler's payment
+  static String refundAndCancelTravelerPayment =
+      'Refund & Cancel Traveler’s Payment';
+
+  ///Returns refund instruction text
+  static String refundInstruction =
+      'Admin will review your cancelled booking and process the refundable amount within next 5 business days';
+
+  ///Returns package price text
+  static String packagePrice = 'Package Price';
+
+  ///Returns province/state text
+  static String provinceState = 'Province/State';
+
+  /// Returns header
+  static String serviceHeader = "What's included?";
+
+  ///Returns transaction details text
+  static String transactionDetails = 'Transaction Details';
+
+  ///Returns re-schedule text
+  static String reschedule = 'Re-schedule';
+
+  ///Returns cancel and refund? text
+  static String cancelAndRefund = 'Cancel & Refund?';
+
+  ///Returns request for cancellation and refund text
+  static String requestForCancelAndRefund = 'Request For Cancellation & Refund';
+
+  ///Returns upgrade to premium and discover more text
+  static String upgradeToPremiumAndDiscoverMore =
+      'Upgrade to Premium and Discover more on GuidED!';
+
+  ///Returns Book your next adventure on guided text
+  static String bookYourNextAdventureOnApp =
+      'Book your next Adventure with GuidED mobile app!';
+
+  ///Returns find amazing wilderness text
+  static String findAmazingWilderness =
+      'Find amazing Wilderness Retreats and Hidden Gems!';
+
+  ///Returns get guided text
+  static String getGuided = 'Get GuidED and Get Outside!';
+
+  ///Returns tour text
+  static String tour = 'Tour';
+
+  ///Returns tour guide text
+  static String tourGuide = 'Tour Guide';
+
+  ///Returns number of people text
+  static String numberOfPeople = 'Number of People';
+
+  ///Returns you've got an adventure request! text
+  static String adventureRequest = "You've got an Adventure Request!";
 }
 
 /// Class for error messages text
@@ -899,14 +1148,79 @@ class ErrorMessageConstants {
   /// Returns  'Cover image is empty' text
   static String emptyCoverImg = 'Cover image is empty';
 
+  /// Returns 'Main Activity is empty' text
+  static String mainActivityEmpty = 'Main Activity field is empty';
+
+  /// Returns 'Sub Activity is empty' text
+  static String subActivityEmpty = 'Sub Activity field is empty';
+
+  /// Returns 'Title is empty' text
+  static String titleEmpty = 'Title field is empty';
+
+  /// Returns 'Fee is empty' text
+  static String feeEmpty = 'Fee field is empty';
+
+  /// Returns 'Country is empty' text
+  static String countryEmpty = 'Country field is empty';
+
+  /// Returns 'Street is empty' text
+  static String streetEmpty = 'Street field is empty';
+
+  /// Returns 'City is empty' text
+  static String cityEmpty = 'City field is empty';
+
+  /// Returns 'Province is empty' text
+  static String provinceEmpty = 'Province field is empty';
+
+  /// Returns 'Postal Code is empty' text
+  static String postalCodeEmpty = 'Postal Code field is empty';
+
+  /// Returns 'Date is empty' text
+  static String dateEmpty = 'Date field is empty';
+
+  /// Returns 'Description is empty' text
+  static String descriptionEmpty = 'Description field is empty';
+
+  /// Returns 'Service is empty' text
+  static String serviceEmpty = 'Services field is empty';
+
+  /// Returns 'Event Image is empty' text
+  static String eventImageEmpty = 'Event Image is empty';
+
+  /// Returns 'Event Image is empty' text
+  static String outfitterImageEmpty = 'Outfitter Image is empty';
+
+  /// Returns 'Event Image is empty' text
+  static String advertisementImageEmpty = 'Advertisement Image is empty';
+
+  /// Returns 'Price is empty' text
+  static String priceEmpty = 'Price field is empty';
+
+  /// Returns 'Product field is empty' text
+  static String productEmpty = 'Product field is empty';
+
+  /// Returns 'Fill all location field' text
+  static String locationEmpty = 'Fill all location details field';
+
+  /// Returns 'Number of Tourist is Zero (0)' text
+  static String slotIsZero = 'Number of Tourist is Zero (0)';
+
+  /// Returns 'Please select time to proceed' text
+  static String selectTime = 'Please select a time in order to proceed';
+
+  /// Returns 'Confirm Terms and Condition to proceed' text
+  static String confirmTermsAndCondition =
+      'Confirm Terms and Condition to proceed';
+
+  /// Returns 'You must pick a day to proceed' text
+  static String datePick = 'You must pick a day to proceed';
+
+  /// Returns 'Image file is too large' text
+  static String imageFileToSize = 'Image file is too large';
 }
 
-
 /// Class for transaction history constants
-class TransactionHistoryConstants{
-
-
+class TransactionHistoryConstants {
   /// Returns  'Transaction History' title text
   static String transactionHistory = 'Transaction History';
-
 }

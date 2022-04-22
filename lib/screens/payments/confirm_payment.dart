@@ -1,12 +1,29 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/common/widgets/custom_rounded_button_with_border.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/payments/payment_manage_card.dart';
+import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/card_model.dart';
+import 'package:guided/screens/payments/payment_successful.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/services/stripe_service.dart';
 
 /// Modal Bottom sheet for confirm payment
-Future<dynamic> confirmPayment(BuildContext context) {
+Future<dynamic> confirmPaymentModal(
+    {required BuildContext context,
+    required Widget paymentDetails,
+    required String serviceName,
+    required String paymentMode,
+    required dynamic paymentMethod,
+    required Function onPaymentSuccessful,
+    required double price,
+    Function? onPaymentFailed,
+    Function? onConfirmPaymentPressed
+    }) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -16,6 +33,7 @@ Future<dynamic> confirmPayment(BuildContext context) {
       ),
       isScrollControlled: true,
       builder: (BuildContext context) {
+        bool isPaymentProcessing = false;
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return ScreenUtilInit(
@@ -27,15 +45,17 @@ Future<dynamic> confirmPayment(BuildContext context) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Row(children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            color: Colors.grey.withOpacity(0.2)),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                        ),
-                      ),
+                      InkWell(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: Colors.grey.withOpacity(0.2)),
+                            child: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.black,
+                            ),
+                          )),
                       SizedBox(width: 20.w),
                       Text(
                         AppTextConstants.confirmPayment,
@@ -51,7 +71,7 @@ Future<dynamic> confirmPayment(BuildContext context) {
                     Center(
                       child: Container(
                         width: 300.w,
-                        height: MediaQuery.of(context).size.height / 2,
+                        // height: MediaQuery.of(context).size.height / 2,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -64,68 +84,70 @@ Future<dynamic> confirmPayment(BuildContext context) {
                             ),
                           ],
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20.w, vertical: 20.h),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: <Widget>[
-                                    Text(
-                                      '120',
-                                      style: TextStyle(
-                                        fontSize: 50.sp,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: 'Poppins',
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(bottom: 8.h),
-                                      child: Text(
-                                        '.00USD',
-                                        style: TextStyle(
-                                          fontSize: 26.sp,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                    ),
-                                  ]),
-                              Divider(
-                                thickness: 1.sp,
-                              ),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              getData(AppTextConstants.company, 'Guided'),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              getData(AppTextConstants.orderNumber, '1229000B3HN'),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              getData(AppTextConstants.service, 'Travel Service'),
-                            ],
-                          ),
-                        ),
+                        child: paymentDetails,
                       ),
                     ),
                     SizedBox(
                       height: 40.h,
                     ),
-                    CustomRoundedButton(
-                        title: AppTextConstants.confirmPayment,
+                    if(onConfirmPaymentPressed != null)
+                      CustomRoundedButton(
+                        title: 'Pay $price USD',
+                        isLoading: isPaymentProcessing,
                         onpressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) =>
-                                    const PaymentManageCard()),
+                          setState(() {
+                            isPaymentProcessing = true;
+                          });
+                         return onConfirmPaymentPressed();
+                        },
+                      )
+                    else
+                      CustomRoundedButton(
+                      title: 'Pay $price USD',
+                      isLoading: isPaymentProcessing,
+                      onpressed: () {
+                        setState(() {
+                          isPaymentProcessing = true;
+                        });
+                        //Handle Payment for Credit Cards
+                        if (paymentMethod is CardModel) {
+                          handleCardPayment(context, paymentMethod,
+                              onPaymentSuccessful, price, onPaymentFailed!);
+                        }
+
+                        //handle payment for google pay
+                        if (paymentMode.toLowerCase() == 'google pay') {
+                          final PaymentMethodParams paymentMethodParams =
+                              PaymentMethodParams.cardFromToken(
+                            token: paymentMethod['id'],
                           );
-                        }),
+
+                          handleWalletPayment(
+                              paymentMethodParams,
+                              onPaymentSuccessful,
+                              context,
+                              price,
+                              onPaymentFailed!);
+                        }
+
+                        //handle payment for apple pay
+                        if (paymentMode.toLowerCase() == 'apple pay') {
+                          final TokenData tokenData = paymentMethod;
+
+                          final PaymentMethodParams paymentMethodParams =
+                              PaymentMethodParams.cardFromToken(
+                            token: tokenData.id,
+                          );
+
+                          handleWalletPayment(
+                              paymentMethodParams,
+                              onPaymentSuccessful,
+                              context,
+                              price,
+                              onPaymentFailed!);
+                        }
+                      },
+                    ),
                     SizedBox(
                       height: 20.h,
                     ),
@@ -148,28 +170,77 @@ Future<dynamic> confirmPayment(BuildContext context) {
       });
 }
 
-/// data
-Widget getData(String title, String data) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          title,
-          style: TextStyle(
-              fontSize: 17.sp,
-              fontWeight: FontWeight.w400,
-              fontFamily: 'Poppins',
-              color: Colors.grey),
-        ),
-        SizedBox(
-          height: 7.h,
-        ),
-        Text(
-          data,
-          style: TextStyle(
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins',
-          ),
-        ),
-      ],
+Future<void> handleCardPayment(BuildContext context, CardModel card,
+    Function onPaymentSuccess, double price, Function onPaymentFailed) async {
+  final String paymentMethodId =
+      await StripeServices().createPaymentMethod(card);
+
+  if (paymentMethodId != '') {
+    await handleChargePayment(
+        price, paymentMethodId, context, onPaymentSuccess, onPaymentFailed);
+  } else {
+    ///Payment Failed Notif
+    debugPrint('Payment Failed!');
+  }
+}
+
+///Charge Payment
+Future<void> handleChargePayment(double price, paymentMethodId, context,
+    onPaymentSuccess, onPaymentFailed) async {
+  final int amount = (price * 100).round();
+
+  //Call Payment Api
+  final APIStandardReturnFormat paymentResponse =
+      await APIServices().pay(amount, paymentMethodId);
+
+  if (paymentResponse.statusCode == 201) {
+    // Navigator.of(context).pop();
+    //Add function to saving other data / transactions / subscriptions on your current screen for this call back
+    onPaymentSuccess();
+  } else {
+    ///Show payment failed modal
+    onPaymentFailed();
+  }
+}
+
+///Handle Google And Apple Payment Method
+Future<void> handleWalletPayment(
+    dynamic paymentMethodParams,
+    Function onPaymentSuccess,
+    BuildContext context,
+    double price,
+    Function onPaymentFailed) async {
+  debugPrint('Wallet Payment ${paymentMethodParams}');
+  //amount to pay
+  final int amount = (price * 100).round();
+  try {
+    //get client secret by creating payment intent
+    final String clientSecret = await createPaymentIntent(amount);
+
+    debugPrint('client secret $clientSecret');
+
+    //  Confirm wallet payment
+    await Stripe.instance.confirmPayment(
+      clientSecret,
+      paymentMethodParams,
     );
+
+    onPaymentSuccess();
+  } on Exception catch (e) {
+    ///Show payment failed modal
+    onPaymentFailed();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $e')),
+    );
+  }
+}
+
+///Create Payment Intent Stripe
+Future<String> createPaymentIntent(int amount) async {
+  final APIStandardReturnFormat result =
+      await APIServices().createPaymentIntent(amount);
+
+  final dynamic data = json.decode(result.successResponse);
+
+  return data['client_secret'];
+}

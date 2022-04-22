@@ -93,7 +93,7 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                       width: 24,
                     ),
                     Expanded(
-                      child: FutureBuilder<ProfileModelData>(
+                      child: FutureBuilder<ProfileDetailsModel>(
                           future: APIServices().getProfileData(),
                           builder: (BuildContext context,
                               AsyncSnapshot<dynamic> snapshot) {
@@ -167,31 +167,18 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                                 side: BorderSide(color: AppColors.silver),
                                 borderRadius: BorderRadius.circular(18.r),
                               ),
-                              primary: AppColors.aquaHaze,
+                              primary: AppColors.lightRed,
                               onPrimary: Colors.black,
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                IconButton(
-                                  icon: SvgPicture.asset(
-                                      'assets/images/svg/settings_icon_power_button.svg',
-                                      height: 40.h,
-                                      width: 40.w),
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute<dynamic>(
-                                          builder: (BuildContext context) =>
-                                              const LoginScreen(),
-                                        ));
-                                  },
-                                ),
                                 Text(
                                   AppTextConstants.logout,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16.sp),
+                                      fontSize: 16.sp,
+                                      color: Colors.white),
                                 ),
                               ],
                             ),
@@ -212,30 +199,29 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
     );
   }
 
-  Widget buildProfileData(ProfileModelData profileData) => Column(
+  Widget buildProfileData(ProfileDetailsModel profileData) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            if (profileData.profileDetails.isEmpty)
+            if (profileData.fullName.isEmpty)
               const Text('Unknown User')
             else
-              for (ProfileDetailsModel detail in profileData.profileDetails)
-                Column(
-                  children: <Widget>[
-                    Text(
-                      '${detail.firstName} ${detail.lastName}',
+              Column(
+                children: <Widget>[
+                  Text(
+                    profileData.fullName,
+                    style: TextStyle(
+                        letterSpacing: 1,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  Text(profileData.email,
                       style: TextStyle(
-                          letterSpacing: 1,
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Text(detail.email,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.grey))
-                  ],
-                )
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.grey))
+                ],
+              )
           ]);
 
   @override

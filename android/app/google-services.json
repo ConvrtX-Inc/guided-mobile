@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "875562076914",
+    "project_id": "guided-convrtx",
+    "storage_bucket": "guided-convrtx.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875562076914:android:6e7a7e74b67bbe578b5e6b",
+        "android_client_info": {
+          "package_name": "com.canada.guided"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "875562076914-dcrk073qt165esv0j4paqmo5er4830gn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.canada.guided",
+            "certificate_hash": "aadd720ca8a5469bde6caf442cdcda40fb523759"
+          }
+        },
+        {
+          "client_id": "875562076914-0vdarq3u3i3l746l999pmhrri4401n2h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVIDD8tUu9aMW_ZZ4v1_0GQNrVDIS-Ovw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "875562076914-0vdarq3u3i3l746l999pmhrri4401n2h.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "875562076914-82rf1to9ns5d72pn562tp51v42t49fpe.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.canada.guided"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -44,7 +44,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
               Padding(
                 padding: EdgeInsets.only(left: 8.w),
                 child: Text(
-                  AppTextConstants.requestedTrip,
+                  AppTextConstants.adventureRequest,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 24.sp,
@@ -80,20 +80,6 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
               ),
               SizedBox(
                 height: 30.h,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 8.w),
-                child: Text(
-                  'Selected gig',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14.sp,
-                      fontFamily: 'Gilroy',
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
-              SizedBox(
-                height: 10.h,
               ),
               Container(
                   margin: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 8.h),
@@ -152,7 +138,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                             fontSize: 14.sp),
                                       ),
                                     ),
-                                    Text('5 Tourists',
+                                    Text('5 Traveller',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 14.sp))
@@ -174,7 +160,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                   children: <Widget>[
                                     const Icon(Icons.star_rate, size: 18),
                                     Text(
-                                      '4.9',
+                                      '0',
                                       style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 14.sp),

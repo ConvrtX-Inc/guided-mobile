@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, unused_local_variable, cast_nullable_to_non_nullable, always_specify_types
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
@@ -110,6 +111,14 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
     destinationList = [];
   }
 
+  // Format File Size
+  static String getFileSizeString({required int bytes, int decimals = 0}) {
+    if (bytes <= 0) return "0 Bytes";
+    const suffixes = [" Bytes", "KB", "MB", "GB", "TB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -145,6 +154,20 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                               }
 
                               final File imageTemporary = File(image1.path);
+                              String file;
+                              int fileSize;
+                              file = getFileSizeString(
+                                  bytes: imageTemporary.lengthSync());
+                              fileSize = int.parse(
+                                  file.substring(0, file.indexOf('K')));
+                              if (fileSize >= 100) {
+                                AdvanceSnackBar(
+                                        message: ErrorMessageConstants
+                                            .imageFileToSize)
+                                    .show(context);
+                                    Navigator.pop(context);
+                                return;
+                              }
                               setState(() {
                                 this.image1 = imageTemporary;
                                 _uploadCount += 1;
@@ -169,6 +192,20 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                               }
 
                               final File imageTemporary = File(image1.path);
+                              String file;
+                              int fileSize;
+                              file = getFileSizeString(
+                                  bytes: imageTemporary.lengthSync());
+                              fileSize = int.parse(
+                                  file.substring(0, file.indexOf('K')));
+                              if (fileSize >= 100) {
+                                AdvanceSnackBar(
+                                        message: ErrorMessageConstants
+                                            .imageFileToSize)
+                                    .show(context);
+                                    Navigator.pop(context);
+                                return;
+                              }
                               setState(() {
                                 this.image1 = imageTemporary;
                                 _uploadCount += 1;
@@ -246,6 +283,20 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -269,6 +320,20 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -347,6 +412,20 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                     return;
                                   }
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -371,6 +450,20 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   }
 
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -597,11 +690,13 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         final String base64Image1 = base64Encode(await image1Bytes);
 
         destinationList.add(ActivityDestinationModel(
-            placeName: _placeName.text,
-            placeDescription: _description.text,
-            img1Holder: base64Image1,
-            latitude: latitute,
-            longitude: longitude));
+          placeName: _placeName.text,
+          placeDescription: _description.text,
+          img1Holder: base64Image1,
+          latitude: latitute,
+          longitude: longitude,
+          uploadCount: _uploadCount,
+        ));
       } else if (_uploadCount == 2) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -610,12 +705,14 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         final String base64Image2 = base64Encode(await image2Bytes);
 
         destinationList.add(ActivityDestinationModel(
-            placeName: _placeName.text,
-            placeDescription: _description.text,
-            img1Holder: base64Image1,
-            img2Holder: base64Image2,
-            latitude: latitute,
-            longitude: longitude));
+          placeName: _placeName.text,
+          placeDescription: _description.text,
+          img1Holder: base64Image1,
+          img2Holder: base64Image2,
+          latitude: latitute,
+          longitude: longitude,
+          uploadCount: _uploadCount,
+        ));
       } else if (_uploadCount == 3) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -627,13 +724,15 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         final String base64Image3 = base64Encode(await image3Bytes);
 
         destinationList.add(ActivityDestinationModel(
-            placeName: _placeName.text,
-            placeDescription: _description.text,
-            img1Holder: base64Image1,
-            img2Holder: base64Image2,
-            img3Holder: base64Image3,
-            latitude: latitute,
-            longitude: longitude));
+          placeName: _placeName.text,
+          placeDescription: _description.text,
+          img1Holder: base64Image1,
+          img2Holder: base64Image2,
+          img3Holder: base64Image3,
+          latitude: latitute,
+          longitude: longitude,
+          uploadCount: _uploadCount,
+        ));
       }
       setState(() {
         _placeName = TextEditingController(text: '');
@@ -720,7 +819,8 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
             placeDescription: _description.text,
             img1Holder: base64Image1,
             latitude: latitute,
-            longitude: longitude));
+            longitude: longitude,
+            uploadCount: _uploadCount));
       } else if (_uploadCount == 2) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -737,7 +837,8 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
             img1Holder: base64Image1,
             img2Holder: base64Image2,
             latitude: latitute,
-            longitude: longitude));
+            longitude: longitude,
+            uploadCount: _uploadCount));
       } else if (_uploadCount == 3) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -752,13 +853,15 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         details['snapshot_img_2'] = base64Image2;
         details['snapshot_img_3'] = base64Image3;
         destinationList.add(ActivityDestinationModel(
-            placeName: _placeName.text,
-            placeDescription: _description.text,
-            img1Holder: base64Image1,
-            img2Holder: base64Image2,
-            img3Holder: base64Image3,
-            latitude: latitute,
-            longitude: longitude));
+          placeName: _placeName.text,
+          placeDescription: _description.text,
+          img1Holder: base64Image1,
+          img2Holder: base64Image2,
+          img3Holder: base64Image3,
+          latitude: latitute,
+          longitude: longitude,
+          uploadCount: _uploadCount,
+        ));
       }
 
       details['upload_count'] = _uploadCount;
@@ -805,7 +908,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         apiKey: kGoogleApiKey,
         apiHeaders: await const GoogleApiHeaders().getHeaders(),
       );
-      PlacesDetailsResponse detail =
+      final PlacesDetailsResponse detail =
           await _places.getDetailsByPlaceId(p.placeId!);
       final lat = detail.result.geometry!.location.lat;
       final lng = detail.result.geometry!.location.lng;

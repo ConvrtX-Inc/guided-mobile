@@ -15,6 +15,7 @@ class AdvertisementFeature extends StatefulWidget {
     String description = '',
     String country = '',
     String address = '',
+    String activities = '',
     String street = '',
     String city = '',
     String province = '',
@@ -29,6 +30,7 @@ class AdvertisementFeature extends StatefulWidget {
         _description = description,
         _country = country,
         _address = address,
+        _activities = activities,
         _street = street,
         _city = city,
         _province = province,
@@ -44,6 +46,7 @@ class AdvertisementFeature extends StatefulWidget {
   final String _description;
   final String _country;
   final String _address;
+  final String _activities;
   final String _street;
   final String _city;
   final String _province;
@@ -58,6 +61,14 @@ class AdvertisementFeature extends StatefulWidget {
 }
 
 class _AdvertisementFeatureState extends State<AdvertisementFeature> {
+  late Map<dynamic, String> value;
+  late List<String> splitActivities;
+  @override
+  void initState() {
+    splitActivities = widget._activities.split(',');
+    // value = {for (int i = 0; i < split.length; i++) i: split[i]};
+  }
+
   @override
   Widget build(BuildContext context) {
     return widget._isPublished
@@ -86,7 +97,7 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
                         in advertisementImage.advertisementImageDetails) {
                       return GestureDetector(
                         onTap: () => navigateAdvertisementDetails(
-                            context, imageDetails.snapshotImg),
+                            context, imageDetails.snapshotImg, imageDetails.id),
                         child: ListTile(
                           title: imageDetails.activityAdvertisementId != null
                               ? SizedBox(
@@ -133,12 +144,14 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
 
   /// Navigate to Advertisement View
   Future<void> navigateAdvertisementDetails(
-      BuildContext context, String snapshotImg) async {
+      BuildContext context, String snapshotImg, String imgId) async {
     final Map<String, dynamic> details = {
       'id': widget._id,
       'title': widget._title,
       'country': widget._country,
       'address': widget._address,
+      // 'activities': value,
+      'activities': splitActivities,
       'street': widget._street,
       'city': widget._city,
       'province': widget._province,
@@ -147,7 +160,8 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
       'availability_date': widget._availability_date,
       'price': widget._price,
       'description': widget._description,
-      'snapshot_img': snapshotImg
+      'snapshot_img': snapshotImg,
+      'image_id': imgId
     };
 
     await Navigator.pushNamed(context, '/advertisement_view',

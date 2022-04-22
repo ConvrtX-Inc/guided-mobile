@@ -2,31 +2,69 @@ import 'package:badges/badges.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/controller/traveller_controller.dart';
+import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/screens/main_navigation/settings/screens/calendar_management/settings_calendar_management_schedule.dart';
+import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
+import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Setting Calendar Management Modal Screen
 class SettingsCalendarManagementModal extends StatefulWidget {
-
   /// Constructor
-  const SettingsCalendarManagementModal({Key? key}) : super(key: key);
+  const SettingsCalendarManagementModal({Key? key, required this.monthId})
+      : super(key: key);
+
+  final int monthId;
 
   @override
-  _SettingsCalendarManagementModalState createState() => _SettingsCalendarManagementModalState();
+  _SettingsCalendarManagementModalState createState() =>
+      _SettingsCalendarManagementModalState();
 }
 
-class _SettingsCalendarManagementModalState extends State<SettingsCalendarManagementModal> {
+class _SettingsCalendarManagementModalState
+    extends State<SettingsCalendarManagementModal> {
   late DateTime _selectedDay = DateTime.now();
   late DateTime _focusedDay = DateTime.now();
   bool isRefreshing = false;
 
   final ScrollController _controller = ScrollController();
   final double _width = 100.0;
+  final ScrollToIndexController _scrollController = ScrollToIndexController();
+  final travellerMonthController = Get.put(TravellerMonthController());
+  int monthID = 0;
+  int count = 0;
+  DateTime plustMonth = DateTime.now();
+  @override
+  void initState() {
+    super.initState();
+
+    monthID = widget.monthId;
+    travellerMonthController.setSelectedDate(monthID + 1);
+
+    DateTime dt = DateTime.parse(travellerMonthController.currentDate);
+
+    plustMonth = DateTime(dt.year, monthID + 1, dt.day, dt.hour, dt.minute);
+
+    final DateTime setLastday = DateTime(plustMonth.year, plustMonth.month, 1,
+        plustMonth.hour, plustMonth.minute);
+
+    travellerMonthController.setCurrentMonth(
+      setLastday.toString(),
+    );
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      _scrollController.easyScrollToIndex(index: monthID);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +78,7 @@ class _SettingsCalendarManagementModalState extends State<SettingsCalendarManage
       textStyle: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          fontFamily: AppTextConstants.fontGilroy
-      ),
+          fontFamily: AppTextConstants.fontGilroy),
     );
 
     return Scaffold(
@@ -96,10 +133,10 @@ class _SettingsCalendarManagementModalState extends State<SettingsCalendarManage
           height: height,
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
+              padding: EdgeInsets.fromLTRB(10.w, 10.h, 10.w, 10.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   HeaderText.headerText(AppTextConstants.findBookingDates),
                   SizedBox(
                     height: 60.h,
@@ -123,7 +160,7 @@ class _SettingsCalendarManagementModalState extends State<SettingsCalendarManage
                         onPrimary: Colors.white,
                       ),
                       child: Text(
-                        '9/April/2021',
+                        '${AppListConstants.calendarMonths[plustMonth.month - 1]}/${plustMonth.year.toString().padLeft(4, '0')}',
                         style: TextStyle(
                           fontSize: 16,
                           color: AppColors.primaryGreen,
@@ -131,120 +168,161 @@ class _SettingsCalendarManagementModalState extends State<SettingsCalendarManage
                       ),
                     ),
                   ),
-                  Center(
-                    child: Row(
-                      children: <Widget>[
-                        InkWell( // inkwell color
-                          child: const Icon(
-                            Icons.arrow_back_ios_sharp,
-                            color: Colors.grey,
-                            size: 20,
-                          ),
-                          onTap: () {
-                            var recentIndexDecreaseMinus =
-                            recentIndexDecrease--;
-                            _animateToIndex(recentIndexDecrease);
-                          },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          if (monthID > -1) {
+                            monthID = monthID - 3;
+                            _scrollController.easyScrollToIndex(index: monthID);
+                          } else {
+                            monthID = 0;
+                            _scrollController.easyScrollToIndex(index: monthID);
+                          }
+                        },
+                        child: Icon(
+                          Icons.chevron_left,
+                          color: HexColor('#898A8D'),
                         ),
-                        Center(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 70.h,
-                                  width: MediaQuery.of(context).size.width * 0.7,
-                                  child: ListView.builder(
-                                      controller: _controller,
-                                      itemCount: 12,
-                                      scrollDirection: Axis.horizontal,
-                                      itemBuilder: (BuildContext context, int index) {
-                                        recentIndexIncrease = index;
-                                        recentIndexDecrease = index;
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Badge(
-                                            showBadge: AppListConstants.monthList[index][2] == false ? false : true,
-                                            padding: const EdgeInsets.all(8),
-                                            badgeColor: AppColors.tropicalRainForest,
-                                            badgeContent: Text(
-                                              AppListConstants.monthList[index][1],
-                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                            ),
-                                            child: ElevatedButton(
-                                              style: AppListConstants.monthList[index][1] == '' && AppListConstants.monthList[index][3] == false || AppListConstants.monthList[index][1] != '' && AppListConstants.monthList[index][3] == false? AppTextStyle.style : AppTextStyle.active,
-                                              onPressed: (){
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text(AppListConstants.monthList[index][0]),
-                                            ),
-                                          ),
-                                        );
-                                      }
+                      ),
+                      Container(
+                          color: Colors.transparent,
+                          height: 80.h,
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: EasyScrollToIndex(
+                            controller:
+                                _scrollController, // ScrollToIndexController
+                            scrollDirection:
+                                Axis.horizontal, // default Axis.vertical
+                            itemCount: AppListConstants
+                                .calendarMonths.length, // itemCount
+                            itemWidth: 95,
+                            itemHeight: 70,
+                            itemBuilder: (BuildContext context, int index) {
+                              return InkWell(
+                                onTap: () {
+                                  _scrollController.easyScrollToIndex(
+                                      index: index);
+                                  travellerMonthController
+                                      .setSelectedDate(index + 1);
+                                  DateTime dt = DateTime.parse(
+                                      travellerMonthController.currentDate);
+
+                                  setState(() {
+                                    plustMonth = DateTime(dt.year, index + 1,
+                                        dt.day, dt.hour, dt.minute);
+                                  });
+
+                                  final DateTime setLastday = DateTime(
+                                      plustMonth.year,
+                                      plustMonth.month,
+                                      1,
+                                      plustMonth.hour,
+                                      plustMonth.minute);
+
+                                  travellerMonthController.setCurrentMonth(
+                                    setLastday.toString(),
+                                  );
+                                },
+                                child: Obx(
+                                  () => Stack(
+                                    children: <Widget>[
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: Container(
+                                          margin: EdgeInsets.fromLTRB(
+                                              index == 0 ? 0.w : 0.w,
+                                              0.h,
+                                              10.w,
+                                              0.h),
+                                          width: 89,
+                                          height: 45,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                Radius.circular(10),
+                                              ),
+                                              border: Border.all(
+                                                  color: index ==
+                                                          travellerMonthController
+                                                                  .selectedDate -
+                                                              1
+                                                      ? HexColor('#FFC74A')
+                                                      : HexColor('#C4C4C4'),
+                                                  width: 1),
+                                              color: index ==
+                                                      travellerMonthController
+                                                              .selectedDate -
+                                                          1
+                                                  ? HexColor('#FFC74A')
+                                                  : Colors.white),
+                                          child: Center(
+                                              child: Text(AppListConstants
+                                                  .calendarMonths[index])),
+                                        ),
+                                      ),
+                                      Positioned(
+                                          right: 2,
+                                          top: 2,
+                                          child: index.isOdd
+                                              ? Badge(
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  badgeColor:
+                                                      AppColors.deepGreen,
+                                                  badgeContent: Text(
+                                                    '2',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12.sp,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                        fontFamily:
+                                                            AppTextConstants
+                                                                .fontPoppins),
+                                                  ),
+                                                )
+                                              : Container()),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        InkWell( // inkwell color
-                          child: const Icon(
-                            Icons.arrow_forward_ios_sharp,
-                            color: Colors.grey,
-                            size: 20,
-                          ),
-                          onTap: () {
-                            _animateToIndex(recentIndexIncrease);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                      height: 20.h
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TableCalendar(
-                          onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
-                            setState(() {
-                              setState(() {
-                                _selectedDay = selectedDay;
-                                _focusedDay = focusedDay;
-                                isRefreshing = true;
-                              });
-
-                              Future.delayed(const Duration(milliseconds: 100),
-                                      () {
-                                    setState(() {
-                                      isRefreshing = false;
-                                    });
-                                  });
-                            });
-                          },
-                          calendarFormat: CalendarFormat.month,
-                          currentDay: _selectedDay,
-                          headerVisible: false,
-                          headerStyle: const HeaderStyle(
-                            formatButtonVisible: false,
-                          ),
-                          daysOfWeekVisible: true,
-                          firstDay: DateTime.utc(2010, 10, 16),
-                          lastDay: DateTime.utc(2030, 3, 14),
-                          focusedDay: _focusedDay,
-                          calendarStyle: CalendarStyle(
-                            todayDecoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.brightSun,
-                            ),
-                            todayTextStyle: const TextStyle(
-                              color: Colors.black,
-                            ),
-                          ),
+                              );
+                            },
+                          )),
+                      GestureDetector(
+                        onTap: () {
+                          if (monthID < 11) {
+                            monthID = monthID + 3;
+                            _scrollController.easyScrollToIndex(index: monthID);
+                          } else {
+                            monthID = 11;
+                            _scrollController.easyScrollToIndex(index: monthID);
+                          }
+                        },
+                        child: Icon(
+                          Icons.chevron_right,
+                          color: HexColor('#898A8D'),
                         ),
                       ),
                     ],
                   ),
+                  GetBuilder<TravellerMonthController>(
+                      id: 'calendar',
+                      builder: (TravellerMonthController controller) {
+                        print(controller.currentDate);
+                        return Container(
+                          padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+                          height: MediaQuery.of(context).size.height * 0.4,
+                          child: Sfcalendar(
+                            context,
+                            travellerMonthController.currentDate,
+                            ((value) {
+                              print(value);
+                            }),
+                          ),
+                        );
+                      }),
                 ],
               ),
             ),
@@ -270,10 +348,7 @@ class _SettingsCalendarManagementModalState extends State<SettingsCalendarManage
             ),
             child: Text(
               AppTextConstants.viewSchedule,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
@@ -281,17 +356,16 @@ class _SettingsCalendarManagementModalState extends State<SettingsCalendarManage
     );
   }
 
-  Future<void> _animateToIndex(i) => _controller.animateTo(_width * i,
-      duration: const Duration(seconds: 1), curve: Curves.fastOutSlowIn);
-
   void _settingModalBottomSheet() {
     showCupertinoModalBottomSheet(
       expand: false,
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (BuildContext context) => const SettingsCalendarManagementSchedule(),
+      builder: (BuildContext context) =>
+          SettingsCalendarManagementSchedule(date: plustMonth),
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);

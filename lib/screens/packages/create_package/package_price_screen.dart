@@ -1,11 +1,14 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/currencies_model.dart';
+import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/screens/packages/create_package/widget/dropdown_currency.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -32,6 +35,11 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
   FocusNode _maxPersonFocus = FocusNode();
   FocusNode _additionalNotesFocus = FocusNode();
 
+  String _local_law = '';
+  String _local_law_id = '';
+
+  bool _isSubmit = false;
+
   void setCurrency(dynamic value) {
     setState(() {
       _currency = value;
@@ -47,10 +55,13 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
 
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final List<Currency> resCurrency = await APIServices().getCurrencies();
-
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       setState(() {
         listCurrency = resCurrency;
-        _currency = listCurrency[0];
+        _currency = listCurrency[8];
+
+        _maxPerson = TextEditingController(text: screenArguments['maximum']);
       });
     });
   }
@@ -113,6 +124,20 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
                             BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
+                    keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true, signed: false),
+                    inputFormatters: [
+                      DecimalTextInputFormatter(decimalRange: 2),
+                      FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                      TextInputFormatter.withFunction((oldValue, newValue) {
+                        try {
+                          final text = newValue.text;
+                          if (text.isNotEmpty) double.parse(text);
+                          return newValue;
+                        } catch (e) {}
+                        return oldValue;
+                      }),
+                    ],
                   ),
                   SizedBox(
                     height: 20.h,
@@ -133,6 +158,20 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
                             BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
+                    keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true, signed: false),
+                    inputFormatters: [
+                      DecimalTextInputFormatter(decimalRange: 2),
+                      FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                      TextInputFormatter.withFunction((oldValue, newValue) {
+                        try {
+                          final text = newValue.text;
+                          if (text.isNotEmpty) double.parse(text);
+                          return newValue;
+                        } catch (e) {}
+                        return oldValue;
+                      }),
+                    ],
                   ),
                   SizedBox(
                     height: 20.h,
@@ -203,8 +242,9 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () =>
-                navigateLocalLawTaxesScreen(context, screenArguments),
+            onPressed: () async => _isSubmit
+                ? null
+                : navigateLocalLawTaxesScreen(context, screenArguments),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -215,10 +255,13 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: Text(
-              AppTextConstants.next,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            child: _isSubmit
+                ? const Center(child: CircularProgressIndicator())
+                : Text(
+                    AppTextConstants.next,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
           ),
         ),
       ),
@@ -227,6 +270,19 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
 
   Future<void> navigateLocalLawTaxesScreen(
       BuildContext context, Map<String, dynamic> data) async {
+    setState(() {
+      _isSubmit = true;
+    });
+    final List<PresetFormModel> resForm =
+        await APIServices().getTermsAndCondition('local_laws');
+    if (resForm.isNotEmpty) {
+      _local_law = resForm[0].description;
+      _local_law_id = resForm[0].id;
+    } else {
+      _local_law = AppTextConstants.longLoremIpsum;
+      _local_law_id = '';
+    }
+
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
     if (_basePrice.text.isEmpty ||
@@ -235,12 +291,17 @@ class _PackagePriceScreenState extends State<PackagePriceScreen> {
         _additionalNotes.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
           .show(context);
+      setState(() {
+        _isSubmit = false;
+      });
     } else {
       details['base_price'] = _basePrice.text;
       details['extra_cost'] = _extraCost.text;
       details['max_person'] = _maxPerson.text;
       details['currency_id'] = _currency.id;
       details['additional_notes'] = _additionalNotes.text;
+      details['preset_local_law'] = _local_law;
+      details['preset_local_law_id'] = _local_law_id;
 
       await Navigator.pushNamed(context, '/local_law_taxes',
           arguments: details);

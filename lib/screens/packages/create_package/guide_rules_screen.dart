@@ -28,7 +28,7 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
   void initState() {
     super.initState();
 
-    _guideRules = TextEditingController(text: 'Text');
+    _guideRules = TextEditingController(text: AppTextConstants.loremIpsum);
   }
 
   @override
@@ -83,10 +83,10 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                if (_isEnabledEdit == false) {
-                                  _isEnabledEdit = true;
-                                } else {
+                                if (_isEnabledEdit) {
                                   _isEnabledEdit = false;
+                                } else {
+                                  _isEnabledEdit = true;
                                 }
                               });
                             },
@@ -140,7 +140,7 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
                       ),
                       Expanded(
                         child: Text(
-                          AppTextConstants.agreeLocalLaws,
+                          AppTextConstants.agreeWithGuideRules,
                           style: TextStyle(
                             color: AppColors.grey,
                             fontSize: 15,

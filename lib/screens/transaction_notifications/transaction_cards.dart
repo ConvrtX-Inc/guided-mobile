@@ -109,9 +109,9 @@ class _TransactionCustomerCardState extends State<TransactionCustomerCard> {
   Widget getMessage()
   {
     String name = '';
-    if(transaction.user?.fullname!=null)
+    if(transaction.user?.fullName!=null)
       {
-          name='${transaction.user?.fullname!}';
+          name='${transaction.user?.fullName!}';
 
 
       }

@@ -15,6 +15,8 @@ import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/settings.dart';
+import 'package:guided/utils/secure_storage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Screen for user settings
 class SettingsMain extends StatefulWidget {
@@ -29,12 +31,13 @@ class _SettingsMainState extends State<SettingsMain>
     with AutomaticKeepAliveClientMixin<SettingsMain> {
   @override
   bool get wantKeepAlive => true;
+  final storage = new FlutterSecureStorage();
 
   /// Get settings items mocked data
   final List<SettingsModel> settingsItems =
       SettingsUtils.getMockedDataSettings();
 
-  late Future<ProfileModelData> _loadingData;
+  late Future<ProfileDetailsModel> _loadingData;
 
   @override
   void initState() {
@@ -99,7 +102,7 @@ class _SettingsMainState extends State<SettingsMain>
                     width: 24,
                   ),
                   Expanded(
-                    child: FutureBuilder<ProfileModelData>(
+                    child: FutureBuilder<ProfileDetailsModel>(
                         future: _loadingData,
                         builder: (BuildContext context,
                             AsyncSnapshot<dynamic> snapshot) {
@@ -173,7 +176,9 @@ class _SettingsMainState extends State<SettingsMain>
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
+                            await storage.delete(
+                                key: AppTextConstants.userType);
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute<dynamic>(
@@ -197,24 +202,23 @@ class _SettingsMainState extends State<SettingsMain>
     );
   }
 
-  Widget buildProfileData(ProfileModelData profileData) => Column(
+  Widget buildProfileData(ProfileDetailsModel profileData) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            if (profileData.profileDetails.isEmpty)
+            if (profileData.fullName.isEmpty)
               const Text('Unknown User')
             else
-              for (ProfileDetailsModel detail in profileData.profileDetails)
                 Column(
                   children: <Widget>[
                     Text(
-                      '${detail.firstName}',
+                      profileData.fullName,
                       style: TextStyle(
                           letterSpacing: 1,
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w600),
                     ),
-                    Text(detail.email,
+                    Text(profileData.email,
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,

@@ -163,8 +163,17 @@ class AssetsPath {
   /// returns discovery close image
   static String discoveryClose = 'assets/images/png/close.png';
 
+  /// returns discovery close image
+  static String close1 = 'assets/images/png/close1.png';
+
+  /// returns discovery close image
+  static String warning = 'assets/images/png/warning.png';
+
   /// returns discovery top image
   static String discoverytopImage = 'assets/images/png/discoverytopImage.png';
+
+  /// returns discovery top image
+  static String discoveryMapImage = 'assets/images/png/discoveryMapImage.png';
 
   /// returns discovery Tree image
   static String discoveryTree = 'assets/images/png/discoveryTree.png';
@@ -214,4 +223,16 @@ class AssetsPath {
 
   /// returns i'm a traveler image
   static String rafikiImage = 'assets/images/png/rafiki.png';
+
+  /// returns heart outlined image
+  static String heartOutlined = 'assets/images/png/heart_outlined.png';
+
+  /// return guide image
+  static String guide1 = 'assets/images/png/guide1.png';
+
+  /// return person message 3 image
+  static String pmessage3 = 'assets/images/png/pmessage3.png';
+
+  /// return icon verified
+  static String iconVerified = 'assets/images/png/icon_verified.png';
 }

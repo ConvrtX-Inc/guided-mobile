@@ -12,6 +12,7 @@ import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Widget for home features
 class OutfitterFeature extends StatefulWidget {
@@ -79,8 +80,17 @@ class OutfitterFeature extends StatefulWidget {
 }
 
 class _OutfitterFeatureState extends State<OutfitterFeature> {
-  late List<Widget> imageList;
+  late List<String> imageList;
+  late List<String> imageIdList;
   int activeIndex = 0;
+  int imageCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    imageList = [];
+    imageIdList = [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +169,10 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
                         color: Colors.white,
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      await openBrowserURL(
+                          url: 'https://${widget._productLink}', inApp: true);
+                    },
                   ),
                 ],
               ),
@@ -175,6 +188,14 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
           if (snapshot.hasData) {
             final OutfitterImageModelData outfitterImage = snapshot.data;
             final int length = outfitterImage.outfitterImageDetails.length;
+            imageCount = length;
+
+            for (int i = 0; i < imageCount; i++) {
+              imageList
+                  .add(outfitterImage.outfitterImageDetails[i].snapshotImg);
+              imageIdList.add(outfitterImage.outfitterImageDetails[i].id);
+            }
+
             return Center(
               child: Stack(
                 alignment: AlignmentDirectional.center,
@@ -196,8 +217,17 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
 
                         return buildImage(imgData, index);
                       }),
-                  if (length == 1)
-                    Container()
+                  if (length == 1) Container(),
+                  if (length == 0)
+                    GestureDetector(
+                        onTap: () {
+                          navigateOutfitterDetails(context, '');
+                        },
+                        child: Container(
+                          width: 300.w,
+                          height: 300.h,
+                          child: const Text(''),
+                        ))
                   else
                     Positioned(
                       bottom: 10,
@@ -239,6 +269,19 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
             dotWidth: 10.w),
       );
 
+  Future<void> openBrowserURL({
+    required String url,
+    bool inApp = false,
+  }) async {
+    if (await canLaunch(url)) {
+      await launch(url,
+          forceSafariVC: inApp, // iOS
+          forceWebView: inApp, // Android
+          enableJavaScript: true // Android
+          );
+    }
+  }
+
   /// Navigate to Outfitter View
   Future<void> navigateOutfitterDetails(
       BuildContext context, String snapshotImg) async {
@@ -256,7 +299,10 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
       'city': widget._city,
       'province': widget._province,
       'zip_code': widget._zipCode,
-      'snapshot_img': snapshotImg
+      'snapshot_img': snapshotImg,
+      'image_count': imageCount,
+      'image_list': imageList,
+      'image_id_list': imageIdList
     };
 
     await Navigator.pushNamed(context, '/outfitter_view', arguments: details);

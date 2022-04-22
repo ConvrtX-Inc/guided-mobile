@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/models/home.dart';
+import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/package_model.dart';
 import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
-import 'package:guided/utils/home.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Package List Screen
@@ -40,7 +39,7 @@ class _PackageListState extends State<PackageList>
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: SizedBox(
-          height: 550.h,
+          height: 600.h,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -63,8 +62,7 @@ class _PackageListState extends State<PackageList>
                             message: 'Result: ${snapshot.error}',
                           ));
                         } else {
-                          _displayWidget =
-                              buildAdvertisementResult(snapshot.data!);
+                          _displayWidget = buildPackageResult(snapshot.data!);
                         }
                     }
                     return _displayWidget;
@@ -76,6 +74,7 @@ class _PackageListState extends State<PackageList>
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'btn0',
         backgroundColor: AppColors.chateauGreen,
         onPressed: () {
           Navigator.push(
@@ -89,7 +88,7 @@ class _PackageListState extends State<PackageList>
     );
   }
 
-  Widget buildAdvertisementResult(PackageModelData packageData) =>
+  Widget buildPackageResult(PackageModelData packageData) =>
       SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -103,21 +102,26 @@ class _PackageListState extends State<PackageList>
               )
             else
               for (PackageDetailsModel detail in packageData.packageDetails)
-                buildAdvertisementInfo(detail)
+                buildPackageInfo(detail)
           ],
         ),
       );
 
-  Widget buildAdvertisementInfo(PackageDetailsModel details) => PackageFeatures(
+  Widget buildPackageInfo(PackageDetailsModel details) => PackageFeatures(
         id: details.id,
         name: details.name,
+        mainBadgeId: details.mainBadgeId,
+        subBadgeId: details.subBadgeId,
         description: details.description,
         imageUrl: details.coverImg,
         numberOfTourist: details.maxTraveller,
-        starRating: 4.9,
+        starRating: 0,
         fee: double.parse(details.basePrice),
         dateRange: '1-9',
         services: details.services,
+        country: details.country,
+        address: details.address,
+        extraCost: details.extraCostPerPerson,
         isPublished: details.isPublished,
       );
 }
