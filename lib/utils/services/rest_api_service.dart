@@ -498,6 +498,65 @@ class APIServices {
     return EventImageModelData(eventImageDetails: details);
   }
 
+
+
+  ///API Service for transactions
+  Future<APIStandardReturnFormat> getTransactions() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactions}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+        });
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  ///API Service for Posts
+  Future<APIStandardReturnFormat> getPosts() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getPosts}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+        });
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  ///API Service for transactions-byguide
+  Future<APIStandardReturnFormat> getTransactionsByGuide(int status) async {
+    var tour_guide_id = UserSingleton.instance.user.user!.id;
+    var statusName = "";
+    switch(status)
+    {
+      case 0:
+        statusName = "all";
+        break;
+      case 1:
+        statusName = "completed";
+        break;
+      case 2:
+        statusName = "pending";
+        break;
+      case 3:
+        statusName = "rejected";
+        break;
+    }
+    var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/${tour_guide_id}\/${statusName}');
+    // var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/678036c1-9da6-43ae-bb21-253a5e9b54d5\/${statusName}');
+    // var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/21ca70b3-9eee-4285-9473-fb518caa67be\/${statusName}');
+    print("url2:"+url);
+    final http.Response response = await http.get(
+        Uri.parse(url),
+        headers: {
+          HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+        });
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+
   /// API service for getClosestActivity
   Future<List<ActivityPackage>> getClosestActivity() async {
     final Map<String, String> headers = {
@@ -1165,4 +1224,5 @@ class APIServices {
       return UserTransaction();
     }
   }
+
 }

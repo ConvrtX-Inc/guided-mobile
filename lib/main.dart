@@ -21,7 +21,6 @@ String _defaultHome = '/';
 
 void main() async {
   await dotenv.load(fileName: '.env');
-
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIOverlays(
       [SystemUiOverlay.bottom, SystemUiOverlay.top]);

@@ -5,6 +5,7 @@ class AppAPIPath {
 
   /// Returns staging mode (change to false if deploying to live)
   static bool isStaging = false;
+  // static bool isStaging = true;
 
   /// Returns API mode
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
@@ -14,6 +15,7 @@ class AppAPIPath {
 
   /// Returns API base url
   static String apiBaseUrl = getBaseUrl(mode);
+
 
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
@@ -132,6 +134,13 @@ class AppAPIPath {
   /// Returns event image
   static String getEventImage = 'api/v1/activity-event-image';
 
+  /// Returns transactions
+  static String getTransactions = 'api/v1/transactions';
+  /// Returns posts
+  static String getPosts = 'api/v1/activity-post';
+  ///Return transactions by-guide
+  static String getTransactionsByGuide = 'api/v1/transactions/byguide/transaction';
+
   /// Returns terms and condition url
   static String getTermsAndCondtion = 'api/v1/terms-and-conditons';
 
@@ -187,4 +196,5 @@ getBaseUrl(String mode) {
     case 'staging':
       return 'guided-api-staging.herokuapp.com';
   }
+
 }

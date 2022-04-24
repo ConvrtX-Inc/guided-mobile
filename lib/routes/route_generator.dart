@@ -94,6 +94,7 @@ import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
+import 'package:guided/screens/transaction_notifications/transaction_history_main.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
 
 import '../screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
@@ -311,7 +312,10 @@ class RouteGenerator {
             builder: (_) => const ReviewsProfileScreen());
       case '/payment':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const PaymentManageCard());
+            builder: (_) => const TabMapScreen(), settings: settings);
+      case '/transaction_history':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TransactionHistoryMain(), settings: settings);
       case '/':
         return MaterialPageRoute<dynamic>(builder: (_) => const Splash());
       case '/package_edit':
@@ -374,7 +378,6 @@ class RouteGenerator {
       case '/request_refund':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RequestRefund());
-
 
       default:
         return _errorRoute();
