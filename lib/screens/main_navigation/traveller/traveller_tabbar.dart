@@ -5,7 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/card_controller.dart';
+import 'package:guided/controller/user_subscription_controller.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/user_subscription.dart';
 import 'package:guided/screens/main_navigation/traveller/nearby_activities/nearby_activities.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
@@ -32,6 +34,7 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
   int _selectedIndex = 0;
   late Widget _selectedWidget;
   final CardController _creditCardController = Get.put(CardController());
+  final UserSubscriptionController _userSubscriptionController = Get.put(UserSubscriptionController());
 
   @override
   void initState() {
@@ -39,6 +42,8 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
       onItemPressed: popularGuideds,
     );
     super.initState();
+
+    getUserSubscription();
 
     if (_creditCardController.cards.isEmpty) {
       getUserCards();
@@ -103,6 +108,15 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
         _selectedWidget = const TabSettingsMain();
       }
     });
+  }
+
+  Future<void> getUserSubscription() async {
+    final UserSubscription subscription =
+        await APIServices().getUserSubscription();
+    debugPrint('userSubscription $subscription');
+
+    _userSubscriptionController.setSubscription(subscription);
+
   }
 
   Future<void> getUserCards() async {

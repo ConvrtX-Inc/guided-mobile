@@ -88,6 +88,7 @@ import 'package:guided/screens/refunds/traveler/request_refund.dart';
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
+import 'package:guided/screens/settings/edit_profile.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
 import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
@@ -378,6 +379,9 @@ class RouteGenerator {
       case '/request_refund':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RequestRefund());
+      case '/edit_profile':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const EditProfileScreen());
 
       default:
         return _errorRoute();

@@ -269,7 +269,7 @@ class APIServices {
   Future<ProfileDetailsModel> getProfileData() async {
     final String url =
         '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/${UserSingleton.instance.user.user!.id}';
-
+debugPrint('URL $url');
     final http.Response response = await http.get(Uri.parse(url), headers: {
       HttpHeaders.authorizationHeader:
           'Bearer ${UserSingleton.instance.user.token}',
@@ -1061,6 +1061,7 @@ class APIServices {
           'start_date': params.startDate,
           'end_date': params.endDate,
           'message': params.message,
+          'price':params.price
         }));
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
@@ -1225,4 +1226,56 @@ class APIServices {
     }
   }
 
+  ///Api Service for update profile
+  Future<APIStandardReturnFormat> updateProfile(
+      dynamic parameters) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.patch(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.getProfileDetails}/$userId'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          'content-type': 'application/json'
+        },
+        body: jsonEncode(parameters));
+
+    debugPrint('update profile response:: ${response.body}');
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for user  getting subscription
+
+  ///API Service for Retrieving User Subscription
+  Future<UserSubscription> getUserSubscription() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+    };
+
+    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/card', queryParameters)}');
+    debugPrint('params R$queryParameters');
+    final http.Response response = await http
+        .get(Uri.http(apiBaseUrl, '/api/v1/user-subscription', queryParameters), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<UserSubscription> subscriptions = <UserSubscription>[];
+    for (final dynamic res in jsonData) {
+      final UserSubscription subscription = UserSubscription.fromJson(res);
+      subscriptions.add(subscription);
+    }
+    if(subscriptions.isNotEmpty){
+      debugPrint('Subscrption ${subscriptions[0].id}');
+      return subscriptions[0];
+    }else{
+      debugPrint('No Subscrption');
+      return UserSubscription();
+    }
+
+  }
 }

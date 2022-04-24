@@ -1,10 +1,22 @@
 // ignore_for_file: no_default_cases, public_member_api_docs
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/profile_photos_controller.dart';
+import 'package:guided/controller/user_profile_controller.dart';
+import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
+import 'package:guided/screens/widgets/reusable_widgets/image_picker_bottom_sheet.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
+import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:skeleton_text/skeleton_text.dart';
 
 /// Profile Screen
 class ProfileScreen extends StatefulWidget {
@@ -16,6 +28,29 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final UserProfileDetailsController _profileDetailsController =
+      Get.put(UserProfileDetailsController());
+  bool isLoading = false;
+
+  String profilePicPreview = '';
+  File? _photo;
+
+  final ProfilePhotoController _profilePhotoController =
+      Get.put(ProfilePhotoController());
+
+  final String _storagePath = 'profilePictures';
+
+  @override
+  void initState() {
+    super.initState();
+
+    /* if (_profileDetailsController.userProfileDetails.id.isEmpty) {
+      isLoading = true;
+    }*/
+    isLoading = true;
+    getProfileDetails();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,74 +73,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
         elevation: 0.2,
         backgroundColor: Colors.white,
       ),
-      body: getBody(context),
+      body: isLoading ? buildFakeProfile() : getBody(context),
       backgroundColor: Colors.white,
     );
   }
-}
 
-/// Body of profile screen
-Widget getBody(BuildContext context) {
-  return SingleChildScrollView(
-      child: SafeArea(
-    child: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 32.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'Profile',
-            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(
-            height: 14.h,
-          ),
-          FutureBuilder<ProfileDetailsModel>(
-              future: APIServices().getProfileData(),
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                Widget _displayWidget;
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    _displayWidget = Column(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 20.h,
-                        ),
-                        const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      ],
-                    );
-                    break;
-                  default:
-                    if (snapshot.hasError) {
-                      _displayWidget = Center(
-                          child: APIMessageDisplay(
-                        message: 'Result: ${snapshot.error}',
-                      ));
-                    } else {
-                      _displayWidget =
-                          buildProfileData(context, snapshot.data!);
-                    }
-                }
-                return _displayWidget;
-              }),
-          getAboutMe(context),
-          getProfileSetting(context)
-        ],
+  /// Body of profile screen
+  Widget getBody(BuildContext context) {
+    return SingleChildScrollView(
+        child: SafeArea(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 32.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              'Profile',
+              style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(
+              height: 14.h,
+            ),
+            GetBuilder<UserProfileDetailsController>(
+                builder: (UserProfileDetailsController _controller) {
+              return buildProfileData(context, _controller.userProfileDetails);
+            }),
+            getAboutMe(context),
+            getProfileSetting(context)
+          ],
+        ),
       ),
-    ),
-  ));
-}
+    ));
+  }
 
-Widget buildProfileData(BuildContext context, ProfileDetailsModel profileData) =>
-    Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          if (profileData.fullName.isEmpty)
-            const Text('Unknown User')
-          else
+  Widget buildProfileData(
+          BuildContext context, ProfileDetailsModel profileData) =>
+      Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -130,169 +136,310 @@ Widget buildProfileData(BuildContext context, ProfileDetailsModel profileData) =
                 ),
               ],
             )
-        ]);
+          ]);
 
-/// profile image
-Widget getProfile(BuildContext context, String name) {
-  return Center(
-    child: Column(
-      children: <Widget>[
-        Container(
-          width: 121.w,
-          height: 121.h,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.white,
-              width: 3,
-            ),
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: const <BoxShadow>[
-              BoxShadow(blurRadius: 3, color: Colors.grey)
-            ],
+  /// profile image
+  Widget getProfile(BuildContext context, String name) {
+    return Center(
+      child: Column(
+        children: <Widget>[
+          buildProfilePicture(),
+          SizedBox(
+            height: 13.h,
           ),
-          child: CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 35,
-              backgroundImage: const AssetImage(
-                  '${AssetsPath.assetsPNGPath}/student_profile.png'),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                    width: 33.3.w,
-                    height: 33.3.h,
+          GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed('/edit_profile');
+              },
+              child: Text(
+                'Edit',
+                style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w400),
+              )),
+          SizedBox(
+            height: 6.h,
+          ),
+          Text(
+            name,
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// widget for about me
+  Widget getAboutMe(BuildContext context) {
+    return GetBuilder<ProfilePhotoController>(
+        builder: (ProfilePhotoController _controller) {
+      return _controller.photos.isNotEmpty
+          ? GridView.count(
+              crossAxisCount: 2,
+              crossAxisSpacing: 20,
+              shrinkWrap: true,
+              children: <Widget>[
+                if (_controller.photos[0].imageUrl != '')
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(0, 23, 0, 23),
                     decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2,
-                        ),
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                            blurRadius: 4,
-                            color: Colors.grey,
-                          )
-                        ],
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(55)),
+                        borderRadius: BorderRadius.circular(20),
+                        image: DecorationImage(
+                            image: MemoryImage(
+                                base64Decode(_controller.photos[0].imageUrl)),
+                            fit: BoxFit.cover)),
+                  ),
+                if (_controller.photos[1].imageUrl != '')
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(0, 23, 0, 23),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.black,
+                        image: DecorationImage(
+                            image: MemoryImage(
+                                base64Decode(_controller.photos[1].imageUrl)),
+                            colorFilter: ColorFilter.mode(
+                                Colors.black.withOpacity(0.6),
+                                BlendMode.dstATop),
+                            fit: BoxFit.cover)),
+                    child: Center(
+                      child: Text(
+                        '4+',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 24.sp),
+                      ),
+                    ),
+                  )
+              ],
+            )
+          : Container(height: 22.h);
+    });
+  }
+
+  /// widget for profile settings
+  Widget getProfileSetting(BuildContext context) {
+    return Column(children: <Widget>[
+      ListTile(
+          leading: Container(
+              width: 38.w,
+              height: 38.h,
+              decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(20)),
+              child: const Icon(Icons.lock_outline)),
+          title: Text(
+            'Change Password',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
+      ListTile(
+          leading: Container(
+              width: 38.w,
+              height: 38.w,
+              decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(20)),
+              child: const Icon(Icons.tablet_android_outlined)),
+          title: Text(
+            'Change Mobile Number',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
+      ListTile(
+          leading: Container(
+              width: 38.w,
+              height: 38.h,
+              decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(20)),
+              child: Image.asset(AssetsPath.certificateIcon)),
+          title: Text(
+            'Certificates',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
+      ListTile(
+          leading: Container(
+              width: 38.w,
+              height: 38.h,
+              decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(20)),
+              child: const Icon(Icons.lock_outline)),
+          title: Text(
+            'About Me',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
+    ]);
+  }
+
+  Widget buildFakeProfile() => Container(
+        padding: EdgeInsets.all(22.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const SkeletonText(
+              width: 80,
+              height: 30,
+            ),
+            SizedBox(height: 35.h),
+            const Center(
+              child: SkeletonText(
+                width: 120,
+                height: 120,
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(height: 18.h),
+            const Center(
+              child: SkeletonText(
+                width: 130,
+              ),
+            ),
+            SizedBox(
+              height: 22.h,
+            ),
+            SkeletonText(
+              width: 90.w,
+            ),
+            SizedBox(
+              height: 22.h,
+            ),
+            SkeletonText(
+              width: 300.w,
+            ),
+            SizedBox(
+              height: 12.h,
+            ),
+            SkeletonText(
+              width: 240.w,
+            ),
+            SizedBox(
+              height: 35.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                SkeletonText(
+                  width: 150.w,
+                  height: 150.h,
+                ),
+                SkeletonText(
+                  width: 150.w,
+                  height: 150.h,
+                ),
+              ],
+            )
+          ],
+        ),
+      );
+
+  Widget buildProfilePicture() => Container(
+          child: Stack(
+        children: <Widget>[
+          Container(
+            width: 121.w,
+            height: 121.h,
+            padding: EdgeInsets.all(4.w),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.white,
+                width: 3,
+              ),
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: const <BoxShadow>[
+                BoxShadow(blurRadius: 3, color: Colors.grey)
+              ],
+            ),
+            child: _profileDetailsController
+                    .userProfileDetails.firebaseProfilePicUrl.isNotEmpty
+                ? CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 35,
+                    backgroundImage: NetworkImage(_profileDetailsController
+                        .userProfileDetails.firebaseProfilePicUrl))
+                : CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 35,
+                    backgroundImage: AssetImage(AssetsPath.defaultProfilePic),
+                  ),
+          ),
+          Positioned(
+            top: 8,
+            right: 6,
+            child: Container(
+                width: 33,
+                height: 33,
+                decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 2,
+                    ),
+                    boxShadow: const <BoxShadow>[
+                      BoxShadow(
+                        blurRadius: 4,
+                        color: Colors.grey,
+                      )
+                    ],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(100)),
+                child: GestureDetector(
+                    onTap: () {
+                      imagePickerBottomSheet(context, handleImagePicked);
+                    },
                     child: Icon(
                       Icons.edit,
                       size: 15.sp,
                       color: Colors.black,
-                    )),
-              )),
-        ),
-        SizedBox(
-          height: 13.h,
-        ),
-        Text(
-          'Edit',
-          style: TextStyle(
-              fontSize: 12.sp, color: Colors.grey, fontWeight: FontWeight.w400),
-        ),
-        SizedBox(
-          height: 6.h,
-        ),
-        Text(
-          name,
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
-        ),
-      ],
-    ),
-  );
-}
+                    ))),
+          )
+        ],
+      ));
 
-/// widget for about me
-Widget getAboutMe(BuildContext context) {
-  return GridView.count(
-    crossAxisCount: 2,
-    crossAxisSpacing: 20,
-    shrinkWrap: true,
-    children: <Widget>[
-      Container(
-        margin: const EdgeInsets.fromLTRB(0, 23, 0, 23),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            image: DecorationImage(
-                image: AssetImage(AssetsPath.image2), fit: BoxFit.cover)),
-      ),
-      Container(
-        margin: const EdgeInsets.fromLTRB(0, 23, 0, 23),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.black,
-            image: DecorationImage(
-                image: AssetImage(AssetsPath.image1),
-                colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.6), BlendMode.dstATop),
-                fit: BoxFit.cover)),
-        child: Center(
-          child: Text(
-            '4+',
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 24.sp),
-          ),
-        ),
-      )
-    ],
-  );
-}
+  Future<void> handleImagePicked(image) async {
+    final Future<Uint8List> imageBytes = File(image.path).readAsBytes();
+    debugPrint('Image Path: $image');
 
-/// widget for profile settings
-Widget getProfileSetting(BuildContext context) {
-  return Column(children: <Widget>[
-    ListTile(
-        leading: Container(
-            width: 38.w,
-            height: 38.h,
-            decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(20)),
-            child: const Icon(Icons.lock_outline)),
-        title: Text(
-          'Change Password',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
-        ),
-        trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
-    ListTile(
-        leading: Container(
-            width: 38.w,
-            height: 38.w,
-            decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(20)),
-            child: const Icon(Icons.tablet_android_outlined)),
-        title: Text(
-          'Change Mobile Number',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
-        ),
-        trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
-    ListTile(
-        leading: Container(
-            width: 38.w,
-            height: 38.h,
-            decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(20)),
-            child: Image.asset(AssetsPath.certificateIcon)),
-        title: Text(
-          'Certificates',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
-        ),
-        trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
-    ListTile(
-        leading: Container(
-            width: 38.w,
-            height: 38.h,
-            decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(20)),
-            child: const Icon(Icons.lock_outline)),
-        title: Text(
-          'About Me',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
-        ),
-        trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
-  ]);
+    ///Save image to firebase
+    String profileUrl = '';
+    if (image != null) {
+      profileUrl =
+          await FirebaseServices().uploadImageToFirebase(image, _storagePath);
+    }
+
+    debugPrint('firebse url: $profileUrl');
+    final dynamic editProfileParams = {
+      'profile_photo_firebase_url': profileUrl
+    };
+
+    final APIStandardReturnFormat res =
+        await APIServices().updateProfile(editProfileParams);
+    debugPrint('Response:: ${res.status}');
+
+    if (res.status == 'success') {
+      final ProfileDetailsModel updatedProfile =
+          ProfileDetailsModel.fromJson(json.decode(res.successResponse));
+      _profileDetailsController.setUserProfileDetails(updatedProfile);
+
+      final String base64String = base64Encode(await imageBytes);
+      setState(() {
+        _photo = image;
+        profilePicPreview = base64String;
+      });
+    }
+  }
+
+  Future<void> getProfileDetails() async {
+    final ProfileDetailsModel res = await APIServices().getProfileData();
+    debugPrint('Profile:: ${res.id}');
+    setState(() {
+      isLoading = false;
+    });
+    _profileDetailsController.setUserProfileDetails(res);
+  }
 }
