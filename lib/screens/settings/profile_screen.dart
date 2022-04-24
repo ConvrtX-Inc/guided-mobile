@@ -104,7 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return buildProfileData(context, _controller.userProfileDetails);
             }),
             getAboutMe(context),
-            getProfileSetting(context)
+            // getProfileSetting(context)
           ],
         ),
       ),
