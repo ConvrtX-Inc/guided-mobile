@@ -269,7 +269,7 @@ class APIServices {
   Future<ProfileDetailsModel> getProfileData() async {
     final String url =
         '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/${UserSingleton.instance.user.user!.id}';
-debugPrint('URL $url');
+    debugPrint('URL $url');
     final http.Response response = await http.get(Uri.parse(url), headers: {
       HttpHeaders.authorizationHeader:
           'Bearer ${UserSingleton.instance.user.token}',
@@ -498,8 +498,6 @@ debugPrint('URL $url');
     return EventImageModelData(eventImageDetails: details);
   }
 
-
-
   ///API Service for transactions
   Future<APIStandardReturnFormat> getTransactions() async {
     final http.Response response = await http.get(
@@ -507,7 +505,7 @@ debugPrint('URL $url');
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactions}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
@@ -519,7 +517,7 @@ debugPrint('URL $url');
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getPosts}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
@@ -528,8 +526,7 @@ debugPrint('URL $url');
   Future<APIStandardReturnFormat> getTransactionsByGuide(int status) async {
     var tour_guide_id = UserSingleton.instance.user.user!.id;
     var statusName = "";
-    switch(status)
-    {
+    switch (status) {
       case 0:
         statusName = "all";
         break;
@@ -543,19 +540,17 @@ debugPrint('URL $url');
         statusName = "rejected";
         break;
     }
-    var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/${tour_guide_id}\/${statusName}');
+    var url = Uri.encodeFull(
+        '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/${tour_guide_id}\/${statusName}');
     // var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/678036c1-9da6-43ae-bb21-253a5e9b54d5\/${statusName}');
     // var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/21ca70b3-9eee-4285-9473-fb518caa67be\/${statusName}');
-    print("url2:"+url);
-    final http.Response response = await http.get(
-        Uri.parse(url),
-        headers: {
-          HttpHeaders.authorizationHeader:
+    print("url2:" + url);
+    final http.Response response = await http.get(Uri.parse(url), headers: {
+      HttpHeaders.authorizationHeader:
           'Bearer ${UserSingleton.instance.user.token}',
-        });
+    });
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
-
 
   /// API service for getClosestActivity
   Future<List<ActivityPackage>> getClosestActivity() async {
@@ -1061,7 +1056,7 @@ debugPrint('URL $url');
           'start_date': params.startDate,
           'end_date': params.endDate,
           'message': params.message,
-          'price':params.price
+          'price': params.price
         }));
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
@@ -1226,14 +1221,72 @@ debugPrint('URL $url');
     }
   }
 
+  /// API service for advertisement model
+  Future<PackageModelData> getPopularGuidePackage(String? id) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"\$and": [{"user_id": \"$id\"}, {"is_published": true}]}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final PackageModelData dataSummary =
+        PackageModelData.fromJson(json.decode(response.body));
+
+    return PackageModelData(packageDetails: dataSummary.packageDetails);
+  }
+
+  /// API service for all event model
+  Future<EventModelData> getAllEventData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityEventUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final EventModelData dataSummary =
+        EventModelData.fromJson(json.decode(response.body));
+
+    return EventModelData(eventDetails: dataSummary.eventDetails);
+  }
+
+  /// API service for all outfitter model
+  Future<OutfitterModelData> getAllOutfitterData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createOutfitterUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final http.Response response2 = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final OutfitterModelData dataSummary =
+        OutfitterModelData.fromJson(json.decode(response.body));
+
+    return OutfitterModelData(outfitterDetails: dataSummary.outfitterDetails);
+  }
+
   ///Api Service for update profile
-  Future<APIStandardReturnFormat> updateProfile(
-      dynamic parameters) async {
+  Future<APIStandardReturnFormat> updateProfile(dynamic parameters) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
     final http.Response response = await http.patch(
-        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.getProfileDetails}/$userId'),
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.getProfileDetails}/$userId'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           'content-type': 'application/json'
@@ -1258,10 +1311,11 @@ debugPrint('URL $url');
 
     debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/card', queryParameters)}');
     debugPrint('params R$queryParameters');
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/api/v1/user-subscription', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/user-subscription', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
     final dynamic jsonData = jsonDecode(response.body);
     final List<UserSubscription> subscriptions = <UserSubscription>[];
@@ -1269,13 +1323,12 @@ debugPrint('URL $url');
       final UserSubscription subscription = UserSubscription.fromJson(res);
       subscriptions.add(subscription);
     }
-    if(subscriptions.isNotEmpty){
+    if (subscriptions.isNotEmpty) {
       debugPrint('Subscrption ${subscriptions[0].id}');
       return subscriptions[0];
-    }else{
+    } else {
       debugPrint('No Subscrption');
       return UserSubscription();
     }
-
   }
 }

@@ -152,26 +152,31 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 10.h),
-                        child: Container(
-                          transform: Matrix4.translationValues(0, -5.h, 0),
-                          height: 60.h,
-                          width: 58.w,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15.r),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/traveller_tab');
+                          },
+                          child: Container(
+                            transform: Matrix4.translationValues(0, -5.h, 0),
+                            height: 60.h,
+                            width: 58.w,
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.r),
+                              ),
                             ),
-                          ),
-                          child: Center(
-                            child: Container(
-                              height: 20.h,
-                              width: 20.w,
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/png/green_house.png'),
-                                  fit: BoxFit.contain,
+                            child: Center(
+                              child: Container(
+                                height: 20.h,
+                                width: 20.w,
+                                decoration: const BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(
+                                        'assets/images/png/green_house_outlined.png'),
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               ),
                             ),
@@ -693,7 +698,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                     transactionNumber: transactionNumber),
                                 paymentMethod: mode);
                           },
-                          onPaymentFailed: (){
+                          onPaymentFailed: () {
                             paymentFailed(
                                 context: context,
                                 paymentDetails: DiscoveryPaymentDetails(
@@ -730,10 +735,9 @@ class _TabMapScreenState extends State<TabMapScreen> {
       price: price
     );
 
-    final APIStandardReturnFormat result = await APIServices().addUserSubscription(subscriptionParams);
+    final APIStandardReturnFormat result =
+        await APIServices().addUserSubscription(subscriptionParams);
 
     debugPrint('subscription result ${result.successResponse}');
-
   }
-
 }

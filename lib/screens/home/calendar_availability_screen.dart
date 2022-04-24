@@ -258,7 +258,9 @@ class _CalendarAvailabilityScreenState
     print(_selectedDate);
     final Map<String, dynamic> details = {
       'id': screenArguments['id'],
-      'selected_date': _selectedDate
+      'selected_date': _selectedDate,
+      'package_id': screenArguments['package_id'],
+      'number_of_tourist': screenArguments['number_of_tourist']
     };
 
     await Navigator.pushNamed(context, '/availability_booking_dates',
