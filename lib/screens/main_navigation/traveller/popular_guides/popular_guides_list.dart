@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, unused_element, always_declare_return_types, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, curly_braces_in_flow_control_structures, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, avoid_catches_without_on_clauses, unnecessary_lambdas
+// ignore_for_file: file_names, unused_element, always_declare_return_types, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, curly_braces_in_flow_control_structures, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, avoid_catches_without_on_clauses, unnecessary_lambdas, public_member_api_docs, always_put_required_named_parameters_first, sort_constructors_first, no_default_cases
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,8 +6,10 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/popular_guide_model.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/widget/popular_guide_features.dart';
 import 'package:guided/utils/home.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Adding Advertisement Screen
 class PopularGuidesList extends StatefulWidget {
@@ -20,11 +22,12 @@ class PopularGuidesList extends StatefulWidget {
 
 class _PopularGuidesListState extends State<PopularGuidesList> {
   List<PopularGuideModel> listPopularGuide = [];
-
+  late Future<List<User>> _loadingData;
   @override
   void initState() {
     super.initState();
     listPopularGuide = HomeUtils.getPopularGuideNearYou();
+    _loadingData = APIServices().getPopularGuides();
   }
 
   @override
@@ -33,39 +36,6 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
     final double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        leading: Transform.scale(
-          scale: 0.8,
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Container(
-              width: 40.w,
-              height: 40.h,
-              padding: EdgeInsets.zero,
-              decoration: BoxDecoration(
-                color: AppColors.harp,
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_sharp,
-                  color: Colors.black,
-                  size: 25,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ),
-        ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-          ),
-        ),
-      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -76,6 +46,23 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                Align(
+                  child: Image.asset(
+                    AssetsPath.horizontalLine,
+                    width: 60.w,
+                    height: 5.h,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10.w, 0.h, 20.w, 0.h),
+                  child: Align(
+                      alignment: Alignment.topLeft,
+                      child: IconButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          icon: const Icon(Icons.arrow_back))),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(8),
                   child: Text(
@@ -87,22 +74,42 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
                         fontWeight: FontWeight.w700),
                   ),
                 ),
-                SizedBox(
-                    height: 600.h,
-                    child: ListView.builder(
-                        itemCount: listPopularGuide.length,
-                        itemBuilder: (BuildContext ctx, int index) {
-                          return PopularGuideFeatures(
-                              id: listPopularGuide[index].id,
-                              name: listPopularGuide[index].name,
-                              mainBadgeId:
-                                  listPopularGuide[index].mainBadgeId,
-                              location: listPopularGuide[index].location,
-                              coverImg: listPopularGuide[index].coverImg,
-                              profileImg: listPopularGuide[index].profileImg,
-                              starRating: listPopularGuide[index].starRating,
-                              isFirstAid: listPopularGuide[index].isFirstAid);
-                        })),
+                FutureBuilder<List<User>>(
+                    future: _loadingData, // async work
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<User>> snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        default:
+                          if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          } else {
+                            return GestureDetector(
+                              onTap: () {},
+                              child: SizedBox(
+                                height: 600.h,
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  children: List<Widget>.generate(
+                                      snapshot.data!.length, (int i) {
+                                    return PopularGuideFeatures(
+                                        id: snapshot.data![i].id,
+                                        name: snapshot.data![i].fullName,
+                                        profileImg: '',
+                                        starRating: '0',
+                                        isFirstAid: snapshot
+                                            .data![i].isFirstAidTrained);
+                                  }),
+                                ),
+                              ),
+                            );
+                          }
+                      }
+                    }),
               ],
             )),
           ),

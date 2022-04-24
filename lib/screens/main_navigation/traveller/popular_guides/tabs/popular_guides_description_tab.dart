@@ -1,24 +1,54 @@
 // ignore_for_file: use_raw_strings
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_static_maps_controller/google_static_maps_controller.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'dart:async';
 
-import 'package:custom_marker/marker_icon.dart';
-import 'package:google_maps_flutter_platform_interface/src/types/marker.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/badge_model.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 
 /// Popular Guides Tab Description
 class PopularGuidesTabDescription extends StatefulWidget {
   /// Constructor
-  const PopularGuidesTabDescription({Key? key}) : super(key: key);
+  const PopularGuidesTabDescription(
+      {Key? key,
+      required this.name,
+      required this.mainBadgeId,
+      required this.description,
+      required this.imageUrl,
+      required this.numberOfTourist,
+      required this.starRating,
+      required this.fee,
+      required this.address,
+      required this.packageId,
+      required this.profileImg,
+      required this.packageName,
+      required this.isFirstAid})
+      : super(key: key);
+
+  final String name,
+      mainBadgeId,
+      description,
+      imageUrl,
+      fee,
+      address,
+      packageId,
+      profileImg,
+      packageName,
+      starRating;
+
+  final int numberOfTourist;
+
+  final bool isFirstAid;
 
   @override
   State<PopularGuidesTabDescription> createState() =>
@@ -26,7 +56,10 @@ class PopularGuidesTabDescription extends StatefulWidget {
 }
 
 class _PopularGuidesTabDescriptionState
-    extends State<PopularGuidesTabDescription> {
+    extends State<PopularGuidesTabDescription>
+    with AutomaticKeepAliveClientMixin<PopularGuidesTabDescription> {
+  @override
+  bool get wantKeepAlive => true;
   Completer<GoogleMapController> _controller = Completer();
   final List<Activity> activities = StaticDataService.getActivityList();
   void _onMapCreated(GoogleMapController controller) {
@@ -44,7 +77,7 @@ class _PopularGuidesTabDescriptionState
               SizedBox(
                 height: 30.h,
               ),
-              guideProfile1(),
+              guideProfile1(widget.name, widget.profileImg),
               SizedBox(
                 height: 20.h,
               ),
@@ -59,54 +92,105 @@ class _PopularGuidesTabDescriptionState
                         SizedBox(
                           width: 20.w,
                         ),
-                        Image(
-                          image: AssetImage(AssetsPath.hunt),
-                          width: 70,
-                          height: 70,
-                        ),
-                        SizedBox(
-                          height: 35.h,
-                          child: Text(
-                            'Hunt',
-                            style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: 'Gilroy'),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 70.h,
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 10.w, bottom: 20.h),
-                            child: Image(
-                              image: AssetImage(AssetsPath.forThePlanet),
-                              width: 70,
-                              height: 70,
-                            ),
-                          ),
+                        FutureBuilder<BadgeModelData>(
+                          future: APIServices()
+                              .getBadgesModelById(widget.mainBadgeId),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasData) {
+                              final BadgeModelData badgeData = snapshot.data;
+                              final int length = badgeData.badgeDetails.length;
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  SizedBox(
+                                    width: 10.w,
+                                  ),
+                                  Image.memory(
+                                    base64.decode(badgeData
+                                        .badgeDetails[0].imgIcon
+                                        .split(',')
+                                        .last),
+                                    gaplessPlayback: true,
+                                  ),
+                                  SizedBox(
+                                    width: 5.w,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 20.h),
+                                    child: SizedBox(
+                                      height: 35.h,
+                                      child: Text(
+                                        badgeData.badgeDetails[0].name,
+                                        style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w400,
+                                            fontFamily: 'Gilroy'),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 20.h),
+                                    child: SizedBox(
+                                      height: 70.h,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                            left: 10.w, bottom: 20.h),
+                                        child: Image(
+                                          image: AssetImage(
+                                              AssetsPath.forThePlanet),
+                                          width: 70,
+                                          height: 70,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                            if (snapshot.connectionState !=
+                                ConnectionState.done) {
+                              return Align(
+                                alignment: Alignment.centerLeft,
+                                child: Row(
+                                  children: <Widget>[
+                                    SizedBox(
+                                      width: 10.w,
+                                    ),
+                                    const CircularProgressIndicator(),
+                                  ],
+                                ),
+                              );
+                            }
+                            return Container();
+                          },
                         ),
                       ],
                     ),
-                    Padding(
-                      padding:
-                          EdgeInsets.only(top: 8.h, bottom: 17.h, right: 15.w),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: AppColors.mintGreen,
-                            border: Border.all(color: AppColors.mintGreen),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8.r))),
-                        child: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Text(AppTextConstants.firstaid,
-                              style: TextStyle(
-                                  color: AppColors.deepGreen,
-                                  fontFamily: 'Gilroy',
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w400)),
+                    if (widget.isFirstAid)
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: 8.h, bottom: 17.h, right: 15.w),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: AppColors.mintGreen,
+                              border: Border.all(color: AppColors.mintGreen),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8.r))),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5),
+                            child: Text(AppTextConstants.firstaid,
+                                style: TextStyle(
+                                    color: AppColors.deepGreen,
+                                    fontFamily: 'Gilroy',
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w400)),
+                          ),
                         ),
-                      ),
-                    )
+                      )
+                    else
+                      Container()
                   ],
                 ),
               ),
@@ -127,7 +211,7 @@ class _PopularGuidesTabDescriptionState
               Padding(
                 padding: EdgeInsets.only(top: 10.h, left: 10.w, bottom: 10.h),
                 child: Text(
-                  'Located northwest if Montreal in Quebec’s the Laurentian Mountains, Mont-Tremblant is best known for its skiing, specifically Mont Treamblent Ski Resort, which occupies the highest peak in the mountain range. Located northwest if ontreal in Quebec’s Laurentian Mountains, Mont-Trembla is best known for its skiing.',
+                  widget.description,
                   style: TextStyle(
                     fontFamily: 'Gilroy',
                     fontSize: 14.sp,
@@ -135,29 +219,29 @@ class _PopularGuidesTabDescriptionState
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () {},
-                child: Padding(
-                  padding: EdgeInsets.only(top: 10.h, left: 10.w, bottom: 10.h),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        'Read More',
-                        style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14.sp,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      const Icon(
-                        Icons.arrow_forward_ios,
-                        size: 15,
-                      )
-                    ],
-                  ),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: () {},
+              //   child: Padding(
+              //     padding: EdgeInsets.only(top: 10.h, left: 10.w, bottom: 10.h),
+              //     child: Row(
+              //       children: <Widget>[
+              //         Text(
+              //           'Read More',
+              //           style: TextStyle(
+              //             fontFamily: 'Gilroy',
+              //             fontWeight: FontWeight.w700,
+              //             fontSize: 14.sp,
+              //             decoration: TextDecoration.underline,
+              //           ),
+              //         ),
+              //         const Icon(
+              //           Icons.arrow_forward_ios,
+              //           size: 15,
+              //         )
+              //       ],
+              //     ),
+              //   ),
+              // ),
               Divider(
                 color: Colors.grey.shade300,
               ),
@@ -195,7 +279,7 @@ class _PopularGuidesTabDescriptionState
                     width: 2.w,
                   ),
                   Text(
-                    "St. John's, Newfoundland, Canada",
+                    widget.address,
                     style: TextStyle(
                         fontFamily: 'Gilroy',
                         fontWeight: FontWeight.w400,
@@ -204,31 +288,31 @@ class _PopularGuidesTabDescriptionState
                   ),
                 ],
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 10.h),
-                child: Center(
-                  child: SizedBox(
-                    height: 200.h,
-                    width: double.infinity,
-                    child: GoogleMap(
-                      initialCameraPosition: const CameraPosition(
-                        target: LatLng(57.818582, -101.760181),
-                        zoom: 10,
-                      ),
-                      onMapCreated: _onMapCreated,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                  padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 10.h),
-                  child: Text(
-                    'Exact location provided after booking',
-                    style: TextStyle(
-                        fontFamily: 'Gilroy',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12.sp),
-                  )),
+              // Padding(
+              //   padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 10.h),
+              //   child: Center(
+              //     child: SizedBox(
+              //       height: 200.h,
+              //       width: double.infinity,
+              //       child: GoogleMap(
+              //         initialCameraPosition: const CameraPosition(
+              //           target: LatLng(57.818582, -101.760181),
+              //           zoom: 10,
+              //         ),
+              //         onMapCreated: _onMapCreated,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // Padding(
+              //     padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 10.h),
+              //     child: Text(
+              //       'Exact location provided after booking',
+              //       style: TextStyle(
+              //           fontFamily: 'Gilroy',
+              //           fontWeight: FontWeight.w600,
+              //           fontSize: 12.sp),
+              //     )),
               SizedBox(
                 height: 20.h,
               ),
@@ -260,7 +344,7 @@ class _PopularGuidesTabDescriptionState
                           size: 15,
                         ),
                         Text(
-                          '16 reviews',
+                          '0 reviews',
                           style: TextStyle(
                               fontSize: 12.sp,
                               fontFamily: 'Gilroy',
@@ -275,95 +359,95 @@ class _PopularGuidesTabDescriptionState
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
-                        child: Container(
-                          width: 55.w,
-                          height: 55.h,
-                          decoration: BoxDecoration(
-                              boxShadow: <BoxShadow>[
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.8),
-                                  spreadRadius: 2,
-                                  blurRadius: 5,
-                                ),
-                              ],
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              image: const DecorationImage(
-                                  fit: BoxFit.fitHeight,
-                                  image: AssetImage(
-                                      'assets/images/profile-photos-2.png'))),
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                              child: Text(
-                                'Ann Sasha',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: 'Gilroy',
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w600),
-                              )),
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(0, 10.h, 0, 0),
-                              child: SizedBox(
-                                width: 180.w,
-                                child: Text(
-                                  'May 6, 2021',
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontFamily: 'Gilroy',
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              )),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-                    child: Text(AppTextConstants.loremIpsum,
-                        style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 14.sp,
-                            color: AppColors.osloGrey,
-                            fontWeight: FontWeight.w400)),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0.w, 20.h, 0.w, 0.h),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          side: BorderSide(color: AppColors.tealGreen),
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.r))),
-                        ),
-                        onPressed: () {
-                          print('Pressed');
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
-                          child: Text('Show all 16 reviews',
-                              style: TextStyle(
-                                  color: AppColors.tealGreen,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700)),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Row(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: <Widget>[
+                  //     Padding(
+                  //       padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
+                  //       child: Container(
+                  //         width: 55.w,
+                  //         height: 55.h,
+                  //         decoration: BoxDecoration(
+                  //             boxShadow: <BoxShadow>[
+                  //               BoxShadow(
+                  //                 color: Colors.grey.withOpacity(0.8),
+                  //                 spreadRadius: 2,
+                  //                 blurRadius: 5,
+                  //               ),
+                  //             ],
+                  //             color: Colors.white,
+                  //             shape: BoxShape.circle,
+                  //             image: const DecorationImage(
+                  //                 fit: BoxFit.fitHeight,
+                  //                 image: AssetImage(
+                  //                     'assets/images/profile-photos-2.png'))),
+                  //       ),
+                  //     ),
+                  //     Column(
+                  //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //       children: <Widget>[
+                  //         Padding(
+                  //             padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
+                  //             child: Text(
+                  //               'Ann Sasha',
+                  //               style: TextStyle(
+                  //                   color: Colors.black,
+                  //                   fontFamily: 'Gilroy',
+                  //                   fontSize: 14.sp,
+                  //                   fontWeight: FontWeight.w600),
+                  //             )),
+                  //         Padding(
+                  //             padding: EdgeInsets.fromLTRB(0, 10.h, 0, 0),
+                  //             child: SizedBox(
+                  //               width: 180.w,
+                  //               child: Text(
+                  //                 'May 6, 2021',
+                  //                 style: TextStyle(
+                  //                     color: Colors.grey,
+                  //                     fontFamily: 'Gilroy',
+                  //                     fontSize: 12.sp,
+                  //                     fontWeight: FontWeight.w400),
+                  //               ),
+                  //             )),
+                  //       ],
+                  //     ),
+                  //   ],
+                  // ),
+                  // Padding(
+                  //   padding:
+                  //       EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
+                  //   child: Text(AppTextConstants.loremIpsum,
+                  //       style: TextStyle(
+                  //           fontFamily: 'Poppins',
+                  //           fontSize: 14.sp,
+                  //           color: AppColors.osloGrey,
+                  //           fontWeight: FontWeight.w400)),
+                  // ),
+                  // Padding(
+                  //   padding: EdgeInsets.fromLTRB(0.w, 20.h, 0.w, 0.h),
+                  //   child: SizedBox(
+                  //     width: MediaQuery.of(context).size.width * 0.9,
+                  //     child: TextButton(
+                  //       style: TextButton.styleFrom(
+                  //         side: BorderSide(color: AppColors.tealGreen),
+                  //         shape: RoundedRectangleBorder(
+                  //             borderRadius:
+                  //                 BorderRadius.all(Radius.circular(10.r))),
+                  //       ),
+                  //       onPressed: () {
+                  //         print('Pressed');
+                  //       },
+                  //       child: Padding(
+                  //         padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
+                  //         child: Text('Show all 16 reviews',
+                  //             style: TextStyle(
+                  //                 color: AppColors.tealGreen,
+                  //                 fontSize: 14,
+                  //                 fontWeight: FontWeight.w700)),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   Divider(
                     color: Colors.grey.shade300,
                   ),
@@ -385,8 +469,7 @@ class _PopularGuidesTabDescriptionState
                         child: CircleAvatar(
                           backgroundColor: Colors.white,
                           radius: 30.r,
-                          backgroundImage: const AssetImage(
-                              '${AssetsPath.assetsPNGPath}/student_profile.png'),
+                          backgroundImage: AssetImage(widget.profileImg),
                         ),
                       ),
                       Expanded(
@@ -399,7 +482,7 @@ class _PopularGuidesTabDescriptionState
                               Padding(
                                 padding: EdgeInsets.only(left: 20.w),
                                 child: Text(
-                                  'Ethan Hunt',
+                                  widget.name,
                                   style: TextStyle(
                                       fontFamily: 'Gilroy',
                                       fontSize: 18.sp,
@@ -489,31 +572,31 @@ class _PopularGuidesTabDescriptionState
                           fontWeight: FontWeight.w400),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0.w, 0.h, 0.w, 0.h),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          side: BorderSide(color: AppColors.tealGreen),
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.r))),
-                        ),
-                        onPressed: () {
-                          print('Pressed');
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
-                          child: Text('Contact Guide',
-                              style: TextStyle(
-                                  color: AppColors.tealGreen,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700)),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: EdgeInsets.fromLTRB(0.w, 0.h, 0.w, 0.h),
+                  //   child: SizedBox(
+                  //     width: MediaQuery.of(context).size.width * 0.9,
+                  //     child: TextButton(
+                  //       style: TextButton.styleFrom(
+                  //         side: BorderSide(color: AppColors.tealGreen),
+                  //         shape: RoundedRectangleBorder(
+                  //             borderRadius:
+                  //                 BorderRadius.all(Radius.circular(10.r))),
+                  //       ),
+                  //       onPressed: () {
+                  //         print('Pressed');
+                  //       },
+                  //       child: Padding(
+                  //         padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
+                  //         child: Text('Contact Guide',
+                  //             style: TextStyle(
+                  //                 color: AppColors.tealGreen,
+                  //                 fontSize: 14,
+                  //                 fontWeight: FontWeight.w700)),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
                     child: SizedBox(
@@ -555,10 +638,10 @@ class _PopularGuidesTabDescriptionState
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 10.w),
-                        child: const Icon(Icons.arrow_forward_ios),
-                      )
+                      // Padding(
+                      //   padding: EdgeInsets.only(right: 10.w),
+                      //   child: const Icon(Icons.arrow_forward_ios),
+                      // )
                     ],
                   ),
                   Padding(
@@ -588,10 +671,10 @@ class _PopularGuidesTabDescriptionState
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 10.w),
-                        child: const Icon(Icons.arrow_forward_ios),
-                      )
+                      // Padding(
+                      //   padding: EdgeInsets.only(right: 10.w),
+                      //   child: const Icon(Icons.arrow_forward_ios),
+                      // )
                     ],
                   ),
                   Padding(
@@ -621,10 +704,10 @@ class _PopularGuidesTabDescriptionState
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 10.w),
-                        child: const Icon(Icons.arrow_forward_ios),
-                      )
+                      // Padding(
+                      //   padding: EdgeInsets.only(right: 10.w),
+                      //   child: const Icon(Icons.arrow_forward_ios),
+                      // )
                     ],
                   ),
                   Padding(
@@ -654,10 +737,10 @@ class _PopularGuidesTabDescriptionState
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 10.w),
-                        child: const Icon(Icons.arrow_forward_ios),
-                      )
+                      // Padding(
+                      //   padding: EdgeInsets.only(right: 10.w),
+                      //   child: const Icon(Icons.arrow_forward_ios),
+                      // )
                     ],
                   ),
                   Padding(
@@ -673,24 +756,24 @@ class _PopularGuidesTabDescriptionState
                   Divider(
                     color: Colors.grey.shade300,
                   ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 10.h),
-                    child: Row(
-                      children: <Widget>[
-                        const Icon(Icons.flag),
-                        SizedBox(width: 5.w),
-                        Text(
-                          'Report this listing',
-                          style: TextStyle(
-                            fontFamily: 'Gilroy',
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            decoration: TextDecoration.underline,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 10.h),
+                  //   child: Row(
+                  //     children: <Widget>[
+                  //       const Icon(Icons.flag),
+                  //       SizedBox(width: 5.w),
+                  //       Text(
+                  //         'Report this listing',
+                  //         style: TextStyle(
+                  //           fontFamily: 'Gilroy',
+                  //           fontSize: 12.sp,
+                  //           fontWeight: FontWeight.w400,
+                  //           decoration: TextDecoration.underline,
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
                   Divider(
                     color: Colors.grey.shade300,
                   ),
@@ -715,52 +798,53 @@ class _PopularGuidesTabDescriptionState
                   Padding(
                     padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 0.h),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(
-                            '\$60',
-                            style: TextStyle(
-                                fontFamily: 'Gilroy',
-                                fontSize: 30.sp,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          Text(
-                            '/hour',
-                            style: TextStyle(
-                                fontFamily: 'Gilroy',
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14.sp),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: SizedBox(
-                          width: 140.w,
-                          height: 60.h,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                  color: AppColors.silver,
-                                ),
-                                borderRadius: BorderRadius.circular(18.r),
+                          Row(
+                            children: <Widget>[
+                              Text(
+                                '\$${widget.fee}',
+                                style: TextStyle(
+                                    fontFamily: 'Gilroy',
+                                    fontSize: 30.sp,
+                                    fontWeight: FontWeight.w700),
                               ),
-                              primary: AppColors.primaryGreen,
-                              onPrimary: Colors.white,
-                            ),
-                            child: Text(
-                              AppTextConstants.checkAvailability,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
+                              Text(
+                                '/hour',
+                                style: TextStyle(
+                                    fontFamily: 'Gilroy',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14.sp),
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
-                    ]),
+                          // Padding(
+                          //   padding: const EdgeInsets.all(20),
+                          //   child: SizedBox(
+                          //     width: 140.w,
+                          //     height: 60.h,
+                          //     child: ElevatedButton(
+                          //       onPressed: () {},
+                          //       style: ElevatedButton.styleFrom(
+                          //         shape: RoundedRectangleBorder(
+                          //           side: BorderSide(
+                          //             color: AppColors.silver,
+                          //           ),
+                          //           borderRadius: BorderRadius.circular(18.r),
+                          //         ),
+                          //         primary: AppColors.primaryGreen,
+                          //         onPrimary: Colors.white,
+                          //       ),
+                          //       child: Text(
+                          //         AppTextConstants.checkAvailability,
+                          //         style: const TextStyle(
+                          //             fontWeight: FontWeight.bold,
+                          //             fontSize: 16),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                        ]),
                   )
                 ],
               ),
@@ -867,7 +951,7 @@ class _PopularGuidesTabDescriptionState
     );
   }
 
-  Widget guideProfile1() => Row(
+  Widget guideProfile1(String name, String profileImg) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(
@@ -886,8 +970,7 @@ class _PopularGuidesTabDescriptionState
               child: CircleAvatar(
                 backgroundColor: Colors.white,
                 radius: 40.r,
-                backgroundImage: const AssetImage(
-                    '${AssetsPath.assetsPNGPath}/student_profile.png'),
+                backgroundImage: AssetImage(profileImg),
               ),
             ),
             Positioned(
@@ -913,7 +996,7 @@ class _PopularGuidesTabDescriptionState
                   Padding(
                     padding: EdgeInsets.only(left: 20.w),
                     child: Text(
-                      'Ethan Hunt',
+                      name,
                       style: TextStyle(
                           fontFamily: 'Gilroy',
                           fontSize: 18.sp,
@@ -935,7 +1018,7 @@ class _PopularGuidesTabDescriptionState
                               size: 15,
                             ),
                             Text(
-                              '16 reviews',
+                              '0 reviews',
                               style: TextStyle(
                                   fontSize: 12.sp,
                                   fontFamily: 'Gilroy',

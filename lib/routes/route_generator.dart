@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/screens/activities/activities.dart';
@@ -33,7 +35,9 @@ import 'package:guided/screens/main_navigation/traveller/check_availability/chec
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_view.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_traveler_limit_schedules.dart';
-import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/event_tab/hub_event_list.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/event_tab/hub_event_view.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_list.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_view.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub_view.dart';
@@ -367,15 +371,20 @@ class RouteGenerator {
             builder: (_) => const PaymentAddCard());
       case '/popular_guides_traveler_limit_schedules':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const PopularGuidesTravelerLimitSchedules());
+            builder: (_) => PopularGuidesTravelerLimitSchedules(
+                  packageId: '',
+                  price: '',
+                ));
       case '/refund':
-        return MaterialPageRoute<dynamic>(
-            builder: (_) => const RefundScreen());
+        return MaterialPageRoute<dynamic>(builder: (_) => const RefundScreen());
       case '/request_refund':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RequestRefund());
-
-
+      case '/hub_event_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const HubEventView(), settings: settings);
+      case '/discovery_hub_events':
+        return MaterialPageRoute<dynamic>(builder: (_)=> const HubEventList());
       default:
         return _errorRoute();
     }

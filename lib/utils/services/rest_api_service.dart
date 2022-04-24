@@ -1165,4 +1165,62 @@ class APIServices {
       return UserTransaction();
     }
   }
+
+  /// API service for advertisement model
+  Future<PackageModelData> getPopularGuidePackage(String? id) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"\$and": [{"user_id": \"$id\"}, {"is_published": true}]}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final PackageModelData dataSummary =
+        PackageModelData.fromJson(json.decode(response.body));
+
+    return PackageModelData(packageDetails: dataSummary.packageDetails);
+  }
+
+  /// API service for all event model
+  Future<EventModelData> getAllEventData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityEventUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final EventModelData dataSummary =
+        EventModelData.fromJson(json.decode(response.body));
+
+    return EventModelData(eventDetails: dataSummary.eventDetails);
+  }
+
+  /// API service for all outfitter model
+  Future<OutfitterModelData> getAllOutfitterData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createOutfitterUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final http.Response response2 = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final OutfitterModelData dataSummary =
+        OutfitterModelData.fromJson(json.decode(response.body));
+
+    return OutfitterModelData(outfitterDetails: dataSummary.outfitterDetails);
+  }
 }

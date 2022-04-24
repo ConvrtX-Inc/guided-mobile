@@ -211,11 +211,11 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                   ]),
                 ),
               ),
-              Image.asset(
-                '${AssetsPath.assetsPNGPath}/phone_circle.png',
-                width: 70.w,
-                height: 70.h,
-              ),
+              // Image.asset(
+              //   '${AssetsPath.assetsPNGPath}/phone_circle.png',
+              //   width: 70.w,
+              //   height: 70.h,
+              // ),
             ],
           ),
           Expanded(

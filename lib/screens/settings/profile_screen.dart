@@ -91,14 +91,15 @@ Widget getBody(BuildContext context) {
                 return _displayWidget;
               }),
           getAboutMe(context),
-          getProfileSetting(context)
+          // getProfileSetting(context)
         ],
       ),
     ),
   ));
 }
 
-Widget buildProfileData(BuildContext context, ProfileDetailsModel profileData) =>
+Widget buildProfileData(
+        BuildContext context, ProfileDetailsModel profileData) =>
     Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -151,44 +152,46 @@ Widget getProfile(BuildContext context, String name) {
               BoxShadow(blurRadius: 3, color: Colors.grey)
             ],
           ),
+          // ignore: prefer_const_constructors
           child: CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 35,
-              backgroundImage: const AssetImage(
-                  '${AssetsPath.assetsPNGPath}/student_profile.png'),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                    width: 33.3.w,
-                    height: 33.3.h,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2,
-                        ),
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                            blurRadius: 4,
-                            color: Colors.grey,
-                          )
-                        ],
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(55)),
-                    child: Icon(
-                      Icons.edit,
-                      size: 15.sp,
-                      color: Colors.black,
-                    )),
-              )),
+            backgroundColor: Colors.white,
+            radius: 35,
+            backgroundImage: const AssetImage(
+                '${AssetsPath.assetsPNGPath}/student_profile.png'),
+            // child: Align(
+            //   alignment: Alignment.topRight,
+            //   child: Container(
+            //       width: 33.3.w,
+            //       height: 33.3.h,
+            //       decoration: BoxDecoration(
+            //           border: Border.all(
+            //             color: Colors.white,
+            //             width: 2,
+            //           ),
+            //           boxShadow: const <BoxShadow>[
+            //             BoxShadow(
+            //               blurRadius: 4,
+            //               color: Colors.grey,
+            //             )
+            //           ],
+            //           color: Colors.white,
+            //           borderRadius: BorderRadius.circular(55)),
+            //       child: Icon(
+            //         Icons.edit,
+            //         size: 15.sp,
+            //         color: Colors.black,
+            //       )),
+            // )
+          ),
         ),
         SizedBox(
           height: 13.h,
         ),
-        Text(
-          'Edit',
-          style: TextStyle(
-              fontSize: 12.sp, color: Colors.grey, fontWeight: FontWeight.w400),
-        ),
+        // Text(
+        //   'Edit',
+        //   style: TextStyle(
+        //       fontSize: 12.sp, color: Colors.grey, fontWeight: FontWeight.w400),
+        // ),
         SizedBox(
           height: 6.h,
         ),

@@ -133,7 +133,7 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                           ),
                           onPressed: () {
                             _takeScreenshot(screenArguments['name'],
-                                '\$${screenArguments['fee'].toString().substring(0, screenArguments['fee'].toString().indexOf('.'))}');
+                                '\$${screenArguments['fee']}');
                           },
                         ),
                       ),
@@ -161,7 +161,7 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                           ),
                           onPressed: () {
                             _takeScreenshot(screenArguments['name'],
-                                '\$${screenArguments['fee'].toString().substring(0, screenArguments['fee'].toString().indexOf('.'))}');
+                                '\$${screenArguments['fee']}');
                           },
                         ),
                       ),
@@ -170,9 +170,8 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                 ],
               ),
               flexibleSpace: Center(
-                child: Image.asset(
-                  screenArguments['image_url'],
-                  fit: BoxFit.cover,
+                child: Image.memory(
+                  base64.decode(screenArguments['image_url'].split(',').last),
                   gaplessPlayback: true,
                 ),
               ),
@@ -186,7 +185,7 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                   Padding(
                     padding: EdgeInsets.only(left: 15.w, top: 15.h),
                     child: Text(
-                      'Grassland Outfitting',
+                      screenArguments['package_name'],
                       style: TextStyle(
                           color: Colors.black,
                           fontFamily: 'Gilroy',
@@ -217,7 +216,7 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                         width: 2.w,
                       ),
                       Text(
-                        'Location',
+                        screenArguments['address'],
                         style: TextStyle(
                             fontFamily: 'Gilroy',
                             fontWeight: FontWeight.w400,
@@ -255,9 +254,24 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                           labelColor: Colors.black,
                           unselectedLabelColor: Colors.grey,
                         ),
-                        views: const <Widget>[
-                          PopularGuidesTabDescription(),
-                          PopularGuidesTravelerLimitSchedules(),
+                        views: <Widget>[
+                          PopularGuidesTabDescription(
+                              name: screenArguments['name'],
+                              mainBadgeId: screenArguments['main_badge_id'],
+                              description: screenArguments['description'],
+                              imageUrl: screenArguments['image_url'],
+                              numberOfTourist:
+                                  screenArguments['number_of_tourist'],
+                              starRating: screenArguments['star_rating'],
+                              fee: screenArguments['fee'],
+                              address: screenArguments['address'],
+                              packageId: screenArguments['package_id'],
+                              profileImg: screenArguments['profile_img'],
+                              packageName: screenArguments['package_name'],
+                              isFirstAid: screenArguments['is_first_aid']),
+                          PopularGuidesTravelerLimitSchedules(
+                              packageId: screenArguments['package_id'],
+                              price: screenArguments['fee']),
                         ],
                         onChange: setTitle,
                         initialIndex: initIndex,
