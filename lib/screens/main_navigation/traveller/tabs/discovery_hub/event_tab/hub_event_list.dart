@@ -85,37 +85,37 @@ class _HubEventListState extends State<HubEventList>
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
-                      child: TextField(
-                        textAlign: TextAlign.left,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          hintText: 'Search...',
-                          hintStyle: TextStyle(fontSize: 16.sp),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16.r),
-                            borderSide: const BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
-                          ),
-                          filled: true,
-                          contentPadding: const EdgeInsets.all(22),
-                          fillColor: Colors.white,
-                          prefixIcon: IconButton(
-                            icon: Image.asset(
-                              'assets/images/png/search_icon.png',
-                              width: 20.w,
-                              height: 20.h,
-                            ),
-                            onPressed: null,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Expanded(
+                  //   child: Padding(
+                  //     padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
+                  //     child: TextField(
+                  //       textAlign: TextAlign.left,
+                  //       keyboardType: TextInputType.text,
+                  //       decoration: InputDecoration(
+                  //         hintText: 'Search...',
+                  //         hintStyle: TextStyle(fontSize: 16.sp),
+                  //         border: OutlineInputBorder(
+                  //           borderRadius: BorderRadius.circular(16.r),
+                  //           borderSide: const BorderSide(
+                  //             width: 0,
+                  //             style: BorderStyle.none,
+                  //           ),
+                  //         ),
+                  //         filled: true,
+                  //         contentPadding: const EdgeInsets.all(22),
+                  //         fillColor: Colors.white,
+                  //         prefixIcon: IconButton(
+                  //           icon: Image.asset(
+                  //             'assets/images/png/search_icon.png',
+                  //             width: 20.w,
+                  //             height: 20.h,
+                  //           ),
+                  //           onPressed: null,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               Padding(
