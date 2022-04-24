@@ -1227,3 +1227,9 @@ class ErrorMessageConstants {
   /// Returns 'Image file is too large' text
   static String imageFileToSize = 'Image file is too large';
 }
+
+/// Class for transaction history constants
+class TransactionHistoryConstants {
+  /// Returns  'Transaction History' title text
+  static String transactionHistory = 'Transaction History';
+}

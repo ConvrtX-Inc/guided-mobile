@@ -1,3 +1,4 @@
+
 /// User
 // ignore_for_file: public_member_api_docs, sort_constructors_first, prefer_collection_literals, unnecessary_question_mark, prefer_void_to_null
 
@@ -48,6 +49,7 @@ class User {
   Null? photo;
   Null? status;
   String? sEntity;
+  String? profilePhoto;
 
   User(
       {this.id,
@@ -74,7 +76,9 @@ class User {
       this.deletedAt,
       this.photo,
       this.status,
-      this.sEntity});
+      this.sEntity,
+      this.profilePhoto
+      });
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -102,13 +106,15 @@ class User {
     photo = json['photo'];
     status = json['status'];
     sEntity = json['__entity'];
+    profilePhoto = json['profile_photo'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = id;
     data['full_name'] = fullName;
-    data['first_name'] = firstName;
+    data['first_name'
+        ''] = firstName;
     data['last_name'] = lastName;
     data['email'] = email;
     data['phone_no'] = phoneNo;
@@ -131,6 +137,7 @@ class User {
     data['photo'] = photo;
     data['status'] = status;
     data['__entity'] = sEntity;
+    data['profile_photo'] = profilePhoto;
     return data;
   }
 }
