@@ -32,6 +32,7 @@ import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/profile_image.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/models/user_terms_and_condition_model.dart';
@@ -1293,7 +1294,6 @@ class APIServices {
         },
         body: jsonEncode(parameters));
 
-    debugPrint('update profile response:: ${response.body}');
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
@@ -1329,6 +1329,102 @@ class APIServices {
     } else {
       debugPrint('No Subscrption');
       return UserSubscription();
+    }
+  }
+
+  ///API Service for  retrieving user profile image
+  Future<UserProfileImage> getUserProfileImages() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+    };
+
+    debugPrint(
+        'DATA ${Uri.http(apiBaseUrl, '/api/v1/user-profile-images', queryParameters)}');
+    debugPrint('params R$queryParameters');
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/user-profile-images', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<UserProfileImage> profileImages = <UserProfileImage>[];
+    for (final dynamic res in jsonData) {
+      final UserProfileImage profileImage = UserProfileImage.fromJson(res);
+      profileImages.add(profileImage);
+    }
+    if (profileImages.isNotEmpty) {
+      debugPrint('Images ${profileImages[0].id}');
+      return profileImages[0];
+    } else {
+      debugPrint('No images');
+      return UserProfileImage();
+    }
+  }
+
+  /// API service for Add User Profile Images
+  Future<UserProfileImage> addUserProfileImages(UserProfileImage params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response =
+        await http.post(Uri.http(apiBaseUrl, '/api/v1/user-profile-images'),
+            headers: {
+              HttpHeaders.authorizationHeader: 'Bearer $token',
+              HttpHeaders.contentTypeHeader: 'application/json',
+            },
+            body: jsonEncode(<String, String>{
+              'user_id': userId.toString(),
+              'image_firebase_url_1': params.imageUrl1,
+              'image_firebase_url_2': params.imageUrl2,
+              'image_firebase_url_3': params.imageUrl3,
+              'image_firebase_url_4': params.imageUrl4,
+              'image_firebase_url_5': params.imageUrl5,
+              'image_firebase_url_6': params.imageUrl6,
+            }));
+
+    final jsonData = json.decode(response.body);
+
+    debugPrint('Profile Image $jsonData');
+    if (response.statusCode == 201) {
+      return UserProfileImage.fromJson(jsonData);
+    } else {
+      return UserProfileImage();
+    }
+  }
+
+
+  /// API service for Update User Profile Images
+  Future<UserProfileImage> updateUserProfileImages(UserProfileImage params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response =
+    await http.patch(Uri.http(apiBaseUrl, '/api/v1/user-profile-images/${params.id}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'image_firebase_url_1': params.imageUrl1,
+          'image_firebase_url_2': params.imageUrl2,
+          'image_firebase_url_3': params.imageUrl3,
+          'image_firebase_url_4': params.imageUrl4,
+          'image_firebase_url_5': params.imageUrl5,
+          'image_firebase_url_6': params.imageUrl6,
+        }));
+
+    final jsonData = json.decode(response.body);
+
+
+    if (response.statusCode == 200) {
+      debugPrint('Update Profile image .. ${response.statusCode}');
+      return UserProfileImage.fromJson(jsonData);
+    } else {
+      return UserProfileImage();
     }
   }
 }

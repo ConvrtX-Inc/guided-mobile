@@ -6,11 +6,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/profile_photos_controller.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/profile_data_model.dart';
+import 'package:guided/models/profile_image.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/screens/widgets/reusable_widgets/image_picker_bottom_sheet.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
@@ -39,6 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Get.put(ProfilePhotoController());
 
   final String _storagePath = 'profilePictures';
+  bool isUploading = false;
 
   @override
   void initState() {
@@ -47,8 +50,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     /* if (_profileDetailsController.userProfileDetails.id.isEmpty) {
       isLoading = true;
     }*/
+
     isLoading = true;
     getProfileDetails();
+    getImages();
   }
 
   @override
@@ -174,31 +179,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget getAboutMe(BuildContext context) {
     return GetBuilder<ProfilePhotoController>(
         builder: (ProfilePhotoController _controller) {
-      return _controller.photos.isNotEmpty
+          debugPrint('image controller ${_controller.profilePhotos.id}');
+      return _controller.profilePhotos.id.isNotEmpty
           ? GridView.count(
               crossAxisCount: 2,
               crossAxisSpacing: 20,
               shrinkWrap: true,
               children: <Widget>[
-                if (_controller.photos[0].imageUrl != '')
+                if (_controller.profilePhotos.imageUrl1 != '')
                   Container(
                     margin: const EdgeInsets.fromLTRB(0, 23, 0, 23),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         image: DecorationImage(
-                            image: MemoryImage(
-                                base64Decode(_controller.photos[0].imageUrl)),
+                            image: NetworkImage(
+                                _controller.profilePhotos.imageUrl1),
                             fit: BoxFit.cover)),
                   ),
-                if (_controller.photos[1].imageUrl != '')
+                if (_controller.profilePhotos.imageUrl2 != '')
                   Container(
                     margin: const EdgeInsets.fromLTRB(0, 23, 0, 23),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: Colors.black,
                         image: DecorationImage(
-                            image: MemoryImage(
-                                base64Decode(_controller.photos[1].imageUrl)),
+                            image: NetworkImage(
+                                _controller.profilePhotos.imageUrl2),
                             colorFilter: ColorFilter.mode(
                                 Colors.black.withOpacity(0.6),
                                 BlendMode.dstATop),
@@ -218,6 +224,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           : Container(height: 22.h);
     });
   }
+
+
 
   /// widget for profile settings
   Widget getProfileSetting(BuildContext context) {
@@ -356,18 +364,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 BoxShadow(blurRadius: 3, color: Colors.grey)
               ],
             ),
-            child: _profileDetailsController
-                    .userProfileDetails.firebaseProfilePicUrl.isNotEmpty
-                ? CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 35,
-                    backgroundImage: NetworkImage(_profileDetailsController
-                        .userProfileDetails.firebaseProfilePicUrl))
-                : CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 35,
-                    backgroundImage: AssetImage(AssetsPath.defaultProfilePic),
-                  ),
+            child: isUploading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.deepGreen,
+                    ),
+                  )
+                : _profileDetailsController
+                        .userProfileDetails.firebaseProfilePicUrl.isNotEmpty
+                    ? CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 35,
+                        backgroundImage: NetworkImage(_profileDetailsController
+                            .userProfileDetails.firebaseProfilePicUrl))
+                    : CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 35,
+                        backgroundImage:
+                            AssetImage(AssetsPath.defaultProfilePic),
+                      ),
           ),
           Positioned(
             top: 8,
@@ -402,8 +417,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ));
 
   Future<void> handleImagePicked(image) async {
-    final Future<Uint8List> imageBytes = File(image.path).readAsBytes();
-    debugPrint('Image Path: $image');
+    setState(() {
+      isUploading = true;
+    });
 
     ///Save image to firebase
     String profileUrl = '';
@@ -426,10 +442,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ProfileDetailsModel.fromJson(json.decode(res.successResponse));
       _profileDetailsController.setUserProfileDetails(updatedProfile);
 
-      final String base64String = base64Encode(await imageBytes);
       setState(() {
-        _photo = image;
-        profilePicPreview = base64String;
+        isUploading = false;
       });
     }
   }
@@ -441,5 +455,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isLoading = false;
     });
     _profileDetailsController.setUserProfileDetails(res);
+  }
+
+  Future<void> getImages() async {
+    final UserProfileImage res = await APIServices().getUserProfileImages();
+    debugPrint('Data ${res.imageUrl1}');
+
+    if (res.id != '') {
+      setState(() {
+        _profilePhotoController.setProfileImages(res);
+      });
+    } else {
+      final UserProfileImage addImagesResponse =
+          await APIServices().addUserProfileImages(UserProfileImage());
+      debugPrint('Response:: $addImagesResponse');
+    }
   }
 }
