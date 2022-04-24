@@ -176,55 +176,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   /// widget for about me
-  /*Widget getAboutMe(BuildContext context) {
-    return GetBuilder<ProfilePhotoController>(
-        builder: (ProfilePhotoController _controller) {
-          debugPrint('image controller ${_controller.profilePhotos.value.id}');
-      return _controller.profilePhotos.value.id.isNotEmpty
-          ? GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 20,
-              shrinkWrap: true,
-              children: <Widget>[
-                if (_controller.profilePhotos.value.imageUrl1 != '')
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(0, 23, 0, 23),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                _controller.profilePhotos.value.imageUrl1),
-                            fit: BoxFit.cover)),
-                  ),
-                if (_controller.profilePhotos.value.imageUrl2 != '')
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(0, 23, 0, 23),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.black,
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                _controller.profilePhotos.value.imageUrl2),
-                            colorFilter: ColorFilter.mode(
-                                Colors.black.withOpacity(0.6),
-                                BlendMode.dstATop),
-                            fit: BoxFit.cover)),
-                    child: Center(
-                      child: Text(
-                        '4+',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 24.sp),
-                      ),
-                    ),
-                  )
-              ],
-            )
-          : Container(height: 22.h);
-    });
-  }*/
-
   Widget getAboutMe(BuildContext context) {
     return GetBuilder<ProfilePhotoController>(
         builder: (ProfilePhotoController _controller) {
