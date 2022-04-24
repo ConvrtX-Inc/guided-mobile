@@ -3,12 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/user_subscription_controller.dart';
+import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/discovery_hub.dart';
 import 'package:guided/models/hub_outfitter.dart';
+import 'package:guided/models/user_subscription.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
 import 'package:guided/screens/payments/payment_failed.dart';
 import 'package:guided/screens/payments/payment_method.dart';
@@ -17,6 +21,7 @@ import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.d
 import 'package:guided/screens/widgets/reusable_widgets/discovery_payment_details.dart';
 import 'package:guided/utils/event.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class TabDiscoveryHubView extends StatefulWidget {
@@ -28,6 +33,8 @@ class TabDiscoveryHubView extends StatefulWidget {
 
 class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
   List<DiscoveryHub> features = EventUtils.getMockDiscoveryHubFeatures();
+  final UserSubscriptionController _userSubscriptionController =
+      Get.put(UserSubscriptionController());
 
   @override
   Widget build(BuildContext context) {
@@ -211,11 +218,11 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                   ]),
                 ),
               ),
-              Image.asset(
-                '${AssetsPath.assetsPNGPath}/phone_circle.png',
-                width: 70.w,
-                height: 70.h,
-              ),
+              // Image.asset(
+              //   '${AssetsPath.assetsPNGPath}/phone_circle.png',
+              //   width: 70.w,
+              //   height: 70.h,
+              // ),
             ],
           ),
           Expanded(
@@ -231,14 +238,18 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                   height: 2),
             ),
           )),
-          if (features[screenArguments['id']].isPremium)
+          if (features[screenArguments['id']].isPremium &&
+              _userSubscriptionController.userSubscription.id.isEmpty)
             Padding(
                 padding: EdgeInsets.only(
                     left: 20.w, right: 20.w, top: 10.h, bottom: 12.h),
                 child: CustomRoundedButton(
                     title: 'Know More About This Event',
-                    onpressed: () => _showDiscoveryBottomSheet(
-                        features[screenArguments['id']].img1)))
+                    onpressed: () =>
+                        _userSubscriptionController.userSubscription.id.isEmpty
+                            ? _showDiscoveryBottomSheet(
+                                features[screenArguments['id']].img1)
+                            : null))
         ],
       ),
     );
@@ -276,13 +287,16 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                           price: price,
                           onPaymentSuccessful: () {
                             Navigator.of(context).pop();
+                            saveSubscription(transactionNumber,
+                                'Premium Subscription', price.toString());
+
                             paymentSuccessful(
                                 context: context,
                                 paymentDetails: DiscoveryPaymentDetails(
                                     transactionNumber: transactionNumber),
                                 paymentMethod: mode);
                           },
-                          onPaymentFailed: (){
+                          onPaymentFailed: () {
                             paymentFailed(
                                 context: context,
                                 paymentDetails: DiscoveryPaymentDetails(
@@ -304,5 +318,24 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                 Navigator.of(context).pop();
               },
             ));
+  }
+
+  Future<void> saveSubscription(
+      String transactionNumber, String subscriptionName, String price) async {
+    final DateTime startDate = DateTime.now();
+
+    final DateTime endDate = GlobalMixin().getEndDate(startDate);
+
+    final UserSubscription subscriptionParams = UserSubscription(
+        paymentReferenceNo: transactionNumber,
+        name: subscriptionName,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
+        price: price);
+
+    final APIStandardReturnFormat result =
+        await APIServices().addUserSubscription(subscriptionParams);
+
+    debugPrint('subscription result ${result.successResponse}');
   }
 }

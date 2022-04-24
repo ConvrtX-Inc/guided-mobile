@@ -19,7 +19,7 @@ class ActivityAvailability {
   static ActivityAvailability fromJson(Map<String, dynamic> json) =>
       ActivityAvailability(
           id: json['id'],
-          activity_package_id: json['availability_date'] ?? '',
+          activity_package_id: json['activity_package_id'] ?? '',
           availability_date: json['availability_date'] ?? '');
 
   Map<String, dynamic> toJson() => {

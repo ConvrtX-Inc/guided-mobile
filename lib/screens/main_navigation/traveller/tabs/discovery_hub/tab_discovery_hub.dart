@@ -102,7 +102,10 @@ class _TabDiscoveryHubState extends State<TabDiscoveryHub> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, '/discovery_hub_events');
+                      },
                       child: Column(
                         children: <Widget>[
                           SizedBox(

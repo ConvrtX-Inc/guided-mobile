@@ -1,3 +1,5 @@
+import 'package:http/src/response.dart';
+
 /// Model for API standard return format
 class APIStandardReturnFormat {
   /// Constructor

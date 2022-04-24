@@ -247,6 +247,7 @@ class _PaymentAddCardState extends State<PaymentAddCard> {
         ),
         BorderlessTextField(
           title: AppTextConstants.cardNumber,
+          textInputType: TextInputType.number,
           hint: '1234 4567 7890 1234',
           onValidate: (String val) {
             if (val.trim().isEmpty) {

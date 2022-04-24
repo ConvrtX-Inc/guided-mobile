@@ -11,7 +11,9 @@ class ProfileDetailsModel {
       this.email = '',
       this.phoneNumber = '',
       this.countryCode = '',
-      this.about = ''});
+      this.about = '',
+      this.firebaseProfilePicUrl = ''
+      });
 
   /// String initialization
   final String id,
@@ -21,7 +23,8 @@ class ProfileDetailsModel {
       email,
       phoneNumber,
       countryCode,
-      about;
+      about,
+  firebaseProfilePicUrl;
 
   /// mapping
   ProfileDetailsModel.fromJson(Map<String, dynamic> parseJson)
@@ -32,5 +35,7 @@ class ProfileDetailsModel {
         email = parseJson['email'] ?? '',
         phoneNumber = parseJson['phone_no'] ?? '',
         countryCode = parseJson['country_code'] ?? '',
-        about = parseJson['about'] ?? '';
+        about = parseJson['about'] ?? '',
+        firebaseProfilePicUrl = parseJson['profile_photo_firebase_url'] ?? ''
+  ;
 }

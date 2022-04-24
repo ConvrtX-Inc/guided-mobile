@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, cascade_invocations, cast_nullable_to_non_nullable, prefer_final_in_for_each, type_annotate_public_apis, always_declare_return_types, unnecessary_statements
+// ignore_for_file: file_names, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, cascade_invocations, cast_nullable_to_non_nullable, prefer_final_in_for_each, type_annotate_public_apis, always_declare_return_types, unnecessary_statements, curly_braces_in_flow_control_structures
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +34,7 @@ class _AvailabilityBookingDateScreenState
   bool _didPickedDate = false;
   bool isSubmit = false;
   bool _didInitialSave = false;
+  bool _newDate = false;
 
   late List<dynamic> setbookingtime = [];
   late List<dynamic> listTime;
@@ -65,6 +66,13 @@ class _AvailabilityBookingDateScreenState
       final List<ActivityAvailabilityHour> resForm = await APIServices()
           .getActivityAvailabilityHour(activityAvailabilityId[num]);
 
+      if (resForm.isEmpty) {
+        final dynamic response2 = await APIServices().request(
+            '${AppAPIPath.activityAvailability}/${activityAvailabilityId[num]}',
+            RequestType.DELETE,
+            needAccessToken: true);
+      }
+
       for (int index = 0; index < resForm.length; index++) {
         splitId.add(resForm[index].id);
         splitAvailabilityDateHour.add(resForm[index].availability_date_hour);
@@ -75,6 +83,7 @@ class _AvailabilityBookingDateScreenState
         splitDateFormat =
             '${splitAvailabilityDateHour[index]?.year}-${splitAvailabilityDateHour[index]?.month}-${splitAvailabilityDateHour[index]?.day}';
         if (selectedDateFormat == splitDateFormat) {
+          _newDate = false;
           hourFormat =
               '${splitAvailabilityDateHour[index]?.hour.toString()}:00:00';
           for (int timeIndex = 0; timeIndex < listTime.length; timeIndex++) {
@@ -90,6 +99,8 @@ class _AvailabilityBookingDateScreenState
               setbookingtime.add(listTime[timeIndex]);
             }
           }
+        } else {
+          _newDate = true;
         }
       }
       splitId.clear();
@@ -525,8 +536,12 @@ class _AvailabilityBookingDateScreenState
                                                               if (listTime[i]
                                                                       [1] ==
                                                                   false) {
-                                                                listTime[i]
-                                                                    [2]++;
+                                                                if (listTime[i]
+                                                                        [2] <
+                                                                    screenArguments[
+                                                                        'number_of_tourist'])
+                                                                  listTime[i]
+                                                                      [2]++;
                                                               }
                                                             });
                                                           }),
@@ -617,45 +632,89 @@ class _AvailabilityBookingDateScreenState
       _date = _preSelectedDay;
     }
 
-    if (setbookingtime.isNotEmpty) {
-      for (var i = 0; i < setbookingtime.length; i++) {
-        if (setbookingtime[i][5].toString().isNotEmpty) {
-          final Map<String, dynamic> availabilityDateHourDetails = {
-            'activity_availability_id': setbookingtime[i][6],
-            'availability_date_hour':
-                '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
-            'slots': setbookingtime[i][2],
-          };
+    if (_newDate) {
+      if (setbookingtime.isNotEmpty) {
+        final Map<String, dynamic> availabilityDateDetails = {
+          'activity_package_id': screenArguments['package_id'],
+          'availability_date':
+              '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[0][3]}',
+          'slots': setbookingtime[0][2],
+        };
 
-          final dynamic response = await APIServices().request(
-              '${AppAPIPath.createSlotAvailabilityHour}/${setbookingtime[i][5]}',
-              RequestType.PATCH,
-              needAccessToken: true,
-              data: availabilityDateHourDetails);
-        } else {
-          final Map<String, dynamic> availabilityDateDetails = {
-            'activity_availability_id': setbookingtime[i][6],
-            'availability_date_hour':
-                '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
-            'slots': setbookingtime[i][2],
-          };
+        final dynamic response = await APIServices().request(
+            AppAPIPath.createSlotAvailability, RequestType.POST,
+            needAccessToken: true, data: availabilityDateDetails);
 
-          final dynamic response = await APIServices().request(
-              AppAPIPath.createSlotAvailabilityHour, RequestType.POST,
-              needAccessToken: true, data: availabilityDateDetails);
+        if (setbookingtime.length > 1) {
+          final String activityAvailabilityId =
+              response['response']['data']['details']['id'];
+
+          for (var i = 1; i < setbookingtime.length; i++) {
+            final Map<String, dynamic> availabilityDateHourDetails = {
+              'activity_availability_id': activityAvailabilityId,
+              'availability_date_hour':
+                  '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
+              'slots': setbookingtime[i][2],
+            };
+
+            final dynamic response1 = await APIServices().request(
+                AppAPIPath.createSlotAvailabilityHour, RequestType.POST,
+                needAccessToken: true, data: availabilityDateHourDetails);
+          }
         }
-      }
 
-      for (var i = 0; i < setbookingtime.length; i++) {
-        int id = setbookingtime[i][4];
-        setState(() {
-          listTime[id][1] = false;
-          listTime[id][2] = 0;
-          listTime[id][5] = '';
-          listTime[id][6] = '';
-        });
+        for (var i = 0; i < setbookingtime.length; i++) {
+          int id = setbookingtime[i][4];
+          setState(() {
+            listTime[id][1] = false;
+            listTime[id][2] = 0;
+            listTime[id][5] = '';
+            listTime[id][6] = '';
+          });
+        }
+        setbookingtime.clear();
       }
-      setbookingtime.clear();
+    } else {
+      if (setbookingtime.isNotEmpty) {
+        for (var i = 0; i < setbookingtime.length; i++) {
+          if (setbookingtime[i][5].toString().isNotEmpty) {
+            final Map<String, dynamic> availabilityDateHourDetails = {
+              'activity_availability_id': setbookingtime[i][6],
+              'availability_date_hour':
+                  '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
+              'slots': setbookingtime[i][2],
+            };
+
+            final dynamic response = await APIServices().request(
+                '${AppAPIPath.createSlotAvailabilityHour}/${setbookingtime[i][5]}',
+                RequestType.PATCH,
+                needAccessToken: true,
+                data: availabilityDateHourDetails);
+          } else {
+            final Map<String, dynamic> availabilityDateDetails = {
+              'activity_availability_id': setbookingtime[i][6],
+              'availability_date_hour':
+                  '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')} ${setbookingtime[i][3]}',
+              'slots': setbookingtime[i][2],
+            };
+
+            final dynamic response = await APIServices().request(
+                AppAPIPath.createSlotAvailabilityHour, RequestType.POST,
+                needAccessToken: true, data: availabilityDateDetails);
+          }
+        }
+
+        for (var i = 0; i < setbookingtime.length; i++) {
+          int id = setbookingtime[i][4];
+          setState(() {
+            listTime[id][1] = false;
+            listTime[id][2] = 0;
+            listTime[id][5] = '';
+            listTime[id][6] = '';
+          });
+        }
+        setbookingtime.clear();
+      }
     }
   }
 

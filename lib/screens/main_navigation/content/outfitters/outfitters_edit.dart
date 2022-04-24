@@ -9,12 +9,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/country_dropdown.dart';
 import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -88,7 +90,8 @@ class _OutfitterEditState extends State<OutfitterEdit>
   String img3Id = '';
 
   bool _isSubmit = false;
-
+  late CountryModel _countryDropdown;
+  late List<CountryModel> listCountry;
   @override
   void initState() {
     super.initState();
@@ -96,7 +99,8 @@ class _OutfitterEditState extends State<OutfitterEdit>
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       String dir = (await getApplicationDocumentsDirectory()).path;
-
+      final List<CountryModel> resCountries =
+          await APIServices().getCountries();
       final String removedDollar =
           screenArguments['price'].toString().substring(0);
 
@@ -113,6 +117,18 @@ class _OutfitterEditState extends State<OutfitterEdit>
       _postalCode = TextEditingController(text: screenArguments['zip_code']);
       _date = TextEditingController(
           text: screenArguments['availability_date'].toString());
+
+      setState(() {
+        listCountry = resCountries;
+        _countryDropdown = listCountry[38];
+      });
+    });
+  }
+
+  void setCountry(dynamic value) {
+    setState(() {
+      _countryDropdown = value;
+      _country = TextEditingController(text: _countryDropdown.name);
     });
   }
 
@@ -225,7 +241,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -264,7 +280,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -357,7 +373,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -394,7 +410,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -486,7 +502,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -524,7 +540,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1139,18 +1155,25 @@ class _OutfitterEditState extends State<OutfitterEdit>
                     SizedBox(
                       height: 2.h,
                     ),
-                    TextField(
-                      enabled: _isEnabledCountry,
-                      controller: _country,
-                      focusNode: _countryFocus,
-                      decoration: InputDecoration(
-                        hintText: 'Country: ${screenArguments['country']}',
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
+                    if (_isEnabledLocation)
+                      DropDownCountry(
+                        value: _countryDropdown,
+                        setCountry: setCountry,
+                        list: listCountry,
+                      )
+                    else
+                      TextField(
+                        enabled: _isEnabledCountry,
+                        controller: _country,
+                        focusNode: _countryFocus,
+                        decoration: InputDecoration(
+                          hintText: 'Country: ${screenArguments['country']}',
+                          hintStyle: TextStyle(
+                            color: Colors.grey.shade800,
+                          ),
                         ),
+                        style: txtStyle,
                       ),
-                      style: txtStyle,
-                    ),
                     SizedBox(
                       height: 2.h,
                     ),

@@ -281,6 +281,7 @@ class _PackageViewState extends State<PackageView>
                 ),
                 TabSlotsAndScheduleView(
                   id: screenArguments['id'],
+                  numberOfTourist: screenArguments['number_of_tourist'],
                 )
               ],
               onChange: setTitle,

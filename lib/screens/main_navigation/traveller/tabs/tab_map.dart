@@ -17,6 +17,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/traveller_controller.dart';
+import 'package:guided/controller/user_subscription_controller.dart';
 import 'dart:async';
 
 import 'package:guided/helpers/hexColor.dart';
@@ -69,6 +70,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
   LatLng currentMapLatLong = LatLng(53.59, -113.60);
   List<ActivityPackage> _loadingData = [];
   final CardController _creditCardController = Get.put(CardController());
+  final UserSubscriptionController _userSubscriptionController = Get.put(UserSubscriptionController());
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
@@ -153,26 +155,31 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 10.h),
-                        child: Container(
-                          transform: Matrix4.translationValues(0, -5.h, 0),
-                          height: 60.h,
-                          width: 58.w,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15.r),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/traveller_tab');
+                          },
+                          child: Container(
+                            transform: Matrix4.translationValues(0, -5.h, 0),
+                            height: 60.h,
+                            width: 58.w,
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.r),
+                              ),
                             ),
-                          ),
-                          child: Center(
-                            child: Container(
-                              height: 20.h,
-                              width: 20.w,
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/png/green_house.png'),
-                                  fit: BoxFit.contain,
+                            child: Center(
+                              child: Container(
+                                height: 20.h,
+                                width: 20.w,
+                                decoration: const BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(
+                                        'assets/images/png/green_house_outlined.png'),
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               ),
                             ),
@@ -371,8 +378,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                   onTap: () {
                                     // Navigator.of(context)
                                     //     .pushNamed('/discovery_map');
-                                    _showDiscoveryBottomSheet(
-                                        tourList[i].featureImage);
+                                    if(_userSubscriptionController.userSubscription.id.isEmpty){
+                                      _showDiscoveryBottomSheet(
+                                          tourList[i].featureImage);
+                                    }
                                   },
                                   child: Container(
                                     margin: EdgeInsets.symmetric(
@@ -723,8 +732,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           price: price,
                           onPaymentSuccessful: () {
                             Navigator.of(context).pop();
-                            saveSubscription(
-                                transactionNumber, 'Premium Subscription');
+                            saveSubscription(transactionNumber, 'Premium Subscription',price.toString());
                             //Save Subscription
                             paymentSuccessful(
                                 context: context,
@@ -756,17 +764,18 @@ class _TabMapScreenState extends State<TabMapScreen> {
             ));
   }
 
-  Future<void> saveSubscription(
-      String transactionNumber, String subscriptionName) async {
+  Future<void> saveSubscription(String transactionNumber, String subscriptionName, String price ) async {
     final DateTime startDate = DateTime.now();
 
     final DateTime endDate = GlobalMixin().getEndDate(startDate);
 
     final UserSubscription subscriptionParams = UserSubscription(
-        paymentReferenceNo: transactionNumber,
-        name: subscriptionName,
-        startDate: startDate.toString(),
-        endDate: endDate.toString());
+      paymentReferenceNo: transactionNumber,
+      name: subscriptionName,
+      startDate: startDate.toString(),
+      endDate:  endDate.toString(),
+      price: price
+    );
 
     final APIStandardReturnFormat result =
         await APIServices().addUserSubscription(subscriptionParams);

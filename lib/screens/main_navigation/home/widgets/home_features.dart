@@ -188,7 +188,7 @@ class _HomeFeaturesState extends State<HomeFeatures>
                                       fontSize: 14),
                                 ),
                               ),
-                              Text('${widget._numberOfTourist} Tourists')
+                              Text('${widget._numberOfTourist} Traveller')
                             ],
                           ),
                         ),
@@ -446,7 +446,9 @@ class _HomeFeaturesState extends State<HomeFeatures>
   Future<void> navigateEditAvailability(BuildContext context) async {
     final Map<String, dynamic> details = {
       'id': splitId,
-      'availability_date': splitAvailabilityDate
+      'availability_date': splitAvailabilityDate,
+      'package_id': widget._id,
+      'number_of_tourist': widget._numberOfTourist
     };
 
     await Navigator.pushNamed(context, '/calendar_availability',

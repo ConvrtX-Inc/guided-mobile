@@ -421,7 +421,6 @@ class _ManagePaymentState extends State<ManagePayment> {
                     SkeletonAnimation(
                         curve: Curves.linear,
                         borderRadius: BorderRadius.circular(10.0),
-
                         child: Container(
                           width: 80,
                           height: 20,
