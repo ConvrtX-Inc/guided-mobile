@@ -811,7 +811,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                       width: 2.w,
                                     ),
                                     Text(
-                                      snapshot.data![index].timeToTravel!,
+                                      // snapshot.data![index].timeToTravel!,
+                                      '0.0 hour drive',
                                       style: TextStyle(
                                           color: HexColor('#696D6D'),
                                           fontSize: 11.sp,

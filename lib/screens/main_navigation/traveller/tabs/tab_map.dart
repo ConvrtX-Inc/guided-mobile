@@ -40,6 +40,9 @@ import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
+import '../../../../models/activity_package.dart';
+import 'package:collection/collection.dart';
+
 /// PopularGuides
 class TabMapScreen extends StatefulWidget {
   const TabMapScreen({Key? key}) : super(key: key);
@@ -50,28 +53,39 @@ class TabMapScreen extends StatefulWidget {
 
 class _TabMapScreenState extends State<TabMapScreen> {
   Completer<GoogleMapController> _controller = Completer();
+  GoogleMapController? mapController;
   final List<Marker> _markers = <Marker>[];
   final ScrollToIndexController _scrollController = ScrollToIndexController();
   final travellerMonthController = Get.put(TravellerMonthController());
   final SwiperController _cardController = SwiperController();
   final List<Guide> guides = StaticDataService.getGuideList();
-  final List<Activity> activities = StaticDataService.getActivityList();
+  final List<Activity> activities =
+      StaticDataService.getActivityForNearybyGuides();
   final List<Activity> tourList = StaticDataService.getTourList();
   bool hideActivities = false;
   bool showBottomScroll = true;
   double activitiesContainer = 70;
+  bool _isloading = true;
   int _selectedActivity = -1;
-
+  LatLng currentMapLatLong = LatLng(53.59, -113.60);
+  List<ActivityPackage> _loadingData = [];
   final CardController _creditCardController = Get.put(CardController());
   final UserSubscriptionController _userSubscriptionController = Get.put(UserSubscriptionController());
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
+    setState(() {
+      mapController = controller;
+    });
   }
 
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker(context));
+    APIServices().getActivityPackages().then((List<ActivityPackage> value) {
+      addMarker(value);
+    });
+
+    // WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker(context));
     super.initState();
 
 /*    if (_creditCardController.cards.isEmpty) {
@@ -79,44 +93,33 @@ class _TabMapScreenState extends State<TabMapScreen> {
     }*/
   }
 
-  Future<void> addMarker(BuildContext context) async {
-    final List<Marker> markers = <Marker>[
-      Marker(
-        markerId: const MarkerId('marker1'),
-        icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/hunting_marker.png',
-            width: 90.w,
-            height: 90.h),
-        position: const LatLng(57.82224878819442, -101.7932965373715),
-      ),
-      Marker(
-        markerId: const MarkerId('marker2'),
-        icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/paddle_marker.png',
-            width: 120.w,
-            height: 120.h),
-        position: const LatLng(57.82402988598948, -101.79746701615878),
-      ),
-      Marker(
-        markerId: const MarkerId('marker3'),
-        icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/eco_marker1.png',
-            width: 120.w,
-            height: 120.h),
-        position: const LatLng(57.82263910866079, -101.78955246695332),
-      ),
-      Marker(
-        markerId: const MarkerId('marker4'),
-        icon: await MarkerIcon.pictureAsset(
-            assetPath: 'assets/images/png/eco_marker2.png',
-            width: 120.w,
-            height: 120.h),
-        position: const LatLng(57.82432951675727, -101.7936172499416),
-      ),
-    ];
+  Future<void> addMarker(List<ActivityPackage> activityPackages) async {
+    final List<Marker> marks = <Marker>[];
+    for (ActivityPackage element in activityPackages) {
+      final Activity? activity = activities
+          .firstWhereOrNull((Activity a) => a.id == element.mainBadge!.id);
+
+      print('${activity?.id} = ${element.mainBadge?.id}');
+      double lat = double.parse(element
+          .activityPackageDestination!.activitypackagedestinationLatitude!);
+      double long = double.parse(element
+          .activityPackageDestination!.activitypackagedestinationLongitude!);
+      if (activity != null) {
+        marks.add(
+          Marker(
+            markerId: MarkerId(element.id!),
+            icon: await MarkerIcon.pictureAsset(
+                assetPath: activity.path, width: 80, height: 80),
+            position: LatLng(lat, long),
+          ),
+        );
+      }
+    }
 
     setState(() {
-      _markers.addAll(markers);
+      _loadingData = activityPackages;
+      _isloading = false;
+      _markers.addAll(marks);
     });
   }
 
@@ -128,8 +131,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
         child: Stack(
           children: <Widget>[
             GoogleMap(
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(57.82288338460806, -101.78925425979324),
+              initialCameraPosition: CameraPosition(
+                target: currentMapLatLong,
                 zoom: 12,
               ),
               markers: Set<Marker>.of(_markers),
@@ -457,7 +460,11 @@ class _TabMapScreenState extends State<TabMapScreen> {
                         Container()
                     ],
                   )),
-            )
+            ),
+            Align(
+                child: _isloading
+                    ? const CircularProgressIndicator()
+                    : Container()),
           ],
         ),
       ),
@@ -469,14 +476,33 @@ class _TabMapScreenState extends State<TabMapScreen> {
     final r = 15;
     final items = <Widget>[];
     double minus = 0;
-    for (var i = 0; i < AppListConstants.activityIcons.length; i++) {
+    for (var i = 0; i < activities.length; i++) {
       if (i < 5) {
         items.add(
           GestureDetector(
             onTap: () {
-              setState(() {
-                _selectedActivity = i;
-              });
+              final ActivityPackage? activity = _loadingData.firstWhereOrNull(
+                  (ActivityPackage a) => a.mainBadge!.id == activities[i].id);
+
+              if (activity != null) {
+                double lat = double.parse(activity.activityPackageDestination!
+                    .activitypackagedestinationLatitude!);
+                double long = double.parse(activity.activityPackageDestination!
+                    .activitypackagedestinationLongitude!);
+                mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(target: LatLng(lat, long), zoom: 17)
+                    //17 is new zoom level
+                    ));
+                print(activity.id);
+                setState(() {
+                  currentMapLatLong = LatLng(lat, long);
+                  _selectedActivity = i;
+                });
+              } else {
+                setState(() {
+                  _selectedActivity = i;
+                });
+              }
             },
             child: Container(
               decoration: BoxDecoration(
@@ -505,8 +531,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     child: CircleAvatar(
                       backgroundColor: Colors.transparent,
                       radius: r.toDouble() + i.toDouble() + 5,
-                      backgroundImage:
-                          ExactAssetImage(AppListConstants.activityIcons[i]),
+                      backgroundImage: ExactAssetImage(activities[i].path),
                     ),
                   ),
                   Positioned(
@@ -540,9 +565,27 @@ class _TabMapScreenState extends State<TabMapScreen> {
         items.add(
           GestureDetector(
             onTap: () {
-              setState(() {
-                _selectedActivity = i;
-              });
+              final ActivityPackage? activity = _loadingData.firstWhereOrNull(
+                  (ActivityPackage a) => a.mainBadge!.id == activities[i].id);
+
+              if (activity != null) {
+                double lat = double.parse(activity.activityPackageDestination!
+                    .activitypackagedestinationLatitude!);
+                double long = double.parse(activity.activityPackageDestination!
+                    .activitypackagedestinationLongitude!);
+                mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(target: LatLng(lat, long), zoom: 17)
+                    //17 is new zoom level
+                    ));
+                setState(() {
+                  currentMapLatLong = LatLng(lat, long);
+                  _selectedActivity = i;
+                });
+              } else {
+                setState(() {
+                  _selectedActivity = i;
+                });
+              }
             },
             child: Container(
               decoration: BoxDecoration(
@@ -573,8 +616,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                       // backgroundColor:
                       //     Colors.primaries[Random().nextInt(Colors.primaries.length)],
                       radius: minus - i.toDouble() + 4,
-                      backgroundImage:
-                          ExactAssetImage(AppListConstants.activityIcons[i]),
+                      backgroundImage: ExactAssetImage(activities[i].path),
                     ),
                   ),
                   Positioned(
