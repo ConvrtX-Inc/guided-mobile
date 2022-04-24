@@ -509,7 +509,7 @@ debugPrint('URL $url');
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
         body: jsonEncode(
-            {'latitude': '53.59', 'longitude': '-113.60', 'distance': '20'}),
+            {'latitude': '45.00', 'longitude': '-81.33', 'distance': '20'}),
         headers: headers);
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -620,22 +620,31 @@ debugPrint('URL $url');
 
   /// API service for get Popular guides
 
-  Future<List<PopularGuide>> getPopularGuides() async {
+  Future<List<User>> getPopularGuides() async {
     final http.Response response = await http.get(
+        // Uri.parse(
+        //     '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.popularGuides}/51.43/-122.21/20'),
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.popularGuides}/9.30/19.67/20'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
         });
     final dynamic jsonData = jsonDecode(response.body);
-    print(jsonData);
-    final List<PopularGuide> popularGuides = <PopularGuide>[];
+
+    final List<User> popularGuides = <User>[];
     final activityPackage =
-        (jsonData as List).map((i) => PopularGuide.fromJson(i)).toList();
-    popularGuides.addAll(activityPackage);
-    print(popularGuides.length);
-    return popularGuides;
+        (jsonData['data'] as List).map((i) => User.fromJson(i)).toList();
+
+    final List<User> guides = activityPackage.where(
+      (User element) {
+        return element.isTraveller == false;
+      },
+    ).toList();
+    print(guides.length);
+    popularGuides.addAll(guides);
+
+    return guides;
   }
 
   /// API service for outfitter image model
@@ -993,6 +1002,7 @@ debugPrint('URL $url');
           'start_date': params.startDate,
           'end_date': params.endDate,
           'message': params.message,
+          'price':params.price
         }));
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
@@ -1174,5 +1184,39 @@ debugPrint('URL $url');
     debugPrint('update profile response:: ${response.body}');
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for user  getting subscription
+
+  ///API Service for Retrieving User Subscription
+  Future<UserSubscription> getUserSubscription() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+    };
+
+    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/card', queryParameters)}');
+    debugPrint('params R$queryParameters');
+    final http.Response response = await http
+        .get(Uri.http(apiBaseUrl, '/api/v1/user-subscription', queryParameters), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<UserSubscription> subscriptions = <UserSubscription>[];
+    for (final dynamic res in jsonData) {
+      final UserSubscription subscription = UserSubscription.fromJson(res);
+      subscriptions.add(subscription);
+    }
+    if(subscriptions.isNotEmpty){
+      debugPrint('Subscrption ${subscriptions[0].id}');
+      return subscriptions[0];
+    }else{
+      debugPrint('No Subscrption');
+      return UserSubscription();
+    }
+
   }
 }

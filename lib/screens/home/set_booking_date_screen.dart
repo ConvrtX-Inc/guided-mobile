@@ -451,8 +451,12 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                                                               if (listTime[i]
                                                                       [1] ==
                                                                   false) {
-                                                                listTime[i]
-                                                                    [2]++;
+                                                                if (listTime[i]
+                                                                        [2] <
+                                                                    screenArguments[
+                                                                        'number_of_tourist'])
+                                                                  listTime[i]
+                                                                      [2]++;
                                                               }
                                                             });
                                                           }),

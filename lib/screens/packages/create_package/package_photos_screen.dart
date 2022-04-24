@@ -165,6 +165,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
+                                    Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -202,6 +203,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
+                                    Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -292,6 +294,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -328,6 +331,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -419,6 +423,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -456,6 +461,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {

@@ -238,6 +238,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
+                                Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -275,6 +276,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
+                                    Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -365,6 +367,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -401,6 +404,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -492,6 +496,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -529,6 +534,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {

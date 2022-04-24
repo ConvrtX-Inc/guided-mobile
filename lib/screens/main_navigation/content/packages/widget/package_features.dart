@@ -188,7 +188,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                                       fontSize: 14),
                                 ),
                               ),
-                              Text('${widget._numberOfTourist} Tourists')
+                              Text('${widget._numberOfTourist} Traveller')
                             ],
                           ),
                         ),

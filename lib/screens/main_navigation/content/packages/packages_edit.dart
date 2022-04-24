@@ -9,12 +9,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/country_dropdown.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/badge_model.dart';
+import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -96,6 +98,9 @@ class _PackageEditState extends State<PackageEdit> {
   TextEditingController _price = TextEditingController();
   TextEditingController _extraCost = TextEditingController();
 
+  late CountryModel _countryDropdown;
+  late List<CountryModel> listCountry;
+
   @override
   void initState() {
     super.initState();
@@ -103,7 +108,8 @@ class _PackageEditState extends State<PackageEdit> {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
+      final List<CountryModel> resCountries =
+          await APIServices().getCountries();
       _packageName = TextEditingController(text: screenArguments['name']);
       _description =
           TextEditingController(text: screenArguments['description']);
@@ -117,10 +123,22 @@ class _PackageEditState extends State<PackageEdit> {
       _services = TextEditingController(text: screenArguments['services']);
       _price = TextEditingController(text: screenArguments['fee'].toString());
       _extraCost = TextEditingController(text: screenArguments['extra_cost']);
+
+      setState(() {
+        listCountry = resCountries;
+        _countryDropdown = listCountry[38];
+      });
     });
     _loadingData = APIServices().getBadgesModel();
   }
 
+  void setCountry(dynamic value) {
+    setState(() {
+      _countryDropdown = value;
+      _country = TextEditingController(text: _countryDropdown.name);
+    });
+  }
+  
   ListTile _choicesMainActivity(BadgeDetailsModel badges) {
     return ListTile(
       onTap: () {
@@ -828,6 +846,7 @@ class _PackageEditState extends State<PackageEdit> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -865,6 +884,7 @@ class _PackageEditState extends State<PackageEdit> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1455,18 +1475,25 @@ class _PackageEditState extends State<PackageEdit> {
                   SizedBox(
                     height: 2.h,
                   ),
-                  TextField(
-                    enabled: _isEnabledCountry,
-                    controller: _country,
-                    focusNode: _countryFocus,
-                    decoration: InputDecoration(
-                      hintText: 'Country: ${screenArguments['country']}',
-                      hintStyle: TextStyle(
-                        color: Colors.grey.shade800,
+                  if (_isEnabledLocation)
+                    DropDownCountry(
+                      value: _countryDropdown,
+                      setCountry: setCountry,
+                      list: listCountry,
+                    )
+                  else
+                    TextField(
+                      enabled: _isEnabledCountry,
+                      controller: _country,
+                      focusNode: _countryFocus,
+                      decoration: InputDecoration(
+                        hintText: 'Country: ${screenArguments['country']}',
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade800,
+                        ),
                       ),
+                      style: txtStyle,
                     ),
-                    style: txtStyle,
-                  ),
                   SizedBox(
                     height: 2.h,
                   ),

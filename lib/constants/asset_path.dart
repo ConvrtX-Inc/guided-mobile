@@ -238,4 +238,7 @@ class AssetsPath {
 
   ///returns gallery icon
   static String gallery = 'assets/images/png/gallery.png';
+
+  ///returns default profile picture
+   static String defaultProfilePic= 'assets/images/png/default_profile_pic.png';
 }

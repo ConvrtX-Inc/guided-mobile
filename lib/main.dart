@@ -21,7 +21,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'firebase/firebase_options.dart';
 
 
-String _defaultHome = '/main_navigation';
+String _defaultHome = '/';
 
 void main() async {
   await dotenv.load(fileName: '.env');

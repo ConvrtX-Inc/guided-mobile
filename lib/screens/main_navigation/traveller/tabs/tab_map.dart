@@ -17,6 +17,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/traveller_controller.dart';
+import 'package:guided/controller/user_subscription_controller.dart';
 import 'dart:async';
 
 import 'package:guided/helpers/hexColor.dart';
@@ -62,6 +63,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
   int _selectedActivity = -1;
 
   final CardController _creditCardController = Get.put(CardController());
+  final UserSubscriptionController _userSubscriptionController = Get.put(UserSubscriptionController());
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
@@ -368,8 +370,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                   onTap: () {
                                     // Navigator.of(context)
                                     //     .pushNamed('/discovery_map');
-                                    _showDiscoveryBottomSheet(
-                                        tourList[i].featureImage);
+                                    if(_userSubscriptionController.userSubscription.id.isEmpty){
+                                      _showDiscoveryBottomSheet(
+                                          tourList[i].featureImage);
+                                    }
                                   },
                                   child: Container(
                                     margin: EdgeInsets.symmetric(
@@ -681,7 +685,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           price: price,
                           onPaymentSuccessful: () {
                             Navigator.of(context).pop();
-                            saveSubscription(transactionNumber, 'Premium Subscription');
+                            saveSubscription(transactionNumber, 'Premium Subscription',price.toString());
                             //Save Subscription
                             paymentSuccessful(
                                 context: context,
@@ -713,7 +717,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
             ));
   }
 
-  Future<void> saveSubscription(String transactionNumber, String subscriptionName) async {
+  Future<void> saveSubscription(String transactionNumber, String subscriptionName, String price ) async {
     final DateTime startDate = DateTime.now();
 
     final DateTime endDate = GlobalMixin().getEndDate(startDate);
@@ -722,7 +726,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
       paymentReferenceNo: transactionNumber,
       name: subscriptionName,
       startDate: startDate.toString(),
-      endDate:  endDate.toString()
+      endDate:  endDate.toString(),
+      price: price
     );
 
     final APIStandardReturnFormat result = await APIServices().addUserSubscription(subscriptionParams);

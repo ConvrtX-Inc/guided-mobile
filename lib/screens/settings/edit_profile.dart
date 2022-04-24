@@ -40,7 +40,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   int currentPage = 0;
 
   TextEditingController _aboutMeController = TextEditingController();
-  List<String> images = List.filled(6,'');
+  List<String> images = List.filled(6, '');
 
   ProfilePhotoController _photoController = Get.put(ProfilePhotoController());
   List<ProfilePhoto> photos = List.filled(6, ProfilePhoto());
@@ -54,13 +54,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _aboutMeController = TextEditingController(
         text: _profileDetailsController.userProfileDetails.about);
 
-    if(_photoController.photos.isNotEmpty){
+    if (_photoController.photos.isNotEmpty) {
       photos = _photoController.photos;
-    }else{
+    } else {
       _photoController.initProfilePhotos(photos);
     }
-
-
   }
 
   @override
@@ -111,7 +109,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 onpressed: () {
                   updateProfile();
                 },
-
               ),
       ),
     );
@@ -227,7 +224,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         physics: NeverScrollableScrollPhysics(),
         itemCount: photos.length,
         itemBuilder: (BuildContext context, int index) {
-
           return GridTile(child: buildPhoto(index));
         },
       );
@@ -282,18 +278,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 BoxShadow(blurRadius: 3, color: Colors.grey)
               ],
             ),
-            child: profilePicPreview.isNotEmpty
-                ? CircleAvatar(
+            child: profilePicPreview.isEmpty
+                ? _profileDetailsController
+                        .userProfileDetails.firebaseProfilePicUrl.isNotEmpty
+                    ? CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 35,
+                        backgroundImage: NetworkImage(_profileDetailsController
+                            .userProfileDetails.firebaseProfilePicUrl))
+                    : CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 35,
+                        backgroundImage:
+                            AssetImage(AssetsPath.defaultProfilePic),
+                      )
+                : CircleAvatar(
                     backgroundColor: Colors.white,
                     radius: 35,
-                    backgroundImage: MemoryImage(
-                      base64.decode(profilePicPreview),
-                    ))
-                : const CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 35,
-                    backgroundImage: AssetImage(
-                        '${AssetsPath.assetsPNGPath}/student_profile.png'),
+                    backgroundImage:
+                        MemoryImage(base64Decode(profilePicPreview)),
                   ),
           ),
           Positioned(
@@ -345,14 +348,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
 
     ///Save image to firebase
-    /* String profileUrl  = '';
-    if(_photo != null){
-      final String profileUrl =  await  FirebaseServices().uploadImageToFirebase(_photo!, _storagePath);
-    }*/
+    String profileUrl = '';
+    if (_photo != null) {
+      profileUrl =
+          await FirebaseServices().uploadImageToFirebase(_photo!, _storagePath);
+    }
 
     final dynamic editProfileParams = {
       'full_name': _fullNameController.text,
-      'about': _aboutMeController.text
+      'about': _aboutMeController.text,
+      'profile_photo_firebase_url': profileUrl
     };
 
     final APIStandardReturnFormat res =
@@ -366,7 +371,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       setState(() {
         isSaving = false;
       });
-
 
       Navigator.of(context).pop();
     }
@@ -386,11 +390,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     debugPrint('photo url $photoUrl');*/
 
     setState(() {
-      photos[selectedPhotoIndex] = ProfilePhoto(
-        imageUrl: base64String
-      );
+      photos[selectedPhotoIndex] = ProfilePhoto(imageUrl: base64String);
 
-      _photoController.updateProfilePhoto(selectedPhotoIndex,photos[selectedPhotoIndex]);
-     });
+      _photoController.updateProfilePhoto(
+          selectedPhotoIndex, photos[selectedPhotoIndex]);
+    });
   }
 }

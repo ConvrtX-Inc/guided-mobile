@@ -127,7 +127,6 @@ class _EventAddState extends State<EventAdd> {
   void setCountry(dynamic value) {
     setState(() {
       _countryDropdown = value;
-      debugPrint(_countryDropdown.id);
     });
   }
 
@@ -898,6 +897,7 @@ class _EventAddState extends State<EventAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
+                                    Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -935,6 +935,7 @@ class _EventAddState extends State<EventAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
+                                    Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -1027,6 +1028,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1063,6 +1065,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1156,6 +1159,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1193,6 +1197,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
+                                        Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
