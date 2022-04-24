@@ -369,12 +369,12 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PopularGuidesTravelerLimitSchedules());
       case '/refund':
-        return MaterialPageRoute<dynamic>(
-            builder: (_) => const RefundScreen());
+        return MaterialPageRoute<dynamic>(builder: (_) => const RefundScreen());
       case '/request_refund':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RequestRefund());
-
+      case '/tabMapScreen':
+        return MaterialPageRoute<dynamic>(builder: (_) => const TabMapScreen());
 
       default:
         return _errorRoute();

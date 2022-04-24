@@ -171,10 +171,10 @@ class AppAPIPath {
   static String activityAvailability = 'api/v1/activity-availabilities';
 
   ///Returns payment intent url
- static String paymentIntentUrl = 'api/v1/payment-intent';
+  static String paymentIntentUrl = 'api/v1/payment-intent';
 
- ///Returns user transactions url
- static String userTransactionsUrl = 'api/v1/transactions';
+  ///Returns user transactions url
+  static String userTransactionsUrl = 'api/v1/transactions';
 }
 
 ///Get Api Base Url
