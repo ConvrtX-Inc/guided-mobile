@@ -14,6 +14,7 @@ import 'package:guided/controller/profile_photos_controller.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/profile_data_model.dart';
+import 'package:guided/models/profile_image.dart';
 import 'package:guided/models/profile_photo_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/image_picker_bottom_sheet.dart';
 import 'package:guided/utils/services/firebase_service.dart';
@@ -21,6 +22,7 @@ import 'package:guided/utils/services/rest_api_service.dart';
 
 ///Edit Profile
 class EditProfileScreen extends StatefulWidget {
+  ///Constructor
   const EditProfileScreen({Key? key}) : super(key: key);
 
   @override
@@ -34,7 +36,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final String _storagePath = 'profilePictures';
   bool isSaving = false;
   final UserProfileDetailsController _profileDetailsController =
-      Get.put(UserProfileDetailsController());
+  Get.put(UserProfileDetailsController());
   PageController _pageController = PageController(initialPage: 0);
 
   int currentPage = 0;
@@ -46,6 +48,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   List<ProfilePhoto> photos = List.filled(6, ProfilePhoto());
   int selectedPhotoIndex = 0;
 
+  UserProfileImage profileImages = UserProfileImage();
+
   @override
   void initState() {
     super.initState();
@@ -54,11 +58,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _aboutMeController = TextEditingController(
         text: _profileDetailsController.userProfileDetails.about);
 
-    if (_photoController.photos.isNotEmpty) {
-      photos = _photoController.photos;
-    } else {
-      _photoController.initProfilePhotos(photos);
-    }
+    profileImages = UserProfileImage(userId: _profileDetailsController.userProfileDetails.id);
+
+    getImages();
+
   }
 
   @override
@@ -96,20 +99,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 28.h),
         child: currentPage < 2
             ? CustomRoundedButton(
-                title: AppTextConstants.next,
-                onpressed: () {
-                  _pageController.animateToPage(currentPage + 1,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.linear);
-                },
-              )
+          title: AppTextConstants.next,
+          onpressed: () {
+            _pageController.animateToPage(currentPage + 1,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.linear);
+          },
+        )
             : CustomRoundedButton(
-                title: AppTextConstants.save,
-                isLoading: isSaving,
-                onpressed: () {
-                  updateProfile();
-                },
-              ),
+          title: AppTextConstants.save,
+          isLoading: isSaving,
+          onpressed: () {
+            updateProfile();
+          },
+        ),
       ),
     );
   }
@@ -134,101 +137,117 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget buildEditPhotoAndName() {
     return SingleChildScrollView(
         child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(AppTextConstants.editProfile,
-              style: TextStyle(fontSize: 24.sp, fontFamily: 'GilroyBold')),
-          Center(
-            child: buildProfilePicture(),
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(AppTextConstants.editProfile,
+                  style: TextStyle(fontSize: 24.sp, fontFamily: 'GilroyBold')),
+              Center(
+                child: buildProfilePicture(),
+              ),
+              TextField(
+                  controller: _fullNameController,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                    hintText: AppTextConstants.fullName,
+                    hintStyle: TextStyle(
+                      color: AppColors.grey,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14.r),
+                      borderSide: BorderSide(color: Colors.grey, width: 0.2.w),
+                    ),
+                  ))
+            ],
           ),
-          TextField(
-              controller: _fullNameController,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                hintText: AppTextConstants.fullName,
-                hintStyle: TextStyle(
-                  color: AppColors.grey,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14.r),
-                  borderSide: BorderSide(color: Colors.grey, width: 0.2.w),
-                ),
-              ))
-        ],
-      ),
-    ));
+        ));
   }
 
   Widget buildEditAboutMe() {
     return SingleChildScrollView(
         child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(AppTextConstants.aboutMe,
-              style: TextStyle(fontSize: 24.sp, fontFamily: 'GilroyBold')),
-          SizedBox(height: 44.h),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 12.h),
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey, width: 0.2.w),
-                borderRadius: BorderRadius.circular(12)),
-            child: TextFormField(
-                controller: _aboutMeController,
-                minLines: 8,
-                maxLines: null,
-                maxLength: 100,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                  hintText: AppTextConstants.aboutMe,
-                  hintStyle: TextStyle(
-                    color: AppColors.grey,
-                  ),
-                  border: InputBorder.none,
-                )),
-          )
-        ],
-      ),
-    ));
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(AppTextConstants.aboutMe,
+                  style: TextStyle(fontSize: 24.sp, fontFamily: 'GilroyBold')),
+              SizedBox(height: 44.h),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 0.2.w),
+                    borderRadius: BorderRadius.circular(12)),
+                child: TextFormField(
+                    controller: _aboutMeController,
+                    minLines: 8,
+                    maxLines: null,
+                    maxLength: 100,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.fromLTRB(
+                          30.w, 20.h, 20.w, 20.h),
+                      hintText: AppTextConstants.aboutMe,
+                      hintStyle: TextStyle(
+                        color: AppColors.grey,
+                      ),
+                      border: InputBorder.none,
+                    )),
+              )
+            ],
+          ),
+        ));
   }
 
   Widget buildEditPhotos() {
     return SingleChildScrollView(
         child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(AppTextConstants.photos,
-              style: TextStyle(fontSize: 24.sp, fontFamily: 'GilroyBold')),
-          SizedBox(height: 44.h),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 12.h),
-            child: buildPhotos(),
-          )
-        ],
-      ),
-    ));
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(AppTextConstants.photos,
+                  style: TextStyle(fontSize: 24.sp, fontFamily: 'GilroyBold')),
+              SizedBox(height: 44.h),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                child: buildPhotos(),
+              )
+            ],
+          ),
+        ));
   }
 
-  Widget buildPhotos() => GridView.builder(
+  Widget buildPhotos() =>
+      GridView(
         shrinkWrap: true,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: MediaQuery.of(context).size.width /
-              (MediaQuery.of(context).size.height / 2.5),
+          childAspectRatio: MediaQuery
+              .of(context)
+              .size
+              .width /
+              (MediaQuery
+                  .of(context)
+                  .size
+                  .height / 2.5),
         ),
         physics: NeverScrollableScrollPhysics(),
-        itemCount: photos.length,
+        children: [
+          buildPhoto(profileImages.imageUrl1, 1),
+          buildPhoto(profileImages.imageUrl2, 2),
+          buildPhoto(profileImages.imageUrl3, 3),
+          buildPhoto(profileImages.imageUrl4, 4),
+          buildPhoto(profileImages.imageUrl5, 5),
+          buildPhoto(profileImages.imageUrl6, 6)
+        ],
+        /*itemCount: photos.length,
         itemBuilder: (BuildContext context, int index) {
           return GridTile(child: buildPhoto(index));
-        },
+        },*/
       );
 
-  Widget buildPhoto(int index) {
+/*  Widget buildPhoto(int index) {
     String image = photos[index].imageUrl;
     debugPrint(' index $index image $image');
     return Container(
@@ -257,79 +276,110 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             fit: BoxFit.fitHeight,
           ))),
     );
+  }*/
+
+  Widget buildPhoto(String image, int order) {
+    debugPrint('image $image');
+    return Container(
+      margin: EdgeInsets.all(10.w),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: image.isNotEmpty ? Colors.black : AppColors.gallery,
+          image: image.isNotEmpty
+              ? DecorationImage(
+              image: NetworkImage(image),
+              colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.6), BlendMode.dstATop),
+              fit: BoxFit.cover)
+              : null),
+      child: GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedPhotoIndex = order;
+            });
+            imagePickerBottomSheet(context, handlePhotoPicked);
+          },
+          child: Center(
+              child: Image.asset(
+                AssetsPath.gallery,
+                height: 35.h,
+                fit: BoxFit.fitHeight,
+              ))),
+    );
   }
 
-  Widget buildProfilePicture() => Container(
-      margin: EdgeInsets.only(top: 55.h, bottom: 65.h),
-      child: Stack(
-        children: <Widget>[
-          Container(
-            width: 200.w,
-            height: 200.h,
-            padding: EdgeInsets.all(4.w),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.white,
-                width: 3,
-              ),
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: const <BoxShadow>[
-                BoxShadow(blurRadius: 3, color: Colors.grey)
-              ],
-            ),
-            child: profilePicPreview.isEmpty
-                ? _profileDetailsController
-                        .userProfileDetails.firebaseProfilePicUrl.isNotEmpty
+  Widget buildProfilePicture() =>
+      Container(
+          margin: EdgeInsets.only(top: 55.h, bottom: 65.h),
+          child: Stack(
+            children: <Widget>[
+              Container(
+                width: 200.w,
+                height: 200.h,
+                padding: EdgeInsets.all(4.w),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 3,
+                  ),
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: const <BoxShadow>[
+                    BoxShadow(blurRadius: 3, color: Colors.grey)
+                  ],
+                ),
+                child: profilePicPreview.isEmpty
+                    ? _profileDetailsController
+                    .userProfileDetails.firebaseProfilePicUrl.isNotEmpty
                     ? CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 35,
-                        backgroundImage: NetworkImage(_profileDetailsController
-                            .userProfileDetails.firebaseProfilePicUrl))
-                    : CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 35,
-                        backgroundImage:
-                            AssetImage(AssetsPath.defaultProfilePic),
-                      )
-                : CircleAvatar(
                     backgroundColor: Colors.white,
                     radius: 35,
-                    backgroundImage:
-                        MemoryImage(base64Decode(profilePicPreview)),
-                  ),
-          ),
-          Positioned(
-            top: 18,
-            right: 20,
-            child: Container(
-                width: 33,
-                height: 33,
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 2,
-                    ),
-                    boxShadow: const <BoxShadow>[
-                      BoxShadow(
-                        blurRadius: 4,
-                        color: Colors.grey,
-                      )
-                    ],
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(100)),
-                child: GestureDetector(
-                    onTap: () {
-                      imagePickerBottomSheet(context, handleImagePicked);
-                    },
-                    child: Icon(
-                      Icons.edit,
-                      size: 15.sp,
-                      color: Colors.black,
-                    ))),
-          )
-        ],
-      ));
+                    backgroundImage: NetworkImage(_profileDetailsController
+                        .userProfileDetails.firebaseProfilePicUrl))
+                    : CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 35,
+                  backgroundImage:
+                  AssetImage(AssetsPath.defaultProfilePic),
+                )
+                    : CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 35,
+                  backgroundImage:
+                  MemoryImage(base64Decode(profilePicPreview)),
+                ),
+              ),
+              Positioned(
+                top: 18,
+                right: 20,
+                child: Container(
+                    width: 33,
+                    height: 33,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2,
+                        ),
+                        boxShadow: const <BoxShadow>[
+                          BoxShadow(
+                            blurRadius: 4,
+                            color: Colors.grey,
+                          )
+                        ],
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(100)),
+                    child: GestureDetector(
+                        onTap: () {
+                          imagePickerBottomSheet(context, handleImagePicked);
+                        },
+                        child: Icon(
+                          Icons.edit,
+                          size: 15.sp,
+                          color: Colors.black,
+                        ))),
+              )
+            ],
+          ));
 
   Future<void> handleImagePicked(image) async {
     final Future<Uint8List> imageBytes = File(image.path).readAsBytes();
@@ -351,7 +401,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     String profileUrl = '';
     if (_photo != null) {
       profileUrl =
-          await FirebaseServices().uploadImageToFirebase(_photo!, _storagePath);
+      await FirebaseServices().uploadImageToFirebase(_photo!, _storagePath);
+    }else{
+      profileUrl = _profileDetailsController.userProfileDetails.firebaseProfilePicUrl;
     }
 
     final dynamic editProfileParams = {
@@ -361,13 +413,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     };
 
     final APIStandardReturnFormat res =
-        await APIServices().updateProfile(editProfileParams);
+    await APIServices().updateProfile(editProfileParams);
     debugPrint('Response:: ${res.status}');
 
     if (res.status == 'success') {
       final ProfileDetailsModel updatedProfile =
-          ProfileDetailsModel.fromJson(json.decode(res.successResponse));
+      ProfileDetailsModel.fromJson(json.decode(res.successResponse));
       _profileDetailsController.setUserProfileDetails(updatedProfile);
+
+      await updateProfileImages();
       setState(() {
         isSaving = false;
       });
@@ -383,17 +437,74 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final String base64String = base64Encode(await imageBytes);
 
     // upload to firebase uncomment when api available ...
-    /* String photoUrl  = '';
+     String photoUrl  = '';
     if(image != null){
       photoUrl =  await  FirebaseServices().uploadImageToFirebase(image, _storagePath);
     }
-    debugPrint('photo url $photoUrl');*/
 
-    setState(() {
-      photos[selectedPhotoIndex] = ProfilePhoto(imageUrl: base64String);
+    updatePhoto(photoUrl, selectedPhotoIndex);
 
-      _photoController.updateProfilePhoto(
-          selectedPhotoIndex, photos[selectedPhotoIndex]);
-    });
+
+  }
+
+  void updatePhoto(String image, int order) {
+    switch (order) {
+      case 1:
+        setState(() {
+          profileImages.imageUrl1 = image;
+        });
+        break;
+      case 2:
+        setState(() {
+          profileImages.imageUrl2 = image;
+        });
+        break;
+      case 3:
+        setState(() {
+          profileImages.imageUrl3 = image;
+        });
+        break;
+      case 4:
+        setState(() {
+          profileImages.imageUrl4 = image;
+        });
+        break;
+      case 5:
+        setState(() {
+          profileImages.imageUrl5 = image;
+        });
+        break;
+      case 6:
+        setState(() {
+          profileImages.imageUrl6 = image;
+        });
+        break;
+    }
+  }
+
+  Future<void> getImages() async {
+    final UserProfileImage res = await APIServices().getUserProfileImages();
+
+    if (res.id != '') {
+      setState(() {
+        profileImages = res;
+      });
+    }else{
+      final UserProfileImage addImagesResponse = await APIServices().addUserProfileImages(profileImages);
+      debugPrint('Response:: $addImagesResponse');
+    }
+  }
+
+  Future<void> updateProfileImages() async {
+    final UserProfileImage result  = await APIServices().updateUserProfileImages(profileImages);
+
+    if(result.id != ''){
+      debugPrint('Updated..');
+      _photoController.setProfileImages(result);
+      setState(() {
+        profileImages = result;
+      });
+
+    }
   }
 }
