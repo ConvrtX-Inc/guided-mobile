@@ -17,6 +17,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/traveller_controller.dart';
+import 'package:guided/controller/user_subscription_controller.dart';
 import 'dart:async';
 
 import 'package:guided/helpers/hexColor.dart';
@@ -56,9 +57,13 @@ class _TabMapScreenState extends State<TabMapScreen> {
   final List<Guide> guides = StaticDataService.getGuideList();
   final List<Activity> activities = StaticDataService.getActivityList();
   final List<Activity> tourList = StaticDataService.getTourList();
+  bool hideActivities = false;
+  bool showBottomScroll = true;
+  double activitiesContainer = 70;
   int _selectedActivity = -1;
 
   final CardController _creditCardController = Get.put(CardController());
+  final UserSubscriptionController _userSubscriptionController = Get.put(UserSubscriptionController());
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
@@ -137,7 +142,9 @@ class _TabMapScreenState extends State<TabMapScreen> {
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 color: HexColor('#F8F7F6'),
               ),
-              height: MediaQuery.of(context).size.height * 0.35,
+              height: hideActivities
+                  ? MediaQuery.of(context).size.height * 0.23
+                  : MediaQuery.of(context).size.height * 0.35,
               width: MediaQuery.of(context).size.width,
               child: Column(
                 children: <Widget>[
@@ -145,26 +152,31 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 10.h),
-                        child: Container(
-                          transform: Matrix4.translationValues(0, -5.h, 0),
-                          height: 60.h,
-                          width: 58.w,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15.r),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/traveller_tab');
+                          },
+                          child: Container(
+                            transform: Matrix4.translationValues(0, -5.h, 0),
+                            height: 60.h,
+                            width: 58.w,
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.r),
+                              ),
                             ),
-                          ),
-                          child: Center(
-                            child: Container(
-                              height: 20.h,
-                              width: 20.w,
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/png/green_house.png'),
-                                  fit: BoxFit.contain,
+                            child: Center(
+                              child: Container(
+                                height: 20.h,
+                                width: 20.w,
+                                decoration: const BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(
+                                        'assets/images/png/green_house_outlined.png'),
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               ),
                             ),
@@ -268,7 +280,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     ],
                   ),
                   SizedBox(
-                    height: 40.h,
+                    height: hideActivities ? 20 : 40.h,
                   ),
                   // Container(
                   //   margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
@@ -292,15 +304,30 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   //   ),
                   // ),
                   SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: 70,
-                      child: overlapped(activities)),
-                  const Spacer(),
-                  const Align(
-                    child: Icon(
-                      Icons.expand_less,
-                      // color: HexColor('#979B9B'),
-                      size: 30,
+                    width: MediaQuery.of(context).size.width,
+                    height: activitiesContainer,
+                    child:
+                        hideActivities ? Container() : overlapped(activities),
+                  ),
+                  // const Spacer(),
+                  Align(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (hideActivities) {
+                            hideActivities = false;
+                            activitiesContainer = 70;
+                          } else {
+                            hideActivities = true;
+                            activitiesContainer = 0;
+                          }
+                        });
+                      },
+                      child: Icon(
+                        hideActivities ? Icons.expand_more : Icons.expand_less,
+                        // color: HexColor('#979B9B'),
+                        size: 30,
+                      ),
                     ),
                   ),
                 ],
@@ -311,82 +338,100 @@ class _TabMapScreenState extends State<TabMapScreen> {
               child: Container(
                   color: Colors.white,
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.24,
+                  height: showBottomScroll
+                      ? MediaQuery.of(context).size.height * 0.24
+                      : 40,
                   child: Column(
                     children: <Widget>[
                       SizedBox(
                         height: 5.h,
                       ),
-                      Icon(
-                        Icons.expand_more,
-                        color: HexColor('#979B9B'),
-                        size: 30,
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (showBottomScroll) {
+                              showBottomScroll = false;
+                            } else {
+                              showBottomScroll = true;
+                            }
+                          });
+                        },
+                        child: Icon(
+                          showBottomScroll
+                              ? Icons.expand_more
+                              : Icons.expand_less,
+                          color: HexColor('#979B9B'),
+                          size: 30,
+                        ),
                       ),
-                      Expanded(
-                        child: ListView(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          children:
-                              List<Widget>.generate(tourList.length, (int i) {
-                            return InkWell(
-                                onTap: () {
-                                  // Navigator.of(context)
-                                  //     .pushNamed('/discovery_map');
-                                  _showDiscoveryBottomSheet(
-                                      tourList[i].featureImage);
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 5.w, vertical: 20.h),
-                                  height: 180.h,
-                                  width: 135.w,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.transparent,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        tourList[i].name,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 11.sp,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10.h,
-                                      ),
-                                      Container(
-                                        height: 90.h,
-                                        width: 135.w,
-                                        decoration: BoxDecoration(
-                                          color: Colors.transparent,
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(15.r),
-                                          ),
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                                tourList[i].featureImage),
-                                            fit: BoxFit.cover,
+                      if (showBottomScroll)
+                        Expanded(
+                          child: ListView(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            children:
+                                List<Widget>.generate(tourList.length, (int i) {
+                              return InkWell(
+                                  onTap: () {
+                                    // Navigator.of(context)
+                                    //     .pushNamed('/discovery_map');
+                                    if(_userSubscriptionController.userSubscription.id.isEmpty){
+                                      _showDiscoveryBottomSheet(
+                                          tourList[i].featureImage);
+                                    }
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 5.w, vertical: 20.h),
+                                    height: 180.h,
+                                    width: 135.w,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.transparent,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          tourList[i].name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 11.sp,
+                                            color: Colors.black,
                                           ),
                                         ),
-                                        child: Stack(
-                                          children: <Widget>[
-                                            Positioned(
-                                              bottom: 0,
-                                              child: CircleAvatar(
-                                                backgroundColor:
-                                                    Colors.transparent,
-                                                radius: 17,
-                                                backgroundImage: AssetImage(
-                                                    tourList[i].path),
-                                              ),
+                                        SizedBox(
+                                          height: 10.h,
+                                        ),
+                                        Container(
+                                          height: 90.h,
+                                          width: 135.w,
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(15.r),
                                             ),
-                                            if (UserSingleton.instance.user
-                                                    .user!.email ==
-                                                'traveller1@abc.com')
+                                            image: DecorationImage(
+                                              image: AssetImage(
+                                                  tourList[i].featureImage),
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          child: Stack(
+                                            children: <Widget>[
+                                              Positioned(
+                                                bottom: 0,
+                                                child: CircleAvatar(
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  radius: 17,
+                                                  backgroundImage: AssetImage(
+                                                      tourList[i].path),
+                                                ),
+                                              ),
+                                              // if (UserSingleton.instance.user
+                                              //         .user!.email ==
+                                              //     'traveller1@abc.com')
                                               Container(
                                                 height: 90.h,
                                                 width: 135.w,
@@ -399,15 +444,17 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                   ),
                                                 ),
                                               ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ));
-                          }),
-                        ),
-                      ),
+                                      ],
+                                    ),
+                                  ));
+                            }),
+                          ),
+                        )
+                      else
+                        Container()
                     ],
                   )),
             )
@@ -643,7 +690,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           price: price,
                           onPaymentSuccessful: () {
                             Navigator.of(context).pop();
-                            saveSubscription(transactionNumber, 'Premium Subscription');
+                            saveSubscription(transactionNumber, 'Premium Subscription',price.toString());
                             //Save Subscription
                             paymentSuccessful(
                                 context: context,
@@ -651,7 +698,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                     transactionNumber: transactionNumber),
                                 paymentMethod: mode);
                           },
-                          onPaymentFailed: (){
+                          onPaymentFailed: () {
                             paymentFailed(
                                 context: context,
                                 paymentDetails: DiscoveryPaymentDetails(
@@ -675,7 +722,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
             ));
   }
 
-  Future<void> saveSubscription(String transactionNumber, String subscriptionName) async {
+  Future<void> saveSubscription(String transactionNumber, String subscriptionName, String price ) async {
     final DateTime startDate = DateTime.now();
 
     final DateTime endDate = GlobalMixin().getEndDate(startDate);
@@ -684,13 +731,13 @@ class _TabMapScreenState extends State<TabMapScreen> {
       paymentReferenceNo: transactionNumber,
       name: subscriptionName,
       startDate: startDate.toString(),
-      endDate:  endDate.toString()
+      endDate:  endDate.toString(),
+      price: price
     );
 
-    final APIStandardReturnFormat result = await APIServices().addUserSubscription(subscriptionParams);
+    final APIStandardReturnFormat result =
+        await APIServices().addUserSubscription(subscriptionParams);
 
     debugPrint('subscription result ${result.successResponse}');
-
   }
-
 }

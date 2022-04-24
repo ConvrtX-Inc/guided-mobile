@@ -48,6 +48,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
 
   final TextEditingController _note = TextEditingController();
   late Future<BadgeModelData> _loadingData;
+
   @override
   void initState() {
     super.initState();
@@ -466,13 +467,8 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                     height: 100.h,
                   )
                 else
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: SizedBox(
-                      width: 160.w,
-                      height: 100.h,
-                      child: _chosenMainActivity(mainActivity),
-                    ),
+                  Expanded(
+                    child: _chosenMainActivity(mainActivity),
                   ),
                 SizedBox(
                   width: 110.w,
@@ -631,14 +627,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                         children: List.generate(length, (int index) {
                           final BadgeDetailsModel badgeDetails =
                               badgeData.badgeDetails[index];
-                          return Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: SizedBox(
-                              height: 10.h,
-                              width: 100.w,
-                              child: _choicesSubActivities(badgeDetails),
-                            ),
-                          );
+                          return _choicesSubActivities(badgeDetails);
                         }),
                       );
                     }

@@ -31,6 +31,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
   bool isRefreshing = false;
   bool _didPickedDate = false;
   bool isSubmit = false;
+  bool _didInitialSave = false;
 
   late List<dynamic> setbookingtime = [];
   late List<dynamic> listTime = [];
@@ -136,22 +137,118 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                             if (setbookingtime.isNotEmpty) {
                               showDialog(
                                   context: context,
-                                  builder: (_) => AlertDialog(
-                                        title:
-                                            Text(AppTextConstants.saveChanges),
-                                        content: Text(
-                                            AppTextConstants.saveChangesDesc),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text('No')),
-                                          TextButton(
-                                              onPressed: setInitialDate,
-                                              child: const Text('Yes')),
-                                        ],
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text(AppTextConstants.saveChanges),
+                                      content: StatefulBuilder(
+                                        builder: (BuildContext context,
+                                            StateSetter setState) {
+                                          return Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              SizedBox(height: 5.h),
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 24.w,
+                                                    vertical: 2.h),
+                                                child: Text(AppTextConstants
+                                                    .saveChangesDesc),
+                                              ),
+                                              SizedBox(
+                                                height: 20.h,
+                                              ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        _didInitialSave = true;
+                                                      });
+                                                      setInitialDate();
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        side: BorderSide(
+                                                          color:
+                                                              AppColors.silver,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10.r),
+                                                      ),
+                                                      primary: AppColors
+                                                          .primaryGreen,
+                                                      onPrimary: Colors.white,
+                                                    ),
+                                                    child: _didInitialSave
+                                                        ? const Center(
+                                                            child: Padding(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    8),
+                                                            child:
+                                                                CircularProgressIndicator(),
+                                                          ))
+                                                        : const Text(
+                                                            'Yes',
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16),
+                                                          ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 20.w,
+                                                  ),
+                                                  if (_didInitialSave)
+                                                    Container()
+                                                  else
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          side: BorderSide(
+                                                            color: AppColors
+                                                                .silver,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.r),
+                                                        ),
+                                                        primary: AppColors
+                                                            .primaryGreen,
+                                                        onPrimary: Colors.white,
+                                                      ),
+                                                      child: const Text(
+                                                        'No',
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16),
+                                                      ),
+                                                    ),
+                                                ],
+                                              )
+                                            ],
+                                          );
+                                        },
                                       ),
+                                    );
+                                  },
                                   barrierDismissible: false);
                             } else {
                               setState(() {
@@ -354,8 +451,12 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                                                               if (listTime[i]
                                                                       [1] ==
                                                                   false) {
-                                                                listTime[i]
-                                                                    [2]++;
+                                                                if (listTime[i]
+                                                                        [2] <
+                                                                    screenArguments[
+                                                                        'number_of_tourist'])
+                                                                  listTime[i]
+                                                                      [2]++;
                                                               }
                                                             });
                                                           }),
@@ -476,6 +577,9 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
       });
     }
     setbookingtime.clear();
+    setState(() {
+      _didInitialSave = false;
+    });
     Navigator.pop(context);
   }
 
@@ -535,7 +639,6 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
         });
       }
       setbookingtime.clear();
-
       await Navigator.pushReplacement(
           context,
           MaterialPageRoute<dynamic>(

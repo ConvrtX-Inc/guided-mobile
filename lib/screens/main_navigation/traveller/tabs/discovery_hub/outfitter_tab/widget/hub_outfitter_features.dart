@@ -1,171 +1,310 @@
+// ignore_for_file: avoid_dynamic_calls, avoid_bool_literals_in_conditional_expressions
+import 'dart:convert';
+
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/outfitter_image_model.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Widget for home features
-class DiscoveryHubOutfitterFeatures extends StatelessWidget {
+class DiscoveryHubOutfitterFeatures extends StatefulWidget {
   /// Constructor
   const DiscoveryHubOutfitterFeatures({
-    int id = 0,
+    String id = '',
     String title = '',
-    String description = '',
-    String date = '',
+    String imageUrl1 = '',
+    String imageUrl2 = '',
+    String imageUrl3 = '',
     String price = '',
-    String img1 = '',
-    String img2 = '',
-    String img3 = '',
+    String date = '',
+    // required DateTime? availabilityDate,
+    String availabilityDate = '',
+    String description = '',
+    String productLink = '',
+    String country = '',
+    String address = '',
+    String street = '',
+    String city = '',
+    String province = '',
+    String zipCode = '',
+    bool isPublished = false,
     Key? key,
   })  : _id = id,
         _title = title,
-        _description = description,
-        _date = date,
+        _imageUrl1 = imageUrl1,
+        _imageUrl2 = imageUrl2,
+        _imageUrl3 = imageUrl3,
         _price = price,
-        _img1 = img1,
-        _img2 = img2,
-        _img3 = img3,
+        _date = date,
+        _availabilityDate = availabilityDate,
+        _description = description,
+        _productLink = productLink,
+        _country = country,
+        _address = address,
+        _street = street,
+        _city = city,
+        _province = province,
+        _zipCode = zipCode,
+        _isPublished = isPublished,
         super(key: key);
 
-  final int _id;
+  final String _id;
   final String _title;
-  final String _description;
-  final String _date;
+  final String _imageUrl1;
+  final String _imageUrl2;
+  final String _imageUrl3;
   final String _price;
-  final String _img1;
-  final String _img2;
-  final String _img3;
+  final String _date;
+  // final DateTime? _availabilityDate;
+  final String _availabilityDate;
+  final String _description;
+  final String _productLink;
+  final String _country;
+  final String _address;
+  final String _street;
+  final String _city;
+  final String _province;
+  final String _zipCode;
+  final bool _isPublished;
+
+  @override
+  State<DiscoveryHubOutfitterFeatures> createState() =>
+      _DiscoveryHubOutfitterFeaturesState();
+}
+
+class _DiscoveryHubOutfitterFeaturesState
+    extends State<DiscoveryHubOutfitterFeatures> {
+  late List<String> imageList;
+  late List<String> imageIdList;
+  int activeIndex = 0;
+  int imageCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    imageList = [];
+    imageIdList = [];
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        final Map<String, dynamic> details = {
-          'id': _id,
-        };
-        Navigator.pushNamed(context, '/discovery_hub_outfitter_view',
-            arguments: details);
-      },
-      child: Column(
-        children: <Widget>[
-          ImageSlideshow(
-            width: 375,
-            height: 200,
-            initialPage: 0,
-            indicatorColor: Colors.white,
-            indicatorBackgroundColor: Colors.grey[100],
-            autoPlayInterval: 3000,
-            isLoop: true,
-            children: <Widget>[
-              Image.asset(_img1, fit: BoxFit.fitHeight),
-              Image.asset(_img2, fit: BoxFit.fitHeight),
-              Image.asset(_img3, fit: BoxFit.fitHeight),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return widget._isPublished
+        ? Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(left: 20.w, top: 10.h),
-                child: Text(
-                  _title,
-                  style: TextStyle(
-                      fontSize: 18.sp,
-                      fontFamily: 'Gilroy',
-                      fontWeight: FontWeight.w600),
-                ),
+                padding: const EdgeInsets.all(8),
+                child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(20.r))),
+                    child: buildSlider(context)),
               ),
+              SizedBox(height: 20.h),
               Padding(
-                padding: EdgeInsets.only(right: 20.w, top: 10.h),
-                child: Text(
-                  '\$$_price',
-                  style: TextStyle(
-                      fontFamily: 'Gilroy',
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600),
-                ),
-              )
-            ],
-          ),
-          Padding(
-              padding: EdgeInsets.only(
-                top: 10.h,
-                left: 20.w,
-              ),
-              child: Row(
-                children: <Widget>[
-                  const Icon(
-                    Icons.calendar_month,
-                    size: 15,
-                    color: Colors.grey,
-                  ),
-                  SizedBox(
-                    width: 5.w,
-                  ),
-                  Text(
-                    _date,
-                    style: TextStyle(
-                        color: AppColors.doveGrey,
-                        fontFamily: 'Gilroy',
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400),
-                  )
-                ],
-              )),
-          Padding(
-            padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.h),
-            child: Text(
-              _description,
-              textAlign: TextAlign.justify,
-              style: TextStyle(
-                  fontFamily: 'Gilroy',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14.sp,
-                  height: 2),
-            ),
-          ),
-          SizedBox(
-            height: 20.h,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 20.w),
-            child: Row(
-              children: <Widget>[
-                ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(AppColors.lightRed),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.r),
-                              side: const BorderSide(color: Colors.red)))),
-                  child: Text(
-                    AppTextConstants.visitSite,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      widget._title,
+                      style: AppTextStyle.txtStyle,
                     ),
-                  ),
-                  onPressed: () {
-                    final Map<String, dynamic> details = {
-                      'id': _id,
-                    };
-                    Navigator.pushNamed(
-                        context, '/discovery_hub_outfitter_view',
-                        arguments: details);
-                  },
+                    Text(
+                      widget._price,
+                      style: AppTextStyle.txtStyle,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: 15,
+                      color: AppColors.osloGrey,
+                    ),
+                    SizedBox(width: 5.w),
+                    Text(
+                      widget._date,
+                      style: AppTextStyle.dateStyle,
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  widget._description,
+                  style: AppTextStyle.descrStyle,
+                ),
+              ),
+              SizedBox(height: 10.h),
+              Row(
+                children: <Widget>[
+                  ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            AppColors.lightRed),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.r),
+                                    side:
+                                        const BorderSide(color: Colors.red)))),
+                    child: Text(
+                      AppTextConstants.visitShop,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    onPressed: () async {
+                      await openBrowserURL(
+                          url: 'https://${widget._productLink}', inApp: true);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          )
+        : Container();
+  }
+
+  Widget buildSlider(BuildContext context) =>
+      FutureBuilder<OutfitterImageModelData>(
+        future: APIServices().getOutfitterImageData(widget._id),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            final OutfitterImageModelData outfitterImage = snapshot.data;
+            final int length = outfitterImage.outfitterImageDetails.length;
+            imageCount = length;
+
+            for (int i = 0; i < imageCount; i++) {
+              imageList
+                  .add(outfitterImage.outfitterImageDetails[i].snapshotImg);
+              imageIdList.add(outfitterImage.outfitterImageDetails[i].id);
+            }
+
+            return Center(
+              child: Stack(
+                alignment: AlignmentDirectional.center,
+                children: <Widget>[
+                  CarouselSlider.builder(
+                      itemCount: length,
+                      options: CarouselOptions(
+                        height: 300.h,
+                        enableInfiniteScroll: false,
+                        viewportFraction: 1,
+                        onPageChanged:
+                            (int index, CarouselPageChangedReason reason) =>
+                                setState(() => activeIndex = index),
+                      ),
+                      itemBuilder:
+                          (BuildContext context, int index, int realIndex) {
+                        final OutfitterImageDetailsModel imgData =
+                            outfitterImage.outfitterImageDetails[index];
+
+                        return buildImage(imgData, index);
+                      }),
+                  if (length == 1) Container(),
+                  if (length == 0)
+                    GestureDetector(
+                        onTap: () {
+                          navigateOutfitterDetails(context, '');
+                        },
+                        child: Container(
+                          width: 300.w,
+                          height: 300.h,
+                          child: const Text(''),
+                        ))
+                  else
+                    Positioned(
+                      bottom: 10,
+                      child: buildIndicator(length),
+                    ),
+                ],
+              ),
+            );
+          }
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return Container();
+        },
+      );
+
+  Widget buildImage(OutfitterImageDetailsModel imgData, int index) => Container(
+        // margin: EdgeInsets.symmetric(horizontal: 1.w),
+        color: Colors.grey,
+        child: GestureDetector(
+          onTap: () {
+            navigateOutfitterDetails(context, imgData.snapshotImg);
+          },
+          child: Image.memory(
+            base64.decode(imgData.snapshotImg.split(',').last),
+            fit: BoxFit.fill,
+            gaplessPlayback: true,
           ),
-          SizedBox(
-            height: 40.h,
-          ),
-        ],
-      ),
-    );
+        ),
+      );
+
+  Widget buildIndicator(int count) => AnimatedSmoothIndicator(
+        activeIndex: activeIndex,
+        count: count,
+        effect: SlideEffect(
+            activeDotColor: Colors.white,
+            dotColor: Colors.grey.shade800,
+            dotHeight: 10.h,
+            dotWidth: 10.w),
+      );
+
+  Future<void> openBrowserURL({
+    required String url,
+    bool inApp = false,
+  }) async {
+    if (await canLaunch(url)) {
+      await launch(url,
+          forceSafariVC: inApp, // iOS
+          forceWebView: inApp, // Android
+          enableJavaScript: true // Android
+          );
+    }
+  }
+
+  /// Navigate to Outfitter View
+  Future<void> navigateOutfitterDetails(
+      BuildContext context, String snapshotImg) async {
+    final Map<String, dynamic> details = {
+      'id': widget._id,
+      'title': widget._title,
+      'price': widget._price,
+      'product_link': widget._productLink,
+      'country': widget._country,
+      'description': widget._description,
+      'date': widget._date,
+      'availability_date': widget._availabilityDate,
+      'address': widget._address,
+      'street': widget._street,
+      'city': widget._city,
+      'province': widget._province,
+      'zip_code': widget._zipCode,
+      'snapshot_img': snapshotImg,
+      'image_count': imageCount,
+      'image_list': imageList,
+      'image_id_list': imageIdList
+    };
+
+    await Navigator.pushNamed(context, '/discovery_hub_outfitter_view', arguments: details);
   }
 }

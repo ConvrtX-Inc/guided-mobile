@@ -188,7 +188,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                                       fontSize: 14),
                                 ),
                               ),
-                              Text('${widget._numberOfTourist} Tourists')
+                              Text('${widget._numberOfTourist} Traveller')
                             ],
                           ),
                         ),
@@ -447,7 +447,9 @@ class _PackageFeaturesState extends State<PackageFeatures> {
     final Map<String, dynamic> details = {
       'id': splitId,
       'availability_date': splitAvailabilityDate,
-      'count': splitAvailabilityDate.length
+      'count': splitAvailabilityDate.length,
+      'package_id': widget._id,
+      'number_of_tourist': widget._numberOfTourist
     };
 
     await Navigator.pushNamed(context, '/calendar_availability',

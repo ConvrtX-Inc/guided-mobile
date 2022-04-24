@@ -72,7 +72,7 @@ class SplashScreen extends StatelessWidget {
                   height: 10.h,
                 ),
                 Text(
-                  'The application will help you find place,',
+                  AppTextConstants.bookYourNextAdventureOnApp,
                   style: TextStyle(
                     fontFamily: 'Gilroy',
                     fontSize: 16.sp,
@@ -85,7 +85,20 @@ class SplashScreen extends StatelessWidget {
                   height: 10.h,
                 ),
                 Text(
-                  'tour or adventures',
+                 AppTextConstants.findAmazingWilderness,
+                  style: TextStyle(
+                    fontFamily: 'Gilroy',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.nobel,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Text(
+                  AppTextConstants.getGuided,
                   style: TextStyle(
                     fontFamily: 'Gilroy',
                     fontSize: 16.sp,

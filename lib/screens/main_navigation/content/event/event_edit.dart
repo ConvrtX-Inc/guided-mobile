@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
@@ -11,12 +12,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:guided/common/widgets/country_dropdown.dart';
+import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/badge_model.dart';
+import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
@@ -111,6 +115,10 @@ class _EventEditState extends State<EventEdit> {
   File? image1;
 
   int _uploadCount = 0;
+
+  late CountryModel _countryDropdown;
+  late List<CountryModel> listCountry;
+
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   @override
   void initState() {
@@ -119,6 +127,8 @@ class _EventEditState extends State<EventEdit> {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      final List<CountryModel> resCountries =
+          await APIServices().getCountries();
 
       _title = TextEditingController(text: screenArguments['title']);
       _price = TextEditingController(text: screenArguments['price']);
@@ -134,8 +144,20 @@ class _EventEditState extends State<EventEdit> {
       _subactivity = TextEditingController(
           text: screenArguments['sub_activity'].join(','));
       _services = TextEditingController(text: screenArguments['services']);
+
+      setState(() {
+        listCountry = resCountries;
+        _countryDropdown = listCountry[38];
+      });
     });
     _loadingData = APIServices().getBadgesModel();
+  }
+
+  void setCountry(dynamic value) {
+    setState(() {
+      _countryDropdown = value;
+      _country = TextEditingController(text: _countryDropdown.name);
+    });
   }
 
   ListTile _choicesMainActivity(BadgeDetailsModel badges) {
@@ -796,6 +818,14 @@ class _EventEditState extends State<EventEdit> {
     );
   }
 
+  // Format File Size
+  static String getFileSizeString({required int bytes, int decimals = 0}) {
+    if (bytes <= 0) return "0 Bytes";
+    const suffixes = [" Bytes", "KB", "MB", "GB", "TB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -833,6 +863,20 @@ class _EventEditState extends State<EventEdit> {
                                   }
 
                                   final File imageTemporary = File(image1.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image1 = imageTemporary;
                                     _uploadCount += 1;
@@ -857,6 +901,20 @@ class _EventEditState extends State<EventEdit> {
                                   }
 
                                   final File imageTemporary = File(image1.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image1 = imageTemporary;
                                     _uploadCount += 1;
@@ -1493,7 +1551,6 @@ class _EventEditState extends State<EventEdit> {
                       enabled: _isEnabledPrice,
                       controller: _price,
                       focusNode: _priceFocus,
-                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         hintText: '\$${screenArguments['price']}',
                         hintStyle: TextStyle(
@@ -1501,8 +1558,19 @@ class _EventEditState extends State<EventEdit> {
                         ),
                       ),
                       style: txtStyle,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: false),
+                      inputFormatters: [
+                        DecimalTextInputFormatter(decimalRange: 2),
+                        FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          try {
+                            final text = newValue.text;
+                            if (text.isNotEmpty) double.parse(text);
+                            return newValue;
+                          } catch (e) {}
+                          return oldValue;
+                        }),
                       ],
                     )
                   ],
@@ -1628,18 +1696,25 @@ class _EventEditState extends State<EventEdit> {
                     SizedBox(
                       height: 2.h,
                     ),
-                    TextField(
-                      enabled: _isEnabledCountry,
-                      controller: _country,
-                      focusNode: _countryFocus,
-                      decoration: InputDecoration(
-                        hintText: 'Country: ${screenArguments['country']}',
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
+                    if (_isEnabledLocation)
+                      DropDownCountry(
+                        value: _countryDropdown,
+                        setCountry: setCountry,
+                        list: listCountry,
+                      )
+                    else
+                      TextField(
+                        enabled: _isEnabledCountry,
+                        controller: _country,
+                        focusNode: _countryFocus,
+                        decoration: InputDecoration(
+                          hintText: 'Country: ${screenArguments['country']}',
+                          hintStyle: TextStyle(
+                            color: Colors.grey.shade800,
+                          ),
                         ),
+                        style: txtStyle,
                       ),
-                      style: txtStyle,
-                    ),
                     SizedBox(
                       height: 2.h,
                     ),
@@ -1997,6 +2072,11 @@ class _EventEditState extends State<EventEdit> {
         _postalCode.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.locationEmpty)
           .show(context);
+    } else if (_price.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.feeEmpty).show(context);
+    } else if (_services.text.isEmpty) {
+      AdvanceSnackBar(message: ErrorMessageConstants.serviceEmpty)
+          .show(context);
     } else if (_didClickedImage) {
       if (image1 == null) {
         AdvanceSnackBar(message: ErrorMessageConstants.eventImageEmpty)
@@ -2029,7 +2109,7 @@ class _EventEditState extends State<EventEdit> {
           'address':
               '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
           'description': _description.text,
-          'price': int.parse(_price.text),
+          'price': double.parse(_price.text),
           'event_date':
               isNewDate ? _eventDate.text : screenArguments['date_format'],
           'is_published': true,
@@ -2090,7 +2170,7 @@ class _EventEditState extends State<EventEdit> {
         'address':
             '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
         'description': _description.text,
-        'price': int.parse(_price.text),
+        'price': double.parse(_price.text),
         'event_date':
             isNewDate ? _eventDate.text : screenArguments['date_format'],
         'is_published': true,

@@ -44,7 +44,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
               Padding(
                 padding: EdgeInsets.only(left: 8.w),
                 child: Text(
-                  AppTextConstants.requestedTrip,
+                  AppTextConstants.adventureRequest,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 24.sp,
@@ -80,20 +80,6 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
               ),
               SizedBox(
                 height: 30.h,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 8.w),
-                child: Text(
-                  'Selected gig',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14.sp,
-                      fontFamily: 'Gilroy',
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
-              SizedBox(
-                height: 10.h,
               ),
               Container(
                   margin: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 8.h),
@@ -152,7 +138,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                             fontSize: 14.sp),
                                       ),
                                     ),
-                                    Text('5 Tourists',
+                                    Text('5 Traveller',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 14.sp))
@@ -230,31 +216,31 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                   const SizedBox(
                                     width: 5,
                                   ),
-                                  Text(
-                                    '1 - 9',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.tropicalRainForest,
-                                        fontSize: 14.sp,),
-                                  ),
+                                  // Text(
+                                  //   '1 - 9',
+                                  //   style: TextStyle(
+                                  //       fontWeight: FontWeight.w500,
+                                  //       color: AppColors.tropicalRainForest,
+                                  //       fontSize: 14.sp,),
+                                  // ),
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              width: 50,
-                              height: 30,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  shape: const CircleBorder(),
-                                  primary: Colors.white, // <-- Button color
-                                  onPrimary: Colors.grey, // <-- Splash color
-                                ),
-                                child: Icon(Icons.edit,
-                                    size: 15,
-                                    color: AppColors.tropicalRainForest),
-                              ),
-                            )
+                            // SizedBox(
+                            //   width: 50,
+                            //   height: 30,
+                            //   child: ElevatedButton(
+                            //     onPressed: () {},
+                            //     style: ElevatedButton.styleFrom(
+                            //       shape: const CircleBorder(),
+                            //       primary: Colors.white, // <-- Button color
+                            //       onPrimary: Colors.grey, // <-- Splash color
+                            //     ),
+                            //     child: Icon(Icons.edit,
+                            //         size: 15,
+                            //         color: AppColors.tropicalRainForest),
+                            //   ),
+                            // )
                           ],
                         ),
                       )
@@ -287,58 +273,58 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                       fontWeight: FontWeight.w400),
                 ),
               ),
-              SizedBox(
-                height: 40.h,
-              ),
-              Center(
-                child: SizedBox(
-                  width: 315.w,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                            const EdgeInsets.all(20)),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(AppColors.spruce),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.r),
-                        ))),
-                    child: Text(
-                      AppTextConstants.acceptRequest,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-              Center(
-                child: SizedBox(
-                  width: 315.w,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                        primary: Colors.transparent),
-                    child: Text(
-                      AppTextConstants.rejectRequest,
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontFamily: 'Gilroy',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
+              // SizedBox(
+              //   height: 40.h,
+              // ),
+              // Center(
+              //   child: SizedBox(
+              //     width: 315.w,
+              //     child: ElevatedButton(
+              //       style: ButtonStyle(
+              //           padding: MaterialStateProperty.all<EdgeInsets>(
+              //               const EdgeInsets.all(20)),
+              //           backgroundColor:
+              //               MaterialStateProperty.all<Color>(AppColors.spruce),
+              //           shape:
+              //               MaterialStateProperty.all<RoundedRectangleBorder>(
+              //                   RoundedRectangleBorder(
+              //             borderRadius: BorderRadius.circular(18.r),
+              //           ))),
+              //       child: Text(
+              //         AppTextConstants.acceptRequest,
+              //         style: TextStyle(
+              //           fontSize: 16.sp,
+              //           fontWeight: FontWeight.w700,
+              //         ),
+              //       ),
+              //       onPressed: () {},
+              //     ),
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 10.h,
+              // ),
+              // Center(
+              //   child: SizedBox(
+              //     width: 315.w,
+              //     child: ElevatedButton(
+              //       style: ElevatedButton.styleFrom(
+              //           elevation: 0,
+              //           shadowColor: Colors.transparent,
+              //           primary: Colors.transparent),
+              //       child: Text(
+              //         AppTextConstants.rejectRequest,
+              //         style: TextStyle(
+              //           color: Colors.red,
+              //           fontFamily: 'Gilroy',
+              //           fontSize: 16.sp,
+              //           fontWeight: FontWeight.w700,
+              //         ),
+              //       ),
+              //       onPressed: () {},
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

@@ -184,12 +184,13 @@ class _LocationScreenState extends State<LocationScreen> {
                     height: 5.h,
                   ),
                   Align(
+                    alignment: Alignment.centerLeft,
                     child: Text(
                       AppTextConstants.placeHint,
                       style: TextStyle(
                         color: AppColors.grey,
                       ),
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.left,
                     ),
                   ),
                   SizedBox(
@@ -219,7 +220,7 @@ class _LocationScreenState extends State<LocationScreen> {
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.state,
+                      hintText: AppTextConstants.provinceState,
                       hintStyle: TextStyle(
                         color: AppColors.grey,
                       ),

@@ -64,9 +64,9 @@ class PackageDetailsModel {
   final bool isPublished;
 
   PackageDetailsModel.fromJson(Map<String, dynamic> parseJson)
-      : id = parseJson['id'],
-        userId = parseJson['user_id'],
-        mainBadgeId = parseJson['main_badge_id'],
+      : id = parseJson['id']??'',
+        userId = parseJson['user_id']??'',
+        mainBadgeId = parseJson['main_badge_id']??'',
         subBadgeId = parseJson['sub_badge_ids'] ?? '',
         packageNote = parseJson['package_note'],
         name = parseJson['name'],

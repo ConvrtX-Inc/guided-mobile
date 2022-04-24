@@ -1,3 +1,4 @@
+
 // ignore_for_file: no_default_cases
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -42,15 +43,15 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () {},
-                    child: SvgPicture.asset(AssetsPath.arrowWithTail,
-                        fit: BoxFit.scaleDown),
-                  ),
-                  SizedBox(
-                    width: 100.w,
-                  ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Navigator.pop(context);
+                  //   },
+                  //   child: SvgPicture.asset(AssetsPath.arrowWithTail,
+                  //       fit: BoxFit.scaleDown),
+                  // ),
                   Text(
                     AppTextConstants.settings,
                     style: const TextStyle(

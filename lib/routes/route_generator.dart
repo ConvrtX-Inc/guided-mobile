@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/screens/activities/activities.dart';
@@ -33,7 +35,9 @@ import 'package:guided/screens/main_navigation/traveller/check_availability/chec
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_view.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_traveler_limit_schedules.dart';
-import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/event_tab/hub_event_list.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/event_tab/hub_event_view.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_list.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_view.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub_view.dart';
@@ -82,17 +86,20 @@ import 'package:guided/screens/profile/reviews_profile.dart';
 
 import 'package:guided/screens/payments/payment_edit_card.dart';
 import 'package:guided/screens/payments/payment_manage_card.dart';
-import 'package:guided/screens/refunds/refund.dart';
+import 'package:guided/screens/refunds/guide/refund.dart';
+import 'package:guided/screens/refunds/traveler/request_refund.dart';
 
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
+import 'package:guided/screens/settings/edit_profile.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
 import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
+import 'package:guided/screens/transaction_notifications/transaction_history_main.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
 
 import '../screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
@@ -310,7 +317,10 @@ class RouteGenerator {
             builder: (_) => const ReviewsProfileScreen());
       case '/payment':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const PaymentManageCard());
+            builder: (_) => const TabMapScreen(), settings: settings);
+      case '/transaction_history':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TransactionHistoryMain(), settings: settings);
       case '/':
         return MaterialPageRoute<dynamic>(builder: (_) => const Splash());
       case '/package_edit':
@@ -366,10 +376,23 @@ class RouteGenerator {
             builder: (_) => const PaymentAddCard());
       case '/popular_guides_traveler_limit_schedules':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const PopularGuidesTravelerLimitSchedules());
+            builder: (_) => PopularGuidesTravelerLimitSchedules(
+                  packageId: '',
+                  price: '',
+                ));
       case '/refund':
+        return MaterialPageRoute<dynamic>(builder: (_) => const RefundScreen());
+      case '/request_refund':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const RefundScreen());
+            builder: (_) => const RequestRefund());
+      case '/hub_event_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const HubEventView(), settings: settings);
+      case '/discovery_hub_events':
+        return MaterialPageRoute<dynamic>(builder: (_)=> const HubEventList());
+      case '/edit_profile':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const EditProfileScreen());
 
       default:
         return _errorRoute();

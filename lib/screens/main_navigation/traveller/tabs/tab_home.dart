@@ -20,6 +20,7 @@ import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/guide.dart';
 import 'package:guided/models/popular_guide.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
@@ -874,10 +875,10 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15.w),
                 child: Text(
-                  'Explore Nearby Activities/Packages',
+                  'Explore Nearby Activities',
                   style: TextStyle(
                       color: Colors.black,
-                      fontSize: 16.sp,
+                      fontSize: 20.sp,
                       fontWeight: FontWeight.w700),
                 ),
               ),
@@ -983,7 +984,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                     );
                   },
                 ),
-                Align(
+                Positioned(
+                  left: MediaQuery.of(context).size.width / 2.8,
+                  bottom: 20,
                   child: SmoothPageIndicator(
                       controller: pageIndicatorController,
                       count: activities.length,
@@ -1017,37 +1020,35 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                       fontWeight: FontWeight.w700),
                 ),
                 Spacer(),
-                Expanded(
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        height: 10.h,
-                        width: 10.w,
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(15.r),
-                          ),
-                          image: const DecorationImage(
-                            image: AssetImage('assets/images/png/clock.png'),
-                            fit: BoxFit.contain,
-                          ),
+                Row(
+                  children: <Widget>[
+                    Container(
+                      height: 10.h,
+                      width: 10.w,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(15.r),
+                        ),
+                        image: const DecorationImage(
+                          image: AssetImage('assets/images/png/clock.png'),
+                          fit: BoxFit.contain,
                         ),
                       ),
-                      // SizedBox(
-                      //   width: 2.w,
-                      // ),
-                      Text(
-                        activities[index].distance,
-                        style: TextStyle(
-                            color: HexColor('#696D6D'),
-                            fontSize: 11.sp,
-                            fontFamily: 'Gilroy',
-                            fontWeight: FontWeight.normal),
-                      ),
-                    ],
-                  ),
-                )
+                    ),
+                    // SizedBox(
+                    //   width: 2.w,
+                    // ),
+                    Text(
+                      activities[index].distance,
+                      style: TextStyle(
+                          color: HexColor('#696D6D'),
+                          fontSize: 11.sp,
+                          fontFamily: 'Gilroy',
+                          fontWeight: FontWeight.normal),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -1103,10 +1104,10 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.25,
-          child: FutureBuilder<List<PopularGuide>>(
+          child: FutureBuilder<List<User>>(
               future: APIServices().getPopularGuides(), // async work
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<PopularGuide>> snapshot) {
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
                     return const Center(
@@ -1117,13 +1118,12 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else {
                       return GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/popular_guides_list');
-                        },
+                        onTap: _settingModalBottomSheet,
                         child: ListView(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
-                          children: List<Widget>.generate(2, (int i) {
+                          children: List<Widget>.generate(snapshot.data!.length,
+                              (int i) {
                             return Container(
                               margin: EdgeInsets.symmetric(
                                   horizontal: 5.w, vertical: 20.h),
@@ -1145,7 +1145,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                       ),
                                       image: DecorationImage(
                                         image:
-                                            AssetImage(guides[i].featureImage),
+                                            AssetImage(guides[1].featureImage),
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -1157,7 +1157,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                             backgroundColor: Colors.transparent,
                                             radius: 30,
                                             backgroundImage:
-                                                AssetImage(guides[i].path),
+                                                AssetImage(guides[1].path),
                                           ),
                                         ),
                                       ],
@@ -1167,7 +1167,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                     height: 5.h,
                                   ),
                                   Text(
-                                    snapshot.data![i].userFirstName!,
+                                    snapshot.data![i].fullName ?? '',
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 16.sp,
@@ -1195,7 +1195,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         width: 2.w,
                                       ),
                                       Text(
-                                        guides[i].distance,
+                                        '1 KM',
                                         style: TextStyle(
                                             color: HexColor('#696D6D'),
                                             fontSize: 11.sp,
@@ -1273,18 +1273,18 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   SizedBox(
                     height: 5.h,
                   ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: AppTextStyle.active,
-                      child: const Text(
-                        'Learn more',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 12),
-                      ),
-                    ),
-                  ),
+                  // SizedBox(
+                  //   width: MediaQuery.of(context).size.width * 0.3,
+                  //   child: ElevatedButton(
+                  //     onPressed: () {},
+                  //     style: AppTextStyle.active,
+                  //     child: const Text(
+                  //       'Learn more',
+                  //       style: TextStyle(
+                  //           fontWeight: FontWeight.bold, fontSize: 12),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               )),
         ],
@@ -1301,7 +1301,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
       ),
       expand: false,
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       builder: (BuildContext context) => const PopularGuidesList(),
     );
   }

@@ -70,6 +70,66 @@ class StaticDataService {
     ];
   }
 
+  /// projects mock data
+  static List<Activity> getActivityForNearybyGuides() {
+    return <Activity>[
+      Activity(
+          id: '1',
+          name: 'Camping',
+          path: 'assets/images/png/activity_icon5.png',
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/png/activity3.png'),
+      Activity(
+          id: '2',
+          name: 'Hiking',
+          path: 'assets/images/png/activity_icon6.png',
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/jpg/hiking.jpg'),
+      Activity(
+          id: '3',
+          name: 'Hunt',
+          path: 'assets/images/png/activity_icon0.png',
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/png/activity1.png'),
+      Activity(
+          id: '4',
+          name: 'Fishing',
+          path: 'assets/images/png/activity_icon7.png',
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/jpg/fishing.jpg'),
+      Activity(
+          id: '5',
+          name: 'ECO Tour',
+          path: 'assets/images/png/activity_icon2.png',
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/jpg/eco_tour.jpg'),
+      Activity(
+          id: '6',
+          name: 'Retreat',
+          path: 'assets/images/png/activity_icon3.png',
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/jpg/retreat.jpg'),
+      Activity(
+          id: '7',
+          name: 'Paddle Spot',
+          path: 'assets/images/png/activity_icon4.png',
+          distance: '4.5 hours drive',
+          featureImage: 'assets/images/png/activity2.png'),
+      Activity(
+          id: '8',
+          name: 'Discovery',
+          path: 'assets/images/png/activity_icon1.png',
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/png/activity1.png'),
+      Activity(
+          id: '9',
+          name: 'Motor',
+          path: 'assets/images/png/activity_icon9.png',
+          distance: '3.5 hours drive',
+          featureImage: 'assets/images/jpg/sport_fishing.jpeg'),
+    ];
+  }
+
   /// returns tour list
   static List<Activity> getTourList() {
     return <Activity>[
@@ -126,7 +186,7 @@ class StaticDataService {
           name: 'Sasha Cruz',
           path: AssetsPath.paddle,
           distance: '12 KM  distance',
-          featureImage: 'assets/images/png/guide2.png'),
+          featureImage: 'assets/images/png/pmessage3.png'),
     ];
   }
 
@@ -156,21 +216,20 @@ class StaticDataService {
   }
 
   ///Get Payment Modes
-  static List<PaymentMode> getPaymentModes(){
+  static List<PaymentMode> getPaymentModes() {
     return <PaymentMode>[
       PaymentMode(
-        mode: 'Bank_Card',
-        logo: 'assets/images/png/bank_card.png',
-        isSelected: true
-      ),  PaymentMode(
+          mode: 'Bank_Card',
+          logo: 'assets/images/png/bank_card.png',
+          isSelected: true),
+      PaymentMode(
           mode: 'Google_Pay',
           logo: 'assets/images/png/google_wallet.png',
-        isEnabled:  Platform.isAndroid
-      ),  PaymentMode(
+          isEnabled: Platform.isAndroid),
+      PaymentMode(
           mode: 'Apple_Pay',
           logo: 'assets/images/png/wallet_app_icon.png',
-          isEnabled:  Platform.isIOS
-      )
+          isEnabled: Platform.isIOS)
     ];
   }
 }

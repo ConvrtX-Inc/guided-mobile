@@ -113,7 +113,7 @@ class DiscoveryBottomSheet extends StatelessWidget {
                             height: 10.h,
                           ),
                           Text(
-                            'You can discover ongoing \n events/happenings initiative by \n Discovery',
+                            AppTextConstants.upgradeToPremiumAndDiscoverMore,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontWeight: FontWeight.normal,

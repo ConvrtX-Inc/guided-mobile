@@ -90,13 +90,8 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
                     height: 100.h,
                   )
                 else
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: SizedBox(
-                      width: 160.w,
-                      height: 100.h,
-                      child: _choicesMainActivity(mainActivity),
-                    ),
+                  Expanded(
+                    child: _choicesMainActivity(mainActivity),
                   ),
                 SizedBox(
                   width: 110.w,
@@ -117,6 +112,7 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
             ),
           ),
         ),
+
         if (showMainActivityChoices)
           Material(
             elevation: 5,
@@ -141,14 +137,7 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
                         children: List.generate(length, (int index) {
                           final BadgeDetailsModel badgeDetails =
                               badgeData.badgeDetails[index];
-                          return Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: SizedBox(
-                              height: 10.h,
-                              width: 100.w,
-                              child: _choicesMainActivity(badgeDetails),
-                            ),
-                          );
+                          return _choicesMainActivity(badgeDetails);
                         }),
                       );
                     }

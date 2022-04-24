@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-
+import 'dart:convert';
 
 /// Free Service Screen
 class FreeServicesScreen extends StatefulWidget {
@@ -55,7 +55,7 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  HeaderText.headerText(AppTextConstants.header),
+                  HeaderText.headerText(AppTextConstants.serviceHeader),
                   SizedBox(
                     height: 30.h,
                   ),
@@ -150,10 +150,8 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
       children: List.generate(services.length, (int index) {
         return Padding(
           padding:
-              EdgeInsets.only(right: 5.w, left: 5.w, top: 10.h, bottom: 10.h),
+              EdgeInsets.only(right: 5.w, left: 5.w, top: 5.h, bottom: 5.h),
           child: Container(
-            width: 15.w,
-            height: 25.h,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.r),
               color: Colors.white,
@@ -168,12 +166,14 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
               children: <Widget>[
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      services[index],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
+                    padding: const EdgeInsets.all(5),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        services[index],
+                        style: TextStyle(
+                          fontSize: RegExp(r"\w+(\'\w+)?").allMatches(services[index]).length > 10 ? 10.sp : 14.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
                   ),

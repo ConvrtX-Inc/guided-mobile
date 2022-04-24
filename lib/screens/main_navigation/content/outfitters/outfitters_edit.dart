@@ -1,6 +1,7 @@
-// ignore_for_file: always_specify_types, cast_nullable_to_non_nullable, unnecessary_raw_strings, curly_braces_in_flow_control_structures, avoid_dynamic_calls, non_constant_identifier_names, unused_element, unnecessary_string_interpolations
+// ignore_for_file: always_specify_types, cast_nullable_to_non_nullable, unnecessary_raw_strings, curly_braces_in_flow_control_structures, avoid_dynamic_calls, non_constant_identifier_names, unused_element, unnecessary_string_interpolations, avoid_print
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
@@ -8,11 +9,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/country_dropdown.dart';
+import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -86,7 +90,8 @@ class _OutfitterEditState extends State<OutfitterEdit>
   String img3Id = '';
 
   bool _isSubmit = false;
-
+  late CountryModel _countryDropdown;
+  late List<CountryModel> listCountry;
   @override
   void initState() {
     super.initState();
@@ -94,15 +99,13 @@ class _OutfitterEditState extends State<OutfitterEdit>
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       String dir = (await getApplicationDocumentsDirectory()).path;
-
+      final List<CountryModel> resCountries =
+          await APIServices().getCountries();
       final String removedDollar =
           screenArguments['price'].toString().substring(0);
-      final String removedDecimal =
-          removedDollar.substring(0, removedDollar.indexOf('.'));
-      final String price = removedDecimal.replaceAll(RegExp(r'[,]'), '');
 
       _title = TextEditingController(text: screenArguments['title']);
-      _price = TextEditingController(text: price);
+      _price = TextEditingController(text: removedDollar);
       _productLink =
           TextEditingController(text: screenArguments['product_link']);
       _description =
@@ -114,6 +117,18 @@ class _OutfitterEditState extends State<OutfitterEdit>
       _postalCode = TextEditingController(text: screenArguments['zip_code']);
       _date = TextEditingController(
           text: screenArguments['availability_date'].toString());
+
+      setState(() {
+        listCountry = resCountries;
+        _countryDropdown = listCountry[38];
+      });
+    });
+  }
+
+  void setCountry(dynamic value) {
+    setState(() {
+      _countryDropdown = value;
+      _country = TextEditingController(text: _countryDropdown.name);
     });
   }
 
@@ -169,6 +184,14 @@ class _OutfitterEditState extends State<OutfitterEdit>
     );
   }
 
+  // Format File Size
+  static String getFileSizeString({required int bytes, int decimals = 0}) {
+    if (bytes <= 0) return "0 Bytes";
+    const suffixes = [" Bytes", "KB", "MB", "GB", "TB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -206,6 +229,21 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   }
 
                                   final File imageTemporary = File(image1.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image1 = imageTemporary;
                                     _uploadCount += 1;
@@ -230,6 +268,21 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   }
 
                                   final File imageTemporary = File(image1.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  print('Filesize: $fileSize');
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image1 = imageTemporary;
                                     _uploadCount += 1;
@@ -309,6 +362,20 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -332,6 +399,20 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -410,6 +491,20 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                     return;
                                   }
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -434,6 +529,20 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   }
 
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                    Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -842,9 +951,19 @@ class _OutfitterEditState extends State<OutfitterEdit>
                         ),
                       ),
                       style: txtStyle,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: false),
+                      inputFormatters: [
+                        DecimalTextInputFormatter(decimalRange: 2),
+                        FilteringTextInputFormatter.allow(RegExp('[0-9.0-9]')),
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          try {
+                            final text = newValue.text;
+                            if (text.isNotEmpty) double.parse(text);
+                            return newValue;
+                          } catch (e) {}
+                          return oldValue;
+                        }),
                       ],
                     )
                   ],
@@ -1036,18 +1155,25 @@ class _OutfitterEditState extends State<OutfitterEdit>
                     SizedBox(
                       height: 2.h,
                     ),
-                    TextField(
-                      enabled: _isEnabledCountry,
-                      controller: _country,
-                      focusNode: _countryFocus,
-                      decoration: InputDecoration(
-                        hintText: 'Country: ${screenArguments['country']}',
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
+                    if (_isEnabledLocation)
+                      DropDownCountry(
+                        value: _countryDropdown,
+                        setCountry: setCountry,
+                        list: listCountry,
+                      )
+                    else
+                      TextField(
+                        enabled: _isEnabledCountry,
+                        controller: _country,
+                        focusNode: _countryFocus,
+                        decoration: InputDecoration(
+                          hintText: 'Country: ${screenArguments['country']}',
+                          hintStyle: TextStyle(
+                            color: Colors.grey.shade800,
+                          ),
                         ),
+                        style: txtStyle,
                       ),
-                      style: txtStyle,
-                    ),
                     SizedBox(
                       height: 2.h,
                     ),
@@ -1400,7 +1526,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
 
         final Map<String, dynamic> outfitterEditDetails = {
           'title': _title.text,
-          'price': int.parse(_price.text),
+          'price': double.parse(_price.text),
           'product_link': _productLink.text,
           'country': _country.text,
           'address':
@@ -1442,7 +1568,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
 
       final Map<String, dynamic> outfitterEditDetails = {
         'title': _title.text,
-        'price': int.parse(_price.text),
+        'price': double.parse(_price.text),
         'product_link': _productLink.text,
         'country': _country.text,
         'address':

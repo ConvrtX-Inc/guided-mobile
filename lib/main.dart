@@ -1,5 +1,6 @@
 // ignore_for_file: always_specify_types
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -17,12 +18,13 @@ import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+import 'firebase/firebase_options.dart';
+
 
 String _defaultHome = '/';
 
 void main() async {
   await dotenv.load(fileName: '.env');
-
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIOverlays(
       [SystemUiOverlay.bottom, SystemUiOverlay.top]);
@@ -30,6 +32,10 @@ void main() async {
   Stripe.publishableKey =
       dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
   Stripe.instance.applySettings();
+
+  await Firebase.initializeApp(
+      name: 'Guided',
+      options: DefaultFirebaseConfig.platformOptions);
   runApp(const MyApp());
 
 

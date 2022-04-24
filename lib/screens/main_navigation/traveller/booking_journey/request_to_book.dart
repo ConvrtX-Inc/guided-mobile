@@ -10,12 +10,24 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/user_transaction_model.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
+import 'package:guided/screens/payments/payment_failed.dart';
+import 'package:guided/screens/payments/payment_manage_card.dart';
 import 'package:guided/screens/payments/payment_method.dart';
+import 'package:guided/screens/payments/payment_successful.dart';
+import 'package:guided/screens/refunds/traveler/request_refund.dart';
+import 'package:guided/screens/widgets/reusable_widgets/booking_payment_details.dart';
 import 'package:guided/screens/widgets/reusable_widgets/credit_card.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/stripe_service.dart';
+
+import 'package:guided/models/activity_package.dart';
+import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/user_model.dart';
+
+import 'package:intl/intl.dart';
 
 import '../../../../constants/app_colors.dart';
 
@@ -31,6 +43,13 @@ class RequestToBookScreen extends StatefulWidget {
 class _RequestToBookScreenState extends State<RequestToBookScreen> {
   dynamic paymentMethodDetails;
   String paymentMode = '';
+  Widget bookingPaymentDetails = Container();
+    double price = 0;
+  final String serviceName = 'Tourist Service';
+  String transactionNumber = '';
+
+  ActivityPackage activityPackage = ActivityPackage();
+  String selectedDate = '';
 
   @override
   void initState() {
@@ -39,6 +58,16 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
+    activityPackage = screenArguments['package'] as ActivityPackage;
+
+    final int numberOfTraveller = screenArguments['numberOfTraveller'] as int;
+    selectedDate = screenArguments['selectedDate'] as String;
+
+    price = getTotalHours(selectedDate) * double.parse(activityPackage.basePrice!);
+
+
     return Scaffold(
       backgroundColor: HexColor('#ECEFF0'),
       body: SafeArea(
@@ -82,6 +111,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 16.w, vertical: 10.h),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Container(
                               height: 100.h,
@@ -91,67 +121,77 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10.r),
                                 ),
-                                image: const DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/png/activity1.png'),
-                                  fit: BoxFit.cover,
-                                ),
+                                // image: const DecorationImage(
+                                //   image: AssetImage(
+                                //       'assets/images/png/activity1.png'),
+                                //   fit: BoxFit.cover,
+                                // ),
+                                image: DecorationImage(
+                                    image: Image.memory(
+                                  base64.decode(activityPackage.coverImg!
+                                      .split(',')
+                                      .last),
+                                  fit: BoxFit.fill,
+                                  gaplessPlayback: true,
+                                ).image),
                               ),
                             ),
                             SizedBox(
                               width: 10.w,
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  'Toronto, Canada',
-                                  style: TextStyle(
-                                      color: HexColor('#979B9B'),
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                                SizedBox(
-                                  height: 10.w,
-                                ),
-                                Text(
-                                  'The Basho Wayfarer',
-                                  style: TextStyle(
-                                      color: HexColor('#181B1B'),
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                SizedBox(
-                                  height: 5.w,
-                                ),
-                                Text(
-                                  'Hunt',
-                                  style: TextStyle(
-                                      color: HexColor('#181B1B'),
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                                SizedBox(
-                                  height: 10.w,
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.star,
-                                      size: 14,
-                                      color: AppColors.deepGreen,
-                                    ),
-                                    Text(
-                                      '16 reviews',
-                                      style: TextStyle(
-                                          color: HexColor('#979B9B'),
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    activityPackage.address!,
+                                    style: TextStyle(
+                                        color: HexColor('#979B9B'),
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                  SizedBox(
+                                    height: 10.w,
+                                  ),
+                                  Text(
+                                    activityPackage.name!,
+                                    style: TextStyle(
+                                        color: HexColor('#181B1B'),
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  SizedBox(
+                                    height: 5.w,
+                                  ),
+                                  Text(
+                                    'Hunt',
+                                    style: TextStyle(
+                                        color: HexColor('#181B1B'),
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                  SizedBox(
+                                    height: 10.w,
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.star,
+                                        size: 14,
+                                        color: AppColors.deepGreen,
+                                      ),
+                                      Text(
+                                        '16 reviews',
+                                        style: TextStyle(
+                                            color: HexColor('#979B9B'),
+                                            fontSize: 12.sp,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -160,12 +200,12 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                   ],
                 ),
               ),
-              sectionTwo(),
+              sectionTwo(screenArguments),
               sectionThree(),
               sectionFour(),
               sectionFive(),
               sectionSix(),
-              sectionSeven(),
+              sectionSeven(screenArguments),
             ],
           ),
         ),
@@ -173,7 +213,21 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionTwo() {
+  String getTime(String date) {
+    final DateTime parseDate =
+        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+    final DateTime inputDate = DateTime.parse(parseDate.toString());
+    final DateTime addHour = inputDate.add(const Duration(hours: 1));
+    final DateFormat outputFormat = DateFormat('HH:mm');
+    final DateFormat outputFormatDate = DateFormat('dd MMM');
+    final String date1 = outputFormatDate.format(inputDate);
+    final String hour1 = outputFormat.format(inputDate);
+    final String hour2 = outputFormat.format(addHour);
+    return '$date1 $hour1 - $hour2';
+  }
+
+  Widget sectionTwo(Map<String, dynamic> screenArguments) {
+    final String bookingDate = screenArguments['selectedDate'] as String;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
@@ -213,7 +267,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                     height: 5.h,
                   ),
                   Text(
-                    '8 Jun-12 Jun',
+                    getTime(bookingDate),
                     style: TextStyle(
                       color: HexColor('#696D6D'),
                       fontSize: 14.sp,
@@ -360,7 +414,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           Row(
             children: <Widget>[
               Text(
-                '60 X 6 hours',
+                '${activityPackage.basePrice} X ${getTotalHours(selectedDate)} hours',
                 style: TextStyle(
                   color: HexColor('#696D6D'),
                   fontSize: 12.sp,
@@ -792,7 +846,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionSeven() {
+  Widget sectionSeven(Map<String, dynamic> screenArguments) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
@@ -812,7 +866,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
               children: <TextSpan>[
                 TextSpan(
                   text:
-                      'Your booking won’t be confirmed until the host accepts yourrequest (within 24 hours?) ',
+                      'Your booking won’t be confirmed until the host accepts your request (within 24 hours?) ',
                   style: TextStyle(
                     fontFamily: 'Gilroy',
                     fontSize: 18.sp,
@@ -844,7 +898,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                   backgroundColor: HexColor('#ECEFF0'),
                 ),
                 onPressed: () async {
-                  final args =
+                  final dynamic args =
                       await Navigator.pushNamed(context, '/goToPaymentMethod');
                   debugPrint('Go To payment method $args ');
                   if (args == 'openPaymentMethod') {
@@ -864,38 +918,125 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
             )
           else
             SizedBox(
-                height: 60.h,
-                child: CustomRoundedButton(
-                    title: AppTextConstants.requestToBook,
-                    onpressed: () async {
-                      //please update price when api is integrated
-                      final double price = 354;
+              height: 60.h,
+              child: CustomRoundedButton(
+                title: AppTextConstants.requestToBook,
+                onpressed: () async {
+                  dynamic paymentClicked = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => PaymentManageCard(
+                              price: '$price',
+                            )),
+                  );
 
-                      //Add Api Integration for Booking Request here ...
-
-                      /*
-                      *Add Creation of Payment Intent
-                      *  Save this payment intent when booking request is inserted to db
-                       */
-                      final paymentIntent = await handlePayment(price);
-                      debugPrint('payment intent id $paymentIntent');
-
-                      //Static for now - please update this w/ response from booking request api ...
-                      String bookingRequestId =
-                          'c90b4a6e-c83a-4b40-b853-cf339f702a7d';
-                      /// save payment intent - uncomment when  booking request api is integrated
-                     /* await saveStripePaymentIntent(
-                          paymentIntent, bookingRequestId);*/
-                    }))
+                  if (paymentClicked != null) {
+                    handleConfirmPayment(screenArguments);
+                  }
+                },
+              ),
+            )
         ],
       ),
     );
   }
 
+  Future<void> goToPaymentMethod(
+      BuildContext context, Map<String, dynamic> screenArguments) async {
+    final ActivityPackage activityPackage =
+        screenArguments['package'] as ActivityPackage;
+    final String bookingDate = screenArguments['selectedDate'] as String;
+    final int numberOfTraveller = screenArguments['numberOfTraveller'] as int;
+    final Map<String, dynamic> details = {
+      'user_id': activityPackage.userId,
+      'from_user_id': UserSingleton.instance.user.user!.id,
+      'request_msg': activityPackage.name,
+      'activity_package_id': activityPackage.id,
+      'status_id': 'b0d8e728-e0f3-4db2-af0f-f90d124c482c',
+      'booking_date_start': bookingDateStart(bookingDate),
+      'booking_date_end': bookingDateEend(bookingDate),
+      'number_of_person': numberOfTraveller,
+      'is_approved': false
+    };
+    print(details);
+
+    final UserTransaction transactionDetails = UserTransaction(
+        userId: UserSingleton.instance.user.user!.id!,
+        activityPackageId: activityPackage.id!,
+        tourGuideId: activityPackage.userId!,
+        statusId: 'b0d8e728-e0f3-4db2-af0f-f90d124c482c',
+        bookDate: bookingDateStart(bookingDate),
+        serviceName: serviceName,
+        numberOfPeople: numberOfTraveller.toString(),
+        transactionNumber: transactionNumber,
+        total: price.toString());
+
+    final String paymentIntent = await handlePayment(price);
+
+    if (paymentIntent.isNotEmpty) {
+      await APIServices()
+          .requestBooking(details)
+          .then((APIStandardReturnFormat value) async {
+        if (value.status == 'success') {
+          final dynamic result = json.decode(value.successResponse);
+
+          ///save transaction
+          final UserTransaction transaction =
+              await APIServices().addUserTransaction(transactionDetails);
+
+          ///Save payment intent here
+          await saveStripePaymentIntent(paymentIntent, result['id']);
+
+          Navigator.pop(context);
+          await paymentSuccessful(
+              context: context,
+              paymentDetails: bookingPaymentDetails,
+              paymentMethod: paymentMode,
+              onOkBtnPressed: () {
+                // show transaction details
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => RequestRefund(
+                            paymentDetails: paymentMethodDetails,
+                            paymentMode: paymentMode,
+                            transactionDetails: transaction,
+                            activityPackageDetails: activityPackage,
+                          )),
+                );
+              });
+        }
+      });
+    } else {
+      await paymentFailed(
+          context: context,
+          paymentDetails: bookingPaymentDetails,
+          paymentMethod: paymentMode);
+    }
+  }
+
+  String bookingDateStart(String date) {
+    final DateTime parseDate =
+        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+    final DateTime inputDate = DateTime.parse(parseDate.toString());
+
+    final DateFormat outputFormatDate = DateFormat('yyyy-MM-dd HH:mm:ss');
+    final String bookingDateStart = outputFormatDate.format(inputDate);
+    return bookingDateStart;
+  }
+
+  String bookingDateEend(String date) {
+    final DateTime parseDate =
+        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+    final DateTime inputDate = DateTime.parse(parseDate.toString());
+    final DateTime addHour = inputDate.add(const Duration(hours: 1));
+    final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+    final String bookingDateEend = outputFormat.format(addHour);
+    return bookingDateEend;
+  }
+
   selectPaymentMethod({int selectedPaymentMode = 0}) {
-    debugPrint('select Payment Method');
     //please update price when api is integrated
-    final double price = 354;
     paymentMethod(
         context: context,
         onCreditCardSelected: (CardModel card) {
@@ -926,8 +1067,6 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     final String paymentMethodId =
         await StripeServices().createPaymentMethod(card);
 
-    debugPrint('Payment Method id: $paymentMethodId ');
-
     return paymentMethodId;
   }
 
@@ -941,17 +1080,16 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
       paymentMethodId = await createCreditCardPaymentMethodId();
     } else {
       /// For google pay and apple
-        String tokenId = '';
-      if(paymentMode =='Google Pay'){
+      String tokenId = '';
+      if (paymentMode == 'Google Pay') {
         tokenId = paymentMethodDetails['id'];
-
-      }else{
-        final TokenData tokenData  = paymentMethodDetails;
+      } else {
+        final TokenData tokenData = paymentMethodDetails;
         tokenId = tokenData.id;
       }
       //create payment method first
-      paymentMethodId = await StripeServices()
-          .createPaymentMethodFromToken(tokenId);
+      paymentMethodId =
+          await StripeServices().createPaymentMethodFromToken(tokenId);
     }
 
     //please update price when api is integrated
@@ -978,9 +1116,53 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
   ///save stripe payment intent to database
   Future<void> saveStripePaymentIntent(
       String paymentIntentId, String bookingRequestId) async {
-    final result = await APIServices()
+    final APIStandardReturnFormat result = await APIServices()
         .savePaymentIntent(paymentIntentId, bookingRequestId);
 
     debugPrint('Result ${result}');
   }
+
+  handleConfirmPayment(screenArgs) {
+    setState(() {
+      transactionNumber = GlobalMixin().generateTransactionNumber();
+    });
+
+
+    final int numberOfTraveller = screenArgs['numberOfTraveller'] as int;
+    final String  tourGuide = screenArgs['tourGuide'] as String;
+
+    setState(() {
+      bookingPaymentDetails = BookingPaymentDetails(
+          transactionNumber: transactionNumber,
+          price: price.toStringAsFixed(2),
+          serviceName: serviceName,
+          tour: activityPackage.name!,
+          tourGuide: tourGuide,
+          bookingDate: getTime(selectedDate),
+          numberOfPeople: numberOfTraveller);
+    });
+
+    confirmPaymentModal(
+        context: context,
+        paymentDetails: bookingPaymentDetails,
+        serviceName: serviceName,
+        paymentMode: paymentMode,
+        paymentMethod: paymentMethod,
+        onPaymentSuccessful: () {
+          /// Book Request
+        },
+        onConfirmPaymentPressed: () {
+          goToPaymentMethod(context, screenArgs);
+        },
+        price: price);
+  }
+
+  int getTotalHours(String selectedDate) {
+    final DateTime startDate = DateTime.parse(bookingDateStart(selectedDate));
+    final DateTime endDate = DateTime.parse(bookingDateEend(selectedDate));
+
+    return endDate.difference(startDate).inHours;
+  }
+
+
 }

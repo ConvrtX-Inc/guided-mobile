@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, unused_element, always_declare_return_types, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, curly_braces_in_flow_control_structures, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, avoid_catches_without_on_clauses, unnecessary_lambdas
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
@@ -186,6 +187,14 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     );
   }
 
+  // Format File Size
+  static String getFileSizeString({required int bytes, int decimals = 0}) {
+    if (bytes <= 0) return "0 Bytes";
+    const suffixes = [" Bytes", "KB", "MB", "GB", "TB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -218,6 +227,20 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               }
 
                               final File imageTemporary = File(image1.path);
+                              String file;
+                              int fileSize;
+                              file = getFileSizeString(
+                                  bytes: imageTemporary.lengthSync());
+                              fileSize = int.parse(
+                                  file.substring(0, file.indexOf('K')));
+                              if (fileSize >= 100) {
+                                AdvanceSnackBar(
+                                        message: ErrorMessageConstants
+                                            .imageFileToSize)
+                                    .show(context);
+                                Navigator.pop(context);
+                                return;
+                              }
                               setState(() {
                                 this.image1 = imageTemporary;
                                 _uploadCount += 1;
@@ -242,6 +265,20 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               }
 
                               final File imageTemporary = File(image1.path);
+                              String file;
+                              int fileSize;
+                              file = getFileSizeString(
+                                  bytes: imageTemporary.lengthSync());
+                              fileSize = int.parse(
+                                  file.substring(0, file.indexOf('K')));
+                              if (fileSize >= 100) {
+                                AdvanceSnackBar(
+                                        message: ErrorMessageConstants
+                                            .imageFileToSize)
+                                    .show(context);
+                                    Navigator.pop(context);
+                                return;
+                              }
                               setState(() {
                                 this.image1 = imageTemporary;
                                 _uploadCount += 1;
@@ -319,6 +356,20 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -342,6 +393,20 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   }
 
                                   final File imageTemporary = File(image2.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image2 = imageTemporary;
                                     _uploadCount += 1;
@@ -420,6 +485,20 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                     return;
                                   }
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -444,6 +523,20 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   }
 
                                   final File imageTemporary = File(image3.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  fileSize = int.parse(
+                                      file.substring(0, file.indexOf('K')));
+                                  if (fileSize >= 100) {
+                                    AdvanceSnackBar(
+                                            message: ErrorMessageConstants
+                                                .imageFileToSize)
+                                        .show(context);
+                                        Navigator.pop(context);
+                                    return;
+                                  }
                                   setState(() {
                                     this.image3 = imageTemporary;
                                     _uploadCount += 1;
@@ -711,7 +804,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       decoration: InputDecoration(
                         contentPadding:
                             EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                        hintText: AppTextConstants.province,
+                        hintText: AppTextConstants.provinceState,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
                         ),
@@ -848,7 +941,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                 print('validation failed');
               }
             },
-
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -1398,7 +1490,8 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         needAccessToken: true, data: finalJson);
   }
 
-  Future<void> advertisementDetail(double price , String serviceName , String transactionNumber , String mode) async {
+  Future<void> advertisementDetail(double price, String serviceName,
+      String transactionNumber, String mode) async {
     if (image1 == null) {
       AdvanceSnackBar(message: ErrorMessageConstants.advertisementImageEmpty)
           .show(context);
@@ -1469,7 +1562,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         await saveBulkImage(activityOutfitterId);
       }
 
-
       //Display payment successful when advertisement is created
       await paymentSuccessful(
           context: context,
@@ -1482,10 +1574,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
             await Navigator.pushReplacement(
                 context,
                 MaterialPageRoute<dynamic>(
-                    builder: (BuildContext context) => const MainNavigationScreen(
-                      navIndex: 1,
-                      contentIndex: 1,
-                    )));
+                    builder: (BuildContext context) =>
+                        const MainNavigationScreen(
+                          navIndex: 1,
+                          contentIndex: 1,
+                        )));
           },
           paymentDetails: PaymentDetails(
               serviceName: serviceName,
@@ -1552,7 +1645,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     }
   }
 
-
   ///Payment integration
   void handlePayment() {
     paymentSetDate(
@@ -1575,7 +1667,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
 
                 debugPrint('Mode $mode');
                 final String transactionNumber =
-                GlobalMixin().generateTransactionNumber();
+                    GlobalMixin().generateTransactionNumber();
                 confirmPaymentModal(
                     context: context,
                     serviceName: serviceName,
@@ -1584,8 +1676,8 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     price: price,
                     onPaymentSuccessful: () {
                       // API Integration for create advertisement..
-                      advertisementDetail(price, serviceName, transactionNumber, mode);
-
+                      advertisementDetail(
+                          price, serviceName, transactionNumber, mode);
                     },
                     onPaymentFailed: () {
                       paymentFailed(
