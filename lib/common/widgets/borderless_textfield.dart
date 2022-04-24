@@ -13,7 +13,9 @@ class BorderlessTextField extends StatelessWidget {
       this.description,
       this.controller,
       this.onSaved,
-      this.onValidate})
+      this.onValidate,
+      this.textInputType = TextInputType.text
+      })
       : super(key: key);
 
   /// Title of the textfield
@@ -36,6 +38,9 @@ class BorderlessTextField extends StatelessWidget {
 
   /// This textfield description
   final String? description;
+
+  ///Text input type
+  final TextInputType  textInputType;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +68,7 @@ class BorderlessTextField extends StatelessWidget {
         ),
         TextFormField(
           controller: controller,
+          keyboardType: textInputType,
 
           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
           onChanged: onChanged,

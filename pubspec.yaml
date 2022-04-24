@@ -97,6 +97,8 @@ dependencies:
 # flutter_expanded_tile: ^0.3.6
   awesome_dialog: ^2.2.0
   skeleton_text: ^3.0.0
+  firebase_core: ^1.13.1
+  firebase_storage: ^10.2.2
 
 
   # flutter_expanded_tile: ^0.3.6

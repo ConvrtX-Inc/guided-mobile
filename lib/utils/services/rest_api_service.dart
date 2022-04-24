@@ -269,7 +269,7 @@ class APIServices {
   Future<ProfileDetailsModel> getProfileData() async {
     final String url =
         '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/${UserSingleton.instance.user.user!.id}';
-
+debugPrint('URL $url');
     final http.Response response = await http.get(Uri.parse(url), headers: {
       HttpHeaders.authorizationHeader:
           'Bearer ${UserSingleton.instance.user.token}',
@@ -1155,5 +1155,24 @@ class APIServices {
     } else {
       return UserTransaction();
     }
+  }
+
+  ///Api Service for update profile
+  Future<APIStandardReturnFormat> updateProfile(
+      dynamic parameters) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.patch(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.getProfileDetails}/$userId'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          'content-type': 'application/json'
+        },
+        body: jsonEncode(parameters));
+
+    debugPrint('update profile response:: ${response.body}');
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 }

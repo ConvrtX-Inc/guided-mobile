@@ -1098,6 +1098,15 @@ class AppTextConstants {
 
  ///Returns number of people text
  static String numberOfPeople = 'Number of People';
+
+ ///Returns edit profile text
+ static String editProfile = 'Edit Profile';
+
+  ///Returns about me text
+  static String aboutMe = 'About Me';
+
+  ///Returns photos text
+ static String photos = 'Photos';
 }
 
 /// Class for error messages text
