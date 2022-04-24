@@ -269,7 +269,7 @@ class APIServices {
   Future<ProfileDetailsModel> getProfileData() async {
     final String url =
         '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/${UserSingleton.instance.user.user!.id}';
-
+    debugPrint('URL $url');
     final http.Response response = await http.get(Uri.parse(url), headers: {
       HttpHeaders.authorizationHeader:
           'Bearer ${UserSingleton.instance.user.token}',
@@ -496,6 +496,60 @@ class APIServices {
     }
 
     return EventImageModelData(eventImageDetails: details);
+  }
+
+  ///API Service for transactions
+  Future<APIStandardReturnFormat> getTransactions() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactions}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  ///API Service for Posts
+  Future<APIStandardReturnFormat> getPosts() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getPosts}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  ///API Service for transactions-byguide
+  Future<APIStandardReturnFormat> getTransactionsByGuide(int status) async {
+    var tour_guide_id = UserSingleton.instance.user.user!.id;
+    var statusName = "";
+    switch (status) {
+      case 0:
+        statusName = "all";
+        break;
+      case 1:
+        statusName = "completed";
+        break;
+      case 2:
+        statusName = "pending";
+        break;
+      case 3:
+        statusName = "rejected";
+        break;
+    }
+    var url = Uri.encodeFull(
+        '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/${tour_guide_id}\/${statusName}');
+    // var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/678036c1-9da6-43ae-bb21-253a5e9b54d5\/${statusName}');
+    // var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/21ca70b3-9eee-4285-9473-fb518caa67be\/${statusName}');
+    print("url2:" + url);
+    final http.Response response = await http.get(Uri.parse(url), headers: {
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+    });
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
   /// API service for getClosestActivity
@@ -1002,6 +1056,7 @@ class APIServices {
           'start_date': params.startDate,
           'end_date': params.endDate,
           'message': params.message,
+          'price': params.price
         }));
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
@@ -1222,5 +1277,58 @@ class APIServices {
         OutfitterModelData.fromJson(json.decode(response.body));
 
     return OutfitterModelData(outfitterDetails: dataSummary.outfitterDetails);
+  }
+
+  ///Api Service for update profile
+  Future<APIStandardReturnFormat> updateProfile(dynamic parameters) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.patch(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.getProfileDetails}/$userId'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          'content-type': 'application/json'
+        },
+        body: jsonEncode(parameters));
+
+    debugPrint('update profile response:: ${response.body}');
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for user  getting subscription
+
+  ///API Service for Retrieving User Subscription
+  Future<UserSubscription> getUserSubscription() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+    };
+
+    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/card', queryParameters)}');
+    debugPrint('params R$queryParameters');
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/user-subscription', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<UserSubscription> subscriptions = <UserSubscription>[];
+    for (final dynamic res in jsonData) {
+      final UserSubscription subscription = UserSubscription.fromJson(res);
+      subscriptions.add(subscription);
+    }
+    if (subscriptions.isNotEmpty) {
+      debugPrint('Subscrption ${subscriptions[0].id}');
+      return subscriptions[0];
+    } else {
+      debugPrint('No Subscrption');
+      return UserSubscription();
+    }
   }
 }

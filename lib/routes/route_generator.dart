@@ -92,12 +92,14 @@ import 'package:guided/screens/refunds/traveler/request_refund.dart';
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
+import 'package:guided/screens/settings/edit_profile.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
 import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
+import 'package:guided/screens/transaction_notifications/transaction_history_main.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
 
 import '../screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
@@ -315,7 +317,10 @@ class RouteGenerator {
             builder: (_) => const ReviewsProfileScreen());
       case '/payment':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const PaymentManageCard());
+            builder: (_) => const TabMapScreen(), settings: settings);
+      case '/transaction_history':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TransactionHistoryMain(), settings: settings);
       case '/':
         return MaterialPageRoute<dynamic>(builder: (_) => const Splash());
       case '/package_edit':
@@ -385,6 +390,10 @@ class RouteGenerator {
             builder: (_) => const HubEventView(), settings: settings);
       case '/discovery_hub_events':
         return MaterialPageRoute<dynamic>(builder: (_)=> const HubEventList());
+      case '/edit_profile':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const EditProfileScreen());
+
       default:
         return _errorRoute();
     }
