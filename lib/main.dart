@@ -17,7 +17,8 @@ import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-String _defaultHome = '/';
+String _defaultHome = '/test';
+// String _defaultHome = '/profile-edit';
 
 void main() async {
   await dotenv.load(fileName: '.env');

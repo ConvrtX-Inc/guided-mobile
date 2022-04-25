@@ -235,4 +235,6 @@ class AssetsPath {
 
   /// return icon verified
   static String iconVerified = 'assets/images/png/icon_verified.png';
+
+
 }
