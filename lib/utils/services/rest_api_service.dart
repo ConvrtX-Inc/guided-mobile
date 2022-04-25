@@ -15,6 +15,7 @@ import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
+import 'package:guided/models/badge.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/card_model.dart';
@@ -55,7 +56,7 @@ class APIServices {
 
   /// token
   final String staticToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJiN2NmNDM1LTQwOTAtNGEzOC1hYzVhLTUzNzA3ZTQ0YmMwMCIsImlhdCI6MTYzOTEwOTY4OSwiZXhwIjoxNjQwNDA1Njg5fQ._YUI1FFHJoF76NLb6JP02Q8HgLxnvKwG9V9PILnA-8U';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlYzI2ZTg4LTZkMGItNDQ5Ny1iMWMyLTA5MmE1NGI2NWE2MyIsImlhdCI6MTY1MDgxMzE4OSwiZXhwIjoxNjUyMTA5MTg5fQ.GlzWfI2toxK6hb0GNmp5OHZpX9dy-wBR9bI6Tm-NQPs';
 
   /// Getting the activity outfitter details
   Future<ActivityOutfitterModel> getActivityOutfitterDetails() async {
@@ -389,6 +390,7 @@ class APIServices {
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
+          // HttpHeaders.authorizationHeader: 'Bearer $staticToken',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -560,6 +562,7 @@ class APIServices {
       'Accept': '*/*',
       HttpHeaders.authorizationHeader:
           'Bearer ${UserSingleton.instance.user.token}',
+      // HttpHeaders.authorizationHeader: 'Bearer $staticToken',
     };
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
@@ -671,6 +674,27 @@ class APIServices {
     }
 
     return BadgeModelData(badgeDetails: details);
+  }
+
+  /// API service for all badges
+  Future<List<ActivityBadge>> getAllBadges() async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.badgesUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+          // HttpHeaders.authorizationHeader: 'Bearer $staticToken',
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
+    final List<ActivityBadge> badges = <ActivityBadge>[];
+    final badge =
+        (jsonData as List).map((i) => ActivityBadge.fromJson(i)).toList();
+    badges.addAll(badge);
+
+    return badges;
   }
 
   /// API service for get Popular guides
