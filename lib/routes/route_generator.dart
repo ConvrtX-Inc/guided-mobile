@@ -82,6 +82,8 @@ import 'package:guided/screens/packages/create_package/waiver_screen.dart';
 import 'package:guided/screens/payments/payment_add_card.dart';
 
 import 'package:guided/screens/profile/main_profile.dart';
+import 'package:guided/screens/profile/profile_details/about_me/screen/edit_profile.dart';
+import 'package:guided/screens/profile/profile_details/certificate/screen/certificate_screen.dart';
 import 'package:guided/screens/profile/reviews_profile.dart';
 
 import 'package:guided/screens/payments/payment_edit_card.dart';
@@ -103,6 +105,7 @@ import 'package:guided/screens/transaction_notifications/transaction_history_mai
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
 
 import '../screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
+import '../screens/main_navigation/settings/screens/settings_main.dart';
 import '../screens/main_navigation/traveller/booking_journey/check_activity_availability.dart';
 import '../screens/main_navigation/traveller/booking_journey/go_to_paymentmethod.dart';
 import '../screens/main_navigation/traveller/booking_journey/guide_screen.dart';
@@ -394,6 +397,16 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const EditProfileScreen());
 
+      ///Profile
+      case '/profile-certificate':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CertificateScreen());
+      case '/profile-edit':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const UpdateProfileScreen());
+      case '/test':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) =>  SettingsMain());
       default:
         return _errorRoute();
     }
