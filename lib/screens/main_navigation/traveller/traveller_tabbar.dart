@@ -5,8 +5,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/card_controller.dart';
+import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/controller/user_subscription_controller.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/screens/main_navigation/traveller/nearby_activities/nearby_activities.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides.dart';
@@ -35,7 +37,8 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
   late Widget _selectedWidget;
   final CardController _creditCardController = Get.put(CardController());
   final UserSubscriptionController _userSubscriptionController = Get.put(UserSubscriptionController());
-
+  final UserProfileDetailsController _profileDetailsController =
+  Get.put(UserProfileDetailsController());
   @override
   void initState() {
     _selectedWidget = TabHomeScreen(
@@ -108,6 +111,13 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
         _selectedWidget = const TabSettingsMain();
       }
     });
+  }
+
+
+  Future<void> getProfileDetails() async {
+    final ProfileDetailsModel res = await APIServices().getProfileData();
+
+    _profileDetailsController.setUserProfileDetails(res);
   }
 
   Future<void> getUserSubscription() async {

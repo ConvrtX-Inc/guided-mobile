@@ -1224,7 +1224,7 @@ class APIServices {
 
   ///Api service for Save Payment Intent (Booking Request)
   Future<APIStandardReturnFormat> savePaymentIntent(
-      String paymentIntentId, String bookingRequestId) async {
+      String paymentIntentId, String bookingRequestId, String paymentMethodId) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
@@ -1237,7 +1237,8 @@ class APIServices {
         body: jsonEncode({
           'user_id': userId,
           'booking_request_id': bookingRequestId,
-          'stripe_payment_intent_id': paymentIntentId
+          'stripe_payment_intent_id': paymentIntentId,
+          'stripe_payment_method_id': paymentMethodId
         }));
 
     debugPrint('save payment intent response:: ${response.body}');
@@ -1353,7 +1354,7 @@ class APIServices {
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
-  /// API service for user  getting subscription
+
 
   ///API Service for Retrieving User Subscription
   Future<UserSubscription> getUserSubscription() async {
@@ -1480,5 +1481,168 @@ class APIServices {
     } else {
       return UserProfileImage();
     }
+  }
+
+
+  /// API service for  stripe setup
+  Future<String> createStripeAccount(ProfileDetailsModel params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint('Response::: ${ Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/account/create-stripe-account')} ');
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/account/create-stripe-account'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'email': params.email,
+          'country': 'CA',
+          'company_name': params.fullName,
+          'first_name': params.firstName,
+          'last_name': params.lastName,
+          'phone': params.phoneNumber,
+          'product_description': 'Provide tour services'
+        }));
+
+     debugPrint('Response ${response.body}');
+
+     return response.body;
+  }
+
+  /// API service for  stripe account link
+  Future<String> getOnboardAccountLink(String accountId) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    debugPrint('on board Response::: ${ Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/account/on-board-account')} ');
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/account/on-board-account'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'account_id': accountId,
+
+        }));
+
+    debugPrint('Response  Account id $accountId ${response.body}');
+    final jsonData = jsonDecode(response.body);
+    return jsonData['url'];
+  }
+
+  /// API service add bank account to stripe
+  Future<String> addBankAccountToStripeAccount(String accountId,String bankToken) async {
+    final String? token = UserSingleton.instance.user.token;
+
+     final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/account/connect-bank-to-account'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'account_id': accountId,
+          'external_account' : bankToken
+        }));
+
+    debugPrint('Response Bank Account Account id $accountId ${response.body}');
+    final jsonData = jsonDecode(response.body);
+    return jsonData['id'];
+  }
+
+
+  ///API Service for Retrieving payment intent booking request
+  Future<dynamic> getPaymentIntentId(String bookingRequestId) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    final Map<String, String> queryParameters = {
+      'filter': 'booking_request_id||eq||"$bookingRequestId"',
+    };
+
+     debugPrint('params R$queryParameters');
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/payment-intent', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    debugPrint('Data ${jsonData[0]}')  ;
+
+    return jsonData[0];
+  }
+
+
+  ///API Service for create transfer payment intent
+  Future<dynamic> createTransferPaymentIntent(String accountId , double totalServiceAmount , double applicationFee , String payeeEmail) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/transfer'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'account': 'acct_1KsRG9QSUgDLrVAX',
+          'total_service_amount': totalServiceAmount.toString(),
+          'transfer_money': applicationFee.toString(),
+          'payee_email': payeeEmail
+        }));
+
+    debugPrint('Response Payment Intent :: ${response.body}');
+    final jsonData = jsonDecode(response.body);
+    return jsonData['paymentIntent'];
+  }
+
+  ///API Service for charging payment booking request
+  Future<dynamic> chargeBookingPayment(String paymentIntentId , String paymentMethodId) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/transfer/confirm-transfer'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'payment_method_id': paymentMethodId,
+          'payment_intent_id' : paymentIntentId
+        }));
+
+    debugPrint('Response Payment :: ${response.body}');
+    final jsonData = jsonDecode(response.body);
+    return jsonData['id'];
+  }
+
+  ///API Service for Getting Booking Transaction
+  Future<UserTransaction> getBookingTransaction(String packageId, String userId) async {
+    final String? token = UserSingleton.instance.user.token;
+    // final String? userId = UserSingleton.instance.user.user?.id;
+
+    final Map<String, String> queryParameters = {
+      'filter[0]': 'user_id||eq||"$userId"',
+      'filter[1]': 'activity_package_id||eq||"$packageId"',
+    };
+
+     debugPrint('params R$queryParameters');
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/transactions', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+
+
+    UserTransaction transaction = UserTransaction();
+    final dynamic jsonData = jsonDecode(response.body);
+
+     transaction = UserTransaction.fromJson(jsonData[0]);
+    //
+    // debugPrint('Transaction ${transaction.id }');
+    return transaction;
   }
 }

@@ -4,12 +4,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:get/get.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
 import 'package:guided/screens/payments/payment_failed.dart';
@@ -51,6 +54,9 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
   ActivityPackage activityPackage = ActivityPackage();
   String selectedDate = '';
 
+  final UserProfileDetailsController _profileDetailsController =
+  Get.put(UserProfileDetailsController());
+
   @override
   void initState() {
     super.initState();
@@ -66,6 +72,8 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     selectedDate = screenArguments['selectedDate'] as String;
 
     price = getTotalHours(selectedDate) * double.parse(activityPackage.basePrice!);
+
+
 
 
     return Scaffold(
@@ -971,9 +979,11 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
         transactionNumber: transactionNumber,
         total: price.toString());
 
-    final String paymentIntent = await handlePayment(price);
+    // final String paymentIntent = await handlePayment(price);
+    final String paymentMethodId = await handlePayment(price);
 
-    if (paymentIntent.isNotEmpty) {
+
+    if (paymentMethodId.isNotEmpty) {
       await APIServices()
           .requestBooking(details)
           .then((APIStandardReturnFormat value) async {
@@ -985,7 +995,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
               await APIServices().addUserTransaction(transactionDetails);
 
           ///Save payment intent here
-          await saveStripePaymentIntent(paymentIntent, result['id']);
+          await saveStripePaymentIntent('paymentIntent', result['id'],paymentMethodId);
 
           Navigator.pop(context);
           await paymentSuccessful(
@@ -1093,12 +1103,14 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     }
 
     //please update price when api is integrated
-    final int amount = (price * 100).round();
+    /*final int amount = (price * 100).round();
 
     final String paymentIntentId =
         await createPaymentIntent(amount, paymentMethodId);
 
-    return paymentIntentId;
+    return paymentIntentId;*/
+
+    return paymentMethodId;
   }
 
   ///Create Payment Intent Stripe
@@ -1115,9 +1127,9 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
 
   ///save stripe payment intent to database
   Future<void> saveStripePaymentIntent(
-      String paymentIntentId, String bookingRequestId) async {
+      String paymentIntentId, String bookingRequestId,String paymentMethodId) async {
     final APIStandardReturnFormat result = await APIServices()
-        .savePaymentIntent(paymentIntentId, bookingRequestId);
+        .savePaymentIntent(paymentIntentId, bookingRequestId,paymentMethodId);
 
     debugPrint('Result ${result}');
   }
