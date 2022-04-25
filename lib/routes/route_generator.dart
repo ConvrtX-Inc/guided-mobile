@@ -266,7 +266,7 @@ class RouteGenerator {
             builder: (_) => const RequestFilterScreen());
       case '/request_view':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const RequestViewScreen());
+            builder: (_) => const RequestViewScreen(), settings: settings);
       case '/discovery':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const DiscoveryScreen(), settings: settings);
@@ -392,7 +392,7 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const HubEventView(), settings: settings);
       case '/discovery_hub_events':
-        return MaterialPageRoute<dynamic>(builder: (_)=> const HubEventList());
+        return MaterialPageRoute<dynamic>(builder: (_) => const HubEventList());
       case '/edit_profile':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const EditProfileScreen());

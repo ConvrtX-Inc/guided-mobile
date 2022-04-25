@@ -84,6 +84,9 @@ class AppAPIPath {
   /// Returns profile details
   static String getProfileDetails = 'api/v1/users';
 
+  /// Returns booking request
+  static String getBookingRequest = 'api/v1/booking-requests';
+
   /// Returns currencies url
   static String getCurrencies = 'api/v1/currencies';
 
