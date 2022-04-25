@@ -146,4 +146,7 @@ class AppColors {
 
   ///hex color for islandSpice
  static HexColor islandSpice = HexColor('#FFFAED');
+
+ ///Certificate first aid tag
+ static HexColor firstAidTag = HexColor('#979B9B');
 }

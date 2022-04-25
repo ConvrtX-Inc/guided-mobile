@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart';
 import 'package:guided/models/preset_form_model.dart';
+import 'package:guided/routes/route_generator.dart';
 import 'package:guided/screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -43,6 +44,9 @@ class _SettingsItemsState extends State<SettingsItems> {
               builder: (BuildContext context) =>
                   const SettingsCalendarManagement(),
             );
+            break;
+          case 'transaction_history':
+            Navigator.pushNamed(context, '/transaction_history');
             break;
           case 'contact_us':
             Navigator.pushNamed(context, '/contact_us');
