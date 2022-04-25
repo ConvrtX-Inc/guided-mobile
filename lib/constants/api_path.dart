@@ -16,7 +16,6 @@ class AppAPIPath {
   /// Returns API base url
   static String apiBaseUrl = getBaseUrl(mode);
 
-
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
 
@@ -136,10 +135,13 @@ class AppAPIPath {
 
   /// Returns transactions
   static String getTransactions = 'api/v1/transactions';
+
   /// Returns posts
   static String getPosts = 'api/v1/activity-post';
+
   ///Return transactions by-guide
-  static String getTransactionsByGuide = 'api/v1/transactions/byguide/transaction';
+  static String getTransactionsByGuide =
+      'api/v1/transactions/byguide/transaction';
 
   /// Returns terms and condition url
   static String getTermsAndCondtion = 'api/v1/terms-and-conditons';
@@ -180,10 +182,10 @@ class AppAPIPath {
   static String activityAvailability = 'api/v1/activity-availabilities';
 
   ///Returns payment intent url
- static String paymentIntentUrl = 'api/v1/payment-intent';
+  static String paymentIntentUrl = 'api/v1/payment-intent';
 
- ///Returns user transactions url
- static String userTransactionsUrl = 'api/v1/transactions';
+  ///Returns user transactions url
+  static String userTransactionsUrl = 'api/v1/transactions';
 }
 
 ///Get Api Base Url
@@ -196,5 +198,4 @@ getBaseUrl(String mode) {
     case 'staging':
       return 'guided-api-staging.herokuapp.com';
   }
-
 }

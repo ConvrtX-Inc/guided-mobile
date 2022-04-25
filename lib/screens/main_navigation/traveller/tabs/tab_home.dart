@@ -811,7 +811,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                       width: 2.w,
                                     ),
                                     Text(
-                                      snapshot.data![index].timeToTravel!,
+                                      // snapshot.data![index].timeToTravel!,
+                                      '0.0 hour drive',
                                       style: TextStyle(
                                           color: HexColor('#696D6D'),
                                           fontSize: 11.sp,
@@ -1118,9 +1119,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else {
                       return GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/popular_guides_list');
-                        },
+                        onTap: _settingModalBottomSheet,
                         child: ListView(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
@@ -1275,18 +1274,18 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   SizedBox(
                     height: 5.h,
                   ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: AppTextStyle.active,
-                      child: const Text(
-                        'Learn more',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 12),
-                      ),
-                    ),
-                  ),
+                  // SizedBox(
+                  //   width: MediaQuery.of(context).size.width * 0.3,
+                  //   child: ElevatedButton(
+                  //     onPressed: () {},
+                  //     style: AppTextStyle.active,
+                  //     child: const Text(
+                  //       'Learn more',
+                  //       style: TextStyle(
+                  //           fontWeight: FontWeight.bold, fontSize: 12),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               )),
         ],
@@ -1303,7 +1302,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
       ),
       expand: false,
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       builder: (BuildContext context) => const PopularGuidesList(),
     );
   }

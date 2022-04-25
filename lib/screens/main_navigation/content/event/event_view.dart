@@ -465,7 +465,7 @@ class _EventViewState extends State<EventView> {
                       width: 10.w,
                     ),
                     Text(
-                      '(67 Reviews)',
+                      '(1 Reviews)',
                       style: AppTextStyle.greyStyle,
                     ),
                   ],

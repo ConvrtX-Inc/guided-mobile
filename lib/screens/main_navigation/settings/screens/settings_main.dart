@@ -3,9 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/profile_photos_controller.dart';
+import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/settings.dart';
 import 'package:guided/screens/main_navigation/settings/widgets/settings_items.dart';
@@ -33,16 +36,24 @@ class _SettingsMainState extends State<SettingsMain>
   bool get wantKeepAlive => true;
   final storage = new FlutterSecureStorage();
 
+
   /// Get settings items mocked data
   final List<SettingsModel> settingsItems =
       SettingsUtils.getMockedDataSettings();
 
   late Future<ProfileDetailsModel> _loadingData;
 
+  final UserProfileDetailsController _profileDetailsController =
+  Get.put(UserProfileDetailsController());
+
+  bool isLoading = false;
+
   @override
   void initState() {
-    _loadingData = APIServices().getProfileData();
+    // _loadingData = APIServices().getProfileData();
     super.initState();
+
+    getProfileDetails();
   }
 
   @override
@@ -75,8 +86,8 @@ class _SettingsMainState extends State<SettingsMain>
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-              child: Row(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
+                /* child: Row(
                 children: <Widget>[
                   Container(
                     decoration: BoxDecoration(
@@ -95,7 +106,7 @@ class _SettingsMainState extends State<SettingsMain>
                       backgroundColor: Colors.white,
                       radius: 35.r,
                       backgroundImage: const AssetImage(
-                          '${AssetsPath.assetsPNGPath}/student_profile.png'),
+                          '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
                     ),
                   ),
                   const SizedBox(
@@ -143,8 +154,54 @@ class _SettingsMainState extends State<SettingsMain>
                     },
                   ),
                 ],
-              ),
-            ),
+              ),*/
+                child: GetBuilder<UserProfileDetailsController>(
+                    builder: (UserProfileDetailsController _controller) {
+                  return Row(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 3.w,
+                          ),
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: const <BoxShadow>[
+                            BoxShadow(
+                                blurRadius: 5,
+                                color: Colors.grey,
+                                spreadRadius: 2)
+                          ],
+                        ),
+                        child: _controller.userProfileDetails.firebaseProfilePicUrl.isEmpty ?  CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 35.r,
+                          backgroundImage: const AssetImage(
+                              '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
+                        ) :CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 35.r,
+                          backgroundImage: NetworkImage(_controller.userProfileDetails.firebaseProfilePicUrl),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 24,
+                      ),
+                      Expanded(
+                          child:
+                              buildProfileData(_controller.userProfileDetails)),
+                      IconButton(
+                        icon: const Icon(Icons.navigate_next),
+                        iconSize: 36,
+                        color: Colors.black,
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/profile');
+                        },
+                      ),
+                    ],
+                  );
+                })),
             Divider(
               thickness: 1,
               color: AppColors.platinum,
@@ -209,23 +266,32 @@ class _SettingsMainState extends State<SettingsMain>
             if (profileData.fullName.isEmpty)
               const Text('Unknown User')
             else
-                Column(
-                  children: <Widget>[
-                    Text(
-                      profileData.fullName,
+              Column(
+                children: <Widget>[
+                  Text(
+                    profileData.fullName,
+                    style: TextStyle(
+                        letterSpacing: 1,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  Text(profileData.email,
                       style: TextStyle(
-                          letterSpacing: 1,
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Text(profileData.email,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.grey))
-                  ],
-                )
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.grey))
+                ],
+              )
           ]);
+
+  Future<void> getProfileDetails() async {
+    final ProfileDetailsModel res = await APIServices().getProfileData();
+    debugPrint('Profile:: ${res.id}');
+    setState(() {
+      isLoading = false;
+    });
+    _profileDetailsController.setUserProfileDetails(res);
+  }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

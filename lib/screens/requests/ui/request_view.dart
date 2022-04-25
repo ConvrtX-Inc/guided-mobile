@@ -216,31 +216,31 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                   const SizedBox(
                                     width: 5,
                                   ),
-                                  Text(
-                                    '1 - 9',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.tropicalRainForest,
-                                        fontSize: 14.sp,),
-                                  ),
+                                  // Text(
+                                  //   '1 - 9',
+                                  //   style: TextStyle(
+                                  //       fontWeight: FontWeight.w500,
+                                  //       color: AppColors.tropicalRainForest,
+                                  //       fontSize: 14.sp,),
+                                  // ),
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              width: 50,
-                              height: 30,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  shape: const CircleBorder(),
-                                  primary: Colors.white, // <-- Button color
-                                  onPrimary: Colors.grey, // <-- Splash color
-                                ),
-                                child: Icon(Icons.edit,
-                                    size: 15,
-                                    color: AppColors.tropicalRainForest),
-                              ),
-                            )
+                            // SizedBox(
+                            //   width: 50,
+                            //   height: 30,
+                            //   child: ElevatedButton(
+                            //     onPressed: () {},
+                            //     style: ElevatedButton.styleFrom(
+                            //       shape: const CircleBorder(),
+                            //       primary: Colors.white, // <-- Button color
+                            //       onPrimary: Colors.grey, // <-- Splash color
+                            //     ),
+                            //     child: Icon(Icons.edit,
+                            //         size: 15,
+                            //         color: AppColors.tropicalRainForest),
+                            //   ),
+                            // )
                           ],
                         ),
                       )
@@ -273,58 +273,58 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                       fontWeight: FontWeight.w400),
                 ),
               ),
-              SizedBox(
-                height: 40.h,
-              ),
-              Center(
-                child: SizedBox(
-                  width: 315.w,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                            const EdgeInsets.all(20)),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(AppColors.spruce),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.r),
-                        ))),
-                    child: Text(
-                      AppTextConstants.acceptRequest,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-              Center(
-                child: SizedBox(
-                  width: 315.w,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                        primary: Colors.transparent),
-                    child: Text(
-                      AppTextConstants.rejectRequest,
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontFamily: 'Gilroy',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
+              // SizedBox(
+              //   height: 40.h,
+              // ),
+              // Center(
+              //   child: SizedBox(
+              //     width: 315.w,
+              //     child: ElevatedButton(
+              //       style: ButtonStyle(
+              //           padding: MaterialStateProperty.all<EdgeInsets>(
+              //               const EdgeInsets.all(20)),
+              //           backgroundColor:
+              //               MaterialStateProperty.all<Color>(AppColors.spruce),
+              //           shape:
+              //               MaterialStateProperty.all<RoundedRectangleBorder>(
+              //                   RoundedRectangleBorder(
+              //             borderRadius: BorderRadius.circular(18.r),
+              //           ))),
+              //       child: Text(
+              //         AppTextConstants.acceptRequest,
+              //         style: TextStyle(
+              //           fontSize: 16.sp,
+              //           fontWeight: FontWeight.w700,
+              //         ),
+              //       ),
+              //       onPressed: () {},
+              //     ),
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 10.h,
+              // ),
+              // Center(
+              //   child: SizedBox(
+              //     width: 315.w,
+              //     child: ElevatedButton(
+              //       style: ElevatedButton.styleFrom(
+              //           elevation: 0,
+              //           shadowColor: Colors.transparent,
+              //           primary: Colors.transparent),
+              //       child: Text(
+              //         AppTextConstants.rejectRequest,
+              //         style: TextStyle(
+              //           color: Colors.red,
+              //           fontFamily: 'Gilroy',
+              //           fontSize: 16.sp,
+              //           fontWeight: FontWeight.w700,
+              //         ),
+              //       ),
+              //       onPressed: () {},
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

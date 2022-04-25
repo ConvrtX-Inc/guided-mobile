@@ -74,55 +74,55 @@ class StaticDataService {
   static List<Activity> getActivityForNearybyGuides() {
     return <Activity>[
       Activity(
-          id: '1',
+          id: 'd54b5cc7-ef50-496b-a01b-0b18a7fdcd3b',
           name: 'Camping',
           path: 'assets/images/png/activity_icon5.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/png/activity3.png'),
       Activity(
-          id: '2',
+          id: 'c2d31a67-9ad5-477e-bcb2-465710777525',
           name: 'Hiking',
           path: 'assets/images/png/activity_icon6.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/jpg/hiking.jpg'),
       Activity(
-          id: '3',
+          id: '11bbd0ab-9a5a-4a60-9d79-698ac8933084',
           name: 'Hunt',
           path: 'assets/images/png/activity_icon0.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/png/activity1.png'),
       Activity(
-          id: '4',
+          id: 'cd434cbb-9f93-4c98-a84d-249c76d85282',
           name: 'Fishing',
           path: 'assets/images/png/activity_icon7.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/jpg/fishing.jpg'),
       Activity(
-          id: '5',
+          id: 'd283aa50-dccf-4b76-a254-a402c37abebf',
           name: 'ECO Tour',
           path: 'assets/images/png/activity_icon2.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/jpg/eco_tour.jpg'),
       Activity(
-          id: '6',
+          id: 'dc777b8a-de31-413e-b5c1-9fc2a72df353',
           name: 'Retreat',
           path: 'assets/images/png/activity_icon3.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/jpg/retreat.jpg'),
       Activity(
-          id: '7',
+          id: 'a74618c0-8b12-4d3d-98a1-f62df5ed2513',
           name: 'Paddle Spot',
           path: 'assets/images/png/activity_icon4.png',
           distance: '4.5 hours drive',
           featureImage: 'assets/images/png/activity2.png'),
       Activity(
-          id: '8',
+          id: '19eeab58-762c-400e-ba26-4fdc02b43a20',
           name: 'Discovery',
           path: 'assets/images/png/activity_icon1.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/png/activity1.png'),
       Activity(
-          id: '9',
+          id: 'fb65f344-5d04-4c90-baac-3a7bf5fc6702',
           name: 'Motor',
           path: 'assets/images/png/activity_icon9.png',
           distance: '3.5 hours drive',
@@ -186,7 +186,7 @@ class StaticDataService {
           name: 'Sasha Cruz',
           path: AssetsPath.paddle,
           distance: '12 KM  distance',
-          featureImage: 'assets/images/png/guide2.png'),
+          featureImage: 'assets/images/png/pmessage3.png'),
     ];
   }
 

@@ -288,7 +288,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                     width: 15.w,
                   ),
                   Text(
-                    '(67 Reviews)',
+                    '(1 Reviews)',
                     style: TextStyle(
                         fontFamily: 'Gilroy',
                         fontSize: 14.sp,

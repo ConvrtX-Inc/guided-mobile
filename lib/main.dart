@@ -1,5 +1,6 @@
 // ignore_for_file: always_specify_types
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -16,9 +17,10 @@ import 'package:guided/screens/main_navigation/home/screens/home_main.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'firebase/firebase_options.dart';
 
-String _defaultHome = '/test';
-// String _defaultHome = '/profile-edit';
+
+String _defaultHome = '/';
 
 void main() async {
   await dotenv.load(fileName: '.env');
@@ -26,9 +28,15 @@ void main() async {
   SystemChrome.setEnabledSystemUIOverlays(
       [SystemUiOverlay.bottom, SystemUiOverlay.top]);
 
-  Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
+  Stripe.publishableKey =
+      dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
   Stripe.instance.applySettings();
+
+  await Firebase.initializeApp(
+      name: 'Guided',
+      options: DefaultFirebaseConfig.platformOptions);
   runApp(const MyApp());
+
 
   initializeDateFormatting().then((_) => runApp(const MyApp()));
 }
@@ -46,9 +54,11 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
+
           return const MaterialApp(
               // home: Splash(),
               );
+
         } else {
           return ScreenUtilInit(
             builder: () => KeyboardDismissOnTap(

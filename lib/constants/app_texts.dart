@@ -1096,8 +1096,17 @@ class AppTextConstants {
   ///Returns tour guide text
   static String tourGuide = 'Tour Guide';
 
-  ///Returns number of people text
-  static String numberOfPeople = 'Number of People';
+ ///Returns number of people text
+ static String numberOfPeople = 'Number of People';
+
+ ///Returns edit profile text
+ static String editProfile = 'Edit Profile';
+
+  ///Returns about me text
+  static String aboutMe = 'About Me';
+
+  ///Returns photos text
+ static String photos = 'Photos';
 
   ///Returns you've got an adventure request! text
   static String adventureRequest = "You've got an Adventure Request!";

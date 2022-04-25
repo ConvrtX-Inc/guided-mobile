@@ -2,11 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/activity_availability_hours_model.dart';
+import 'package:guided/models/activity_availability_model.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Popular Guides Traveler Limit Schedules
 class PopularGuidesTravelerLimitSchedules extends StatefulWidget {
   /// Constructor
-  const PopularGuidesTravelerLimitSchedules({Key? key}) : super(key: key);
+  const PopularGuidesTravelerLimitSchedules(
+      {Key? key, required this.packageId, required this.price})
+      : super(key: key);
+
+  final String packageId;
+  final String price;
 
   @override
   State<PopularGuidesTravelerLimitSchedules> createState() =>
@@ -14,7 +22,36 @@ class PopularGuidesTravelerLimitSchedules extends StatefulWidget {
 }
 
 class _PopularGuidesTravelerLimitSchedulesState
-    extends State<PopularGuidesTravelerLimitSchedules> {
+    extends State<PopularGuidesTravelerLimitSchedules>
+    with AutomaticKeepAliveClientMixin<PopularGuidesTravelerLimitSchedules> {
+  @override
+  bool get wantKeepAlive => true;
+  String date = 'Loading...';
+  String time = 'Loading...';
+  int slots = 0;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      List<ActivityAvailability> resAvailabilityDate =
+          await APIServices().getActivityAvailability(widget.packageId);
+      List<ActivityAvailabilityHour> resAvailabilityTime = await APIServices()
+          .getActivityAvailabilityHour(resAvailabilityDate[0].id);
+
+      DateTime? tempDate = resAvailabilityTime[0].availability_date_hour;
+
+      setState(() {
+        slots = resAvailabilityTime[0].slots;
+        date = '${tempDate!.month}. ${tempDate.day}. ${tempDate.year}';
+        if (tempDate.hour <= 11) {
+          time = '${tempDate.hour}:00 AM to ${tempDate.hour + 1} AM';
+        } else {
+          time = '${tempDate.hour}:00 PM to ${tempDate.hour + 1} PM';
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +85,7 @@ class _PopularGuidesTravelerLimitSchedulesState
                   borderRadius: BorderRadius.circular(20.r)),
               child: Center(
                 child: Text(
-                  '23/25',
+                  slots.toString(),
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
@@ -85,7 +122,7 @@ class _PopularGuidesTravelerLimitSchedulesState
                   borderRadius: BorderRadius.circular(20.r)),
               child: Center(
                 child: Text(
-                  '7:00 AM to 11:00 AM',
+                  time,
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
@@ -122,7 +159,7 @@ class _PopularGuidesTravelerLimitSchedulesState
                   borderRadius: BorderRadius.circular(20.r)),
               child: Center(
                 child: Text(
-                  '12. 08. 2021',
+                  date,
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
@@ -159,7 +196,7 @@ class _PopularGuidesTravelerLimitSchedulesState
                   borderRadius: BorderRadius.circular(20.r)),
               child: Center(
                 child: Text(
-                  '\$90',
+                  '\$${widget.price}',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
