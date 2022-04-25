@@ -9,7 +9,9 @@ class ActivityPackage {
   String? packageNote;
   String? name;
   String? description;
+  bool? premiumUser;
   String? coverImg;
+  String? activityDate;
   int? maxTraveller;
   int? minTraveller;
   String? country;
@@ -18,6 +20,8 @@ class ActivityPackage {
   String? createdDate;
   String? updatedDate;
   String? basePrice;
+  String? maxPrice;
+  String? packageTotalCost;
   String? extraCostPerPerson;
   int? maxExtraPerson;
   String? currencyId;
@@ -25,10 +29,9 @@ class ActivityPackage {
   bool? isPublished;
   bool? isPost;
   Null? deletedAt;
-  Destination? destination;
   String? sEntity;
-  String? distance;
-  String? timeToTravel;
+  MainBadge? mainBadge;
+  ActivityPackageDestination? activityPackageDestination;
 
   ActivityPackage(
       {this.id,
@@ -38,7 +41,9 @@ class ActivityPackage {
       this.packageNote,
       this.name,
       this.description,
+      this.premiumUser,
       this.coverImg,
+      this.activityDate,
       this.maxTraveller,
       this.minTraveller,
       this.country,
@@ -47,6 +52,8 @@ class ActivityPackage {
       this.createdDate,
       this.updatedDate,
       this.basePrice,
+      this.maxPrice,
+      this.packageTotalCost,
       this.extraCostPerPerson,
       this.maxExtraPerson,
       this.currencyId,
@@ -54,10 +61,9 @@ class ActivityPackage {
       this.isPublished,
       this.isPost,
       this.deletedAt,
-      this.destination,
       this.sEntity,
-      this.distance,
-      this.timeToTravel});
+      this.mainBadge,
+      this.activityPackageDestination});
 
   ActivityPackage.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -67,7 +73,9 @@ class ActivityPackage {
     packageNote = json['package_note'];
     name = json['name'];
     description = json['description'];
+    premiumUser = json['premium_user'];
     coverImg = json['cover_img'];
+    activityDate = json['activity_date'];
     maxTraveller = json['max_traveller'];
     minTraveller = json['min_traveller'];
     country = json['country'];
@@ -76,6 +84,8 @@ class ActivityPackage {
     createdDate = json['created_date'];
     updatedDate = json['updated_date'];
     basePrice = json['base_price'];
+    maxPrice = json['max_price'];
+    packageTotalCost = json['package_total_cost'];
     extraCostPerPerson = json['extra_cost_per_person'];
     maxExtraPerson = json['max_extra_person'];
     currencyId = json['currency_id'];
@@ -83,12 +93,14 @@ class ActivityPackage {
     isPublished = json['is_published'];
     isPost = json['is_post'];
     deletedAt = json['deletedAt'];
-    destination = json['destination'] != null
-        ? new Destination.fromJson(json['destination'])
-        : null;
     sEntity = json['__entity'];
-    distance = json['distance'];
-    timeToTravel = json['time_to_travel'];
+    mainBadge = json['main_badge'] != null
+        ? new MainBadge.fromJson(json['main_badge'])
+        : null;
+    activityPackageDestination = json['activity_package_destination'] != null
+        ? new ActivityPackageDestination.fromJson(
+            json['activity_package_destination'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -100,7 +112,9 @@ class ActivityPackage {
     data['package_note'] = this.packageNote;
     data['name'] = this.name;
     data['description'] = this.description;
+    data['premium_user'] = this.premiumUser;
     data['cover_img'] = this.coverImg;
+    data['activity_date'] = this.activityDate;
     data['max_traveller'] = this.maxTraveller;
     data['min_traveller'] = this.minTraveller;
     data['country'] = this.country;
@@ -109,6 +123,8 @@ class ActivityPackage {
     data['created_date'] = this.createdDate;
     data['updated_date'] = this.updatedDate;
     data['base_price'] = this.basePrice;
+    data['max_price'] = this.maxPrice;
+    data['package_total_cost'] = this.packageTotalCost;
     data['extra_cost_per_person'] = this.extraCostPerPerson;
     data['max_extra_person'] = this.maxExtraPerson;
     data['currency_id'] = this.currencyId;
@@ -116,129 +132,124 @@ class ActivityPackage {
     data['is_published'] = this.isPublished;
     data['is_post'] = this.isPost;
     data['deletedAt'] = this.deletedAt;
-    if (this.destination != null) {
-      data['destination'] = this.destination!.toJson();
-    }
     data['__entity'] = this.sEntity;
-    data['distance'] = this.distance;
-    data['time_to_travel'] = this.timeToTravel;
+    if (this.mainBadge != null) {
+      data['main_badge'] = this.mainBadge!.toJson();
+    }
+    if (this.activityPackageDestination != null) {
+      data['activity_package_destination'] =
+          this.activityPackageDestination!.toJson();
+    }
     return data;
   }
 }
 
-class Destination {
+class MainBadge {
   String? id;
-  String? activityPackageId;
-  String? placeName;
-  String? placeDescription;
-  String? latitude;
-  String? longitude;
-  String? createdDate;
-  String? updatedDate;
+  String? badgeName;
+  String? badgeDescription;
+  String? imgIcon;
+  bool? isMainActivity;
+  bool? isSubActivity;
   Null? deletedAt;
-  DestinationImage? destinationImage;
+  String? sEntity;
 
-  Destination(
+  MainBadge(
       {this.id,
-      this.activityPackageId,
-      this.placeName,
-      this.placeDescription,
-      this.latitude,
-      this.longitude,
-      this.createdDate,
-      this.updatedDate,
+      this.badgeName,
+      this.badgeDescription,
+      this.imgIcon,
+      this.isMainActivity,
+      this.isSubActivity,
       this.deletedAt,
-      this.destinationImage});
+      this.sEntity});
 
-  Destination.fromJson(Map<String, dynamic> json) {
+  MainBadge.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    activityPackageId = json['activity_package_id'];
-    placeName = json['place_name'];
-    placeDescription = json['place_description'];
-    latitude = json['latitude'];
-    longitude = json['longitude'];
-    createdDate = json['created_date'];
-    updatedDate = json['updated_date'];
+    badgeName = json['badge_name'];
+    badgeDescription = json['badge_description'];
+    imgIcon = json['img_icon'];
+    isMainActivity = json['is_main_activity'];
+    isSubActivity = json['is_sub_activity'];
     deletedAt = json['deletedAt'];
-    destinationImage = json['destinationImage'] != null
-        ? new DestinationImage.fromJson(json['destinationImage'])
-        : null;
+    sEntity = json['__entity'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['activity_package_id'] = this.activityPackageId;
-    data['place_name'] = this.placeName;
-    data['place_description'] = this.placeDescription;
-    data['latitude'] = this.latitude;
-    data['longitude'] = this.longitude;
-    data['created_date'] = this.createdDate;
-    data['updated_date'] = this.updatedDate;
+    data['badge_name'] = this.badgeName;
+    data['badge_description'] = this.badgeDescription;
+    data['img_icon'] = this.imgIcon;
+    data['is_main_activity'] = this.isMainActivity;
+    data['is_sub_activity'] = this.isSubActivity;
     data['deletedAt'] = this.deletedAt;
-    if (this.destinationImage != null) {
-      data['destinationImage'] = this.destinationImage!.toJson();
-    }
+    data['__entity'] = this.sEntity;
     return data;
   }
 }
 
-class DestinationImage {
-  String? id;
-  String? activityPackageDestinationId;
-  SnapshotImg? snapshotImg;
-  String? createdDate;
-  String? updatedDate;
-  Null? deletedAt;
+class ActivityPackageDestination {
+  String? activitypackagedestinationId;
+  String? activitypackagedestinationActivityPackageId;
+  String? activitypackagedestinationPlaceName;
+  String? activitypackagedestinationPlaceDescription;
+  String? activitypackagedestinationLatitude;
+  String? activitypackagedestinationLongitude;
+  String? activitypackagedestinationCreatedDate;
+  String? activitypackagedestinationUpdatedDate;
+  Null? activitypackagedestinationDeletedAt;
 
-  DestinationImage(
-      {this.id,
-      this.activityPackageDestinationId,
-      this.snapshotImg,
-      this.createdDate,
-      this.updatedDate,
-      this.deletedAt});
+  ActivityPackageDestination(
+      {this.activitypackagedestinationId,
+      this.activitypackagedestinationActivityPackageId,
+      this.activitypackagedestinationPlaceName,
+      this.activitypackagedestinationPlaceDescription,
+      this.activitypackagedestinationLatitude,
+      this.activitypackagedestinationLongitude,
+      this.activitypackagedestinationCreatedDate,
+      this.activitypackagedestinationUpdatedDate,
+      this.activitypackagedestinationDeletedAt});
 
-  DestinationImage.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    activityPackageDestinationId = json['activity_package_destination_id'];
-    snapshotImg = json['snapshot_img'] != null
-        ? new SnapshotImg.fromJson(json['snapshot_img'])
-        : null;
-    createdDate = json['created_date'];
-    updatedDate = json['updated_date'];
-    deletedAt = json['deletedAt'];
+  ActivityPackageDestination.fromJson(Map<String, dynamic> json) {
+    activitypackagedestinationId = json['activitypackagedestination_id'];
+    activitypackagedestinationActivityPackageId =
+        json['activitypackagedestination_activity_package_id'];
+    activitypackagedestinationPlaceName =
+        json['activitypackagedestination_place_name'];
+    activitypackagedestinationPlaceDescription =
+        json['activitypackagedestination_place_description'];
+    activitypackagedestinationLatitude =
+        json['activitypackagedestination_latitude'];
+    activitypackagedestinationLongitude =
+        json['activitypackagedestination_longitude'];
+    activitypackagedestinationCreatedDate =
+        json['activitypackagedestination_created_date'];
+    activitypackagedestinationUpdatedDate =
+        json['activitypackagedestination_updated_date'];
+    activitypackagedestinationDeletedAt =
+        json['activitypackagedestination_deletedAt'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['activity_package_destination_id'] = this.activityPackageDestinationId;
-    if (this.snapshotImg != null) {
-      data['snapshot_img'] = this.snapshotImg!.toJson();
-    }
-    data['created_date'] = this.createdDate;
-    data['updated_date'] = this.updatedDate;
-    data['deletedAt'] = this.deletedAt;
-    return data;
-  }
-}
-
-class SnapshotImg {
-  String? type;
-  List<int>? data;
-
-  SnapshotImg({this.type, this.data});
-
-  SnapshotImg.fromJson(Map<String, dynamic> json) {
-    type = json['type'];
-    data = json['data'].cast<int>();
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['type'] = this.type;
-    data['data'] = this.data;
+    data['activitypackagedestination_id'] = this.activitypackagedestinationId;
+    data['activitypackagedestination_activity_package_id'] =
+        this.activitypackagedestinationActivityPackageId;
+    data['activitypackagedestination_place_name'] =
+        this.activitypackagedestinationPlaceName;
+    data['activitypackagedestination_place_description'] =
+        this.activitypackagedestinationPlaceDescription;
+    data['activitypackagedestination_latitude'] =
+        this.activitypackagedestinationLatitude;
+    data['activitypackagedestination_longitude'] =
+        this.activitypackagedestinationLongitude;
+    data['activitypackagedestination_created_date'] =
+        this.activitypackagedestinationCreatedDate;
+    data['activitypackagedestination_updated_date'] =
+        this.activitypackagedestinationUpdatedDate;
+    data['activitypackagedestination_deletedAt'] =
+        this.activitypackagedestinationDeletedAt;
     return data;
   }
 }

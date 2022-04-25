@@ -3,11 +3,15 @@ import 'package:get/get.dart';
 ///Traveller Controller
 class TravellerMonthController extends GetxController {
   final RxInt _selectedDate = 0.obs;
+  final RxInt _selectedActivity = 999.obs;
   final RxString _currentDate = DateTime.now().toString().obs;
   final RxList<DateTime> _selectedDates = <DateTime>[].obs;
 
   ///get value
   int get selectedDate => _selectedDate.value;
+
+  ///get value
+  int get selectedActivity => _selectedActivity.value;
 
   ///get value
   List<DateTime> get selectedDates => _selectedDates.value;
@@ -19,6 +23,12 @@ class TravellerMonthController extends GetxController {
   void setSelectedDate(int value) {
     _selectedDate.value = value;
     update(['dateList']);
+  }
+
+  ///set value
+  void setSelectedActivity(int value) {
+    _selectedActivity.value = value;
+    update(['setSelectedActivity']);
   }
 
   ///set value

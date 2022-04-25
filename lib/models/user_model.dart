@@ -50,6 +50,7 @@ class User {
   Null? status;
   String? sEntity;
   String? profilePhoto;
+  String? stripeAccountId;
 
   User(
       {this.id,
@@ -77,7 +78,7 @@ class User {
       this.photo,
       this.status,
       this.sEntity,
-      this.profilePhoto
+      this.profilePhoto, this.stripeAccountId
       });
 
   User.fromJson(Map<String, dynamic> json) {
@@ -107,6 +108,7 @@ class User {
     status = json['status'];
     sEntity = json['__entity'];
     profilePhoto = json['profile_photo'];
+    stripeAccountId = json['stripe_account_id'];
   }
 
   Map<String, dynamic> toJson() {

@@ -13,6 +13,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/bank_account_controller.dart';
+import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/country_currency_model.dart';
 import 'package:guided/models/country_model.dart';
@@ -49,6 +50,10 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
 
   final BankAccountController _bankAccountController =
       Get.put(BankAccountController());
+
+  final UserProfileDetailsController _profileDetailsController =
+  Get.put(UserProfileDetailsController());
+
 
   @override
   void initState() {
@@ -177,14 +182,9 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                     },
                   ),
                   SizedBox(height: 20.h),
-                  Text(
-                    AppTextConstants.country,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 15,
-                        fontFamily: 'Gilroy'),
-                  ),
+
                   DropDownCountry(
+                    fontSize: 16.sp,
                     value: _country,
                     setCountry: setCountry,
                     list: listCountry,
@@ -244,6 +244,10 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
           await StripeServices().createBankAccountToken(bankAccountParams);
 
       if (stripeValidationResult['id'] != null) {
+
+        /// Add bank account to stripe connect
+        await addBankAccountToStripeAccount(stripeValidationResult['id']);
+
         // Save bank account to db
         final BankAccountModel result =
             await APIServices().addBankAccount(bankAccountParams);
@@ -359,5 +363,11 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
             label: 'OK', onPressed: scaffold.hideCurrentSnackBar),
       ),
     );
+  }
+
+  Future<void> addBankAccountToStripeAccount(String bankToken) async {
+   final String res = await APIServices().addBankAccountToStripeAccount(_profileDetailsController.userProfileDetails.stripeAccountId, bankToken);
+   debugPrint('response bank account: $res ');
+
   }
 }

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:guided/common/widgets/bottom_navigation_bar.dart';
 import 'package:guided/controller/card_controller.dart';
+import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/home/screens/home_main.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_main.dart';
@@ -40,7 +42,8 @@ class _HomeScreenState extends State<MainNavigationScreen>
 
   _HomeScreenState(this.navIndex, this.contentIndex);
   final CardController  _creditCardController  = Get.put(CardController());
-
+  final UserProfileDetailsController _profileDetailsController =
+  Get.put(UserProfileDetailsController());
 
   void setBottomNavigationIndexHandler(int value) {
     setState(() {
@@ -56,7 +59,7 @@ class _HomeScreenState extends State<MainNavigationScreen>
       _selectedContent = contentIndex;
     });
     super.initState();
-
+    getProfileDetails();
     getUserCards();
   }
 
@@ -101,6 +104,13 @@ class _HomeScreenState extends State<MainNavigationScreen>
         _creditCardController.setDefaultCard(cards[0]);
       }
     }
+  }
+
+
+  Future<void> getProfileDetails() async {
+    final ProfileDetailsModel res = await APIServices().getProfileData();
+
+    _profileDetailsController.setUserProfileDetails(res);
   }
 
   @override

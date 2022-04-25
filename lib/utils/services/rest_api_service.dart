@@ -15,6 +15,7 @@ import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/advertisement_image_model.dart';
 import 'package:guided/models/advertisement_model.dart';
+import 'package:guided/models/badge.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/card_model.dart';
@@ -43,6 +44,8 @@ import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/global_api_service.dart';
 import 'package:http/http.dart' as http;
 
+import '../../models/booking_request.dart';
+
 enum RequestType { GET, POST, PATCH, DELETE }
 
 /// Service for API Calls
@@ -55,7 +58,7 @@ class APIServices {
 
   /// token
   final String staticToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJiN2NmNDM1LTQwOTAtNGEzOC1hYzVhLTUzNzA3ZTQ0YmMwMCIsImlhdCI6MTYzOTEwOTY4OSwiZXhwIjoxNjQwNDA1Njg5fQ._YUI1FFHJoF76NLb6JP02Q8HgLxnvKwG9V9PILnA-8U';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIxY2E3MGIzLTllZWUtNDI4NS05NDczLWZiNTE4Y2FhNjdiZSIsImlhdCI6MTY1MDg5OTA5OSwiZXhwIjoxNjUyMTk1MDk5fQ.sYpHBg-K_bkiMAQLtUZxjzaM2hQn4K6M4o0i5JUYf6E';
 
   /// Getting the activity outfitter details
   Future<ActivityOutfitterModel> getActivityOutfitterDetails() async {
@@ -111,7 +114,6 @@ class APIServices {
 
     if (needAccessToken) {
       token = UserSingleton.instance.user.token;
-      // staticToken; //await SecureStorage.readValue(key: SecureStorage.userTokenKey);
       headers['Authorization'] = 'Bearer $token';
     }
     request.headers.addAll(headers);
@@ -281,6 +283,24 @@ class APIServices {
     return dataSummary;
   }
 
+  /// API service for get booking request
+  Future<List<BookingRequest>> getBookingRequest() async {
+    final String url =
+        '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getBookingRequest}/21ca70b3-9eee-4285-9473-fb518caa67be';
+    debugPrint('URL $url');
+    final http.Response response = await http.get(Uri.parse(url), headers: {
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+    });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<BookingRequest> bookingRequest = <BookingRequest>[];
+    final booking =
+        (jsonData as List).map((i) => BookingRequest.fromJson(i)).toList();
+    bookingRequest.addAll(booking);
+    return bookingRequest;
+  }
+
   /// API service for profile model
   Future<User> getUserDetails(String id) async {
     print(id);
@@ -348,6 +368,8 @@ class APIServices {
       body: jsonEncode(data),
       headers: headers,
     );
+    print(response.body);
+    print(response.request!.url);
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
@@ -397,6 +419,20 @@ class APIServices {
         (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
+  }
+
+  /// API service for getActivityPackageDetails
+  Future<ActivityPackage> getActivityPackageDetails(String id) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}/$id'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    print(response.body);
+    final dynamic parsedJson = json.decode(response.body);
+    return ActivityPackage.fromJson(parsedJson);
   }
 
   /// API service for advertisement model
@@ -671,6 +707,26 @@ class APIServices {
     }
 
     return BadgeModelData(badgeDetails: details);
+  }
+
+  /// API service for all badges
+  Future<List<ActivityBadge>> getAllBadges() async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.badgesUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
+    final List<ActivityBadge> badges = <ActivityBadge>[];
+    final badge =
+        (jsonData as List).map((i) => ActivityBadge.fromJson(i)).toList();
+    badges.addAll(badge);
+
+    return badges;
   }
 
   /// API service for get Popular guides
@@ -1168,7 +1224,7 @@ class APIServices {
 
   ///Api service for Save Payment Intent (Booking Request)
   Future<APIStandardReturnFormat> savePaymentIntent(
-      String paymentIntentId, String bookingRequestId) async {
+      String paymentIntentId, String bookingRequestId, String paymentMethodId) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
@@ -1181,7 +1237,8 @@ class APIServices {
         body: jsonEncode({
           'user_id': userId,
           'booking_request_id': bookingRequestId,
-          'stripe_payment_intent_id': paymentIntentId
+          'stripe_payment_intent_id': paymentIntentId,
+          'stripe_payment_method_id': paymentMethodId
         }));
 
     debugPrint('save payment intent response:: ${response.body}');
@@ -1294,11 +1351,10 @@ class APIServices {
         },
         body: jsonEncode(parameters));
 
-
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
-  /// API service for user  getting subscription
+
 
   ///API Service for Retrieving User Subscription
   Future<UserSubscription> getUserSubscription() async {
@@ -1396,14 +1452,14 @@ class APIServices {
     }
   }
 
-
   /// API service for Update User Profile Images
-  Future<UserProfileImage> updateUserProfileImages(UserProfileImage params) async {
+  Future<UserProfileImage> updateUserProfileImages(
+      UserProfileImage params) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-    final http.Response response =
-    await http.patch(Uri.http(apiBaseUrl, '/api/v1/user-profile-images/${params.id}'),
+    final http.Response response = await http.patch(
+        Uri.http(apiBaseUrl, '/api/v1/user-profile-images/${params.id}'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           HttpHeaders.contentTypeHeader: 'application/json',
@@ -1419,12 +1475,174 @@ class APIServices {
 
     final jsonData = json.decode(response.body);
 
-
     if (response.statusCode == 200) {
       debugPrint('Update Profile image .. ${response.statusCode}');
       return UserProfileImage.fromJson(jsonData);
     } else {
       return UserProfileImage();
     }
+  }
+
+
+  /// API service for  stripe setup
+  Future<String> createStripeAccount(ProfileDetailsModel params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint('Response::: ${ Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/account/create-stripe-account')} ');
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/account/create-stripe-account'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'email': params.email,
+          'country': 'CA',
+          'company_name': params.fullName,
+          'first_name': params.firstName,
+          'last_name': params.lastName,
+          'phone': params.phoneNumber,
+          'product_description': 'Provide tour services'
+        }));
+
+     debugPrint('Response ${response.body}');
+
+     return response.body;
+  }
+
+  /// API service for  stripe account link
+  Future<String> getOnboardAccountLink(String accountId) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    debugPrint('on board Response::: ${ Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/account/on-board-account')} ');
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/account/on-board-account'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'account_id': accountId,
+
+        }));
+
+    debugPrint('Response  Account id $accountId ${response.body}');
+    final jsonData = jsonDecode(response.body);
+    return jsonData['url'];
+  }
+
+  /// API service add bank account to stripe
+  Future<String> addBankAccountToStripeAccount(String accountId,String bankToken) async {
+    final String? token = UserSingleton.instance.user.token;
+
+     final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/account/connect-bank-to-account'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'account_id': accountId,
+          'external_account' : bankToken
+        }));
+
+    debugPrint('Response Bank Account Account id $accountId ${response.body}');
+    final jsonData = jsonDecode(response.body);
+    return jsonData['id'];
+  }
+
+
+  ///API Service for Retrieving payment intent booking request
+  Future<dynamic> getPaymentIntentId(String bookingRequestId) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    final Map<String, String> queryParameters = {
+      'filter': 'booking_request_id||eq||"$bookingRequestId"',
+    };
+
+     debugPrint('params R$queryParameters');
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/payment-intent', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    debugPrint('Data ${jsonData[0]}')  ;
+
+    return jsonData[0];
+  }
+
+
+  ///API Service for create transfer payment intent
+  Future<dynamic> createTransferPaymentIntent(String accountId , double totalServiceAmount , double applicationFee , String payeeEmail) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/transfer'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'account': 'acct_1KsRG9QSUgDLrVAX',
+          'total_service_amount': totalServiceAmount.toString(),
+          'transfer_money': applicationFee.toString(),
+          'payee_email': payeeEmail
+        }));
+
+    debugPrint('Response Payment Intent :: ${response.body}');
+    final jsonData = jsonDecode(response.body);
+    return jsonData['paymentIntent'];
+  }
+
+  ///API Service for charging payment booking request
+  Future<dynamic> chargeBookingPayment(String paymentIntentId , String paymentMethodId) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/transfer/confirm-transfer'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'payment_method_id': paymentMethodId,
+          'payment_intent_id' : paymentIntentId
+        }));
+
+    debugPrint('Response Payment :: ${response.body}');
+    final jsonData = jsonDecode(response.body);
+    return jsonData['id'];
+  }
+
+  ///API Service for Getting Booking Transaction
+  Future<UserTransaction> getBookingTransaction(String packageId, String userId) async {
+    final String? token = UserSingleton.instance.user.token;
+    // final String? userId = UserSingleton.instance.user.user?.id;
+
+    final Map<String, String> queryParameters = {
+      'filter[0]': 'user_id||eq||"$userId"',
+      'filter[1]': 'activity_package_id||eq||"$packageId"',
+    };
+
+     debugPrint('params R$queryParameters');
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/transactions', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+
+
+    UserTransaction transaction = UserTransaction();
+    final dynamic jsonData = jsonDecode(response.body);
+
+     transaction = UserTransaction.fromJson(jsonData[0]);
+    //
+    // debugPrint('Transaction ${transaction.id }');
+    return transaction;
   }
 }
