@@ -44,6 +44,8 @@ import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/global_api_service.dart';
 import 'package:http/http.dart' as http;
 
+import '../../models/booking_request.dart';
+
 enum RequestType { GET, POST, PATCH, DELETE }
 
 /// Service for API Calls
@@ -56,7 +58,7 @@ class APIServices {
 
   /// token
   final String staticToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlYzI2ZTg4LTZkMGItNDQ5Ny1iMWMyLTA5MmE1NGI2NWE2MyIsImlhdCI6MTY1MDgxMzE4OSwiZXhwIjoxNjUyMTA5MTg5fQ.GlzWfI2toxK6hb0GNmp5OHZpX9dy-wBR9bI6Tm-NQPs';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIxY2E3MGIzLTllZWUtNDI4NS05NDczLWZiNTE4Y2FhNjdiZSIsImlhdCI6MTY1MDg5OTA5OSwiZXhwIjoxNjUyMTk1MDk5fQ.sYpHBg-K_bkiMAQLtUZxjzaM2hQn4K6M4o0i5JUYf6E';
 
   /// Getting the activity outfitter details
   Future<ActivityOutfitterModel> getActivityOutfitterDetails() async {
@@ -112,7 +114,6 @@ class APIServices {
 
     if (needAccessToken) {
       token = UserSingleton.instance.user.token;
-      // staticToken; //await SecureStorage.readValue(key: SecureStorage.userTokenKey);
       headers['Authorization'] = 'Bearer $token';
     }
     request.headers.addAll(headers);
@@ -282,6 +283,24 @@ class APIServices {
     return dataSummary;
   }
 
+  /// API service for get booking request
+  Future<List<BookingRequest>> getBookingRequest() async {
+    final String url =
+        '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getBookingRequest}/21ca70b3-9eee-4285-9473-fb518caa67be';
+    debugPrint('URL $url');
+    final http.Response response = await http.get(Uri.parse(url), headers: {
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+    });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<BookingRequest> bookingRequest = <BookingRequest>[];
+    final booking =
+        (jsonData as List).map((i) => BookingRequest.fromJson(i)).toList();
+    bookingRequest.addAll(booking);
+    return bookingRequest;
+  }
+
   /// API service for profile model
   Future<User> getUserDetails(String id) async {
     print(id);
@@ -349,6 +368,8 @@ class APIServices {
       body: jsonEncode(data),
       headers: headers,
     );
+    print(response.body);
+    print(response.request!.url);
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
@@ -390,7 +411,6 @@ class APIServices {
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
-          // HttpHeaders.authorizationHeader: 'Bearer $staticToken',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -399,6 +419,20 @@ class APIServices {
         (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
+  }
+
+  /// API service for getActivityPackageDetails
+  Future<ActivityPackage> getActivityPackageDetails(String id) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}/$id'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+    print(response.body);
+    final dynamic parsedJson = json.decode(response.body);
+    return ActivityPackage.fromJson(parsedJson);
   }
 
   /// API service for advertisement model
@@ -562,7 +596,6 @@ class APIServices {
       'Accept': '*/*',
       HttpHeaders.authorizationHeader:
           'Bearer ${UserSingleton.instance.user.token}',
-      // HttpHeaders.authorizationHeader: 'Bearer $staticToken',
     };
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
@@ -684,7 +717,6 @@ class APIServices {
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
-          // HttpHeaders.authorizationHeader: 'Bearer $staticToken',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -1318,7 +1350,6 @@ class APIServices {
         },
         body: jsonEncode(parameters));
 
-
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
@@ -1420,14 +1451,14 @@ class APIServices {
     }
   }
 
-
   /// API service for Update User Profile Images
-  Future<UserProfileImage> updateUserProfileImages(UserProfileImage params) async {
+  Future<UserProfileImage> updateUserProfileImages(
+      UserProfileImage params) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-    final http.Response response =
-    await http.patch(Uri.http(apiBaseUrl, '/api/v1/user-profile-images/${params.id}'),
+    final http.Response response = await http.patch(
+        Uri.http(apiBaseUrl, '/api/v1/user-profile-images/${params.id}'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           HttpHeaders.contentTypeHeader: 'application/json',
@@ -1442,7 +1473,6 @@ class APIServices {
         }));
 
     final jsonData = json.decode(response.body);
-
 
     if (response.statusCode == 200) {
       debugPrint('Update Profile image .. ${response.statusCode}');
