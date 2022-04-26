@@ -19,6 +19,7 @@ import 'package:guided/models/badge.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/event_image_model.dart';
@@ -1652,4 +1653,24 @@ class APIServices {
     // debugPrint('Transaction ${transaction.id }');
     return transaction;
   }
+
+  ///Api service to get chat messages
+ Future<List<ChatModel>> getChatMessages(String userId, String filter) async {
+   final String? token = UserSingleton.instance.user.token;
+
+   final http.Response response = await http.get(
+       Uri.http(apiBaseUrl, '/api/v1/message-detail/$userId/$filter'),
+       headers: {
+         HttpHeaders.authorizationHeader: 'Bearer $token',
+       });
+
+   final dynamic jsonData = jsonDecode(response.body);
+   final List<ChatModel> chatMessages = <ChatModel>[];
+   for (final dynamic res in jsonData) {
+     final ChatModel chat = ChatModel.fromJson(res);
+     chatMessages.add(chat);
+   }
+
+   return chatMessages;
+ }
 }

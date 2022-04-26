@@ -4,7 +4,12 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/message.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
+
+import 'message_individual_screen.dart';
 
 /// Notification Screen
 class MessageInbox extends StatefulWidget {
@@ -18,7 +23,15 @@ class MessageInbox extends StatefulWidget {
 class _MessageInboxState extends State<MessageInbox> {
   double _height = 94.h;
   double _width = 309.w;
-  final List<Message> messages = AppListConstants.getMessages();
+
+  List<ChatModel> messages = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    getMessages();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,113 +167,141 @@ class _MessageInboxState extends State<MessageInbox> {
                 child: ListView.separated(
                   itemCount: messages.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(
-                          horizontal: 15.w, vertical: 20.h),
-                      child: Row(
-                        children: <Widget>[
-                          Container(
-                            height: 58.h,
-                            width: 58.w,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.white, width: 3),
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                image: AssetImage(messages[index].imgUrl),
-                                fit: BoxFit.contain,
-                              ),
-                              boxShadow: <BoxShadow>[
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                  // offset: const Offset(
-                                  //     0, 0), // changes position of shadow
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: 15.w,
-                          ),
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Text.rich(
-                                      TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: messages[index].name,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 14.sp,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Text(
-                                      AppTextConstants.messageTime,
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: AppColors.cloud,
-                                      ),
+                    return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      MessageIndividual(
+                                        message: messages[index],
+                                      )));
+                        },
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 15.w, vertical: 20.h),
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                height: 58.h,
+                                width: 58.w,
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.white, width: 3),
+                                  shape: BoxShape.circle,
+                                  image: messages[index].receiver!.avatar != ''
+                                      ? DecorationImage(
+                                          image: NetworkImage(messages[index]
+                                              .receiver!
+                                              .avatar!),
+                                          fit: BoxFit.contain,
+                                        )
+                                      : DecorationImage(
+                                          image: AssetImage(
+                                              AssetsPath.defaultProfilePic),
+                                          fit: BoxFit.contain,
+                                        ),
+                                  boxShadow: <BoxShadow>[
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.5),
+                                      spreadRadius: 1,
+                                      blurRadius: 5,
+                                      // offset: const Offset(
+                                      //     0, 0), // changes position of shadow
                                     ),
                                   ],
                                 ),
-                                SizedBox(
-                                  height: 6.h,
-                                ),
-                                Row(
+                              ),
+                              SizedBox(
+                                width: 15.w,
+                              ),
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.6,
-                                      child: Text(
-                                        messages[index].message,
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          color: AppColors.dustyGrey,
-                                        ),
-                                      ),
-                                    ),
-                                    if (index == 0)
-                                      Expanded(
-                                        child: Container(
-                                          padding: const EdgeInsets.all(5),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.mediumGreen,
-                                            shape: BoxShape.circle,
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Text.rich(
+                                          TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: messages[index]
+                                                    .receiver!
+                                                    .fullName,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 14.sp,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          child: Center(
-                                            child: Text(
-                                              '3',
-                                              style: TextStyle(
-                                                fontSize: 12.sp,
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
+                                        ),
+                                        Text(
+                                          AppTextConstants.messageTime,
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            color: AppColors.cloud,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 6.h,
+                                    ),
+                                    Row(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.6,
+                                          child: Text(
+                                            messages[index]
+                                                .messages![messages[index]
+                                                        .messages!
+                                                        .length -
+                                                    1]
+                                                .message!,
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              color: AppColors.dustyGrey,
+                                            ),
+                                          ),
+                                        ),
+                                        if (index == 0)
+                                          Expanded(
+                                            child: Container(
+                                              padding: const EdgeInsets.all(5),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.mediumGreen,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '3',
+                                                  style: TextStyle(
+                                                    fontSize: 12.sp,
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                      )
+                                          )
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 6.h,
+                                    ),
                                   ],
                                 ),
-                                SizedBox(
-                                  height: 6.h,
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    );
+                              )
+                            ],
+                          ),
+                        ));
                   },
                   separatorBuilder: (BuildContext context, int index) {
                     return const Divider();
@@ -272,5 +313,15 @@ class _MessageInboxState extends State<MessageInbox> {
         ),
       ),
     );
+  }
+
+  Future<void> getMessages() async {
+    final List<ChatModel> res = await APIServices()
+        .getChatMessages(UserSingleton.instance.user.user!.id!, 'all');
+
+    setState(() {
+      messages = res;
+    });
+    debugPrint('DATA ${res.length}');
   }
 }
