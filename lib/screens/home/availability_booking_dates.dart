@@ -10,6 +10,8 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/activity_availability_hours_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
+import 'package:guided/screens/widgets/reusable_widgets/time_loading.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -35,6 +37,7 @@ class _AvailabilityBookingDateScreenState
   bool isSubmit = false;
   bool _didInitialSave = false;
   bool _newDate = false;
+  bool _isLoading = true;
 
   late List<dynamic> setbookingtime = [];
   late List<dynamic> listTime;
@@ -51,6 +54,7 @@ class _AvailabilityBookingDateScreenState
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       getActivityAvailabilityHours(
           screenArguments['id'], listTime, screenArguments['selected_date']);
+      _isLoading = false;
     });
   }
 
@@ -151,44 +155,58 @@ class _AvailabilityBookingDateScreenState
             child: Padding(
               padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   HeaderText.headerText(AppTextConstants.setBookingDates),
                   SizedBox(
                     height: 30.h,
                   ),
-                  SizedBox(
-                    width: width,
-                    height: 45.h,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                            color: AppColors.primaryGreen,
-                          ),
-                          borderRadius: BorderRadius.circular(18.r),
+                  if (_isLoading)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: SkeletonText(
+                          height: 60,
+                          width: 500,
                         ),
-                        primary: Colors.white,
-                        onPrimary: Colors.white,
                       ),
-                      child: Text(
-                        _didPickedDate
-                            ? '${_selectedDay.day}/${AppListConstants.calendarMonths.elementAt(_selectedDay.month - 1)}/ ${_selectedDay.year}'
-                            : '${_preSelectedDay.day}/${AppListConstants.calendarMonths.elementAt(_preSelectedDay.month - 1)}/ ${_preSelectedDay.year}',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: AppColors.primaryGreen,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
+                    )
+                  else
+                    SizedBox(
+                      width: width,
+                      height: 45.h,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: AppColors.primaryGreen,
+                            ),
+                            borderRadius: BorderRadius.circular(18.r),
+                          ),
+                          primary: Colors.white,
+                          onPrimary: Colors.white,
+                        ),
+                        child: Text(
+                          _didPickedDate
+                              ? '${_selectedDay.day}/${AppListConstants.calendarMonths.elementAt(_selectedDay.month - 1)}/ ${_selectedDay.year}'
+                              : '${_preSelectedDay.day}/${AppListConstants.calendarMonths.elementAt(_preSelectedDay.month - 1)}/ ${_preSelectedDay.year}',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: AppColors.primaryGreen,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   SizedBox(
                     height: 20.h,
                   ),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       InkWell(
                         // inkwell color
@@ -198,101 +216,76 @@ class _AvailabilityBookingDateScreenState
                           size: 20,
                         ),
                         onTap: () {
-                          setState(() {
-                            _focusedDay =
-                                _focusedDay.subtract(Duration(days: 7));
-                          });
+                          final DateTime temp =
+                              _focusedDay.subtract(const Duration(days: 7));
+
+                          if (temp.compareTo(DateTime.now()) > 0) {
+                            setState(() {
+                              _focusedDay =
+                                  _focusedDay.subtract(const Duration(days: 7));
+                            });
+                          }
                         },
                       ),
-                      Expanded(
-                        child: TableCalendar(
-                          locale: 'en',
-                          onDaySelected: (selectedDay, focusedDay) {
-                            if (setbookingtime.isNotEmpty) {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text(AppTextConstants.saveChanges),
-                                      content: StatefulBuilder(
-                                        builder: (BuildContext context,
-                                            StateSetter setState) {
-                                          return Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              SizedBox(height: 5.h),
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 24.w,
-                                                    vertical: 2.h),
-                                                child: Text(AppTextConstants
-                                                    .saveChangesDesc),
-                                              ),
-                                              SizedBox(
-                                                height: 20.h,
-                                              ),
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        _didInitialSave = true;
-                                                      });
-                                                      setInitialDate(
-                                                          screenArguments['id'],
-                                                          listTime,
-                                                          selectedDay,
-                                                          focusedDay);
-                                                    },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        side: BorderSide(
-                                                          color:
-                                                              AppColors.silver,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10.r),
-                                                      ),
-                                                      primary: AppColors
-                                                          .primaryGreen,
-                                                      onPrimary: Colors.white,
-                                                    ),
-                                                    child: _didInitialSave
-                                                        ? const Center(
-                                                            child: Padding(
-                                                            padding:
-                                                                EdgeInsets.all(
-                                                                    8),
-                                                            child:
-                                                                CircularProgressIndicator(),
-                                                          ))
-                                                        : const Text(
-                                                            'Yes',
-                                                            style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 16),
-                                                          ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 20.w,
-                                                  ),
-                                                  if (_didInitialSave)
-                                                    Container()
-                                                  else
+                      if (_isLoading)
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: SkeletonText(
+                              width: 400,
+                              height: 40,
+                            ),
+                          ),
+                        )
+                      else
+                        Expanded(
+                          child: TableCalendar(
+                            locale: 'en',
+                            onDaySelected: (selectedDay, focusedDay) {
+                              if (setbookingtime.isNotEmpty) {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title:
+                                            Text(AppTextConstants.saveChanges),
+                                        content: StatefulBuilder(
+                                          builder: (BuildContext context,
+                                              StateSetter setState) {
+                                            return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                SizedBox(height: 5.h),
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 24.w,
+                                                      vertical: 2.h),
+                                                  child: Text(AppTextConstants
+                                                      .saveChangesDesc),
+                                                ),
+                                                SizedBox(
+                                                  height: 20.h,
+                                                ),
+                                                Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: <Widget>[
                                                     ElevatedButton(
                                                       onPressed: () {
-                                                        Navigator.pop(context);
+                                                        setState(() {
+                                                          _didInitialSave =
+                                                              true;
+                                                        });
+                                                        setInitialDate(
+                                                            screenArguments[
+                                                                'id'],
+                                                            listTime,
+                                                            selectedDay,
+                                                            focusedDay);
                                                       },
                                                       style: ElevatedButton
                                                           .styleFrom(
@@ -311,80 +304,128 @@ class _AvailabilityBookingDateScreenState
                                                             .primaryGreen,
                                                         onPrimary: Colors.white,
                                                       ),
-                                                      child: const Text(
-                                                        'No',
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 16),
-                                                      ),
+                                                      child: _didInitialSave
+                                                          ? const Center(
+                                                              child: Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .all(8),
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                            ))
+                                                          : const Text(
+                                                              'Yes',
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 16),
+                                                            ),
                                                     ),
-                                                ],
-                                              )
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  barrierDismissible: false);
-                            } else {
-                              setState(() {
+                                                    SizedBox(
+                                                      width: 20.w,
+                                                    ),
+                                                    if (_didInitialSave)
+                                                      Container()
+                                                    else
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            side: BorderSide(
+                                                              color: AppColors
+                                                                  .silver,
+                                                            ),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10.r),
+                                                          ),
+                                                          primary: AppColors
+                                                              .primaryGreen,
+                                                          onPrimary:
+                                                              Colors.white,
+                                                        ),
+                                                        child: const Text(
+                                                          'No',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 16),
+                                                        ),
+                                                      ),
+                                                  ],
+                                                )
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    barrierDismissible: false);
+                              } else {
                                 setState(() {
-                                  _selectedDay = selectedDay;
-                                  _focusedDay = focusedDay;
-                                  isRefreshing = true;
-                                  _didPickedDate = true;
-                                });
-
-                                Future.delayed(
-                                    const Duration(milliseconds: 100), () {
                                   setState(() {
-                                    isRefreshing = false;
+                                    _selectedDay = selectedDay;
+                                    _focusedDay = focusedDay;
+                                    isRefreshing = true;
+                                    _didPickedDate = true;
                                   });
+
+                                  Future.delayed(
+                                      const Duration(milliseconds: 100), () {
+                                    setState(() {
+                                      isRefreshing = false;
+                                    });
+                                  });
+
+                                  for (int index = 0;
+                                      index < listTime.length;
+                                      index++) {
+                                    setState(() {
+                                      listTime[index][1] = false;
+                                      listTime[index][2] = 0;
+                                      listTime[index][5] = '';
+                                      listTime[index][6] = '';
+                                    });
+                                  }
+
+                                  getActivityAvailabilityHours(
+                                      screenArguments['id'],
+                                      listTime,
+                                      _selectedDay);
                                 });
-
-                                for (int index = 0;
-                                    index < listTime.length;
-                                    index++) {
-                                  setState(() {
-                                    listTime[index][1] = false;
-                                    listTime[index][2] = 0;
-                                    listTime[index][5] = '';
-                                    listTime[index][6] = '';
-                                  });
-                                }
-
-                                getActivityAvailabilityHours(
-                                    screenArguments['id'],
-                                    listTime,
-                                    _selectedDay);
-                              });
-                            }
-                          },
-                          calendarFormat: CalendarFormat.week,
-                          currentDay:
-                              _didPickedDate ? _selectedDay : _preSelectedDay,
-                          headerVisible: false,
-                          headerStyle: const HeaderStyle(
-                            formatButtonVisible: false,
-                          ),
-                          daysOfWeekVisible: false,
-                          firstDay: DateTime.utc(2010, 10, 16),
-                          lastDay: DateTime.utc(2030, 3, 14),
-                          focusedDay:
-                              _didPickedDate ? _focusedDay : _prefocusedDay,
-                          calendarStyle: CalendarStyle(
-                            todayDecoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.brightSun,
+                              }
+                            },
+                            calendarFormat: CalendarFormat.week,
+                            currentDay:
+                                _didPickedDate ? _selectedDay : _preSelectedDay,
+                            headerVisible: false,
+                            headerStyle: const HeaderStyle(
+                              formatButtonVisible: false,
                             ),
-                            todayTextStyle: const TextStyle(
-                              color: Colors.black,
+                            daysOfWeekVisible: false,
+                            firstDay: DateTime.now(),
+                            lastDay: DateTime.utc(2030, 3, 14),
+                            focusedDay:
+                                _didPickedDate ? _focusedDay : _prefocusedDay,
+                            calendarStyle: CalendarStyle(
+                              todayDecoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.brightSun,
+                              ),
+                              todayTextStyle: const TextStyle(
+                                color: Colors.black,
+                              ),
                             ),
                           ),
                         ),
-                      ),
                       InkWell(
                         // inkwell color
                         child: const Icon(
@@ -394,7 +435,8 @@ class _AvailabilityBookingDateScreenState
                         ),
                         onTap: () {
                           setState(() {
-                            _focusedDay = _focusedDay.add(Duration(days: 7));
+                            _focusedDay =
+                                _focusedDay.add(const Duration(days: 7));
                           });
                         },
                       ),
@@ -406,169 +448,185 @@ class _AvailabilityBookingDateScreenState
                   if (isRefreshing)
                     const SizedBox()
                   else
-                    ListView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        children: List.generate(
-                            listTime.length,
-                            (i) => SingleChildScrollView(
-                                  child: Card(
-                                    child: CheckboxListTile(
-                                      title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: <Widget>[
-                                          Text(
-                                            listTime[i][0],
-                                            style: TextStyle(
-                                                fontSize: 14.sp,
-                                                color: AppListConstants
-                                                        .timeList[i][1]
-                                                    ? AppColors.deepGreen
-                                                    : AppColors.osloGrey,
-                                                fontWeight: FontWeight.w600,
-                                                fontFamily: 'Gilroy'),
-                                          ),
-                                          SizedBox(
-                                            width: 10.w,
-                                          ),
-                                          SizedBox(
-                                              child: Wrap(
-                                                  alignment: WrapAlignment
-                                                      .spaceBetween,
-                                                  children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    Container(
-                                                      width: 30.w,
-                                                      height: 40.h,
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              color: listTime[i]
-                                                                      [1]
-                                                                  ? AppColors
-                                                                      .osloGrey
-                                                                  : AppColors
-                                                                      .deepGreen),
-                                                          color: Colors.white,
-                                                          shape:
-                                                              BoxShape.circle),
-                                                      child: IconButton(
-                                                          icon: Icon(
-                                                            Icons.remove,
-                                                            color: listTime[i]
-                                                                    [1]
-                                                                ? AppColors
-                                                                    .osloGrey
-                                                                : AppColors
-                                                                    .primaryGreen,
-                                                            size: 15,
-                                                          ),
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              if (listTime[i]
-                                                                      [1] ==
-                                                                  false) {
-                                                                if (listTime[i]
-                                                                        [2] !=
-                                                                    0) {
-                                                                  listTime[i]
-                                                                      [2]--;
-                                                                }
-                                                              }
-                                                            });
-                                                          }),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 5.w,
-                                                    ),
-                                                    Container(
-                                                      height: 40.h,
-                                                      width: 40.w,
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              color: AppColors
-                                                                  .osloGrey),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      10.r)),
-                                                      child: Center(
-                                                        child: Text(
-                                                          ' ${listTime[i][2]}',
-                                                          style: TextStyle(
-                                                              fontSize: 20.sp),
+                    _isLoading
+                        ? const TimeLoading()
+                        : ListView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            children: List.generate(
+                                listTime.length,
+                                (i) => SingleChildScrollView(
+                                      child: Card(
+                                        child: CheckboxListTile(
+                                          title: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: <Widget>[
+                                              Text(
+                                                listTime[i][0],
+                                                style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    color: AppListConstants
+                                                            .timeList[i][1]
+                                                        ? AppColors.deepGreen
+                                                        : AppColors.osloGrey,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontFamily: 'Gilroy'),
+                                              ),
+                                              SizedBox(
+                                                width: 10.w,
+                                              ),
+                                              SizedBox(
+                                                  child: Wrap(
+                                                      alignment: WrapAlignment
+                                                          .spaceBetween,
+                                                      children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: <Widget>[
+                                                        Container(
+                                                          width: 30.w,
+                                                          height: 40.h,
+                                                          decoration: BoxDecoration(
+                                                              border: Border.all(
+                                                                  color: listTime[
+                                                                          i][1]
+                                                                      ? AppColors
+                                                                          .osloGrey
+                                                                      : AppColors
+                                                                          .deepGreen),
+                                                              color:
+                                                                  Colors.white,
+                                                              shape: BoxShape
+                                                                  .circle),
+                                                          child: IconButton(
+                                                              icon: Icon(
+                                                                Icons.remove,
+                                                                color: listTime[
+                                                                        i][1]
+                                                                    ? AppColors
+                                                                        .osloGrey
+                                                                    : AppColors
+                                                                        .primaryGreen,
+                                                                size: 15,
+                                                              ),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  if (listTime[
+                                                                              i]
+                                                                          [1] ==
+                                                                      false) {
+                                                                    if (listTime[i]
+                                                                            [
+                                                                            2] !=
+                                                                        0) {
+                                                                      listTime[
+                                                                              i]
+                                                                          [2]--;
+                                                                    }
+                                                                  }
+                                                                });
+                                                              }),
                                                         ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 5.w,
-                                                    ),
-                                                    Container(
-                                                      width: 30.w,
-                                                      height: 40.h,
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              color: listTime[i]
-                                                                      [1]
-                                                                  ? AppColors
-                                                                      .osloGrey
-                                                                  : AppColors
-                                                                      .deepGreen),
-                                                          color: Colors.white,
-                                                          shape:
-                                                              BoxShape.circle),
-                                                      child: IconButton(
-                                                          icon: Icon(
-                                                            Icons.add,
-                                                            color: listTime[i]
-                                                                    [1]
-                                                                ? AppColors
-                                                                    .osloGrey
-                                                                : AppColors
-                                                                    .primaryGreen,
-                                                            size: 15,
+                                                        SizedBox(
+                                                          width: 5.w,
+                                                        ),
+                                                        Container(
+                                                          height: 40.h,
+                                                          width: 40.w,
+                                                          decoration: BoxDecoration(
+                                                              border: Border.all(
+                                                                  color: AppColors
+                                                                      .osloGrey),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10.r)),
+                                                          child: Center(
+                                                            child: Text(
+                                                              ' ${listTime[i][2]}',
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      20.sp),
+                                                            ),
                                                           ),
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              if (listTime[i]
-                                                                      [1] ==
-                                                                  false) {
-                                                                if (listTime[i]
-                                                                        [2] <
-                                                                    screenArguments[
-                                                                        'number_of_tourist'])
-                                                                  listTime[i]
-                                                                      [2]++;
-                                                              }
-                                                            });
-                                                          }),
-                                                    )
-                                                  ],
-                                                ),
-                                              ]))
-                                        ],
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5.w,
+                                                        ),
+                                                        Container(
+                                                          width: 30.w,
+                                                          height: 40.h,
+                                                          decoration: BoxDecoration(
+                                                              border: Border.all(
+                                                                  color: listTime[
+                                                                          i][1]
+                                                                      ? AppColors
+                                                                          .osloGrey
+                                                                      : AppColors
+                                                                          .deepGreen),
+                                                              color:
+                                                                  Colors.white,
+                                                              shape: BoxShape
+                                                                  .circle),
+                                                          child: IconButton(
+                                                              icon: Icon(
+                                                                Icons.add,
+                                                                color: listTime[
+                                                                        i][1]
+                                                                    ? AppColors
+                                                                        .osloGrey
+                                                                    : AppColors
+                                                                        .primaryGreen,
+                                                                size: 15,
+                                                              ),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  if (listTime[
+                                                                              i]
+                                                                          [1] ==
+                                                                      false) {
+                                                                    if (listTime[i]
+                                                                            [
+                                                                            2] <
+                                                                        screenArguments[
+                                                                            'number_of_tourist'])
+                                                                      listTime[
+                                                                              i]
+                                                                          [2]++;
+                                                                  }
+                                                                });
+                                                              }),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ]))
+                                            ],
+                                          ),
+                                          onChanged: (bool? value) {
+                                            if (listTime[i][2] == 0) {
+                                              AdvanceSnackBar(
+                                                      message:
+                                                          ErrorMessageConstants
+                                                              .slotIsZero)
+                                                  .show(context);
+                                            } else {
+                                              setState(() {
+                                                listTime[i][1] = value!;
+                                              });
+                                              _onCheckedSelected(
+                                                  i,
+                                                  listTime[i][1],
+                                                  listTime[i][0],
+                                                  listTime[i][2]);
+                                            }
+                                          },
+                                          value: listTime[i][1],
+                                        ),
                                       ),
-                                      onChanged: (bool? value) {
-                                        if (listTime[i][2] == 0) {
-                                          AdvanceSnackBar(
-                                                  message: ErrorMessageConstants
-                                                      .slotIsZero)
-                                              .show(context);
-                                        } else {
-                                          setState(() {
-                                            listTime[i][1] = value!;
-                                          });
-                                          _onCheckedSelected(i, listTime[i][1],
-                                              listTime[i][0], listTime[i][2]);
-                                        }
-                                      },
-                                      value: listTime[i][1],
-                                    ),
-                                  ),
-                                ))),
+                                    ))),
                 ],
               ),
             ),

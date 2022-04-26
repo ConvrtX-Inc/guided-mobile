@@ -10,6 +10,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/package_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Widget for home features
@@ -60,8 +61,9 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
             Widget _displayWidget;
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
-                _displayWidget = const Center(
-                  child: CircularProgressIndicator(),
+                _displayWidget = const SkeletonText(
+                  height: 200,
+                  width: 900,
                 );
                 break;
               default:
@@ -294,7 +296,11 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                                             SizedBox(
                                               width: 10.w,
                                             ),
-                                            const CircularProgressIndicator(),
+                                            const SkeletonText(
+                                              width: 30,
+                                              height: 30,
+                                              shape: BoxShape.circle,
+                                            ),
                                           ],
                                         ),
                                       );
