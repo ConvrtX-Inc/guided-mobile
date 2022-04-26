@@ -1,12 +1,8 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -17,18 +13,22 @@ import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-/// Notification Screen
-class MessageIndividual extends StatefulWidget {
-  /// Constructor
-  const MessageIndividual({Key? key, this.message}) : super(key: key);
+
+///Message Screen Traveler
+class MessageScreenTraveler extends StatefulWidget {
+  ///Constructor
+  const MessageScreenTraveler({Key? key, this.message}) : super(key: key);
+
 
   final ChatModel? message;
 
   @override
-  _MessageIndividualState createState() => _MessageIndividualState();
+  _MessageScreenTravelerState createState() => _MessageScreenTravelerState();
 }
 
-class _MessageIndividualState extends State<MessageIndividual> {
+class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
+  List<Message> chatMessages = [];
+
   late IO.Socket socket;
   String message = 'test';
   final TextEditingController _textMessageController = TextEditingController();
@@ -37,10 +37,8 @@ class _MessageIndividualState extends State<MessageIndividual> {
 
   ChatModel chat = ChatModel();
 
-  List<Message> chatMessages = [];
-
   final UserProfileDetailsController _profileDetailsController =
-      Get.put(UserProfileDetailsController());
+  Get.put(UserProfileDetailsController());
 
   ProfileDetailsModel senderDetails = ProfileDetailsModel();
 
@@ -53,7 +51,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
     super.initState();
 
     final KeyboardVisibilityController keyboardVisibilityController =
-        KeyboardVisibilityController();
+    KeyboardVisibilityController();
 
     chat = widget.message!;
 
@@ -68,12 +66,12 @@ class _MessageIndividualState extends State<MessageIndividual> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       keyboardSubscription =
           keyboardVisibilityController.onChange.listen((bool visible) {
-        if (visible) {
-          if (_scrollController.hasClients) {
-            scrollToBottom();
-          }
-        }
-      });
+            if (visible) {
+              if (_scrollController.hasClients) {
+                scrollToBottom();
+              }
+            }
+          });
     });
   }
 
@@ -109,7 +107,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return   Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Column(
@@ -121,23 +119,12 @@ class _MessageIndividualState extends State<MessageIndividual> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   IconButton(
-                    icon: SvgPicture.asset(
-                        'assets/images/svg/arrow_back_with_tail.svg',
-                        height: 40.h,
-                        width: 40.w),
+                    icon: Icon(Icons.arrow_back),
                     onPressed: () {
                       Navigator.pop(context);
                     },
                   ),
-                  IconButton(
-                    icon: Image.asset(
-                        '${AssetsPath.assetsPNGPath}/phone_green.png',
-                        height: 20.h,
-                        width: 20.w),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
+
                 ],
               ),
             ),
@@ -157,54 +144,14 @@ class _MessageIndividualState extends State<MessageIndividual> {
             SizedBox(
               height: 15.h,
             ),
-            Container(
-              height: 57.h,
-              color: AppColors.tealGreen.withOpacity(0.15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Text(
-                    'Create a custom offer?',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: AppColors.deepGreen),
-                  ),
-                  Container(
-                    width: 122.w,
-                    height: 37.h,
-                    decoration: BoxDecoration(
-                      color: AppColors.deepGreen,
-                      border: Border.all(
-                        color: Colors.transparent,
-                      ),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: () => Navigator.of(context)
-                            .pushNamed('/message_custom_offer'),
-                        child: const Text(
-                          'Create offer',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
+
             Expanded(
               child: ListView.builder(
                 itemCount: chatMessages.length,
                 controller: _scrollController,
                 itemBuilder: (BuildContext context, int index) {
                   final Message message = chatMessages[index];
+
                   return message.senderId == senderDetails.id
                       ? _repliedMessage(message)
                       : _senderMessage(message);
@@ -277,148 +224,6 @@ class _MessageIndividualState extends State<MessageIndividual> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _offerMessage() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.tealGreen.withOpacity(0.15),
-            border: Border.all(
-              color: Colors.transparent,
-            ),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(10),
-            ),
-          ),
-          margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                child: Text(
-                  'Sent offer details',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: AppColors.deepGreen),
-                ),
-              ),
-              Divider(
-                height: 2.h,
-                color: AppColors.tealGreen.withOpacity(0.8),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          'Selected package',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp,
-                              color: AppColors.deepGreen),
-                        ),
-                        Text(
-                          'Premium',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp,
-                              color: AppColors.deepGreen),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          'Number of People',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp,
-                              color: AppColors.deepGreen),
-                        ),
-                        Text(
-                          '5 People',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp,
-                              color: AppColors.deepGreen),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          'Set date',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp,
-                              color: AppColors.deepGreen),
-                        ),
-                        Text(
-                          '23. 07. 2021',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp,
-                              color: AppColors.deepGreen),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          'Price',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp,
-                              color: AppColors.deepGreen),
-                        ),
-                        Text(
-                          'CAD 200',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.sp,
-                              color: AppColors.deepGreen),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0.h),
-          child: Text(
-            'Withdraw offer?',
-            style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12.sp,
-                color: AppColors.coralPink),
-          ),
-        ),
-      ],
     );
   }
 
@@ -510,7 +315,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
     ];
 
     final List<Widget> stackLayers =
-        List<Widget>.generate(items.length, (int index) {
+    List<Widget>.generate(items.length, (int index) {
       return Padding(
         padding: EdgeInsets.fromLTRB(index.toDouble() * overlap, 0, 0, 0),
         child: items[index],
@@ -521,31 +326,31 @@ class _MessageIndividualState extends State<MessageIndividual> {
   }
 
   Widget buildProfilePicture(String image) => Container(
-        height: 49.h,
-        width: 49.w,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white, width: 3),
-          shape: BoxShape.circle,
-          image: image.isEmpty
-              ? DecorationImage(
-                  image: AssetImage(AssetsPath.defaultProfilePic),
-                  fit: BoxFit.contain,
-                )
-              : DecorationImage(
-                  image: NetworkImage(image),
-                  fit: BoxFit.contain,
-                ),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: Colors.black.withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 5,
-              // offset: const Offset(
-              //     0, 0), // changes position of shadow
-            ),
-          ],
+    height: 49.h,
+    width: 49.w,
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.white, width: 3),
+      shape: BoxShape.circle,
+      image: image.isEmpty
+          ? DecorationImage(
+        image: AssetImage(AssetsPath.defaultProfilePic),
+        fit: BoxFit.contain,
+      )
+          : DecorationImage(
+        image: NetworkImage(image),
+        fit: BoxFit.contain,
+      ),
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: Colors.black.withOpacity(0.5),
+          spreadRadius: 1,
+          blurRadius: 5,
+          // offset: const Offset(
+          //     0, 0), // changes position of shadow
         ),
-      );
+      ],
+    ),
+  );
 
   handleMessage(payload) {
     // final dynamic dataFromServer = jsonDecode(payload);
@@ -574,7 +379,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
   void scrollToBottom({int timer = 100}) {
     Timer(
       Duration(milliseconds: timer),
-      () => _scrollController.animateTo(
+          () => _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
         duration: Duration(milliseconds: timer),
         curve: Curves.fastOutSlowIn,
