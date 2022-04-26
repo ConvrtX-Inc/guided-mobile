@@ -1595,21 +1595,19 @@ class _EventAddState extends State<EventAdd> {
                     TextField(
                       textAlign: TextAlign.left,
                       onSubmitted: (text) {
-                        setState(() {
-                          if (services.length != 10) {
-                            if (text != '') {
-                              services.add(text);
-                            }
-                            _keyword = TextEditingController(text: '');
-                          } else {
-                            AdvanceSnackBar(
-                                    message:
-                                        ErrorMessageConstants.maximumKeyword)
-                                .show(context);
+                        if (services.length != 10) {
+                          if (text != '') {
+                            services.add(text);
                           }
-                        });
-                        _keyword.clear();
-                        _keywordFocus.requestFocus();
+                          setState(() {
+                            _keyword.clear();
+                            _keywordFocus.requestFocus();
+                          });
+                        } else {
+                          AdvanceSnackBar(
+                                  message: ErrorMessageConstants.maximumKeyword)
+                              .show(context);
+                        }
                       },
                       controller: _keyword,
                       focusNode: _keywordFocus,

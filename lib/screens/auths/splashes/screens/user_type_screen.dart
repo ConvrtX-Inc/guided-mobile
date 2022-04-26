@@ -64,7 +64,7 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                               width: 15.w,
                             ),
                             Text(
-                              'I\'m a Traveler',
+                              "I'm a Traveler",
                               style: TextStyle(
                                   color: Colors.black,
                                   fontFamily: 'Gilroy',
@@ -74,6 +74,8 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                             Image.asset(
                               AssetsPath.rafikiImage,
                               fit: BoxFit.fitHeight,
+                              width: 150,
+                              height: 250,
                             ),
                           ]),
                     ),
