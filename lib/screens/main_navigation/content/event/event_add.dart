@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, unused_element, always_declare_return_types, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, curly_braces_in_flow_control_structures, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, avoid_catches_without_on_clauses, unnecessary_lambdas
+// ignore_for_file: file_names, unused_element, always_declare_return_types, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, curly_braces_in_flow_control_structures, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, avoid_catches_without_on_clauses, unnecessary_lambdas, use_named_constants
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -36,6 +36,7 @@ import 'package:guided/screens/widgets/reusable_widgets/payment_details.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Adding Advertisement Screen
@@ -822,8 +823,13 @@ class _EventAddState extends State<EventAdd> {
                     padding: const EdgeInsets.all(10),
                     child: Text(
                       services[index],
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: RegExp(r"\w+(\'\w+)?")
+                                    .allMatches(services[index])
+                                    .length >
+                                10
+                            ? 10.sp
+                            : 14.sp,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -897,7 +903,7 @@ class _EventAddState extends State<EventAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
-                                    Navigator.pop(context);
+                                Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -935,7 +941,7 @@ class _EventAddState extends State<EventAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
-                                    Navigator.pop(context);
+                                Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -1028,7 +1034,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1065,7 +1071,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1159,7 +1165,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1197,7 +1203,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1334,11 +1340,11 @@ class _EventAddState extends State<EventAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _title,
                       focusNode: _titleFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.title,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1358,11 +1364,11 @@ class _EventAddState extends State<EventAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _fee,
                       focusNode: _feeFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.fee,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1431,11 +1437,11 @@ class _EventAddState extends State<EventAdd> {
                     ),
                     if (isLocationBtnClicked)
                       TextField(
+                        textAlign: TextAlign.left,
                         controller: _country,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding:
-                              EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                          contentPadding: EdgeInsets.only(left: 10.w),
                           hintText: AppTextConstants.country,
                           hintStyle: TextStyle(
                             color: AppColors.grey,
@@ -1457,11 +1463,11 @@ class _EventAddState extends State<EventAdd> {
                       height: 20.h,
                     ),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _street,
                       focusNode: _streetFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.street,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1482,11 +1488,11 @@ class _EventAddState extends State<EventAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _city,
                       focusNode: _cityFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.city,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1500,11 +1506,11 @@ class _EventAddState extends State<EventAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _province,
                       focusNode: _provinceFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.provinceState,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1518,11 +1524,11 @@ class _EventAddState extends State<EventAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _postalCode,
                       focusNode: _postalCodeFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.postalCode,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1541,10 +1547,10 @@ class _EventAddState extends State<EventAdd> {
                       onTap: () => _showDate(context),
                       child: AbsorbPointer(
                         child: TextField(
+                          textAlign: TextAlign.left,
                           controller: _date,
                           decoration: InputDecoration(
-                            contentPadding:
-                                EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                            contentPadding: EdgeInsets.only(left: 10.w),
                             hintText: AppTextConstants.date,
                             hintStyle: TextStyle(
                               color: AppColors.grey,
@@ -1562,12 +1568,12 @@ class _EventAddState extends State<EventAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _description,
                       focusNode: _descriptionFocus,
                       maxLines: 10,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w, top: 20.h),
                         hintText: AppTextConstants.description,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1587,12 +1593,20 @@ class _EventAddState extends State<EventAdd> {
                       height: 20.h,
                     ),
                     TextField(
+                      textAlign: TextAlign.left,
                       onSubmitted: (text) {
                         setState(() {
-                          if (text != '') {
-                            services.add(text);
+                          if (services.length != 10) {
+                            if (text != '') {
+                              services.add(text);
+                            }
+                            _keyword = TextEditingController(text: '');
+                          } else {
+                            AdvanceSnackBar(
+                                    message:
+                                        ErrorMessageConstants.maximumKeyword)
+                                .show(context);
                           }
-                          _keyword = TextEditingController(text: '');
                         });
                         _keyword.clear();
                         _keywordFocus.requestFocus();
@@ -1600,8 +1614,7 @@ class _EventAddState extends State<EventAdd> {
                       controller: _keyword,
                       focusNode: _keywordFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.addNewService,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1612,6 +1625,7 @@ class _EventAddState extends State<EventAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
+                      maxLength: 20,
                     ),
                     SizedBox(
                       height: 20.h,
@@ -1632,7 +1646,7 @@ class _EventAddState extends State<EventAdd> {
         child: SizedBox(
           width: width,
           height: 60.h,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: () {
               _formKey.currentState?.save();
               if (_formKey.currentState!.validate()) {
@@ -1651,13 +1665,15 @@ class _EventAddState extends State<EventAdd> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: _isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.createEvent,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.createEvent,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),

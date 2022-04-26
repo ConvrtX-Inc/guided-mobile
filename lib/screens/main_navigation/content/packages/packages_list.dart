@@ -9,6 +9,7 @@ import 'package:guided/models/package_model.dart';
 import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
+import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Package List Screen
@@ -38,39 +39,32 @@ class _PackageListState extends State<PackageList>
     return Scaffold(
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
-        child: SizedBox(
-          height: 600.h,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                child: FutureBuilder<PackageModelData>(
-                  future: _loadingData,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                    Widget _displayWidget;
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        _displayWidget = const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                        break;
-                      default:
-                        if (snapshot.hasError) {
-                          _displayWidget = Center(
-                              child: APIMessageDisplay(
-                            message: 'Result: ${snapshot.error}',
-                          ));
-                        } else {
-                          _displayWidget = buildPackageResult(snapshot.data!);
-                        }
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            FutureBuilder<PackageModelData>(
+              future: _loadingData,
+              builder:
+                  (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                Widget _displayWidget;
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    _displayWidget = const MainContentSkeleton();
+                    break;
+                  default:
+                    if (snapshot.hasError) {
+                      _displayWidget = Center(
+                          child: APIMessageDisplay(
+                        message: 'Result: ${snapshot.error}',
+                      ));
+                    } else {
+                      _displayWidget = buildPackageResult(snapshot.data!);
                     }
-                    return _displayWidget;
-                  },
-                ),
-              )
-            ],
-          ),
+                }
+                return _displayWidget;
+              },
+            )
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(

@@ -11,6 +11,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/event_image_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Widget for home features
@@ -233,7 +234,10 @@ class _EventFeaturesState extends State<EventFeatures> {
                                         SizedBox(
                                           width: 30.w,
                                         ),
-                                        const CircularProgressIndicator()
+                                        const SkeletonText(
+                                            width: 30,
+                                            height: 30,
+                                            shape: BoxShape.circle)
                                       ],
                                     ),
                                   ],

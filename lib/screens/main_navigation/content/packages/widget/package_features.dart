@@ -9,6 +9,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Widget for home features
@@ -251,16 +252,9 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                       );
                     }
                     if (snapshot.connectionState != ConnectionState.done) {
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Row(
-                          children: <Widget>[
-                            SizedBox(
-                              width: 10.w,
-                            ),
-                            const CircularProgressIndicator(),
-                          ],
-                        ),
+                      return const SkeletonText(
+                        height: 200,
+                        width: 900,
                       );
                     }
                     return Container();

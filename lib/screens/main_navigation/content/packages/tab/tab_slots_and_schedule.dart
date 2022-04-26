@@ -1,4 +1,4 @@
-// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings, diagnostic_describe_all_properties, always_specify_types, unused_field
+// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings, diagnostic_describe_all_properties, always_specify_types, unused_field, no_logic_in_create_state, always_put_required_named_parameters_first, public_member_api_docs, sort_constructors_first
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,19 +17,25 @@ import 'package:in_date_utils/in_date_utils.dart' as Indate;
 class TabSlotsAndScheduleView extends StatefulWidget {
   final String id;
   final int numberOfTourist;
+  final List<String> availabilityId;
+  final List<DateTime> availabilityDate;
 
   /// Constructor
   const TabSlotsAndScheduleView(
-      {Key? key, required this.id, required this.numberOfTourist})
+      {Key? key,
+      required this.id,
+      required this.numberOfTourist,
+      required this.availabilityId,
+      required this.availabilityDate})
       : super(key: key);
 
   @override
   _TabSlotsAndScheduleViewState createState() =>
-      _TabSlotsAndScheduleViewState(id, numberOfTourist);
+      _TabSlotsAndScheduleViewState();
 }
 
 class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
-  _TabSlotsAndScheduleViewState(id, numberOfTourist);
+  _TabSlotsAndScheduleViewState();
 
   int selectedmonth = 0;
   final travellerMonthController = Get.put(TravellerMonthController());
@@ -72,6 +78,11 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    List<DateTime> splitDates = widget.availabilityDate;
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,79 +101,22 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
             ),
           ),
           Container(
-            height: 50.h,
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 2.h),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.r),
-              color: Colors.white,
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<int>(
-                value: selectedMonth,
-                onChanged: (int? intVal) => setState(() {
-                  selectedMonth = intVal!;
-                  DateTime dt =
-                      DateTime.parse(travellerMonthController.currentDate);
-
-                  final DateTime plustMonth = DateTime(
-                      dt.year, selectedMonth, dt.day, dt.hour, dt.minute);
-
-                  final DateTime setLastday = DateTime(plustMonth.year,
-                      plustMonth.month, 1, plustMonth.hour, plustMonth.minute);
-
-                  travellerMonthController.setCurrentMonth(
-                    setLastday.toString(),
-                  );
-                }),
-                selectedItemBuilder: (BuildContext context) {
-                  return AppListConstants.numberList.map<Widget>((int item) {
-                    return Center(
-                        child: Text(
-                      '${AppListConstants.calendarMonths[item - 1]} ${focusedYear.year + 1}',
-                      style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600),
-                    ));
-                  }).toList();
-                },
-                items: AppListConstants.numberList.map((int item) {
-                  return DropdownMenuItem<int>(
-                    value: item,
-                    child: Center(
-                        child: Text(
-                            '${AppListConstants.calendarMonths[item - 1]} ${focusedYear.year + 1}',
-                            style: TextStyle(
-                                fontFamily: 'Gilroy',
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w600))),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-                border: Border.all(color: AppColors.dustyGrey),
-                borderRadius: BorderRadius.circular(10.r)),
-            child: Container(
-              padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
-              height: MediaQuery.of(context).size.height * 0.4,
-              child: SfDateRangePicker(
+            padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+            height: MediaQuery.of(context).size.height * 0.4,
+            child: SfDateRangePicker(
                 enablePastDates: false,
-                minDate: DateTime.parse(travellerMonthController.currentDate),
-                maxDate: Indate.DateUtils.lastDayOfMonth(
-                    DateTime.parse(travellerMonthController.currentDate)),
-                initialDisplayDate:
-                    DateTime.parse(travellerMonthController.currentDate),
-                navigationMode: DateRangePickerNavigationMode.none,
-                monthViewSettings: const DateRangePickerMonthViewSettings(
-                  dayFormat: 'E',
-                ),
                 monthCellStyle: DateRangePickerMonthCellStyle(
                   textStyle: TextStyle(color: HexColor('#3E4242')),
                   todayTextStyle: TextStyle(
-                      fontWeight: FontWeight.bold, color: HexColor('#3E4242')),
+                      fontWeight: FontWeight.bold,
+                      color: HexColor('#3E4242')),
+                ),
+                monthViewSettings: DateRangePickerMonthViewSettings(
+                  viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                      textStyle: TextStyle(
+                          fontFamily: 'Gilroy',
+                          color: Colors.black,
+                          fontSize: 15.sp)),
                 ),
                 selectionTextStyle: const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -170,10 +124,9 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
                 ),
                 selectionColor: HexColor('#FFC74A'),
                 todayHighlightColor: HexColor('#FFC74A'),
-                headerHeight: 0,
                 onSelectionChanged: _onSelectionChanged,
-              ),
-            ),
+                initialSelectedDates: splitDates,
+                selectionMode: DateRangePickerSelectionMode.multiple),
           ),
           Padding(
             padding: const EdgeInsets.all(20),

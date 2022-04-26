@@ -86,7 +86,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                     height: 45.h,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Navigator.of(context).pushNamed('/guide_rule');
+                        Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
@@ -124,10 +124,15 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                           size: 20,
                         ),
                         onTap: () {
-                          setState(() {
-                            _focusedDay =
-                                _focusedDay.subtract(Duration(days: 7));
-                          });
+                          final DateTime temp =
+                              _focusedDay.subtract(const Duration(days: 7));
+
+                          if (temp.compareTo(DateTime.now()) > 0) {
+                            setState(() {
+                              _focusedDay =
+                                  _focusedDay.subtract(const Duration(days: 7));
+                            });
+                          }
                         },
                       ),
                       Expanded(
@@ -285,7 +290,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                             formatButtonVisible: false,
                           ),
                           daysOfWeekVisible: false,
-                          firstDay: DateTime.utc(2010, 10, 16),
+                          firstDay: DateTime.now(),
                           lastDay: DateTime.utc(2030, 3, 14),
                           focusedDay:
                               _didPickedDate ? _focusedDay : _prefocusedDay,

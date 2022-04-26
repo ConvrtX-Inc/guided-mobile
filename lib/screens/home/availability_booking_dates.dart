@@ -198,10 +198,15 @@ class _AvailabilityBookingDateScreenState
                           size: 20,
                         ),
                         onTap: () {
-                          setState(() {
-                            _focusedDay =
-                                _focusedDay.subtract(Duration(days: 7));
-                          });
+                          final DateTime temp =
+                              _focusedDay.subtract(const Duration(days: 7));
+
+                          if (temp.compareTo(DateTime.now()) > 0) {
+                            setState(() {
+                              _focusedDay =
+                                  _focusedDay.subtract(const Duration(days: 7));
+                            });
+                          }
                         },
                       ),
                       Expanded(
@@ -370,7 +375,7 @@ class _AvailabilityBookingDateScreenState
                             formatButtonVisible: false,
                           ),
                           daysOfWeekVisible: false,
-                          firstDay: DateTime.utc(2010, 10, 16),
+                          firstDay: DateTime.now(),
                           lastDay: DateTime.utc(2030, 3, 14),
                           focusedDay:
                               _didPickedDate ? _focusedDay : _prefocusedDay,
@@ -394,7 +399,7 @@ class _AvailabilityBookingDateScreenState
                         ),
                         onTap: () {
                           setState(() {
-                            _focusedDay = _focusedDay.add(Duration(days: 7));
+                            _focusedDay = _focusedDay.add(const Duration(days: 7));
                           });
                         },
                       ),

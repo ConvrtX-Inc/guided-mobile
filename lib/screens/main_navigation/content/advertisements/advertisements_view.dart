@@ -12,6 +12,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -242,7 +243,10 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                                           SizedBox(
                                             width: 10.w,
                                           ),
-                                          const CircularProgressIndicator(),
+                                          const SkeletonText(
+                                            width: 100,
+                                            height: 30,
+                                          ),
                                         ],
                                       ),
                                     );

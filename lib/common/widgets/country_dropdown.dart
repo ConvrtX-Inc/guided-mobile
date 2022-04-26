@@ -26,13 +26,6 @@ class DropDownCountry extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          AppTextConstants.country,
-          style: TextStyle(
-              fontSize: 14.sp,
-              ),
-        ),
-        SizedBox(height: 5.h),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 2.h),
           decoration: BoxDecoration(

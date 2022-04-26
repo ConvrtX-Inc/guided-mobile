@@ -22,10 +22,12 @@ import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Edit Advertisement Screen
@@ -1126,7 +1128,12 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                                       SizedBox(
                                                         width: 10.w,
                                                       ),
-                                                      const CircularProgressIndicator(),
+                                                      const SkeletonText(
+                                                          width: 100,
+                                                          height: 30),
+                                                      SizedBox(
+                                                        width: 10.w,
+                                                      ),
                                                     ],
                                                   ),
                                                 );
@@ -1664,7 +1671,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
         child: SizedBox(
           width: width,
           height: 60.h,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: () async => _isSubmit ? null : advertisementEditDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -1676,13 +1683,15 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: _isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.postEvent,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.postEvent,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),

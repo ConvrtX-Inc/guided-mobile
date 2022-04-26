@@ -19,8 +19,10 @@ import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Package Summary Screen
@@ -138,7 +140,7 @@ class _PackageEditState extends State<PackageEdit> {
       _country = TextEditingController(text: _countryDropdown.name);
     });
   }
-  
+
   ListTile _choicesMainActivity(BadgeDetailsModel badges) {
     return ListTile(
       onTap: () {
@@ -242,7 +244,6 @@ class _PackageEditState extends State<PackageEdit> {
             elevation: 5,
             borderRadius: BorderRadius.circular(12.r),
             child: SizedBox(
-              height: 200.h,
               width: width,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
@@ -270,7 +271,10 @@ class _PackageEditState extends State<PackageEdit> {
                       );
                     }
                     if (snapshot.connectionState != ConnectionState.done) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const SkeletonText(
+                        width: 100,
+                        height: 10,
+                      );
                     }
                     return Container();
                   },
@@ -1061,16 +1065,9 @@ class _PackageEditState extends State<PackageEdit> {
                           }
                           if (snapshot.connectionState !=
                               ConnectionState.done) {
-                            return Padding(
-                              padding: EdgeInsets.only(left: 10.w),
-                              child: Column(
-                                children: <Widget>[
-                                  SizedBox(
-                                    height: 140.h,
-                                  ),
-                                  const CircularProgressIndicator(),
-                                ],
-                              ),
+                            return const SkeletonText(
+                              width: 100,
+                              height: 30,
                             );
                           }
                           return Container();
@@ -1255,7 +1252,10 @@ class _PackageEditState extends State<PackageEdit> {
                                                       SizedBox(
                                                         width: 10.w,
                                                       ),
-                                                      const CircularProgressIndicator(),
+                                                      const SkeletonText(
+                                                        width: 100,
+                                                        height: 30,
+                                                      )
                                                     ],
                                                   ),
                                                 );
@@ -1831,7 +1831,7 @@ class _PackageEditState extends State<PackageEdit> {
         child: SizedBox(
           width: width,
           height: 60,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: () async => _isSubmit ? null : packageDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -1843,13 +1843,15 @@ class _PackageEditState extends State<PackageEdit> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: _isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.submit,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.submit,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),
