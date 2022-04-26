@@ -11,7 +11,7 @@ class AppAPIPath {
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
 
   ///Returns mode : (dev | staging | local )
-  static String mode = 'staging';
+  static String mode = 'dev';
 
   /// Returns API base url
   static String apiBaseUrl = getBaseUrl(mode);
@@ -83,6 +83,9 @@ class AppAPIPath {
 
   /// Returns profile details
   static String getProfileDetails = 'api/v1/users';
+
+  /// Returns booking request
+  static String getBookingRequest = 'api/v1/booking-requests';
 
   /// Returns currencies url
   static String getCurrencies = 'api/v1/currencies';
