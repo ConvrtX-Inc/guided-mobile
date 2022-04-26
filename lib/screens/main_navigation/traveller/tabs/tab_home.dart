@@ -7,6 +7,8 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geolocator_web/geolocator_web.dart';
 import 'package:get/get.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
@@ -52,7 +54,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   final ScrollToIndexController _scrollController = ScrollToIndexController();
   final travellerMonthController = Get.put(TravellerMonthController());
   final SwiperController _cardController = SwiperController();
-
+  double latitude = 0.0;
+  double longitude = 0.0;
   var result;
   @override
   void initState() {
@@ -71,7 +74,18 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         defaultDate.toString(),
       );
     });
+    getCurrentLocation();
     super.initState();
+  }
+
+  Future<void> getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      latitude = position.latitude;
+      longitude = position.longitude;
+    });
   }
 
   @override
@@ -668,7 +682,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.26,
           child: FutureBuilder<List<ActivityPackage>>(
-            future: APIServices().getClosestActivity(), // async work
+            future: APIServices()
+                .getClosestActivity(latitude, longitude), // async work
             builder: (BuildContext context,
                 AsyncSnapshot<List<ActivityPackage>> snapshot) {
               switch (snapshot.connectionState) {

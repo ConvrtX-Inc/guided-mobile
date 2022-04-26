@@ -197,39 +197,45 @@ class _HomeScreenState extends State<HomeScreen>
                       if (snapshot.hasData) {
                         final PackageModelData packageData = snapshot.data;
                         final int length = packageData.packageDetails.length;
-                        return ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: length,
-                            itemBuilder: (BuildContext ctx, int index) {
-                              return HomeFeatures(
-                                id: packageData.packageDetails[index].id,
-                                name: packageData.packageDetails[index].name,
-                                mainBadgeId: packageData
-                                    .packageDetails[index].mainBadgeId,
-                                subBadgeId: packageData
-                                    .packageDetails[index].subBadgeId,
-                                description: packageData
-                                    .packageDetails[index].description,
-                                imageUrl: packageData
-                                    .packageDetails[index].coverImg,
-                                numberOfTourist: packageData
-                                    .packageDetails[index].maxTraveller,
-                                starRating: 0,
-                                fee: double.parse(packageData
-                                    .packageDetails[index].basePrice),
-                                dateRange: '1-9',
-                                services: packageData
-                                    .packageDetails[index].services,
-                                country:
-                                    packageData.packageDetails[index].country,
-                                address:
-                                    packageData.packageDetails[index].address,
-                                extraCost: packageData
-                                    .packageDetails[index].extraCostPerPerson,
-                                isPublished: packageData
-                                    .packageDetails[index].isPublished,
-                              );
-                            });
+                        if (packageData.packageDetails.isEmpty) {
+                          return const Center(
+                            child: Text('Nothing to show here'),
+                          );
+                        } else {
+                          return ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: length,
+                              itemBuilder: (BuildContext ctx, int index) {
+                                return HomeFeatures(
+                                  id: packageData.packageDetails[index].id,
+                                  name: packageData.packageDetails[index].name,
+                                  mainBadgeId: packageData
+                                      .packageDetails[index].mainBadgeId,
+                                  subBadgeId: packageData
+                                      .packageDetails[index].subBadgeId,
+                                  description: packageData
+                                      .packageDetails[index].description,
+                                  imageUrl: packageData
+                                      .packageDetails[index].coverImg,
+                                  numberOfTourist: packageData
+                                      .packageDetails[index].maxTraveller,
+                                  starRating: 0,
+                                  fee: double.parse(packageData
+                                      .packageDetails[index].basePrice),
+                                  dateRange: '1-9',
+                                  services: packageData
+                                      .packageDetails[index].services,
+                                  country:
+                                      packageData.packageDetails[index].country,
+                                  address:
+                                      packageData.packageDetails[index].address,
+                                  extraCost: packageData
+                                      .packageDetails[index].extraCostPerPerson,
+                                  isPublished: packageData
+                                      .packageDetails[index].isPublished,
+                                );
+                              });
+                        }
                       }
                       if (snapshot.connectionState != ConnectionState.done) {
                         return const MainContentSkeletonHorizontal();
