@@ -44,6 +44,7 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
   DateTime focusedYear = DateTime.now();
   DateTime _selectedDate = DateTime.now();
   bool _isSelectionChanged = false;
+  bool _isStatic = true;
 
   @override
   void initState() {
@@ -100,16 +101,65 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
               ),
             ),
           ),
-          Container(
-            padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: SfDateRangePicker(
+          if (_isStatic)
+            Stack(children: <Widget>[
+              Container(
+                padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+                height: MediaQuery.of(context).size.height * 0.4,
+                child: SfDateRangePicker(
+                    enablePastDates: false,
+                    monthCellStyle: DateRangePickerMonthCellStyle(
+                      textStyle: TextStyle(color: HexColor('#3E4242')),
+                      todayTextStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: HexColor('#3E4242')),
+                    ),
+                    monthViewSettings: DateRangePickerMonthViewSettings(
+                      viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                          textStyle: TextStyle(
+                              fontFamily: 'Gilroy',
+                              color: Colors.black,
+                              fontSize: 15.sp)),
+                    ),
+                    selectionTextStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    selectionColor: HexColor('#FFC74A'),
+                    todayHighlightColor: HexColor('#FFC74A'),
+                    initialSelectedDates: splitDates,
+                    selectionMode: DateRangePickerSelectionMode.multiple),
+              ),
+              Positioned(
+                  top: 0,
+                  right: 0,
+                  left: 0,
+                  bottom: 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isStatic = false;
+                      });
+                    },
+                    child: SizedBox(
+                      height: 500.h,
+                      width: 500.w,
+                      child: const DecoratedBox(
+                        decoration: BoxDecoration(color: Colors.transparent),
+                      ),
+                    ),
+                  ))
+            ])
+          else
+            Container(
+              padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+              height: MediaQuery.of(context).size.height * 0.4,
+              child: SfDateRangePicker(
                 enablePastDates: false,
                 monthCellStyle: DateRangePickerMonthCellStyle(
                   textStyle: TextStyle(color: HexColor('#3E4242')),
                   todayTextStyle: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: HexColor('#3E4242')),
+                      fontWeight: FontWeight.bold, color: HexColor('#3E4242')),
                 ),
                 monthViewSettings: DateRangePickerMonthViewSettings(
                   viewHeaderStyle: DateRangePickerViewHeaderStyle(
@@ -125,9 +175,8 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
                 selectionColor: HexColor('#FFC74A'),
                 todayHighlightColor: HexColor('#FFC74A'),
                 onSelectionChanged: _onSelectionChanged,
-                initialSelectedDates: splitDates,
-                selectionMode: DateRangePickerSelectionMode.multiple),
-          ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.all(20),
             child: SizedBox(
@@ -164,9 +213,10 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
   Future<void> navigateAddSchedule(BuildContext context) async {
     if (_isSelectionChanged) {
       final Map<String, dynamic> details = {
-        'id': widget.id,
+        'package_id': widget.id,
         'selected_date': _selectedDate,
         'number_of_tourist': widget.numberOfTourist,
+        'availability_id': widget.availabilityId
       };
 
       await Navigator.pushNamed(context, '/set_booking_date',

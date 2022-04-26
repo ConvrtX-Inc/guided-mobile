@@ -46,6 +46,7 @@ class _CalendarAvailabilityScreenState
   List<String> splitDates = [];
   List<String> splitId = [];
   List<DateTime> listDate = [];
+  bool _isStatic = true;
   @override
   void initState() {
     super.initState();
@@ -117,10 +118,62 @@ class _CalendarAvailabilityScreenState
                   SizedBox(
                     height: 20.h,
                   ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    child: SfDateRangePicker(
+                  if (_isStatic)
+                    Stack(children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+                        height: MediaQuery.of(context).size.height * 0.4,
+                        child: SfDateRangePicker(
+                            enablePastDates: false,
+                            monthCellStyle: DateRangePickerMonthCellStyle(
+                              textStyle: TextStyle(color: HexColor('#3E4242')),
+                              todayTextStyle: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: HexColor('#3E4242')),
+                            ),
+                            monthViewSettings: DateRangePickerMonthViewSettings(
+                              viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                                  textStyle: TextStyle(
+                                      fontFamily: 'Gilroy',
+                                      color: Colors.black,
+                                      fontSize: 15.sp)),
+                            ),
+                            selectionTextStyle: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            selectionColor: HexColor('#FFC74A'),
+                            todayHighlightColor: HexColor('#FFC74A'),
+                            initialSelectedDates: splitDates,
+                            selectionMode:
+                                DateRangePickerSelectionMode.multiple),
+                      ),
+                      Positioned(
+                          top: 0,
+                          right: 0,
+                          left: 0,
+                          bottom: 0,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isStatic = false;
+                              });
+                            },
+                            child: SizedBox(
+                              height: 500.h,
+                              width: 500.w,
+                              child: const DecoratedBox(
+                                decoration:
+                                    BoxDecoration(color: Colors.transparent),
+                              ),
+                            ),
+                          ))
+                    ])
+                  else
+                    Container(
+                      padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      child: SfDateRangePicker(
                         enablePastDates: false,
                         monthCellStyle: DateRangePickerMonthCellStyle(
                           textStyle: TextStyle(color: HexColor('#3E4242')),
@@ -142,9 +195,8 @@ class _CalendarAvailabilityScreenState
                         selectionColor: HexColor('#FFC74A'),
                         todayHighlightColor: HexColor('#FFC74A'),
                         onSelectionChanged: _onSelectionChanged,
-                        initialSelectedDates: splitDates,
-                        selectionMode: DateRangePickerSelectionMode.multiple),
-                  ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -201,8 +253,9 @@ class _CalendarAvailabilityScreenState
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
     // print(args.value);
     setState(() {
-      listDate = args.value;
-      _selectedDate = listDate[listDate.length - 1];
+      // listDate = args.value;
+      // _selectedDate = listDate[listDate.length - 1];
+      _selectedDate = args.value;
       _isSelectionChanged = true;
     });
     print(_selectedDate);
