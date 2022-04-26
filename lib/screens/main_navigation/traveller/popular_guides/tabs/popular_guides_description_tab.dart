@@ -13,6 +13,7 @@ import 'dart:async';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/badge_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 
@@ -158,7 +159,11 @@ class _PopularGuidesTabDescriptionState
                                     SizedBox(
                                       width: 10.w,
                                     ),
-                                    const CircularProgressIndicator(),
+                                    const SkeletonText(
+                                      width: 30,
+                                      height: 30,
+                                      shape: BoxShape.circle,
+                                    ),
                                   ],
                                 ),
                               );
@@ -474,6 +479,7 @@ class _PopularGuidesTabDescriptionState
                       ),
                       Expanded(
                         child: Card(
+                          color: Colors.transparent,
                           elevation: 0,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -713,7 +719,7 @@ class _PopularGuidesTabDescriptionState
                   Padding(
                     padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 10.h),
                     child: Text(
-                      'We will care about your health & safety',
+                      'We care about your health & safety',
                       style: TextStyle(
                           fontFamily: 'Gilroy',
                           fontSize: 14.sp,
@@ -968,7 +974,7 @@ class _PopularGuidesTabDescriptionState
                 shape: BoxShape.circle,
               ),
               child: CircleAvatar(
-                backgroundColor: Colors.white,
+                backgroundColor: Colors.transparent,
                 radius: 40.r,
                 backgroundImage: AssetImage(profileImg),
               ),
@@ -988,6 +994,7 @@ class _PopularGuidesTabDescriptionState
           ]),
           Expanded(
             child: Card(
+              color: Colors.transparent,
               elevation: 0,
               child: Column(
                 mainAxisSize: MainAxisSize.min,

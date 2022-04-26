@@ -23,7 +23,9 @@ import 'package:guided/models/popular_guide.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
+import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
@@ -671,9 +673,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                 AsyncSnapshot<List<ActivityPackage>> snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const MainContentSkeletonHorizontal();
                 default:
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
@@ -766,7 +766,11 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                       SizedBox(
                                                         height: 110.h,
                                                       ),
-                                                      const CircularProgressIndicator(),
+                                                      const SkeletonText(
+                                                        width: 30,
+                                                        height: 30,
+                                                        shape: BoxShape.circle,
+                                                      )
                                                     ],
                                                   ),
                                                 );
@@ -1111,9 +1115,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return const MainContentSkeletonHorizontal();
                   default:
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
