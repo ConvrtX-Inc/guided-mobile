@@ -79,21 +79,15 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                 width: 150.w,
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (!isLast) {
-                      setState(() {
-                        activeIndex = activeIndex + 1;
-                      });
-                    } else {
-                      await SecureStorage.readValue(
-                              key: AppTextConstants.userType)
-                          .then((String value) async {
-                        if (value == 'traveller') {
-                          await Navigator.of(context).pushNamed('/discovery');
-                        } else {
-                          await Navigator.of(context).pushNamed('/welcome');
-                        }
-                      });
-                    }
+                    await SecureStorage.readValue(
+                            key: AppTextConstants.userType)
+                        .then((String value) async {
+                      if (value == 'traveller') {
+                        await Navigator.of(context).pushNamed('/discovery');
+                      } else {
+                        await Navigator.of(context).pushNamed('/welcome');
+                      }
+                    });
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -172,7 +166,6 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                       ? headerImage(
                           'Step 2/2', 'assets/images/userOnBoarding3.png')
                       : const SizedBox(),
-
               if (screenArguments['user_type'] == 'traveller')
                 if (activeIndex == 0)
                   footer(
@@ -186,7 +179,6 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                           true,
                         )
                       : const SizedBox(),
-
               if (screenArguments['user_type'] == 'guide')
                 if (activeIndex == 0)
                   headerImage('Step 1/2', 'assets/images/userOnBoarding1.png')
@@ -195,7 +187,6 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                       ? headerImage(
                           'Step 2/2', 'assets/images/userOnBoarding3.png')
                       : const SizedBox(),
-
               if (screenArguments['user_type'] == 'guide')
                 if (activeIndex == 0)
                   footer(
@@ -209,7 +200,6 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                           true,
                         )
                       : const SizedBox(),
-
               DotsIndicator(
                 dotsCount: 2,
                 position: activeIndex,

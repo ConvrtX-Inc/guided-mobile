@@ -12,6 +12,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/main_navigation/content/packages/tab/tab_description.dart';
 import 'package:guided/screens/main_navigation/content/packages/tab/tab_slots_and_schedule.dart';
@@ -37,9 +38,9 @@ class _PackageViewState extends State<PackageView>
   @override
   bool get wantKeepAlive => true;
   _PackageViewState(this.initIndex);
-
   final screenshotController = ScreenshotController();
-
+  List<String> splitId = [];
+  List<DateTime> splitAvailabilityDate = [];
   int initIndex;
   String title = '';
 
@@ -47,6 +48,24 @@ class _PackageViewState extends State<PackageView>
   void initState() {
     super.initState();
     setTitle(initIndex);
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+      await getActivityAvailability(screenArguments['id']);
+    });
+  }
+
+  Future<void> getActivityAvailability(String activityPackageId) async {
+    final List<ActivityAvailability> resForm =
+        await APIServices().getActivityAvailability(activityPackageId);
+
+    for (int index = 0; index < resForm.length; index++) {
+      splitId.add(resForm[index].id);
+      splitAvailabilityDate
+          .add(DateTime.parse(resForm[index].availability_date));
+    }
   }
 
   void setTitle(int initIndex) {
@@ -281,6 +300,8 @@ class _PackageViewState extends State<PackageView>
                 ),
                 TabSlotsAndScheduleView(
                   id: screenArguments['id'],
+                  availabilityId: splitId,
+                  availabilityDate: splitAvailabilityDate,
                   numberOfTourist: screenArguments['number_of_tourist'],
                 )
               ],
