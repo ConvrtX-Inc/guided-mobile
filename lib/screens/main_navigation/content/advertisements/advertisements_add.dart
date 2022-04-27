@@ -20,6 +20,7 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/badgesModel.dart';
 import 'package:guided/models/card_model.dart';
@@ -96,6 +97,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   bool isLocationBtnClicked = false;
   late Future<BadgeModelData> _loadingData;
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
   @override
   void initState() {
     super.initState();
@@ -938,7 +940,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
             onPressed: () {
               _formKey.currentState?.save();
               if (_formKey.currentState!.validate()) {
-                _isSubmit ? null : handlePayment();
+                _isSubmit
+                    ? null
+                    : PaymentConfig.isPaymentEnabled
+                        ? handlePayment()
+                        : advertisementDetail();
               } else {
                 print('validation failed');
               }
@@ -1494,8 +1500,12 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         needAccessToken: true, data: finalJson);
   }
 
-  Future<void> advertisementDetail(double price, String serviceName,
-      String transactionNumber, String mode) async {
+  Future<void> advertisementDetail(
+      {double? price,
+      String? serviceName,
+      String? transactionNumber,
+      String? mode}) async {
+    debugPrint('crate ad');
     if (image1 == null) {
       AdvanceSnackBar(message: ErrorMessageConstants.advertisementImageEmpty)
           .show(context);
@@ -1566,37 +1576,39 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         await saveBulkImage(activityOutfitterId);
       }
 
-      //Display payment successful when advertisement is created
-      await paymentSuccessful(
-          context: context,
-          onOkBtnPressed: () async {
-            int count = 0;
-            Navigator.popUntil(context, (route) {
-              return count++ == 3;
-            });
+      if (PaymentConfig.isPaymentEnabled) {
+        //Display payment successful when advertisement is created
+        await paymentSuccessful(
+            context: context,
+            onOkBtnPressed: () async {
+              int count = 0;
+              Navigator.popUntil(context, (route) {
+                return count++ == 3;
+              });
 
-            await Navigator.pushReplacement(
-                context,
-                MaterialPageRoute<dynamic>(
-                    builder: (BuildContext context) =>
-                        const MainNavigationScreen(
-                          navIndex: 1,
-                          contentIndex: 1,
-                        )));
-          },
-          paymentDetails: PaymentDetails(
-              serviceName: serviceName,
-              price: price.toStringAsFixed(2),
-              transactionNumber: transactionNumber),
-          paymentMethod: mode);
-
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
-                    navIndex: 1,
-                    contentIndex: 3,
-                  )));
+              await Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) =>
+                          const MainNavigationScreen(
+                            navIndex: 1,
+                            contentIndex: 1,
+                          )));
+            },
+            paymentDetails: PaymentDetails(
+                serviceName: serviceName!,
+                price: price!.toStringAsFixed(2),
+                transactionNumber: transactionNumber!),
+            paymentMethod: mode!);
+      } else {
+        await Navigator.pushReplacement(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => const MainNavigationScreen(
+                      navIndex: 1,
+                      contentIndex: 3,
+                    )));
+      }
     }
   }
 
@@ -1681,7 +1693,10 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     onPaymentSuccessful: () {
                       // API Integration for create advertisement..
                       advertisementDetail(
-                          price, serviceName, transactionNumber, mode);
+                          price: price,
+                          serviceName: serviceName,
+                          transactionNumber: transactionNumber,
+                          mode: mode);
                     },
                     onPaymentFailed: () {
                       paymentFailed(

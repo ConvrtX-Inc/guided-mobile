@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/api/api_standard_return.dart';
@@ -47,7 +48,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
   dynamic paymentMethodDetails;
   String paymentMode = '';
   Widget bookingPaymentDetails = Container();
-    double price = 0;
+  double price = 0;
   final String serviceName = 'Tourist Service';
   String transactionNumber = '';
 
@@ -55,7 +56,9 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
   String selectedDate = '';
 
   final UserProfileDetailsController _profileDetailsController =
-  Get.put(UserProfileDetailsController());
+      Get.put(UserProfileDetailsController());
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -71,10 +74,8 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     final int numberOfTraveller = screenArguments['numberOfTraveller'] as int;
     selectedDate = screenArguments['selectedDate'] as String;
 
-    price = getTotalHours(selectedDate) * double.parse(activityPackage.basePrice!);
-
-
-
+    price =
+        getTotalHours(selectedDate) * double.parse(activityPackage.basePrice!);
 
     return Scaffold(
       backgroundColor: HexColor('#ECEFF0'),
@@ -210,7 +211,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
               ),
               sectionTwo(screenArguments),
               sectionThree(),
-              sectionFour(),
+              if (PaymentConfig.isPaymentEnabled) sectionFour(),
               sectionFive(),
               sectionSix(),
               sectionSeven(screenArguments),
@@ -896,7 +897,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           SizedBox(
             height: 20.h,
           ),
-          if (paymentMode.isEmpty)
+          if (PaymentConfig.isPaymentEnabled && paymentMode.isEmpty)
             SizedBox(
               height: 60.h,
               width: MediaQuery.of(context).size.width * 0.9,
@@ -928,18 +929,26 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
             SizedBox(
               height: 60.h,
               child: CustomRoundedButton(
+                isLoading: isLoading,
                 title: AppTextConstants.requestToBook,
                 onpressed: () async {
-                  dynamic paymentClicked = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => PaymentManageCard(
-                              price: '$price',
-                            )),
-                  );
+                  if (PaymentConfig.isPaymentEnabled) {
+                    dynamic paymentClicked = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => PaymentManageCard(
+                                price: '$price',
+                              )),
+                    );
 
-                  if (paymentClicked != null) {
-                    handleConfirmPayment(screenArguments);
+                    if (paymentClicked != null) {
+                      handleConfirmPayment(screenArguments);
+                    }
+                  } else {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await goToPaymentMethod(context, screenArguments);
                   }
                 },
               ),
@@ -979,11 +988,52 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
         transactionNumber: transactionNumber,
         total: price.toString());
 
-    // final String paymentIntent = await handlePayment(price);
-    final String paymentMethodId = await handlePayment(price);
+    if (PaymentConfig.isPaymentEnabled) {
+      // final String paymentIntent = await handlePayment(price);
+      final String paymentMethodId = await handlePayment(price);
 
+      if (paymentMethodId.isNotEmpty) {
+        await APIServices()
+            .requestBooking(details)
+            .then((APIStandardReturnFormat value) async {
+          if (value.status == 'success') {
+            final dynamic result = json.decode(value.successResponse);
 
-    if (paymentMethodId.isNotEmpty) {
+            ///save transaction
+            final UserTransaction transaction =
+                await APIServices().addUserTransaction(transactionDetails);
+
+            ///Save payment intent here
+            await saveStripePaymentIntent(
+                'paymentIntent', result['id'], paymentMethodId);
+
+            Navigator.pop(context);
+            await paymentSuccessful(
+                context: context,
+                paymentDetails: bookingPaymentDetails,
+                paymentMethod: paymentMode,
+                onOkBtnPressed: () {
+                  // show transaction details
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => RequestRefund(
+                              paymentDetails: paymentMethodDetails,
+                              paymentMode: paymentMode,
+                              transactionDetails: transaction,
+                              activityPackageDetails: activityPackage,
+                            )),
+                  );
+                });
+          }
+        });
+      } else {
+        await paymentFailed(
+            context: context,
+            paymentDetails: bookingPaymentDetails,
+            paymentMethod: paymentMode);
+      }
+    } else {
       await APIServices()
           .requestBooking(details)
           .then((APIStandardReturnFormat value) async {
@@ -994,34 +1044,13 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           final UserTransaction transaction =
               await APIServices().addUserTransaction(transactionDetails);
 
-          ///Save payment intent here
-          await saveStripePaymentIntent('paymentIntent', result['id'],paymentMethodId);
+          setState(() {
+            isLoading = false;
+          });
 
-          Navigator.pop(context);
-          await paymentSuccessful(
-              context: context,
-              paymentDetails: bookingPaymentDetails,
-              paymentMethod: paymentMode,
-              onOkBtnPressed: () {
-                // show transaction details
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => RequestRefund(
-                            paymentDetails: paymentMethodDetails,
-                            paymentMode: paymentMode,
-                            transactionDetails: transaction,
-                            activityPackageDetails: activityPackage,
-                          )),
-                );
-              });
+         await _showDialog(context);
         }
       });
-    } else {
-      await paymentFailed(
-          context: context,
-          paymentDetails: bookingPaymentDetails,
-          paymentMethod: paymentMode);
     }
   }
 
@@ -1126,10 +1155,10 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
   }
 
   ///save stripe payment intent to database
-  Future<void> saveStripePaymentIntent(
-      String paymentIntentId, String bookingRequestId,String paymentMethodId) async {
+  Future<void> saveStripePaymentIntent(String paymentIntentId,
+      String bookingRequestId, String paymentMethodId) async {
     final APIStandardReturnFormat result = await APIServices()
-        .savePaymentIntent(paymentIntentId, bookingRequestId,paymentMethodId);
+        .savePaymentIntent(paymentIntentId, bookingRequestId, paymentMethodId);
 
     debugPrint('Result ${result}');
   }
@@ -1139,9 +1168,8 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
       transactionNumber = GlobalMixin().generateTransactionNumber();
     });
 
-
     final int numberOfTraveller = screenArgs['numberOfTraveller'] as int;
-    final String  tourGuide = screenArgs['tourGuide'] as String;
+    final String tourGuide = screenArgs['tourGuide'] as String;
 
     setState(() {
       bookingPaymentDetails = BookingPaymentDetails(
@@ -1177,4 +1205,44 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
   }
 
 
+  Future<void> _showDialog(BuildContext context) async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(22.r))),
+            elevation: 12,
+            content: SizedBox(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+
+                  children: <Widget>[
+
+                    Center(
+                      child: Container(
+                        child: Text(
+                            'Booking Request Sent!',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 14.sp)),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    Center(
+                        child: CustomRoundedButton(
+                          title: 'Ok',
+                          onpressed: () {
+                              Navigator.of(context).pushNamed('/traveller_tab');
+                          },
+                          buttonHeight: 40.h,
+                          buttonWidth: 120.w,
+                        ))
+                  ],
+                )),
+          );
+        });
+  }
 }
