@@ -74,6 +74,9 @@ Future<dynamic> paymentMethod(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Row(children: <Widget>[
+                      GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: 
                       Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(6),
@@ -82,7 +85,7 @@ Future<dynamic> paymentMethod(
                           Icons.arrow_back,
                           color: Colors.black,
                         ),
-                      ),
+                      )),
                       SizedBox(width: 20.w),
                       Text(
                         'Payment Method',
@@ -134,25 +137,26 @@ Future<dynamic> paymentMethod(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: <Widget>[
                                 for (int i = 0; i < paymentModes.length; i++)
-                                  getMethods(
-                                      data: paymentModes[i],
-                                      isSelected: selectedPaymentMode == i,
-                                      onPaymentModePressed: () {
-                                        debugPrint('Selected');
+                                  if(paymentModes[i].isEnabled)
+                                    getMethods(
+                                        data: paymentModes[i],
+                                        isSelected: selectedPaymentMode == i,
+                                        onPaymentModePressed: () {
+                                          debugPrint('Selected');
 
-                                        setState(() {
-                                          selectedPaymentMode = i;
-                                        });
+                                          setState(() {
+                                            selectedPaymentMode = i;
+                                          });
 
-                                        if (selectedPaymentMode == 1) {
-                                          // Google Pay
-                                          debugPrint('Google Pay');
-                                          // handleGooglePay(context);
-                                        } else {
-                                          // apple pay
+                                          if (selectedPaymentMode == 1) {
+                                            // Google Pay
+                                            debugPrint('Google Pay');
+                                            // handleGooglePay(context);
+                                          } else {
+                                            // apple pay
 
-                                        }
-                                      }),
+                                          }
+                                        }),
                               ]),
 
                           SizedBox(
