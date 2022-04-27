@@ -407,6 +407,10 @@ class RouteGenerator {
       case '/test':
         return MaterialPageRoute<dynamic>(
             builder: (_) =>  SettingsMain());
+      case '/manage_cards':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PaymentManageCard());
+
       default:
         return _errorRoute();
     }
