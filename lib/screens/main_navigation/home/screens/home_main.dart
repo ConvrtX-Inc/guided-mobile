@@ -1,4 +1,4 @@
-// ignore_for_file: no_default_cases, always_specify_types, avoid_dynamic_calls, use_string_buffers
+// ignore_for_file: no_default_cases, always_specify_types, avoid_dynamic_calls, use_string_buffers, type_annotate_public_apis, always_declare_return_types
 
 import 'dart:convert';
 import 'dart:math';
@@ -14,6 +14,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/booking_request.dart';
 import 'package:guided/models/home.dart';
 import 'package:guided/models/package_model.dart';
+import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
 import 'package:guided/screens/main_navigation/home/widgets/concat_strings.dart';
@@ -62,11 +63,69 @@ class _HomeScreenState extends State<HomeScreen>
 
   late Future<PackageModelData> _loadingData;
   late Future<List<BookingRequest>> _loadingBooking;
+  String image1 = '';
+  String image2 = '';
+  String image3 = '';
+  String name1 = '';
+  String name2 = '';
+  String name3 = '';
+  List<String> image = ['image1', 'image2', 'image3'];
   @override
   void initState() {
     super.initState();
     _loadingData = APIServices().getPackageData();
     _loadingBooking = APIServices().getBookingRequest();
+
+    getData();
+  }
+
+  getData() async {
+    final List<BookingRequest> resData =
+        await APIServices().getBookingRequest();
+
+    for (int index = 0; index < resData.length; index++) {
+      if (resData[index].isApproved! == false) {
+        if (image1 == '') {
+          setData1(resData[index].profilePhoto!, resData[index].fromUserId!);
+        }
+        if (image2 == '') {
+          setData2(resData[index].profilePhoto!, resData[index].fromUserId!);
+        }
+        if (image3 == '') {
+          setData3(resData[index].profilePhoto!, resData[index].fromUserId!);
+        }
+        setState(() {
+          total = resData.length;
+        });
+      }
+    }
+  }
+
+  setData1(String img, String id) async {
+    final ProfileDetailsModel resUsername0 =
+        await APIServices().getProfileDataById(id);
+    setState(() {
+      image1 = img;
+      name1 = resUsername0.firstName;
+    });
+  }
+
+  setData2(String img, String id) async {
+    final ProfileDetailsModel resUsername0 =
+        await APIServices().getProfileDataById(id);
+    setState(() {
+      image2 = img;
+      name2 = resUsername0.firstName;
+    });
+  }
+
+  setData3(String img, String id) async {
+    final ProfileDetailsModel resUsername0 =
+        await APIServices().getProfileDataById(id);
+    setState(() {
+      image3 = img;
+      name3 = resUsername0.firstName;
+    });
   }
 
   @override
@@ -261,6 +320,269 @@ class _HomeScreenState extends State<HomeScreen>
             height: _bulletHeight,
             color: _bulletColor,
           ),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) =>
+                          const MainNavigationScreen(
+                            navIndex: 2,
+                            contentIndex: 0,
+                          )));
+            },
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.only(top: 12.h),
+                  width: double.infinity,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.platinum),
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              if (image1 == '')
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: <BoxShadow>[
+                                        BoxShadow(
+                                            blurRadius: 5,
+                                            color:
+                                                Colors.black.withOpacity(0.3),
+                                            spreadRadius: 3)
+                                      ],
+                                    ),
+                                    child: const CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      child: CircleAvatar(
+                                        radius: 18,
+                                        backgroundColor: Colors.green,
+                                        backgroundImage: NetworkImage(
+                                            'https://img.icons8.com/office/344/person-male.png'),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: <BoxShadow>[
+                                        BoxShadow(
+                                            blurRadius: 5,
+                                            color:
+                                                Colors.black.withOpacity(0.3),
+                                            spreadRadius: 3)
+                                      ],
+                                    ),
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      child: Container(
+                                        height: 10.h,
+                                        width: 10.w,
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            image: DecorationImage(
+                                                image: Image.memory(
+                                              base64.decode(
+                                                  image1.split(',').last),
+                                              fit: BoxFit.cover,
+                                              gaplessPlayback: true,
+                                            ).image),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.r)),
+                                            border: Border.all(
+                                                color: Colors.green,
+                                                width: 4.w)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              if (image2 == '')
+                                Align(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: <BoxShadow>[
+                                        BoxShadow(
+                                            blurRadius: 5,
+                                            color:
+                                                Colors.black.withOpacity(0.3),
+                                            spreadRadius: 3)
+                                      ],
+                                    ),
+                                    child: const CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      child: CircleAvatar(
+                                        radius: 18,
+                                        backgroundColor: Colors.green,
+                                        backgroundImage: NetworkImage(
+                                            'https://img.icons8.com/office/344/person-male.png'),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                Align(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: <BoxShadow>[
+                                        BoxShadow(
+                                            blurRadius: 5,
+                                            color:
+                                                Colors.black.withOpacity(0.3),
+                                            spreadRadius: 3)
+                                      ],
+                                    ),
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      child: Container(
+                                        height: 10.h,
+                                        width: 10.w,
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            image: DecorationImage(
+                                                image: Image.memory(
+                                              base64.decode(
+                                                  image2.split(',').last),
+                                              fit: BoxFit.cover,
+                                              gaplessPlayback: true,
+                                            ).image),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.r)),
+                                            border: Border.all(
+                                                color: Colors.green,
+                                                width: 4.w)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              if (image3 == '')
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: <BoxShadow>[
+                                        BoxShadow(
+                                            blurRadius: 5,
+                                            color:
+                                                Colors.black.withOpacity(0.3),
+                                            spreadRadius: 3)
+                                      ],
+                                    ),
+                                    child: const CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      child: CircleAvatar(
+                                        radius: 18,
+                                        backgroundColor: Colors.green,
+                                        backgroundImage: NetworkImage(
+                                            'https://img.icons8.com/office/344/person-male.png'),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                Align(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: <BoxShadow>[
+                                        BoxShadow(
+                                            blurRadius: 5,
+                                            color:
+                                                Colors.black.withOpacity(0.3),
+                                            spreadRadius: 3)
+                                      ],
+                                    ),
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      child: Container(
+                                        height: 10.h,
+                                        width: 10.w,
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            image: DecorationImage(
+                                                image: Image.memory(
+                                              base64.decode(
+                                                  image3.split(',').last),
+                                              fit: BoxFit.cover,
+                                              gaplessPlayback: true,
+                                            ).image),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.r)),
+                                            border: Border.all(
+                                                color: Colors.red, width: 4.w)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              SizedBox(width: 15.w),
+                              Text(
+                                '$name1, ',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 14),
+                              ),
+                              Text(
+                                '$name2, ',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 14),
+                              ),
+                              Text(
+                                name3,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 14),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10.h),
+                          Text(
+                            AppTextConstants.homeMainHeader,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.grey),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 5.h, horizontal: 9.w),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6.r),
+                        color: AppColors.lightningYellow),
+                    child: Text('$total Pending request',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w600, color: Colors.white)),
+                  ),
+                )
+              ],
+            ),
+          ),
+
           // SizedBox(
           //   height: 150.h,
           //   child: Column(

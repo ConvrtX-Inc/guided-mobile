@@ -1675,4 +1675,19 @@ class APIServices {
 
     return chatMessages;
   }
+
+  /// API service for profile model
+  Future<ProfileDetailsModel> getProfileDataById(String id) async {
+    final String url =
+        '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/$id';
+    debugPrint('URL $url');
+    final http.Response response = await http.get(Uri.parse(url), headers: {
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+    });
+
+    final ProfileDetailsModel dataSummary =
+        ProfileDetailsModel.fromJson(json.decode(response.body));
+    return dataSummary;
+  }
 }
