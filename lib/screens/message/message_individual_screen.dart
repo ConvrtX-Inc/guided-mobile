@@ -33,7 +33,6 @@ class _MessageIndividualState extends State<MessageIndividual> {
   String message = 'test';
   final TextEditingController _textMessageController = TextEditingController();
 
-  String receiverId = '1be3bb15-8931-4135-aaa2-f5f242b190bb';
 
   ChatModel chat = ChatModel();
 
@@ -78,8 +77,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
   }
 
   void connectToServer() {
-    debugPrint(
-        'Socekt url : ${AppAPIPath.webSocketUrl} ${receiverId} ${UserSingleton.instance.user.user?.id}');
+
     socket = IO.io(AppAPIPath.webSocketUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
@@ -126,10 +124,10 @@ class _MessageIndividualState extends State<MessageIndividual> {
                         height: 40.h,
                         width: 40.w),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context,'getMessages');
                     },
                   ),
-                  IconButton(
+               /*   IconButton(
                     icon: Image.asset(
                         '${AssetsPath.assetsPNGPath}/phone_green.png',
                         height: 20.h,
@@ -137,7 +135,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                  ),
+                  ),*/
                 ],
               ),
             ),
@@ -157,7 +155,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
             SizedBox(
               height: 15.h,
             ),
-            Container(
+           /* Container(
               height: 57.h,
               color: AppColors.tealGreen.withOpacity(0.15),
               child: Row(
@@ -198,7 +196,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
                   )
                 ],
               ),
-            ),
+            ),*/
             Expanded(
               child: ListView.builder(
                 itemCount: chatMessages.length,

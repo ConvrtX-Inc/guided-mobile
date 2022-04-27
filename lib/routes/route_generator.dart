@@ -67,6 +67,7 @@ import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
+import 'package:guided/screens/message/message_screen_traveler.dart';
 import 'package:guided/screens/notification/notification_screen.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
 import 'package:guided/screens/packages/create_package/free_service_screen.dart';
@@ -287,7 +288,7 @@ class RouteGenerator {
             settings: settings);
       case '/checkAvailability':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const CheckAvailability(), settings: settings);
+            builder: (_) =>   CheckAvailability(screenArguments: args), settings: settings);
       case '/discovery_hub':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TabDiscoveryHub());
@@ -407,6 +408,14 @@ class RouteGenerator {
       case '/test':
         return MaterialPageRoute<dynamic>(
             builder: (_) =>  SettingsMain());
+      case '/manage_cards':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PaymentManageCard());
+
+      case '/traveller_message':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const MessageScreenTraveler());
+
       default:
         return _errorRoute();
     }

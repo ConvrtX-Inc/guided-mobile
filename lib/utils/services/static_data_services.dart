@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/guide.dart';
@@ -74,55 +75,73 @@ class StaticDataService {
   static List<Activity> getActivityForNearybyGuides() {
     return <Activity>[
       Activity(
-          id: 'd54b5cc7-ef50-496b-a01b-0b18a7fdcd3b',
+          id: AppAPIPath.mode == 'dev'
+              ? '764f32ae-7f8c-4d3c-b948-d7b93eaed436'
+              : '4265e4f4-5b4d-49fc-8752-98e05e114368',
           name: 'Camping',
           path: 'assets/images/png/activity_icon5.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/png/activity3.png'),
       Activity(
-          id: 'c2d31a67-9ad5-477e-bcb2-465710777525',
+          id: AppAPIPath.mode == 'dev'
+              ? 'd39690d5-a692-49b8-bc30-610dfc4ca6b7'
+              : '69356166-f57d-46ed-aaf7-03321199f6a5',
           name: 'Hiking',
           path: 'assets/images/png/activity_icon6.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/jpg/hiking.jpg'),
       Activity(
-          id: '11bbd0ab-9a5a-4a60-9d79-698ac8933084',
+          id: AppAPIPath.mode == 'dev'
+              ? '97253245-07c1-47e8-9da6-2187e6a1c648'
+              : '0ef59c29-2c4c-4998-93d1-053e470735fd',
           name: 'Hunt',
           path: 'assets/images/png/activity_icon0.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/png/activity1.png'),
       Activity(
-          id: 'cd434cbb-9f93-4c98-a84d-249c76d85282',
+          id: AppAPIPath.mode == 'dev'
+              ? 'b513f525-b84b-4420-8b10-f4c30236bcf3'
+              : '1639d620-5769-405a-b344-76e8653906ff',
           name: 'Fishing',
           path: 'assets/images/png/activity_icon7.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/jpg/fishing.jpg'),
       Activity(
-          id: 'd283aa50-dccf-4b76-a254-a402c37abebf',
+          id: AppAPIPath.mode == 'dev'
+              ? 'd90ad697-91d1-4f8c-89f1-6382895242b0'
+              : '6203594e-e767-4971-93d5-7fe7a4950811',
           name: 'ECO Tour',
           path: 'assets/images/png/activity_icon2.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/jpg/eco_tour.jpg'),
       Activity(
-          id: 'dc777b8a-de31-413e-b5c1-9fc2a72df353',
+          id: AppAPIPath.mode == 'dev'
+              ? '88b7631d-ca94-4777-a92b-020e80480914'
+              : '792a1a73-2919-4186-9031-e7aa8cf37549',
           name: 'Retreat',
           path: 'assets/images/png/activity_icon3.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/jpg/retreat.jpg'),
       Activity(
-          id: 'a74618c0-8b12-4d3d-98a1-f62df5ed2513',
+          id: AppAPIPath.mode == 'dev'
+              ? 'f89b5ca2-2179-41d3-98ad-ee81b6762a03'
+              : '6932db75-77cb-4ccd-b54a-18d6af9940ff',
           name: 'Paddle Spot',
           path: 'assets/images/png/activity_icon4.png',
           distance: '4.5 hours drive',
           featureImage: 'assets/images/png/activity2.png'),
       Activity(
-          id: '19eeab58-762c-400e-ba26-4fdc02b43a20',
+          id: AppAPIPath.mode == 'dev'
+              ? 'd66ecb13-38ed-4f36-901d-e5c9db24651f'
+              : '19eeab58-762c-400e-ba26-4fdc02b43a20',
           name: 'Discovery',
           path: 'assets/images/png/activity_icon1.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/png/activity1.png'),
       Activity(
-          id: 'fb65f344-5d04-4c90-baac-3a7bf5fc6702',
+          id: AppAPIPath.mode == 'dev'
+              ? '58bf3725-f77c-42c8-8da2-cfec49423b9f'
+              : '6950833-17c8-4c0c-9aa1-ed94c427622f',
           name: 'Motor',
           path: 'assets/images/png/activity_icon9.png',
           distance: '3.5 hours drive',

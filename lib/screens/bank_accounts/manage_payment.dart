@@ -10,6 +10,7 @@ import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/bank_account_controller.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/user_profile_controller.dart';
@@ -91,7 +92,7 @@ class _ManagePaymentState extends State<ManagePayment> {
         ),
       ),
       // body: buildPaymentUI(),
-      body: stripeAcctId.isNotEmpty ? buildPaymentUI() :  buildSetupStripeAccount(),
+      body: (stripeAcctId.isEmpty && PaymentConfig.isPaymentEnabled) ?   buildSetupStripeAccount() : buildPaymentUI(),
     );
   }
 

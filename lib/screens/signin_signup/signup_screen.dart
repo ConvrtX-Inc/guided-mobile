@@ -320,17 +320,13 @@ class _SignupScreenState extends State<SignupScreen> {
                               buttonIsLoading = true;
                             });
                             // print(_formKey.currentState?.value['email']);
-                            List<String> name = _formKey
-                                .currentState?.value['first_name']
-                                .split(' ');
+
                             final Map<String, dynamic> details = {
                               'email': _formKey.currentState?.value['email'],
                               'password':
                                   _formKey.currentState?.value['password'],
                               'full_name':
                                   _formKey.currentState?.value['first_name'],
-                              'first_name': name[0],
-                              'last_name': name[1],
                               'user_type': isTraveller ? 'Traveller' : 'Guide',
                               'phone_no': _phonenumber,
                               'country_code': _countryCode,

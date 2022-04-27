@@ -128,6 +128,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
                       child: TextField(
+                        onSubmitted: (value) {
+                          widget.onItemPressed('guides');
+                        },
                         textAlign: TextAlign.left,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(

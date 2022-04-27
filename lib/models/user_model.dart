@@ -51,6 +51,7 @@ class User {
   String? sEntity;
   String? profilePhoto;
   String? stripeAccountId;
+  String? firebaseProfilePicUrl;
 
   User(
       {this.id,
@@ -109,6 +110,7 @@ class User {
     sEntity = json['__entity'];
     profilePhoto = json['profile_photo'];
     stripeAccountId = json['stripe_account_id'];
+    firebaseProfilePicUrl = json['profile_photo_firebase_url'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
