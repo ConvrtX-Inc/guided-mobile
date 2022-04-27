@@ -19,26 +19,7 @@ class AppListConstants {
     'Archive'
   ];
 
-  /// generate mock data
-  static List<Message> getMessages() {
-    return <Message>[
-      Message(
-          id: 1,
-          name: 'Ann Sasha',
-          message: 'Hello, are we good for the hike at 2 pm?',
-          imgUrl: 'assets/images/png/pmessage1.png'),
-      Message(
-          id: 2,
-          name: 'Mark Henrry',
-          message: "Sounds like fun, can't wait to get out on the lake",
-          imgUrl: 'assets/images/png/pmessage2.png'),
-      Message(
-          id: 3,
-          name: 'David Bill',
-          message: 'I am happy to give you a discount for 5 or more people',
-          imgUrl: 'assets/images/png/pmessage3.png'),
-    ];
-  }
+
 
   /// use in message offer screen
   static List<String> packages = <String>['Basic', 'Premium'];
