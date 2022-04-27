@@ -1,7 +1,7 @@
 /// Class for settings items
-class Message {
+class MessageModel {
   /// Constructor
-  Message({
+  MessageModel({
     required this.id,
     required this.name,
     required this.message,
@@ -20,7 +20,7 @@ class Message {
   /// property for image url
   late String imgUrl;
 
-  Message.fromJson(Map<String, dynamic> json) {
+  MessageModel.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '';
     name = json['name'] ?? '';
     message = json['message'] ?? '';
