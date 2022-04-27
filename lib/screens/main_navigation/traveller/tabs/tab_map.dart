@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, use_named_constants
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
@@ -66,11 +67,13 @@ class _TabMapScreenState extends State<TabMapScreen> {
   bool showBottomScroll = true;
   double activitiesContainer = 70;
   bool _isloading = true;
-  int _selectedActivity = -1;
+  List<int> _selectedActivity = [];
   LatLng currentMapLatLong = LatLng(53.59, -113.60);
   List<ActivityPackage> _loadingData = [];
+  List<ActivityPackage> _filteredActivity = [];
   final CardController _creditCardController = Get.put(CardController());
-  final UserSubscriptionController _userSubscriptionController = Get.put(UserSubscriptionController());
+  final UserSubscriptionController _userSubscriptionController =
+      Get.put(UserSubscriptionController());
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
@@ -99,7 +102,6 @@ class _TabMapScreenState extends State<TabMapScreen> {
       final Activity? activity = activities
           .firstWhereOrNull((Activity a) => a.id == element.mainBadge!.id);
 
-      print('${activity?.id} = ${element.mainBadge?.id}');
       double lat = double.parse(element
           .activityPackageDestination!.activitypackagedestinationLatitude!);
       double long = double.parse(element
@@ -115,8 +117,16 @@ class _TabMapScreenState extends State<TabMapScreen> {
         );
       }
     }
-
+    double lat = double.parse(activityPackages
+        .first.activityPackageDestination!.activitypackagedestinationLatitude!);
+    double long = double.parse(activityPackages.first
+        .activityPackageDestination!.activitypackagedestinationLongitude!);
+    // mapController?.animateCamera(CameraUpdate.newCameraPosition(
+    //     CameraPosition(target: LatLng(lat, long), zoom: 17)
+    //     //17 is new zoom level
+    //     ));
     setState(() {
+      currentMapLatLong = LatLng(lat, long);
       _loadingData = activityPackages;
       _isloading = false;
       _markers.addAll(marks);
@@ -285,27 +295,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   SizedBox(
                     height: hideActivities ? 20 : 40.h,
                   ),
-                  // Container(
-                  //   margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
-                  //   height: 50,
-                  //   child: ListView(
-                  //     scrollDirection: Axis.horizontal,
-                  //     children: List.generate(activities.length, (int index) {
-                  //       return Container(
-                  //         height: 40,
-                  //         width: 40,
-                  //         decoration: BoxDecoration(
-                  //           color: Colors.transparent,
-                  //           shape: BoxShape.circle,
-                  //           image: DecorationImage(
-                  //             image: AssetImage(activities[index].path),
-                  //             fit: BoxFit.cover,
-                  //           ),
-                  //         ),
-                  //       );
-                  //     }),
-                  //   ),
-                  // ),
+
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: activitiesContainer,
@@ -372,13 +362,21 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           child: ListView(
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
-                            children:
-                                List<Widget>.generate(tourList.length, (int i) {
+                            children: List<Widget>.generate(_loadingData.length,
+                                (int i) {
+                              final Activity? icon = activities
+                                  .firstWhereOrNull((Activity element) =>
+                                      element.id ==
+                                      _loadingData[i].mainBadgeId);
+                              final ActivityPackage? enable = _filteredActivity
+                                  .firstWhereOrNull((ActivityPackage element) =>
+                                      element.id == _loadingData[i].id);
                               return InkWell(
                                   onTap: () {
                                     // Navigator.of(context)
                                     //     .pushNamed('/discovery_map');
-                                    if(_userSubscriptionController.userSubscription.id.isEmpty){
+                                    if (_userSubscriptionController
+                                        .userSubscription.id.isEmpty) {
                                       _showDiscoveryBottomSheet(
                                           tourList[i].featureImage);
                                     }
@@ -396,10 +394,11 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
-                                          tourList[i].name,
+                                          _loadingData[i].name!,
+                                          overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontWeight: FontWeight.w700,
-                                            fontSize: 11.sp,
+                                            fontSize: 12.sp,
                                             color: Colors.black,
                                           ),
                                         ),
@@ -415,38 +414,46 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                               Radius.circular(15.r),
                                             ),
                                             image: DecorationImage(
-                                              image: AssetImage(
-                                                  tourList[i].featureImage),
+                                                image: Image.memory(
+                                              base64.decode(_loadingData[i]
+                                                  .coverImg!
+                                                  .split(',')
+                                                  .last),
                                               fit: BoxFit.cover,
-                                            ),
+                                              gaplessPlayback: true,
+                                            ).image),
+                                            // image: DecorationImage(
+                                            //   image: AssetImage(
+                                            //       tourList[0].featureImage),
+                                            //   fit: BoxFit.cover,
+                                            // ),
                                           ),
                                           child: Stack(
                                             children: <Widget>[
                                               Positioned(
-                                                bottom: 0,
+                                                left: 5,
+                                                bottom: 5,
                                                 child: CircleAvatar(
                                                   backgroundColor:
                                                       Colors.transparent,
-                                                  radius: 17,
-                                                  backgroundImage: AssetImage(
-                                                      tourList[i].path),
+                                                  radius: 12,
+                                                  backgroundImage:
+                                                      AssetImage(icon!.path),
                                                 ),
                                               ),
-                                              // if (UserSingleton.instance.user
-                                              //         .user!.email ==
-                                              //     'traveller1@abc.com')
-                                              Container(
-                                                height: 90.h,
-                                                width: 135.w,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.8),
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                    Radius.circular(15.r),
+                                              if (enable == null)
+                                                Container(
+                                                  height: 90.h,
+                                                  width: 135.w,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.8),
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                      Radius.circular(15.r),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
                                             ],
                                           ),
                                         ),
@@ -481,26 +488,29 @@ class _TabMapScreenState extends State<TabMapScreen> {
         items.add(
           GestureDetector(
             onTap: () {
-              final ActivityPackage? activity = _loadingData.firstWhereOrNull(
-                  (ActivityPackage a) => a.mainBadge!.id == activities[i].id);
+              final List<ActivityPackage> filteredActivity = _loadingData
+                  .where((ActivityPackage a) =>
+                      a.mainBadge!.id == activities[i].id)
+                  .toList();
 
-              if (activity != null) {
-                double lat = double.parse(activity.activityPackageDestination!
-                    .activitypackagedestinationLatitude!);
-                double long = double.parse(activity.activityPackageDestination!
-                    .activitypackagedestinationLongitude!);
-                mapController?.animateCamera(CameraUpdate.newCameraPosition(
-                    CameraPosition(target: LatLng(lat, long), zoom: 17)
-                    //17 is new zoom level
-                    ));
-                print(activity.id);
+              if (filteredActivity.isNotEmpty) {
                 setState(() {
-                  currentMapLatLong = LatLng(lat, long);
-                  _selectedActivity = i;
+                  if (_selectedActivity.contains(i)) {
+                    _selectedActivity.remove(i);
+                    _filteredActivity.removeWhere(
+                        (element) => element.mainBadgeId == activities[i].id);
+                  } else {
+                    _filteredActivity.addAll(filteredActivity);
+                    _selectedActivity.add(i);
+                  }
                 });
               } else {
                 setState(() {
-                  _selectedActivity = i;
+                  if (_selectedActivity.contains(i)) {
+                    _selectedActivity.remove(i);
+                  } else {
+                    _selectedActivity.add(i);
+                  }
                 });
               }
             },
@@ -521,7 +531,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: _selectedActivity == i
+                        color: _selectedActivity.contains(i)
                             ? Colors.black
                             : Colors.transparent,
                         width: 2,
@@ -537,7 +547,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   Positioned(
                       top: 2,
                       right: 8,
-                      child: _selectedActivity == i
+                      child: _selectedActivity.contains(i)
                           ? Container(
                               padding: EdgeInsets.all(1),
                               decoration: BoxDecoration(
@@ -565,27 +575,60 @@ class _TabMapScreenState extends State<TabMapScreen> {
         items.add(
           GestureDetector(
             onTap: () {
-              final ActivityPackage? activity = _loadingData.firstWhereOrNull(
-                  (ActivityPackage a) => a.mainBadge!.id == activities[i].id);
+              final List<ActivityPackage> filteredActivity = _loadingData
+                  .where((ActivityPackage a) =>
+                      a.mainBadge!.id == activities[i].id)
+                  .toList();
 
-              if (activity != null) {
-                double lat = double.parse(activity.activityPackageDestination!
-                    .activitypackagedestinationLatitude!);
-                double long = double.parse(activity.activityPackageDestination!
-                    .activitypackagedestinationLongitude!);
-                mapController?.animateCamera(CameraUpdate.newCameraPosition(
-                    CameraPosition(target: LatLng(lat, long), zoom: 17)
-                    //17 is new zoom level
-                    ));
+              if (filteredActivity.isNotEmpty) {
                 setState(() {
-                  currentMapLatLong = LatLng(lat, long);
-                  _selectedActivity = i;
+                  if (_selectedActivity.contains(i)) {
+                    _selectedActivity.remove(i);
+                    _filteredActivity.removeWhere(
+                        (element) => element.mainBadgeId == activities[i].id);
+                  } else {
+                    _filteredActivity.addAll(filteredActivity);
+                    _selectedActivity.add(i);
+                  }
                 });
               } else {
                 setState(() {
-                  _selectedActivity = i;
+                  if (_selectedActivity.contains(i)) {
+                    _selectedActivity.remove(i);
+                  } else {
+                    _selectedActivity.add(i);
+                  }
                 });
               }
+              // final ActivityPackage? activity = _loadingData.firstWhereOrNull(
+              //     (ActivityPackage a) => a.mainBadge!.id == activities[i].id);
+
+              // if (activity != null) {
+              //   double lat = double.parse(activity.activityPackageDestination!
+              //       .activitypackagedestinationLatitude!);
+              //   double long = double.parse(activity.activityPackageDestination!
+              //       .activitypackagedestinationLongitude!);
+              //   mapController?.animateCamera(CameraUpdate.newCameraPosition(
+              //       CameraPosition(target: LatLng(lat, long), zoom: 17)
+              //       //17 is new zoom level
+              //       ));
+              //   setState(() {
+              //     currentMapLatLong = LatLng(lat, long);
+              //     if (_selectedActivity.contains(i)) {
+              //       _selectedActivity.remove(i);
+              //     } else {
+              //       _selectedActivity.add(i);
+              //     }
+              //   });
+              // } else {
+              //   setState(() {
+              //     if (_selectedActivity.contains(i)) {
+              //       _selectedActivity.remove(i);
+              //     } else {
+              //       _selectedActivity.add(i);
+              //     }
+              //   });
+              // }
             },
             child: Container(
               decoration: BoxDecoration(
@@ -604,7 +647,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: _selectedActivity == i
+                        color: _selectedActivity.contains(i)
                             ? Colors.black
                             : Colors.transparent,
                         width: 2,
@@ -622,7 +665,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   Positioned(
                     top: 2,
                     right: 8,
-                    child: _selectedActivity == i
+                    child: _selectedActivity.contains(i)
                         ? Container(
                             padding: EdgeInsets.all(1),
                             decoration: BoxDecoration(
@@ -670,27 +713,25 @@ class _TabMapScreenState extends State<TabMapScreen> {
         child: items[5],
       );
     });
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Positioned(
-          left: MediaQuery.of(context).size.width * 0.1,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          transform: Matrix4.translationValues(15, 0, 0),
           child: Stack(
             children: stackLayersLeft,
           ),
         ),
-        Positioned(
-          right: MediaQuery.of(context).size.width * 0.1,
+        Align(
+          child: items[4],
+        ),
+        Container(
+          transform: Matrix4.translationValues(-15, 0, 0),
           child: Stack(
             children: stackLayersRight,
           ),
         ),
-        Positioned.fill(
-          child: Align(
-            alignment: Alignment.center,
-            child: items[4],
-          ),
-        ),
+
         // Positioned(child: items[4]),
       ],
     );
@@ -732,7 +773,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           price: price,
                           onPaymentSuccessful: () {
                             Navigator.of(context).pop();
-                            saveSubscription(transactionNumber, 'Premium Subscription',price.toString());
+                            saveSubscription(transactionNumber,
+                                'Premium Subscription', price.toString());
                             //Save Subscription
                             paymentSuccessful(
                                 context: context,
@@ -764,18 +806,18 @@ class _TabMapScreenState extends State<TabMapScreen> {
             ));
   }
 
-  Future<void> saveSubscription(String transactionNumber, String subscriptionName, String price ) async {
+  Future<void> saveSubscription(
+      String transactionNumber, String subscriptionName, String price) async {
     final DateTime startDate = DateTime.now();
 
     final DateTime endDate = GlobalMixin().getEndDate(startDate);
 
     final UserSubscription subscriptionParams = UserSubscription(
-      paymentReferenceNo: transactionNumber,
-      name: subscriptionName,
-      startDate: startDate.toString(),
-      endDate:  endDate.toString(),
-      price: price
-    );
+        paymentReferenceNo: transactionNumber,
+        name: subscriptionName,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
+        price: price);
 
     final APIStandardReturnFormat result =
         await APIServices().addUserSubscription(subscriptionParams);
