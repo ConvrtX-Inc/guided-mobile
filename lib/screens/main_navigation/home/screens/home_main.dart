@@ -1,14 +1,20 @@
-// ignore_for_file: no_default_cases, always_specify_types
+// ignore_for_file: no_default_cases, always_specify_types, avoid_dynamic_calls, use_string_buffers
+
+import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/name_with_bullet.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/models/booking_request.dart';
 import 'package:guided/models/home.dart';
 import 'package:guided/models/package_model.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
 import 'package:guided/screens/main_navigation/home/widgets/concat_strings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_earnings.dart';
@@ -37,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen>
   final double _bulletHeight = 50;
   final double _bulletWidth = 50;
   final Color _bulletColor = AppColors.tropicalRainForest;
+  int total = 0;
 
   /// Get features items mocked data
   List<HomeModel> features = HomeUtils.getMockFeatures();
@@ -54,11 +61,12 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   late Future<PackageModelData> _loadingData;
-
+  late Future<List<BookingRequest>> _loadingBooking;
   @override
   void initState() {
     super.initState();
     _loadingData = APIServices().getPackageData();
+    _loadingBooking = APIServices().getBookingRequest();
   }
 
   @override
@@ -253,89 +261,77 @@ class _HomeScreenState extends State<HomeScreen>
             height: _bulletHeight,
             color: _bulletColor,
           ),
-          Stack(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.only(top: 12.h),
-                // decoration: BoxDecoration(border: Border.all()),
-                width: double.infinity,
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.platinum),
-                    borderRadius: BorderRadius.circular(8.r),
-                    // color: ConstantHelpers.platinum,
-                  ),
-                  child: const Center(
-                    child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text('Nothing to show here')),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 9.w),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6.r),
-                      color: AppColors.lightningYellow),
-                  child: const Text('0 Pending request',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600, color: Colors.white)),
-                ),
-              )
-            ],
-          ),
-          // Stack(
-          //   children: <Widget>[
-          //     Container(
-          //       padding: EdgeInsets.only(top: 12.h),
-          //       // decoration: BoxDecoration(border: Border.all()),
-          //       width: double.infinity,
-          //       child: Container(
-          //         decoration: BoxDecoration(
-          //           border: Border.all(color: AppColors.platinum),
-          //           borderRadius: BorderRadius.circular(8.r),
-          //           // color: ConstantHelpers.platinum,
-          //         ),
-          //         child: Padding(
-          //           padding: const EdgeInsets.all(10),
-          //           child: Column(
-          //             children: <Widget>[
-          //               Row(
-          //                 children: <Widget>[
-          //                   OverlappingAvatars(),
-          //                   SizedBox(width: 15.w),
-          //                   ConcatStrings()
-          //                 ],
-          //               ),
-          //               SizedBox(height: 10.h),
-          //               Text(
-          //                 AppTextConstants.homeMainHeader,
-          //                 style: TextStyle(
-          //                     fontWeight: FontWeight.w500,
-          //                     color: AppColors.grey),
-          //               )
-          //             ],
+          // SizedBox(
+          //   height: 150.h,
+          //   child: Column(
+          //     children: <Widget>[
+          //       Container(
+          //         color: Colors.yellow,
+          //         child: Stack(children: <Widget>[
+          //           FutureBuilder<List<BookingRequest>>(
+          //             future: _loadingBooking,
+          //             builder: (BuildContext context,
+          //                 AsyncSnapshot<dynamic> snapshot) {
+          //               if (snapshot.hasData) {
+          //                 final List<BookingRequest> bookingData =
+          //                     snapshot.data;
+          //                 final int length = bookingData.length;
+          //                 if (bookingData.isEmpty) {
+          //                   return const Center(
+          //                     child: Text('Nothing to show here'),
+          //                   );
+          //                 } else {
+          //                   return Row(
+          //                     children: <Widget>[
+          //                       SizedBox(
+          //                         width: 80.w,
+          //                         height: 30.h,
+          //                         child: Stack(children: <Widget>[
+          //                           ListView.builder(
+          //                               scrollDirection: Axis.horizontal,
+          //                               itemCount: length,
+          //                               itemBuilder:
+          //                                   (BuildContext ctx, int index) {
+          //                                 return customerRequestImage(
+          //                                     context,
+          //                                     index,
+          //                                     snapshot.data![index],
+          //                                     length);
+          //                               }),
+          //                         ]),
+          //                       ),
+          //                       SizedBox(
+          //                         height: 30.h,
+          //                         width:
+          //                             MediaQuery.of(context).size.width * 0.6,
+          //                         child: Expanded(
+          //                           child: ListView.builder(
+          //                               scrollDirection: Axis.horizontal,
+          //                               itemCount: length,
+          //                               itemBuilder:
+          //                                   (BuildContext ctx, int index) {
+          //                                 return customerRequestName(
+          //                                     context,
+          //                                     index,
+          //                                     snapshot.data![index],
+          //                                     length);
+          //                               }),
+          //                         ),
+          //                       ),
+          //                     ],
+          //                   );
+          //                 }
+          //               }
+          //               if (snapshot.connectionState != ConnectionState.done) {
+          //                 return const MainContentSkeletonHorizontal();
+          //               }
+          //               return Container();
+          //             },
           //           ),
-          //         ),
+          //         ]),
           //       ),
-          //     ),
-          //     Positioned(
-          //       top: 0,
-          //       right: 0,
-          //       child: Container(
-          //         padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 9.w),
-          //         decoration: BoxDecoration(
-          //             borderRadius: BorderRadius.circular(6.r),
-          //             color: AppColors.lightningYellow),
-          //         child: Text('${customerRequests.length} Pending request',
-          //             style: const TextStyle(
-          //                 fontWeight: FontWeight.w600, color: Colors.white)),
-          //       ),
-          //     )
-          //   ],
+          //     ],
+          //   ),
           // ),
           const SizedBox(
             height: 15,
@@ -349,6 +345,148 @@ class _HomeScreenState extends State<HomeScreen>
           HomeEarnings()
         ],
       ),
+    );
+  }
+
+  Widget customerRequestImage(
+      BuildContext context, int index, BookingRequest request, int total) {
+    return FutureBuilder<User>(
+      future: APIServices().getUserDetails(request.fromUserId!),
+      builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+        String concatStrings = '';
+        if (snapshot.hasData) {
+          for (int i = 0; i < 3; i++) {
+            concatStrings = '$concatStrings${snapshot.data!.firstName}, ';
+          }
+          concatStrings = concatStrings.substring(0, concatStrings.length - 2);
+
+          if (request.profilePhoto != null) {
+            if (index < 3) {
+              return Align(
+                alignment: index == 0
+                    ? Alignment.centerRight
+                    : (index == 1 ? Alignment.center : Alignment.centerRight),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                          blurRadius: 5,
+                          color: Colors.black.withOpacity(0.3),
+                          spreadRadius: 3)
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: Container(
+                      height: 10.h,
+                      width: 10.w,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          image: DecorationImage(
+                              image: Image.memory(
+                            base64
+                                .decode(request.profilePhoto!.split(',').last),
+                            fit: BoxFit.cover,
+                            gaplessPlayback: true,
+                          ).image),
+                          borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                          border: Border.all(color: Colors.red, width: 4.w)),
+                    ),
+                  ),
+                ),
+              );
+            }
+          } else {
+            return Container();
+          }
+        }
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Align(
+              alignment: Alignment.topLeft, child: CircularProgressIndicator());
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget customerRequestName(
+      BuildContext context, int index, BookingRequest request, int total) {
+    return FutureBuilder<User>(
+      future: APIServices().getUserDetails(request.fromUserId!),
+      builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+        String? concatStrings = '';
+        if (snapshot.hasData) {
+          // for (int i = 0; i < 3; i++) {
+          //   concatStrings = '$concatStrings${snapshot.data!.firstName}, ';
+          // }
+          // concatStrings = concatStrings.substring(0, concatStrings.length - 2);
+
+          concatStrings = '${snapshot.data!.firstName}';
+          if (index < 3) {
+            if (index == 2) {
+              return Text(
+                concatStrings,
+                style:
+                    const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              );
+            } else {
+              return Text(
+                '$concatStrings, ',
+                style:
+                    const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              );
+            }
+          }
+        }
+        // if (snapshot.hasData) {
+        //   for (int i = 0; i < 3; i++) {
+        //     concatStrings = '$concatStrings${snapshot.data!.firstName}, ';
+        //   }
+        //   concatStrings = concatStrings.substring(0, concatStrings.length - 2);
+
+        //   return Align(
+        //     alignment: index == 0
+        //         ? Alignment.centerRight
+        //         : (index == 1 ? Alignment.center : Alignment.centerRight),
+        //     child: Container(
+        //       decoration: BoxDecoration(
+        //         color: Colors.white,
+        //         shape: BoxShape.circle,
+        //         boxShadow: <BoxShadow>[
+        //           BoxShadow(
+        //               blurRadius: 5,
+        //               color: Colors.black.withOpacity(0.3),
+        //               spreadRadius: 3)
+        //         ],
+        //       ),
+        //       child: CircleAvatar(
+        //         backgroundColor: Colors.white,
+        //         child: Container(
+        //           height: 10.h,
+        //           width: 10.w,
+        //           decoration: BoxDecoration(
+        //               color: Colors.white,
+        //               image: DecorationImage(
+        //                   image: Image.memory(
+        //                 base64.decode(request.profilePhoto!.split(',').last),
+        //                 fit: BoxFit.cover,
+        //                 gaplessPlayback: true,
+        //               ).image),
+        //               borderRadius: BorderRadius.all(Radius.circular(50.r)),
+        //               border: Border.all(color: Colors.red, width: 4.w)),
+        //         ),
+        //       ),
+        //     ),
+        //   );
+        // }
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Align(
+              alignment: Alignment.topLeft, child: CircularProgressIndicator());
+        }
+        return Container();
+      },
     );
   }
 

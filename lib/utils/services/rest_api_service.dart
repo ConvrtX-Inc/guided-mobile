@@ -286,8 +286,9 @@ class APIServices {
 
   /// API service for get booking request
   Future<List<BookingRequest>> getBookingRequest() async {
+    final String? userId = UserSingleton.instance.user.user?.id;
     final String url =
-        '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getBookingRequest}/21ca70b3-9eee-4285-9473-fb518caa67be';
+        '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getBookingRequest}/$userId';
     debugPrint('URL $url');
     final http.Response response = await http.get(Uri.parse(url), headers: {
       HttpHeaders.authorizationHeader:
@@ -323,7 +324,7 @@ class APIServices {
   Future<List<Currency>> getCurrencies() async {
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getCurrencies}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getCurrencies}?sort=currency_name,ASC'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
@@ -1655,22 +1656,22 @@ class APIServices {
   }
 
   ///Api service to get chat messages
- Future<List<ChatModel>> getChatMessages(String userId, String filter) async {
-   final String? token = UserSingleton.instance.user.token;
+  Future<List<ChatModel>> getChatMessages(String userId, String filter) async {
+    final String? token = UserSingleton.instance.user.token;
 
-   final http.Response response = await http.get(
-       Uri.http(apiBaseUrl, '/api/v1/message-detail/$userId/$filter'),
-       headers: {
-         HttpHeaders.authorizationHeader: 'Bearer $token',
-       });
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/message-detail/$userId/$filter'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
-   final dynamic jsonData = jsonDecode(response.body);
-   final List<ChatModel> chatMessages = <ChatModel>[];
-   for (final dynamic res in jsonData) {
-     final ChatModel chat = ChatModel.fromJson(res);
-     chatMessages.add(chat);
-   }
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<ChatModel> chatMessages = <ChatModel>[];
+    for (final dynamic res in jsonData) {
+      final ChatModel chat = ChatModel.fromJson(res);
+      chatMessages.add(chat);
+    }
 
-   return chatMessages;
- }
+    return chatMessages;
+  }
 }
