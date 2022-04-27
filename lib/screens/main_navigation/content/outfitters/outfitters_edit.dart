@@ -22,6 +22,7 @@ import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -1479,7 +1480,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
         child: SizedBox(
           width: width,
           height: 60.h,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: () async => _isSubmit ? null : outfitterEditDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -1491,13 +1492,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: _isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.post,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.post,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),

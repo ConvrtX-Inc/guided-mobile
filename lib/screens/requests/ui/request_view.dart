@@ -5,11 +5,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/profile_data_model.dart';
+import 'package:guided/models/user_transaction_model.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 import '../../../models/activity_package.dart';
@@ -31,12 +36,39 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
   BookingRequest bookingRequest = BookingRequest();
   User travellerDetails = User();
 
+  String paymentMethodId = '';
+  String paymentIntentId = '';
+  String fromUserId = '';
+
+  bool isLoading = false;
+
+  User fromUser = User();
+
+  UserTransaction transactionDetails = UserTransaction();
+
+  final UserProfileDetailsController _profileDetailsController =
+  Get.put(UserProfileDetailsController());
+
+  bool isAccepted = false;
+
+  @override
+  void initState() {
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> screenArguments =
-        ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
+    ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
     bookingRequest = screenArguments['bookingRequest'] as BookingRequest;
     travellerDetails = screenArguments['traveller'] as User;
+
+    //
+    // getBookingPaymentIntentId(bookingRequest.id!);
+    // getBookingTransaction(bookingRequest.activityPackageId!,
+    //     travellerDetails.id!);
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
@@ -301,7 +333,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                     SizedBox(
                       height: 40.h,
                     ),
-                    Center(
+               /*     Center(
                       child: SizedBox(
                         width: 315.w,
                         child: ElevatedButton(
@@ -325,7 +357,10 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                           onPressed: () {},
                         ),
                       ),
-                    ),
+                    ),*/
+                    CustomRoundedButton(title: AppTextConstants.acceptRequest, onpressed: () {
+                      chargePayment();
+                    }, isLoading: isLoading, isEnabled: isAccepted ? false : true),
                     SizedBox(
                       height: 10.h,
                     ),
@@ -369,4 +404,119 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
       ),
     );
   }
+
+  Future<void> getBookingPaymentIntentId(String bookingRequestId) async {
+    final result = await APIServices().getPaymentIntentId(bookingRequestId);
+
+    debugPrint(
+        "Result ${result['stripe_payment_intent_id']} ${result['stripe_payment_method_id']}");
+    await getUserDetails(result['user_id']);
+    setState(() {
+      paymentIntentId = result['stripe_payment_intent_id'];
+      paymentMethodId = result['stripe_payment_method_id'];
+      fromUserId = result['user_id'];
+    });
+  }
+
+  Future<void> chargePayment() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await getBookingPaymentIntentId(bookingRequest.id!);
+    await getBookingTransaction(bookingRequest.activityPackageId!,
+        travellerDetails.id!);
+    final String paymentIntent = await createTransferPaymentIntent();
+
+    if (paymentIntent.isNotEmpty) {
+      final paymentRes = await APIServices()
+          .chargeBookingPayment(paymentIntent, paymentMethodId);
+
+      if (paymentRes != '') {
+        debugPrint('Payment Accepted! $paymentRes');
+        setState(() {
+          isLoading = false;
+          isAccepted = true;
+        });
+        await _showDialog(context);
+      }
+    }
+  }
+
+  Future<void> getBookingTransaction(String packageId, String userId) async {
+    final UserTransaction res =
+        await APIServices().getBookingTransaction(packageId, userId);
+
+    debugPrint('Transaction booking ${res.total}');
+
+    setState(() {
+      transactionDetails = res;
+    });
+  }
+
+  Future<void> getUserDetails(String fromUserId) async {
+    final User userDetails = await APIServices().getUserDetails(fromUserId);
+
+    setState(() {
+      fromUser = userDetails;
+    });
+  }
+
+  Future<String> createTransferPaymentIntent() async {
+    final ProfileDetailsModel user =
+        _profileDetailsController.userProfileDetails;
+    final String res = await APIServices().createTransferPaymentIntent(
+        user.stripeAccountId,
+        double.parse(transactionDetails.total),
+        0,
+        fromUser.email!);
+
+    return res;
+  }
+
+  Future<void> _showDialog(BuildContext context) async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(22.r))),
+            elevation: 12,
+            content: SizedBox(
+                 child: Column(
+                   mainAxisAlignment: MainAxisAlignment.center,
+                   mainAxisSize: MainAxisSize.min,
+
+                  children: <Widget>[
+
+                    Center(
+                      child: Container(
+                        child: Text(
+                           'Booking Request Accepted!',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 14.sp)),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    Center(
+                        child: CustomRoundedButton(
+                          title: 'Ok',
+                          onpressed: () {
+                            int count = 0;
+                            Navigator.popUntil(context, (route) {
+                              return count++ == 2;
+                            });
+                          },
+                          buttonHeight: 40.h,
+                          buttonWidth: 120.w,
+                        ))
+                  ],
+                )),
+          );
+        });
+  }
+
+
 }

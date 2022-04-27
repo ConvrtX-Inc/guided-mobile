@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, always_specify_types, non_constant_identifier_names, unnecessary_lambdas, prefer_final_fields, cast_nullable_to_non_nullable, avoid_dynamic_calls
 
+import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -65,14 +66,19 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
                   ),
                   TextField(
                     onSubmitted: (text) {
-                      setState(() {
+                      if (services.length != 10) {
                         if (text != '') {
                           services.add(text);
                         }
-                        _keyword = TextEditingController(text: '');
-                      });
-                      _keyword.clear();
-                      _keywordFocus.requestFocus();
+                        setState(() {
+                          _keyword.clear();
+                          _keywordFocus.requestFocus();
+                        });
+                      } else {
+                        AdvanceSnackBar(
+                                message: ErrorMessageConstants.maximumKeyword)
+                            .show(context);
+                      }
                     },
                     controller: _keyword,
                     focusNode: _keywordFocus,
@@ -89,6 +95,7 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
                             BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
+                    maxLength: 20,
                   ),
                   SizedBox(
                     height: 5.h,
@@ -171,7 +178,12 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
                       child: Text(
                         services[index],
                         style: TextStyle(
-                          fontSize: RegExp(r"\w+(\'\w+)?").allMatches(services[index]).length > 10 ? 10.sp : 14.sp,
+                          fontSize: RegExp(r"\w+(\'\w+)?")
+                                      .allMatches(services[index])
+                                      .length >
+                                  10
+                              ? 10.sp
+                              : 14.sp,
                           fontWeight: FontWeight.w400,
                         ),
                       ),

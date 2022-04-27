@@ -1,20 +1,28 @@
+import 'dart:convert';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/bank_account_controller.dart';
 import 'package:guided/controller/card_controller.dart';
+import 'package:guided/controller/user_profile_controller.dart';
+import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:skeleton_text/skeleton_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 ///Manage Payment Screen
 class ManagePayment extends StatefulWidget {
@@ -36,12 +44,23 @@ class _ManagePaymentState extends State<ManagePayment> {
   final CardController _cardController = Get.put(CardController());
 
   bool isLoading = false;
+  bool isSettingUpStripe = false;
 
+  final UserProfileDetailsController _profileDetailsController =
+      Get.put(UserProfileDetailsController());
+
+  String stripeAcctId = '';
   @override
   void initState() {
     super.initState();
 
-      isLoading = true;
+    isLoading = true;
+    stripeAcctId = _profileDetailsController.userProfileDetails.stripeAccountId;
+
+    debugPrint(
+        'Profile Details:: ${_profileDetailsController.userProfileDetails.id}  Stripe account id: ${_profileDetailsController.userProfileDetails.stripeAccountId} ');
+
+    // setupStripe();
 
     getPaymentData();
   }
@@ -72,11 +91,12 @@ class _ManagePaymentState extends State<ManagePayment> {
               fontFamily: 'Gilroy'),
         ),
       ),
-      body: isLoading ? buildFakePaymentDataUI() : buildPaymentUI(),
+      // body: buildPaymentUI(),
+      body: (stripeAcctId.isEmpty && PaymentConfig.isPaymentEnabled) ?   buildSetupStripeAccount() : buildPaymentUI(),
     );
   }
 
-  Widget buildPaymentUI() => Container(
+  Widget buildPaymentUI() => isLoading ? buildFakePaymentDataUI() : Container(
         padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 10.h),
         child: SingleChildScrollView(
             child: Column(
@@ -247,9 +267,8 @@ class _ManagePaymentState extends State<ManagePayment> {
     setState(() {
       isLoading = false;
     });
-
   }
-  
+
   void _showRemoveDialog(
       {required String type,
       required String id,
@@ -389,12 +408,10 @@ class _ManagePaymentState extends State<ManagePayment> {
               margin: EdgeInsets.only(bottom: 10.h),
               padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
-
                   borderRadius: BorderRadius.all(Radius.circular(20.r))),
               child: ListTile(
                 leading: SkeletonAnimation(
                     borderRadius: BorderRadius.circular(10.0),
-
                     child: Container(
                       width: 40,
                       height: 40,
@@ -408,8 +425,6 @@ class _ManagePaymentState extends State<ManagePayment> {
                     SkeletonAnimation(
                         curve: Curves.linear,
                         borderRadius: BorderRadius.circular(10.0),
-
-
                         child: Container(
                           width: MediaQuery.of(context).size.width,
                           height: 20,
@@ -454,6 +469,51 @@ class _ManagePaymentState extends State<ManagePayment> {
       Navigator.of(context).pop();
     }
   }
+
+  Future<void> setupStripe() async {
+    setState(() {
+      isSettingUpStripe = true;
+    });
+
+    final String createAccountRes = await APIServices()
+        .createStripeAccount(_profileDetailsController.userProfileDetails);
+
+    // final dynamic accountDetails = jsonDecode(createAccountRes.successResponse);
+
+    debugPrint('Setup S response ${createAccountRes}');
+
+
+
+    final String onBoardAccountRes =
+        await APIServices().getOnboardAccountLink(createAccountRes);
+    debugPrint('Link::  ${onBoardAccountRes}');
+
+    if(onBoardAccountRes.isNotEmpty){
+      setState(() {
+        stripeAcctId = createAccountRes;
+        isSettingUpStripe = false;
+      });
+      await launch(onBoardAccountRes);
+    }
+
+
+
+
+    // await Navigator.of(context).pushNamed('/add_bank_account');
+  }
+
+  Widget buildSetupStripeAccount() =>Container(
+      padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 10.h), child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+              'GuidED partners with Stripe for secure payments and financial services. In order to start getting paid, you need to set up a Stripe account.'),
+          SizedBox(height: 22.h),
+          CustomRoundedButton(title: 'Setup Now', onpressed: setupStripe , isLoading: isSettingUpStripe),
+          SizedBox(height: 22.h),
+         Center(child:  Text(" You'll be redirected to Stripe",))
+        ],
+      ));
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

@@ -16,6 +16,9 @@ class AppAPIPath {
   /// Returns API base url
   static String apiBaseUrl = getBaseUrl(mode);
 
+  ///Returns web socket url
+  static String webSocketUrl = '$apiBaseMode$apiBaseUrl/messenger';
+
   /// Returns login url
   static String loginUrl = 'api/v1/auth/email/login';
 

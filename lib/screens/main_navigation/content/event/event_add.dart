@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, unused_element, always_declare_return_types, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, curly_braces_in_flow_control_structures, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, avoid_catches_without_on_clauses, unnecessary_lambdas
+// ignore_for_file: file_names, unused_element, always_declare_return_types, prefer_const_literals_to_create_immutables, avoid_print, diagnostic_describe_all_properties, curly_braces_in_flow_control_structures, always_specify_types, avoid_dynamic_calls, avoid_redundant_argument_values, avoid_catches_without_on_clauses, unnecessary_lambdas, use_named_constants
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -20,6 +20,7 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/badgesModel.dart';
 import 'package:guided/models/card_model.dart';
@@ -36,6 +37,7 @@ import 'package:guided/screens/widgets/reusable_widgets/payment_details.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Adding Advertisement Screen
@@ -822,8 +824,13 @@ class _EventAddState extends State<EventAdd> {
                     padding: const EdgeInsets.all(10),
                     child: Text(
                       services[index],
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: RegExp(r"\w+(\'\w+)?")
+                                    .allMatches(services[index])
+                                    .length >
+                                10
+                            ? 10.sp
+                            : 14.sp,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -897,7 +904,7 @@ class _EventAddState extends State<EventAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
-                                    Navigator.pop(context);
+                                Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -935,7 +942,7 @@ class _EventAddState extends State<EventAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
-                                    Navigator.pop(context);
+                                Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -1028,7 +1035,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1065,7 +1072,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1159,7 +1166,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1197,7 +1204,7 @@ class _EventAddState extends State<EventAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -1334,11 +1341,11 @@ class _EventAddState extends State<EventAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _title,
                       focusNode: _titleFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.title,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1358,11 +1365,11 @@ class _EventAddState extends State<EventAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _fee,
                       focusNode: _feeFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.fee,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1431,11 +1438,11 @@ class _EventAddState extends State<EventAdd> {
                     ),
                     if (isLocationBtnClicked)
                       TextField(
+                        textAlign: TextAlign.left,
                         controller: _country,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding:
-                              EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                          contentPadding: EdgeInsets.only(left: 10.w),
                           hintText: AppTextConstants.country,
                           hintStyle: TextStyle(
                             color: AppColors.grey,
@@ -1457,11 +1464,11 @@ class _EventAddState extends State<EventAdd> {
                       height: 20.h,
                     ),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _street,
                       focusNode: _streetFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.street,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1482,11 +1489,11 @@ class _EventAddState extends State<EventAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _city,
                       focusNode: _cityFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.city,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1500,11 +1507,11 @@ class _EventAddState extends State<EventAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _province,
                       focusNode: _provinceFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.provinceState,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1518,11 +1525,11 @@ class _EventAddState extends State<EventAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _postalCode,
                       focusNode: _postalCodeFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.postalCode,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1541,10 +1548,10 @@ class _EventAddState extends State<EventAdd> {
                       onTap: () => _showDate(context),
                       child: AbsorbPointer(
                         child: TextField(
+                          textAlign: TextAlign.left,
                           controller: _date,
                           decoration: InputDecoration(
-                            contentPadding:
-                                EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                            contentPadding: EdgeInsets.only(left: 10.w),
                             hintText: AppTextConstants.date,
                             hintStyle: TextStyle(
                               color: AppColors.grey,
@@ -1562,12 +1569,12 @@ class _EventAddState extends State<EventAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _description,
                       focusNode: _descriptionFocus,
                       maxLines: 10,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w, top: 20.h),
                         hintText: AppTextConstants.description,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1587,21 +1594,26 @@ class _EventAddState extends State<EventAdd> {
                       height: 20.h,
                     ),
                     TextField(
+                      textAlign: TextAlign.left,
                       onSubmitted: (text) {
-                        setState(() {
+                        if (services.length != 10) {
                           if (text != '') {
                             services.add(text);
                           }
-                          _keyword = TextEditingController(text: '');
-                        });
-                        _keyword.clear();
-                        _keywordFocus.requestFocus();
+                          setState(() {
+                            _keyword.clear();
+                            _keywordFocus.requestFocus();
+                          });
+                        } else {
+                          AdvanceSnackBar(
+                                  message: ErrorMessageConstants.maximumKeyword)
+                              .show(context);
+                        }
                       },
                       controller: _keyword,
                       focusNode: _keywordFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.addNewService,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -1612,6 +1624,7 @@ class _EventAddState extends State<EventAdd> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
+                      maxLength: 20,
                     ),
                     SizedBox(
                       height: 20.h,
@@ -1632,11 +1645,11 @@ class _EventAddState extends State<EventAdd> {
         child: SizedBox(
           width: width,
           height: 60.h,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: () {
               _formKey.currentState?.save();
               if (_formKey.currentState!.validate()) {
-                _isSubmit ? null : handlePayment();
+                _isSubmit ? null : PaymentConfig.isPaymentEnabled ?  handlePayment() : eventsDetail();
               } else {
                 print('validation failed');
               }
@@ -1651,13 +1664,15 @@ class _EventAddState extends State<EventAdd> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: _isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.createEvent,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.createEvent,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),
@@ -1747,8 +1762,8 @@ class _EventAddState extends State<EventAdd> {
         needAccessToken: true, data: finalJson);
   }
 
-  Future<void> eventsDetail(double price, String serviceName,
-      String transactionNumber, String mode) async {
+  Future<void> eventsDetail({double? price, String? serviceName,
+    String? transactionNumber, String? mode}) async {
     String countryFinal = '';
     String subBadges = '';
 
@@ -1824,29 +1839,41 @@ class _EventAddState extends State<EventAdd> {
         await saveBulkImage(activityOutfitterId);
       }
 
-      //Display payment successful when event is created
-      await paymentSuccessful(
-          context: context,
-          onOkBtnPressed: () async {
-            int count = 0;
-            Navigator.popUntil(context, (route) {
-              return count++ == 3;
-            });
+      if(PaymentConfig.isPaymentEnabled){
+        //Display payment successful when event is created
+        await paymentSuccessful(
+            context: context,
+            onOkBtnPressed: () async {
+              int count = 0;
+              Navigator.popUntil(context, (route) {
+                return count++ == 3;
+              });
 
-            await Navigator.pushReplacement(
-                context,
-                MaterialPageRoute<dynamic>(
-                    builder: (BuildContext context) =>
-                        const MainNavigationScreen(
-                          navIndex: 1,
-                          contentIndex: 1,
-                        )));
-          },
-          paymentDetails: PaymentDetails(
-              serviceName: serviceName,
-              price: price.toStringAsFixed(2),
-              transactionNumber: transactionNumber),
-          paymentMethod: mode);
+              await Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) =>
+                      const MainNavigationScreen(
+                        navIndex: 1,
+                        contentIndex: 1,
+                      )));
+            },
+            paymentDetails: PaymentDetails(
+                serviceName: serviceName!,
+                price: price!.toStringAsFixed(2),
+                transactionNumber: transactionNumber!),
+            paymentMethod: mode!);
+      }else{
+        await Navigator.pushReplacement(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) =>
+                const MainNavigationScreen(
+                  navIndex: 1,
+                  contentIndex: 1,
+                )));
+      }
+
     }
   }
 
@@ -1930,7 +1957,7 @@ class _EventAddState extends State<EventAdd> {
                     price: price,
                     onPaymentSuccessful: () {
                       // API Integration for create event..
-                      eventsDetail(price, serviceName, transactionNumber, mode);
+                      eventsDetail(price:price, serviceName:serviceName, transactionNumber:transactionNumber, mode:mode);
                     },
                     onPaymentFailed: () {
                       paymentFailed(

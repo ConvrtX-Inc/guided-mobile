@@ -20,6 +20,7 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/badgesModel.dart';
 import 'package:guided/models/card_model.dart';
@@ -36,6 +37,7 @@ import 'package:guided/screens/widgets/reusable_widgets/payment_details.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Adding Advertisement Screen
@@ -95,6 +97,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   bool isLocationBtnClicked = false;
   late Future<BadgeModelData> _loadingData;
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
   @override
   void initState() {
     super.initState();
@@ -276,7 +279,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
-                                    Navigator.pop(context);
+                                Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -367,7 +370,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -404,7 +407,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -496,7 +499,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -534,7 +537,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -659,11 +662,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _title,
                       focusNode: _titleFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.title,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -730,11 +733,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     ),
                     if (isLocationBtnClicked)
                       TextField(
+                        textAlign: TextAlign.left,
                         controller: _country,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding:
-                              EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                          contentPadding: EdgeInsets.only(left: 10.w),
                           hintText: AppTextConstants.country,
                           hintStyle: TextStyle(
                             color: AppColors.grey,
@@ -756,11 +759,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       height: 20.h,
                     ),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _street,
                       focusNode: _streetFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.street,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -781,11 +784,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _city,
                       focusNode: _cityFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.city,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -799,11 +802,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _province,
                       focusNode: _provinceFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.provinceState,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -817,11 +820,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _postalCode,
                       focusNode: _postalCodeFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.postalCode,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -840,10 +843,10 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       onTap: () => _showDate(context),
                       child: AbsorbPointer(
                         child: TextField(
+                          textAlign: TextAlign.left,
                           controller: _date,
                           decoration: InputDecoration(
-                            contentPadding:
-                                EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                            contentPadding: EdgeInsets.only(left: 10.w),
                             hintText: AppTextConstants.date,
                             hintStyle: TextStyle(
                               color: AppColors.grey,
@@ -861,11 +864,12 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      maxLines: 10,
+                      textAlign: TextAlign.left,
                       controller: _description,
                       focusNode: _descriptionFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w, top: 20.h),
                         hintText: AppTextConstants.description,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -885,11 +889,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _price,
                       focusNode: _priceFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.price,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -932,11 +936,15 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         child: SizedBox(
           width: width,
           height: 60.h,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: () {
               _formKey.currentState?.save();
               if (_formKey.currentState!.validate()) {
-                _isSubmit ? null : handlePayment();
+                _isSubmit
+                    ? null
+                    : PaymentConfig.isPaymentEnabled
+                        ? handlePayment()
+                        : advertisementDetail();
               } else {
                 print('validation failed');
               }
@@ -951,13 +959,15 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: _isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.createAdvertisement,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.createAdvertisement,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),
@@ -1490,8 +1500,12 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         needAccessToken: true, data: finalJson);
   }
 
-  Future<void> advertisementDetail(double price, String serviceName,
-      String transactionNumber, String mode) async {
+  Future<void> advertisementDetail(
+      {double? price,
+      String? serviceName,
+      String? transactionNumber,
+      String? mode}) async {
+    debugPrint('crate ad');
     if (image1 == null) {
       AdvanceSnackBar(message: ErrorMessageConstants.advertisementImageEmpty)
           .show(context);
@@ -1562,37 +1576,39 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         await saveBulkImage(activityOutfitterId);
       }
 
-      //Display payment successful when advertisement is created
-      await paymentSuccessful(
-          context: context,
-          onOkBtnPressed: () async {
-            int count = 0;
-            Navigator.popUntil(context, (route) {
-              return count++ == 3;
-            });
+      if (PaymentConfig.isPaymentEnabled) {
+        //Display payment successful when advertisement is created
+        await paymentSuccessful(
+            context: context,
+            onOkBtnPressed: () async {
+              int count = 0;
+              Navigator.popUntil(context, (route) {
+                return count++ == 3;
+              });
 
-            await Navigator.pushReplacement(
-                context,
-                MaterialPageRoute<dynamic>(
-                    builder: (BuildContext context) =>
-                        const MainNavigationScreen(
-                          navIndex: 1,
-                          contentIndex: 1,
-                        )));
-          },
-          paymentDetails: PaymentDetails(
-              serviceName: serviceName,
-              price: price.toStringAsFixed(2),
-              transactionNumber: transactionNumber),
-          paymentMethod: mode);
-
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
-                    navIndex: 1,
-                    contentIndex: 3,
-                  )));
+              await Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) =>
+                          const MainNavigationScreen(
+                            navIndex: 1,
+                            contentIndex: 1,
+                          )));
+            },
+            paymentDetails: PaymentDetails(
+                serviceName: serviceName!,
+                price: price!.toStringAsFixed(2),
+                transactionNumber: transactionNumber!),
+            paymentMethod: mode!);
+      } else {
+        await Navigator.pushReplacement(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => const MainNavigationScreen(
+                      navIndex: 1,
+                      contentIndex: 3,
+                    )));
+      }
     }
   }
 
@@ -1677,7 +1693,10 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     onPaymentSuccessful: () {
                       // API Integration for create advertisement..
                       advertisementDetail(
-                          price, serviceName, transactionNumber, mode);
+                          price: price,
+                          serviceName: serviceName,
+                          transactionNumber: transactionNumber,
+                          mode: mode);
                     },
                     onPaymentFailed: () {
                       paymentFailed(

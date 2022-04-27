@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/user_subscription_controller.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
@@ -239,7 +240,7 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
             ),
           )),
           if (features[screenArguments['id']].isPremium &&
-              _userSubscriptionController.userSubscription.id.isEmpty)
+              _userSubscriptionController.userSubscription.id.isEmpty && PaymentConfig.isPaymentEnabled)
             Padding(
                 padding: EdgeInsets.only(
                     left: 20.w, right: 20.w, top: 10.h, bottom: 12.h),

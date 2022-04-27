@@ -27,6 +27,7 @@ import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Add Outfitter Screen
@@ -225,7 +226,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
-                                    Navigator.pop(context);
+                                Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -263,7 +264,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                         message: ErrorMessageConstants
                                             .imageFileToSize)
                                     .show(context);
-                                    Navigator.pop(context);
+                                Navigator.pop(context);
                                 return;
                               }
                               setState(() {
@@ -354,7 +355,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -391,7 +392,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -483,7 +484,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -521,7 +522,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                                             message: ErrorMessageConstants
                                                 .imageFileToSize)
                                         .show(context);
-                                        Navigator.pop(context);
+                                    Navigator.pop(context);
                                     return;
                                   }
                                   setState(() {
@@ -640,11 +641,11 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     ),
                     SizedBox(height: 20.h),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _title,
                       focusNode: _titleFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.title,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -662,11 +663,11 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     ),
                     SizedBox(height: 20.h),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _price,
                       focusNode: _priceFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.price,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -698,11 +699,11 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     ),
                     SizedBox(height: 20.h),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _productLink,
                       focusNode: _productLinkFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.productLink,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -757,11 +758,11 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     ),
                     if (isLocationBtnClicked)
                       TextField(
+                        textAlign: TextAlign.left,
                         controller: _country,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding:
-                              EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                          contentPadding: EdgeInsets.only(left: 10.w),
                           hintText: AppTextConstants.country,
                           hintStyle: TextStyle(
                             color: AppColors.grey,
@@ -781,11 +782,11 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                       ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _street,
                       focusNode: _streetFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.street,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -808,11 +809,11 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                       height: 20.h,
                     ),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _city,
                       focusNode: _cityFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.city,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -826,11 +827,11 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _province,
                       focusNode: _provinceFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.provinceState,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -846,11 +847,11 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                       height: 20.h,
                     ),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _postalCode,
                       focusNode: _postalCodeFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.postalCode,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -869,10 +870,10 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                       onTap: () => _showDate(context),
                       child: AbsorbPointer(
                         child: TextField(
+                          textAlign: TextAlign.left,
                           controller: _date,
                           decoration: InputDecoration(
-                            contentPadding:
-                                EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                            contentPadding: EdgeInsets.only(left: 10.w),
                             hintText: AppTextConstants.date,
                             hintStyle: TextStyle(
                               color: AppColors.grey,
@@ -888,12 +889,12 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                     ),
                     SizedBox(height: 20.h),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _description,
                       focusNode: _descriptionFocus,
                       maxLines: 5,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w, top: 20.h),
                         hintText: AppTextConstants.description,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -924,7 +925,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
         child: SizedBox(
           width: width,
           height: 60.h,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: () {
               _formKey.currentState?.save();
               if (_formKey.currentState!.validate()) {
@@ -943,13 +944,15 @@ class _OutfitterAddState extends State<OutfitterAdd> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: _isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.createOutfitter,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.createOutfitter,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),

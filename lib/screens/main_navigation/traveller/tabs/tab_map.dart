@@ -16,6 +16,7 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/controller/user_subscription_controller.dart';
@@ -375,8 +376,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                   onTap: () {
                                     // Navigator.of(context)
                                     //     .pushNamed('/discovery_map');
-                                    if (_userSubscriptionController
-                                        .userSubscription.id.isEmpty) {
+                                    if(_userSubscriptionController.userSubscription.id.isEmpty && PaymentConfig.isPaymentEnabled){
                                       _showDiscoveryBottomSheet(
                                           tourList[i].featureImage);
                                     }

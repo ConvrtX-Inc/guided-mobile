@@ -264,7 +264,7 @@ class _MessageInboxState extends State<MessageInbox> {
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
                                   image:
-                                      AssetImage(requestsItems[index].imgUrl),
+                                      AssetImage(requestsItems[0].imgUrl),
                                   fit: BoxFit.contain,
                                 ),
                                 boxShadow: <BoxShadow>[

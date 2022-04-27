@@ -329,9 +329,9 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
               ),
             ],
           ),
-          _getList('Fianna Wu', '2 hr ago', r'+$600.00', () {}),
+        /*  _getList('Fianna Wu', '2 hr ago', r'+$600.00', () {}),
           _getList('Jolina Jones', '4 hr ago', r'-$200.00', () {}),
-          _getList('Wills Smith', '4 hr ago', r'+$240.00', () {}),
+          _getList('Wills Smith', '4 hr ago', r'+$240.00', () {}),*/
         ],
       ));
 

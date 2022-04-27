@@ -12,7 +12,8 @@ class ProfileDetailsModel {
       this.phoneNumber = '',
       this.countryCode = '',
       this.about = '',
-      this.firebaseProfilePicUrl = ''
+      this.firebaseProfilePicUrl = '',
+        this.stripeAccountId = ''
       });
 
   /// String initialization
@@ -24,7 +25,7 @@ class ProfileDetailsModel {
       phoneNumber,
       countryCode,
       about,
-  firebaseProfilePicUrl;
+  firebaseProfilePicUrl, stripeAccountId;
 
   /// mapping
   ProfileDetailsModel.fromJson(Map<String, dynamic> parseJson)
@@ -36,6 +37,7 @@ class ProfileDetailsModel {
         phoneNumber = parseJson['phone_no'] ?? '',
         countryCode = parseJson['country_code'] ?? '',
         about = parseJson['about'] ?? '',
+        stripeAccountId = parseJson['stripe_account_id'] ?? '',
         firebaseProfilePicUrl = parseJson['profile_photo_firebase_url'] ?? ''
   ;
 }

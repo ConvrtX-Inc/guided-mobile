@@ -8,6 +8,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/popular_guide_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/widget/popular_guide_features.dart';
+import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/utils/home.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -80,9 +81,7 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
                         AsyncSnapshot<List<User>> snapshot) {
                       switch (snapshot.connectionState) {
                         case ConnectionState.waiting:
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
+                          return const MainContentSkeleton();
                         default:
                           if (snapshot.hasError) {
                             return Center(
