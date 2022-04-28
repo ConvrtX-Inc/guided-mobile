@@ -22,8 +22,9 @@ class PackageFeatures extends StatefulWidget {
     String subBadgeId = '',
     String description = '',
     String imageUrl = '',
+    int numberOfTouristMin = 0,
     int numberOfTourist = 0,
-    double starRating = 0.0,
+    double starRating = 5.0,
     double fee = 0.0,
     String dateRange = '',
     String services = '',
@@ -38,6 +39,7 @@ class PackageFeatures extends StatefulWidget {
         _subBadgeId = subBadgeId,
         _description = description,
         _imageUrl = imageUrl,
+        _numberOfTouristMin = numberOfTouristMin,
         _numberOfTourist = numberOfTourist,
         _fee = fee,
         _starRating = starRating,
@@ -55,6 +57,7 @@ class PackageFeatures extends StatefulWidget {
   final String _subBadgeId;
   final String _description;
   final String _imageUrl;
+  final int _numberOfTouristMin;
   final int _numberOfTourist;
   final double _starRating;
   final double _fee;
@@ -189,7 +192,8 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                                       fontSize: 14),
                                 ),
                               ),
-                              Text('${widget._numberOfTourist} Traveller')
+                              Text(
+                                  '${widget._numberOfTouristMin} - ${widget._numberOfTourist} Traveller')
                             ],
                           ),
                         ),
@@ -402,6 +406,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
       'image_url': widget._imageUrl,
+      'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,
       'fee': widget._fee,
@@ -424,6 +429,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
       'image_url': widget._imageUrl,
+      'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,
       'fee': widget._fee,

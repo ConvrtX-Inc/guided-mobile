@@ -10,6 +10,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:in_date_utils/in_date_utils.dart' as Indate;
 
@@ -45,9 +46,11 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
   DateTime _selectedDate = DateTime.now();
   bool _isSelectionChanged = false;
   bool _isStatic = true;
+  bool _isLoadingDone = false;
 
   @override
   void initState() {
+
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
       final DateTime dt = DateTime.parse(travellerMonthController.currentDate);
       final int mon = dt.month;
@@ -62,9 +65,13 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
       travellerMonthController.setCurrentMonth(
         defaultDate.toString(),
       );
+      setState(() {
+        _isLoadingDone = true;
+      });
     });
     selectedmonth = DateTime.now().month.toInt();
     selectedMonth = AppListConstants.numberList[selectedmonth - 1];
+
     super.initState();
   }
 
@@ -101,80 +108,89 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
               ),
             ),
           ),
-          if (_isStatic)
-            Stack(children: <Widget>[
+          if (_isLoadingDone)
+            if (_isStatic)
+              Stack(children: <Widget>[
+                Container(
+                  padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  child: SfDateRangePicker(
+                      enablePastDates: false,
+                      monthCellStyle: DateRangePickerMonthCellStyle(
+                        textStyle: TextStyle(color: HexColor('#3E4242')),
+                        todayTextStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: HexColor('#3E4242')),
+                      ),
+                      monthViewSettings: DateRangePickerMonthViewSettings(
+                        viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                            textStyle: TextStyle(
+                                fontFamily: 'Gilroy',
+                                color: Colors.black,
+                                fontSize: 15.sp)),
+                      ),
+                      selectionTextStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      selectionColor: HexColor('#FFC74A'),
+                      todayHighlightColor: HexColor('#FFC74A'),
+                      initialSelectedDates: splitDates,
+                      selectionMode: DateRangePickerSelectionMode.multiple),
+                ),
+                Positioned(
+                    top: 0,
+                    right: 0,
+                    left: 0,
+                    bottom: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isStatic = false;
+                        });
+                      },
+                      child: SizedBox(
+                        height: 500.h,
+                        width: 500.w,
+                        child: const DecoratedBox(
+                          decoration: BoxDecoration(color: Colors.transparent),
+                        ),
+                      ),
+                    ))
+              ])
+            else
               Container(
                 padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
                 height: MediaQuery.of(context).size.height * 0.4,
                 child: SfDateRangePicker(
-                    enablePastDates: false,
-                    monthCellStyle: DateRangePickerMonthCellStyle(
-                      textStyle: TextStyle(color: HexColor('#3E4242')),
-                      todayTextStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: HexColor('#3E4242')),
-                    ),
-                    monthViewSettings: DateRangePickerMonthViewSettings(
-                      viewHeaderStyle: DateRangePickerViewHeaderStyle(
-                          textStyle: TextStyle(
-                              fontFamily: 'Gilroy',
-                              color: Colors.black,
-                              fontSize: 15.sp)),
-                    ),
-                    selectionTextStyle: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    selectionColor: HexColor('#FFC74A'),
-                    todayHighlightColor: HexColor('#FFC74A'),
-                    initialSelectedDates: splitDates,
-                    selectionMode: DateRangePickerSelectionMode.multiple),
-              ),
-              Positioned(
-                  top: 0,
-                  right: 0,
-                  left: 0,
-                  bottom: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isStatic = false;
-                      });
-                    },
-                    child: SizedBox(
-                      height: 500.h,
-                      width: 500.w,
-                      child: const DecoratedBox(
-                        decoration: BoxDecoration(color: Colors.transparent),
-                      ),
-                    ),
-                  ))
-            ])
+                  enablePastDates: false,
+                  monthCellStyle: DateRangePickerMonthCellStyle(
+                    textStyle: TextStyle(color: HexColor('#3E4242')),
+                    todayTextStyle: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: HexColor('#3E4242')),
+                  ),
+                  monthViewSettings: DateRangePickerMonthViewSettings(
+                    viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                        textStyle: TextStyle(
+                            fontFamily: 'Gilroy',
+                            color: Colors.black,
+                            fontSize: 15.sp)),
+                  ),
+                  selectionTextStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  selectionColor: HexColor('#FFC74A'),
+                  todayHighlightColor: HexColor('#FFC74A'),
+                  onSelectionChanged: _onSelectionChanged,
+                ),
+              )
           else
-            Container(
-              padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
-              height: MediaQuery.of(context).size.height * 0.4,
-              child: SfDateRangePicker(
-                enablePastDates: false,
-                monthCellStyle: DateRangePickerMonthCellStyle(
-                  textStyle: TextStyle(color: HexColor('#3E4242')),
-                  todayTextStyle: TextStyle(
-                      fontWeight: FontWeight.bold, color: HexColor('#3E4242')),
-                ),
-                monthViewSettings: DateRangePickerMonthViewSettings(
-                  viewHeaderStyle: DateRangePickerViewHeaderStyle(
-                      textStyle: TextStyle(
-                          fontFamily: 'Gilroy',
-                          color: Colors.black,
-                          fontSize: 15.sp)),
-                ),
-                selectionTextStyle: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-                selectionColor: HexColor('#FFC74A'),
-                todayHighlightColor: HexColor('#FFC74A'),
-                onSelectionChanged: _onSelectionChanged,
+            const Center(
+              child: SkeletonText(
+                height: 500,
+                width: 500,
               ),
             ),
           Padding(

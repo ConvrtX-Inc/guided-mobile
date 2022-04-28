@@ -738,7 +738,7 @@ class AppTextConstants {
   static String biggerBullet = '●';
 
   /// Returns 'No Results Found' text
-  static String noResultFound = 'No Results Found';
+  static String noResultFound = 'Nothing to Show Here';
 
   /// Returns confirm payment
   static String confirmPayment = 'Confirm Payment';

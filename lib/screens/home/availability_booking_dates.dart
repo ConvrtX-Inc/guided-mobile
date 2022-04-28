@@ -13,6 +13,7 @@ import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/screens/widgets/reusable_widgets/time_loading.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Set Booking Date Screen
@@ -37,7 +38,7 @@ class _AvailabilityBookingDateScreenState
   bool isSubmit = false;
   bool _didInitialSave = false;
   bool _newDate = false;
-  bool _isLoading = true;
+  bool _isLoadingDone = false;
 
   late List<dynamic> setbookingtime = [];
   late List<dynamic> listTime;
@@ -54,7 +55,9 @@ class _AvailabilityBookingDateScreenState
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       getActivityAvailabilityHours(
           screenArguments['id'], listTime, screenArguments['selected_date']);
-      _isLoading = false;
+      setState(() {
+        _isLoadingDone = true;
+      });
     });
   }
 
@@ -162,17 +165,7 @@ class _AvailabilityBookingDateScreenState
                   SizedBox(
                     height: 30.h,
                   ),
-                  if (_isLoading)
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: SkeletonText(
-                          height: 60,
-                          width: 500,
-                        ),
-                      ),
-                    )
-                  else
+                  if (_isLoadingDone)
                     SizedBox(
                       width: width,
                       height: 45.h,
@@ -198,6 +191,16 @@ class _AvailabilityBookingDateScreenState
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w400,
                           ),
+                        ),
+                      ),
+                    )
+                  else
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: SkeletonText(
+                          height: 60,
+                          width: 500,
                         ),
                       ),
                     ),
@@ -227,17 +230,7 @@ class _AvailabilityBookingDateScreenState
                           }
                         },
                       ),
-                      if (_isLoading)
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: SkeletonText(
-                              width: 400,
-                              height: 40,
-                            ),
-                          ),
-                        )
-                      else
+                      if (_isLoadingDone)
                         Expanded(
                           child: TableCalendar(
                             locale: 'en',
@@ -425,6 +418,16 @@ class _AvailabilityBookingDateScreenState
                               ),
                             ),
                           ),
+                        )
+                      else
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: SkeletonText(
+                              width: 400,
+                              height: 40,
+                            ),
+                          ),
                         ),
                       InkWell(
                         // inkwell color
@@ -448,9 +451,8 @@ class _AvailabilityBookingDateScreenState
                   if (isRefreshing)
                     const SizedBox()
                   else
-                    _isLoading
-                        ? const TimeLoading()
-                        : ListView(
+                    _isLoadingDone
+                        ? ListView(
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             children: List.generate(
@@ -626,7 +628,8 @@ class _AvailabilityBookingDateScreenState
                                           value: listTime[i][1],
                                         ),
                                       ),
-                                    ))),
+                                    )))
+                        : const TimeLoading(),
                 ],
               ),
             ),
@@ -638,7 +641,7 @@ class _AvailabilityBookingDateScreenState
         child: SizedBox(
           width: width,
           height: 60.h,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: isSubmit ? null : setBookingDates,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -650,13 +653,15 @@ class _AvailabilityBookingDateScreenState
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.submit,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.submit,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),

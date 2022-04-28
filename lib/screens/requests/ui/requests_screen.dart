@@ -90,7 +90,9 @@ class _RequestsScreenState extends State<RequestsScreen> {
                       if (snapshot.connectionState != ConnectionState.done) {
                         return const Center(child: CircularProgressIndicator());
                       }
-                      return Container();
+                      return const Center(
+                        child: Text("You Don't Have Any Request Yet"),
+                      );
                     },
                   ),
                 ],
@@ -221,7 +223,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
             height: 90,
           );
         }
-        return Container();
+        return const Center(child: Text("You Don't Have Any Request Yet"));
       },
     );
   }

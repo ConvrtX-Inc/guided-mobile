@@ -14,6 +14,7 @@ import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/screens/widgets/reusable_widgets/time_loading.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Set Booking Date Screen
@@ -36,7 +37,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
   bool isSubmit = false;
   bool _didInitialSave = false;
   bool _newDate = false;
-  bool _isLoading = true;
+  bool _isLoadingDone = false;
   late List<dynamic> setbookingtime = [];
   late List<dynamic> listTime = [];
   late List<dynamic> time = [];
@@ -52,7 +53,9 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       getActivityAvailabilityHours(screenArguments['availability_id'], listTime,
           screenArguments['selected_date']);
-      _isLoading = false;
+      setState(() {
+        _isLoadingDone = true;
+      });
     });
   }
 
@@ -164,17 +167,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                   SizedBox(
                     height: 30.h,
                   ),
-                  if (_isLoading)
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: SkeletonText(
-                          height: 60,
-                          width: 500,
-                        ),
-                      ),
-                    )
-                  else
+                  if (_isLoadingDone)
                     SizedBox(
                       width: width,
                       height: 45.h,
@@ -204,6 +197,16 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                           ),
                         ),
                       ),
+                    )
+                  else
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: SkeletonText(
+                          height: 60,
+                          width: 500,
+                        ),
+                      ),
                     ),
                   SizedBox(
                     height: 20.h,
@@ -231,17 +234,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                           }
                         },
                       ),
-                      if (_isLoading)
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: SkeletonText(
-                              width: 400,
-                              height: 40,
-                            ),
-                          ),
-                        )
-                      else
+                      if (_isLoadingDone)
                         Expanded(
                           child: TableCalendar(
                             locale: 'en',
@@ -422,6 +415,16 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                               ),
                             ),
                           ),
+                        )
+                      else
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: SkeletonText(
+                              width: 400,
+                              height: 40,
+                            ),
+                          ),
                         ),
                       InkWell(
                         // inkwell color
@@ -444,9 +447,8 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                   if (isRefreshing)
                     const SizedBox()
                   else
-                    _isLoading
-                        ? const TimeLoading()
-                        : ListView(
+                    _isLoadingDone
+                        ? ListView(
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             children: List.generate(
@@ -622,7 +624,8 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                                           value: listTime[i][1],
                                         ),
                                       ),
-                                    ))),
+                                    )))
+                        : const TimeLoading(),
                 ],
               ),
             ),
@@ -634,7 +637,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
         child: SizedBox(
           width: width,
           height: 60.h,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: isSubmit ? null : setBookingDates,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -646,13 +649,15 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.submit,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.submit,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),
