@@ -15,7 +15,9 @@ import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/image_viewers/image_viewer.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+
 
 /// Notification Screen
 class MessageIndividual extends StatefulWidget {
@@ -32,7 +34,6 @@ class _MessageIndividualState extends State<MessageIndividual> {
   late IO.Socket socket;
   String message = 'test';
   final TextEditingController _textMessageController = TextEditingController();
-
 
   ChatModel chat = ChatModel();
 
@@ -77,7 +78,6 @@ class _MessageIndividualState extends State<MessageIndividual> {
   }
 
   void connectToServer() {
-
     socket = IO.io(AppAPIPath.webSocketUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
@@ -124,10 +124,10 @@ class _MessageIndividualState extends State<MessageIndividual> {
                         height: 40.h,
                         width: 40.w),
                     onPressed: () {
-                      Navigator.pop(context,'getMessages');
+                      Navigator.pop(context, 'getMessages');
                     },
                   ),
-               /*   IconButton(
+                  /*   IconButton(
                     icon: Image.asset(
                         '${AssetsPath.assetsPNGPath}/phone_green.png',
                         height: 20.h,
@@ -155,7 +155,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
             SizedBox(
               height: 15.h,
             ),
-           /* Container(
+            /* Container(
               height: 57.h,
               color: AppColors.tealGreen.withOpacity(0.15),
               child: Row(
@@ -206,11 +206,11 @@ class _MessageIndividualState extends State<MessageIndividual> {
                   return message.senderId == senderDetails.id
                       ? _repliedMessage(message)
                       : _senderMessage(message);
-
                 },
               ),
             ),
-            Align(
+            if(!chat.isBlocked!)
+              Align(
               alignment: Alignment.bottomCenter,
               child: Stack(
                 children: <Widget>[
@@ -465,7 +465,8 @@ class _MessageIndividualState extends State<MessageIndividual> {
           SizedBox(
             width: 15.w,
           ),
-          Container(
+          if(message.messageType!.toLowerCase() == 'text')  
+            Container(
             width: 205.w,
             padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 15.w),
             decoration: BoxDecoration(
@@ -486,7 +487,9 @@ class _MessageIndividualState extends State<MessageIndividual> {
                 height: 2,
               ),
             ),
-          ),
+          )
+          else
+            buildChatAttachment(message.message!)
         ],
       ),
     );
@@ -579,4 +582,18 @@ class _MessageIndividualState extends State<MessageIndividual> {
       ),
     );
   }
+
+  Widget buildChatAttachment(String image) => GestureDetector(
+      onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) {
+          return ImageViewerScreen(imageUrl: image);
+        }));
+      },
+      child: ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Image.network(
+            image,
+            height: 150.h,
+            fit: BoxFit.contain,
+          )));
 }

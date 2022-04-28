@@ -1676,6 +1676,57 @@ class APIServices {
     return chatMessages;
   }
 
+  ///Delete chat conversation
+  Future<http.Response> deleteConversation(String roomId) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final http.Response response = await http.delete(
+      Uri.parse(
+          '$apiBaseMode$apiBaseUrl/api/v1/message-detail/delete-conversation/$roomId/user/$userId'),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+    );
+
+    return response;
+  }
+
+  ///Block User chat
+  Future<http.Response> blockUserChat(String toUserId) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/user-messages-block'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'from_user_id': userId.toString(),
+          'to_user_id': toUserId
+        }));
+
+    return response;
+  }
+
+  ///UnBlock User chat
+  Future<http.Response> unBlockUserChat(String blockId) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    final http.Response response = await http.delete(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/api/v1/user-messages-block/$blockId'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        });
+
+    debugPrint('response $response');
+
+    return response;
+  }
+
   /// API service for profile model
   Future<ProfileDetailsModel> getProfileDataById(String id) async {
     final String url =
