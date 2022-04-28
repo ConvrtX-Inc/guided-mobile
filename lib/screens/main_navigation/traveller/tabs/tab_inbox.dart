@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -16,6 +18,7 @@ import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 import '../../../message/message_individual_screen.dart';
+import 'package:guided/screens/message/widgets/inbox_actions.dart';
 
 /// TabInboxScreen Screen
 class TabInboxScreen extends StatefulWidget {
@@ -166,7 +169,17 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
                                                   iconSize: 40.h,
                                                   icon: Image.asset(
                                                       '${AssetsPath.assetsPNGPath}/delete_message.png'),
-                                                  onPressed: () {},
+                                                  onPressed: () {
+                                                    InboxActions()
+                                                        .showDeleteConversationDialog(
+                                                            context, () {
+                                                      deleteConversation(
+                                                          messages[index]);
+                                                    });
+
+                                                    /* _showRemoveDialog(
+                                                        messages[index]);*/
+                                                  },
                                                 ),
                                               ),
                                               Flexible(
@@ -186,44 +199,100 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
                                       ),
                                     ),
                                   ),
-                                  Expanded(
-                                    child: SizedBox.expand(
-                                      child: OutlinedButton(
-                                        onPressed: null,
-                                        style: OutlinedButton.styleFrom(
-                                          backgroundColor: AppColors.lightRed,
-                                          shape: const RoundedRectangleBorder(),
-                                          side: BorderSide.none,
-                                        ),
-                                        child: Center(
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              Flexible(
-                                                child: IconButton(
-                                                  iconSize: 40.h,
-                                                  icon: Image.asset(
-                                                      '${AssetsPath.assetsPNGPath}/block_message.png'),
-                                                  onPressed: () {},
-                                                ),
-                                              ),
-                                              Flexible(
-                                                child: Text(
-                                                  'Block',
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontSize: 10.sp,
-                                                    color: Colors.white,
+                                  if (!messages[index].isBlocked!)
+                                    Expanded(
+                                      child: SizedBox.expand(
+                                        child: OutlinedButton(
+                                          onPressed: null,
+                                          style: OutlinedButton.styleFrom(
+                                            backgroundColor: AppColors.lightRed,
+                                            shape:
+                                                const RoundedRectangleBorder(),
+                                            side: BorderSide.none,
+                                          ),
+                                          child: Center(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Flexible(
+                                                  child: IconButton(
+                                                    iconSize: 40.h,
+                                                    icon: Image.asset(
+                                                        '${AssetsPath.assetsPNGPath}/block_message.png'),
+                                                    onPressed: () {
+                                                      InboxActions()
+                                                          .showBlockDialog(
+                                                              context,
+                                                              messages[index],
+                                                              () {
+                                                        blockUserMessage(
+                                                            messages[index]);
+                                                      });
+                                                    },
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                                Flexible(
+                                                  child: Text(
+                                                    'Block',
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 10.sp,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  )
+                                  if (messages[index].isBlocked! &&
+                                      messages[index].userId! ==
+                                          messages[index].userMessageBlockFrom!)
+                                    Expanded(
+                                      child: SizedBox.expand(
+                                        child: OutlinedButton(
+                                          onPressed: null,
+                                          style: OutlinedButton.styleFrom(
+                                            backgroundColor: AppColors.lightRed,
+                                            shape:
+                                                const RoundedRectangleBorder(),
+                                            side: BorderSide.none,
+                                          ),
+                                          child: Center(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Flexible(
+                                                  child: IconButton(
+                                                    iconSize: 40.h,
+                                                    icon: Image.asset(
+                                                        '${AssetsPath.assetsPNGPath}/block_message.png'),
+                                                    onPressed: () {
+                                                      unBlockUserMessage(
+                                                          messages[index]);
+                                                    },
+                                                  ),
+                                                ),
+                                                Flexible(
+                                                  child: Text(
+                                                    'Unblock',
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 10.sp,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
                                 ],
                               ),
                               child: InkWell(
@@ -333,13 +402,23 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
                                                             0.6,
                                                     child: Text(
                                                       filteredMessages[index]
-                                                          .messages![
-                                                              filteredMessages[
+                                                                  .messages![filteredMessages[
+                                                                              index]
+                                                                          .messages!
+                                                                          .length -
+                                                                      1]
+                                                                  .messageType!
+                                                                  .toLowerCase() ==
+                                                              'text'
+                                                          ? filteredMessages[
+                                                                  index]
+                                                              .messages![filteredMessages[
                                                                           index]
                                                                       .messages!
                                                                       .length -
                                                                   1]
-                                                          .message!,
+                                                              .message!
+                                                          : 'You Sent a photo',
                                                       style: TextStyle(
                                                         fontSize: 12.sp,
                                                         color:
@@ -410,7 +489,7 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
         filteredMessages = res;
         isLoading = false;
       });
-    }else{
+    } else {
       setState(() {
         isLoading = false;
       });
@@ -435,4 +514,59 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
           trailing: SkeletonText(width: 30),
         );
       });
+
+  Future<void> deleteConversation(ChatModel chat) async {
+    final response = await APIServices().deleteConversation(chat.roomId!);
+    if (response.statusCode == 200) {
+      debugPrint('deleted');
+      Navigator.of(context).pop();
+      setState(() {
+        messages.remove(chat);
+      });
+    }
+  }
+
+  Future<void> blockUserMessage(ChatModel chat) async {
+    final response = await APIServices().blockUserChat(chat.receiver!.id!);
+    final jsonData = jsonDecode(response.body);
+    if (response.statusCode == 201) {
+      Navigator.of(context).pop();
+      chat
+        ..isBlocked = true
+        ..userMessageBlockedId = jsonData['id'];
+      final int index = messages.indexOf(chat);
+      setState(() {
+        messages[index] = chat;
+      });
+      _showToast(context, 'You Blocked ${chat.receiver!.fullName!}');
+    }
+  }
+
+  void _showToast(BuildContext context, String message) {
+    final ScaffoldMessengerState scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+            label: 'OK', onPressed: scaffold.hideCurrentSnackBar),
+      ),
+    );
+  }
+
+  Future<void> unBlockUserMessage(ChatModel chat) async {
+    final response =
+        await APIServices().unBlockUserChat(chat.userMessageBlockedId!);
+    debugPrint('status code ${response.statusCode}');
+    if (response.statusCode == 200) {
+      chat
+        ..isBlocked = false
+        ..userMessageBlockedId = '';
+      final int index = messages.indexOf(chat);
+      setState(() {
+        messages[index] = chat;
+      });
+      _showToast(context, 'You Unblocked ${chat.receiver!.fullName!}');
+    }
+  }
 }

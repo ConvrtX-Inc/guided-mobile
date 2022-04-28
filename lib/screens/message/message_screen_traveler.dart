@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,7 +15,10 @@ import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/image_viewers/image_viewer.dart';
 import 'package:guided/screens/widgets/reusable_widgets/date_time_ago.dart';
+import 'package:guided/screens/widgets/reusable_widgets/image_picker_bottom_sheet.dart';
+import 'package:guided/utils/services/firebase_service.dart';
 import 'package:intl/intl.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
@@ -34,9 +39,11 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
 
   late IO.Socket socket;
   String message = 'test';
-  final TextEditingController _textMessageController = TextEditingController();
+  TextEditingController _textMessageController = TextEditingController();
 
   ChatModel chat = ChatModel();
+
+  bool showEmojiPicker = false;
 
   final UserProfileDetailsController _profileDetailsController =
       Get.put(UserProfileDetailsController());
@@ -48,6 +55,11 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
 
   late StreamSubscription<bool> keyboardSubscription;
 
+  bool isUploading = false;
+  final _storagePath = '/chatAttachments';
+
+  final FocusNode _textMessageFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -56,7 +68,7 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
         KeyboardVisibilityController();
 
     chat = widget.message!;
-
+// chat.receiver!.id = '9e9a214c-c26a-4886-8913-14614eb5dbcb';
     chatMessages = List.from(widget.message!.messages!);
 
     senderDetails = _profileDetailsController.userProfileDetails;
@@ -68,6 +80,11 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
       keyboardSubscription =
           keyboardVisibilityController.onChange.listen((bool visible) {
         if (visible) {
+          if (showEmojiPicker) {
+            setState(() {
+              showEmojiPicker = false;
+            });
+          }
           if (chatMessages.isNotEmpty) {
             scrollToBottom();
           }
@@ -77,7 +94,6 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
   }
 
   void connectToServer() {
-
     socket = IO.io(AppAPIPath.webSocketUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
@@ -132,94 +148,130 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
             SizedBox(
               height: 15.h,
             ),
-            /*      Expanded(
-              child: ListView.builder(
-                itemCount: chatMessages.length,
-                controller: _scrollController,
-                itemBuilder: (BuildContext context, int index) {
-                  final Message message = chatMessages[index];
-                  debugPrint(
-                      'Sender id : ${message.senderId} Text ${message.message} sender detais ${senderDetails.id}');
-                  return message.senderId == senderDetails.id
-                      ? _myMessage(message)
-                      : _guideMessage(message);
-                },
-              ),
-            ),*/
             Expanded(child: buildMessages()),
-            Align(
+            if (!chat.isBlocked!)
+              Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
-                  // height: 87.h,
-                  width: double.infinity,
-                  color: Colors.white,
-                  child: Container(
-                    margin: const EdgeInsets.all(15),
-                    child: Row(
-                      children: <Widget>[
-                        SizedBox(
-                          width: 10.w,
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            keyboardType: TextInputType.multiline,
-                            minLines: 1,
-                            maxLines: 3,
-                            controller: _textMessageController,
-                            onChanged: (val) {
-                              setState(() {
-                                message = val.trim();
-                              });
-                            },
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(4.w),
-                      /*        prefixIcon: IconButton(
-                                icon: SvgPicture.asset(
-                                    '${AssetsPath.assetsSVGPath}/emoji.svg',
-                                    height: 16.h,
-                                    width: 16.w,
-                                    fit: BoxFit.scaleDown),
-                                onPressed: () {},
+                    // height: 87.h,
+                    width: double.infinity,
+                    color: Colors.white,
+                    child: Column(children: [
+                      Container(
+                          margin: const EdgeInsets.all(15),
+                          child: Row(
+                            children: <Widget>[
+                              SizedBox(
+                                width: 10.w,
                               ),
-                              suffixIcon: IconButton(
-                                  icon: SvgPicture.asset(
-                                      '${AssetsPath.assetsSVGPath}/attachment.svg',
-                                      height: 16.h,
-                                      width: 16.w,
-                                      fit: BoxFit.scaleDown),
-                                  onPressed: () {}),*/
-                              filled: true,
-                              fillColor: AppColors.porcelain,
-                              hintText: 'Type your message...',
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14.r),
-                                  borderSide: BorderSide.none),
-                              hintStyle: TextStyle(
-                                color: AppColors.novel,
+                              Expanded(
+                                child: TextFormField(
+                                  focusNode: _textMessageFocusNode,
+                                  keyboardType: TextInputType.multiline,
+                                  minLines: 1,
+                                  maxLines: 3,
+                                  controller: _textMessageController,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      message = val.trim();
+                                      debugPrint('mesage $val');
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.all(4.w),
+                                    prefixIcon: IconButton(
+                                      icon: SvgPicture.asset(
+                                          '${AssetsPath.assetsSVGPath}/emoji.svg',
+                                          height: 16.h,
+                                          width: 16.w,
+                                          fit: BoxFit.scaleDown),
+                                      onPressed: () {
+                                        // FocusScope.of(context).unfocus();
+                                        FocusScope.of(context).requestFocus(
+                                            _textMessageFocusNode);
+                                        _textMessageFocusNode.unfocus();
+                                        setState(() {
+                                          showEmojiPicker = !showEmojiPicker;
+                                        });
+                                      },
+                                    ),
+                                    suffixIcon: IconButton(
+                                        icon: SvgPicture.asset(
+                                            '${AssetsPath.assetsSVGPath}/attachment.svg',
+                                            height: 16.h,
+                                            width: 16.w,
+                                            fit: BoxFit.scaleDown),
+                                        onPressed: () {
+                                          imagePickerBottomSheet(
+                                              context, uploadAttachment);
+                                        }),
+                                    filled: true,
+                                    fillColor: AppColors.porcelain,
+                                    hintText: 'Type your message...',
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(14.r),
+                                        borderSide: BorderSide.none),
+                                    hintStyle: TextStyle(
+                                      color: AppColors.novel,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                      color: AppColors.novel, fontSize: 16.sp),
+                                ),
                               ),
-                            ),
-                            style: TextStyle(
-                                color: AppColors.novel, fontSize: 16.sp),
-                          ),
-                        ),
-                        if (_textMessageController.text.isNotEmpty)
-                          GestureDetector(
-                              onTap: sendMessageToServer,
-                              child: Container(
-                                height: 48.h,
-                                width: 40.w,
-                                margin: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    color: AppColors.deepGreen,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(12.r))),
-                                child: const Icon(Icons.arrow_forward,
-                                    color: Colors.white),
-                              ))
-                      ],
-                    ),
-                  ),
-                )),
+                              if (_textMessageController.text != '')
+                                GestureDetector(
+                                    onTap: sendMessageToServer,
+                                    child: Container(
+                                      height: 44,
+                                      width: 44,
+                                      margin: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                          color: AppColors.deepGreen,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(12.r))),
+                                      child: const Icon(Icons.arrow_forward,
+                                          color: Colors.white),
+                                    ))
+                            ],
+                          )),
+                    ])),
+              ),
+            Offstage(
+              offstage: !showEmojiPicker,
+              child: SizedBox(
+                height: 250.h,
+                child: EmojiPicker(
+                    onEmojiSelected: (Category category, Emoji emoji) {
+                      _onEmojiSelected(emoji);
+                    },
+                    onBackspacePressed: _onBackspacePressed,
+                    config: Config(
+                        columns: 7,
+                         emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                        verticalSpacing: 0,
+                        horizontalSpacing: 0,
+                        initCategory: Category.RECENT,
+                        bgColor: const Color(0xFFF2F2F2),
+                        indicatorColor: Colors.blue,
+                        iconColor: Colors.grey,
+                        iconColorSelected: Colors.blue,
+                        progressIndicatorColor: Colors.blue,
+                        backspaceColor: Colors.blue,
+                        skinToneDialogBgColor: Colors.white,
+                        skinToneIndicatorColor: Colors.grey,
+                        enableSkinTones: true,
+                        showRecentsTab: true,
+                        recentsLimit: 28,
+                        noRecentsText: 'No Recents',
+                        noRecentsStyle: const TextStyle(
+                            fontSize: 20, color: Colors.black26),
+                        tabIndicatorAnimDuration: kTabScrollDuration,
+                        categoryIcons: const CategoryIcons(),
+                        buttonMode: ButtonMode.MATERIAL)),
+              ),
+            ),
           ],
         ),
       ),
@@ -232,42 +284,49 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Container(
-              child:
-                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Container(
-              width: 205.w,
-              padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 15.w),
-              decoration: BoxDecoration(
-                color: HexColor('#F7F9FA'),
-                borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(16),
-                    bottomRight: Radius.circular(16),
-                    topLeft: Radius.circular(16)),
-              ),
-              child: Text(
-                message.message!,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                  height: 2,
-                ),
-              ),
-            ),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                  if (message.messageType!.toLowerCase() == 'text')
+                    Container(
+                      width: 205.w,
+                      padding: EdgeInsets.symmetric(
+                          vertical: 15.h, horizontal: 15.w),
+                      decoration: BoxDecoration(
+                        color: HexColor('#F7F9FA'),
+                        borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(16),
+                            bottomRight: Radius.circular(16),
+                            topLeft: Radius.circular(16)),
+                      ),
+                      child: Text(
+                        message.message!,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                          height: 2,
+                        ),
+                      ),
+                    )
+                  else
+                    buildChatAttachment(message.message!),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  DateTimeAgo(
+                      dateString: message.createdDate!,
+                      textAlign: TextAlign.right,
+                      color: HexColor('#C4C4C4'),
+                      size: 12.sp),
+                ])),
             SizedBox(
-              height: 10.h,
+              width: 15.w,
             ),
-            DateTimeAgo(
-                dateString: message.createdDate!,
-                textAlign: TextAlign.right,
-                color: HexColor('#C4C4C4'),
-                size: 12.sp),
-          ])),
-          SizedBox(
-            width: 15.w,
-          ),
-          buildProfilePicture(senderDetails.firebaseProfilePicUrl),
+            buildProfilePicture(senderDetails.firebaseProfilePicUrl),
+          ])
         ],
       ),
     );
@@ -323,7 +382,6 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
   Widget buildProfilePicture(String image) => Container(
         height: 39.h,
         width: 39.w,
-        margin: EdgeInsets.only(bottom: 35.h),
         decoration: BoxDecoration(
           // border: Border.all(color: Colors.white, width: 3),
           shape: BoxShape.circle,
@@ -339,11 +397,26 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
         ),
       );
 
+  Widget buildChatAttachment(String image) => GestureDetector(
+      onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) {
+          return ImageViewerScreen(imageUrl: image);
+        }));
+      },
+      child: ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Image.network(
+            image,
+            height: 150.h,
+            fit: BoxFit.contain,
+          )));
+
   handleMessage(payload) {
     // final dynamic dataFromServer = jsonDecode(payload);
     final Message message = Message(
         createdDate: payload['dateCreate'],
         message: payload['text'],
+        messageType: payload['type'] ?? 'text',
         senderId: payload['sender_id'],
         receiverId: payload['receiver_id']);
 //
@@ -357,7 +430,8 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
     socket.emit('msgToServer', {
       'receiver_id': chat.receiver!.id!,
       'sender_id': UserSingleton.instance.user.user?.id,
-      'text': _textMessageController.text
+      'text': _textMessageController.text,
+      'type': 'text'
     });
     print('success');
     _textMessageController.clear();
@@ -420,9 +494,79 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
           ),
         ),
         itemBuilder: (_, Message message) {
-          return  message.senderId == senderDetails.id
-                  ? _myMessage(message)
-                  : _guideMessage(message);
+          return message.senderId == senderDetails.id
+              ? _myMessage(message)
+              : _guideMessage(message);
         },
       );
+
+  Future<void> uploadAttachment(image) async {
+    setState(() {
+      isUploading = true;
+    });
+
+    _showUploadDialog(context);
+
+    ///Save image to firebase
+    String attachmentUrl = '';
+    if (image != null) {
+      attachmentUrl =
+          await FirebaseServices().uploadImageToFirebase(image, _storagePath);
+
+      if (attachmentUrl.isNotEmpty) {
+        ///Send Message
+        socket.emit('msgToServer', {
+          'receiver_id': chat.receiver!.id!,
+          'sender_id': UserSingleton.instance.user.user?.id,
+          'text': attachmentUrl,
+          'type': 'image'
+        });
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
+  Future<void> _showUploadDialog(BuildContext context) async {
+    await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(22.r))),
+            content: Row(
+              children: <Widget>[
+                CircularProgressIndicator(
+                  color: AppColors.deepGreen,
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                    child: Text('Uploading Image...',
+                        style: TextStyle(
+                            fontSize: 14.sp, fontWeight: FontWeight.bold))),
+              ],
+            ),
+          );
+        });
+  }
+
+  _onEmojiSelected(Emoji emoji) {
+    final text = _textMessageController.text;
+    final selection = _textMessageController.selection;
+    final newText =
+        text.replaceRange(selection.start, selection.end, emoji.emoji);
+    final emojiLength = emoji.emoji.length;
+    _textMessageController.value = TextEditingValue(
+      text: newText,
+      selection:
+          TextSelection.collapsed(offset: selection.baseOffset + emojiLength),
+    );
+  }
+
+  _onBackspacePressed() {
+    _textMessageController
+      ..text = _textMessageController.text.characters.skipLast(1).toString()
+      ..selection = TextSelection.fromPosition(
+          TextPosition(offset: _textMessageController.text.length));
+  }
 }

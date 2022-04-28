@@ -1110,6 +1110,17 @@ class AppTextConstants {
 
   ///Returns you've got an adventure request! text
   static String adventureRequest = "You've got an Adventure Request!";
+
+  ///Returns delete conversation text
+  static String deleteConversation = 'Delete Conversation';
+
+  ///Returns areYouSureYouWantToDeleteConversation text
+  static String areYouSureYouWantToDeleteConversation =
+      'Are you sure you want to delete this conversation?';
+
+  ///Returns areYouSureYouWantBlockMessages text
+  static String areYouSureYouWantToBlockMessages =
+      'Are you sure you want to block messages from';
 }
 
 /// Class for error messages text
@@ -1229,6 +1240,7 @@ class ErrorMessageConstants {
 
   /// Returns 'Maximum keyword reach' text
   static String maximumKeyword = 'Maximum keyword reach';
+
 }
 
 /// Class for transaction history constants
