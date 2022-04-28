@@ -245,41 +245,29 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                     Widget _displayWidget;
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        _displayWidget = Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  const SkeletonText(
-                                    width: 300,
-                                    height: 30,
-                                  ),
-                                  SizedBox(
-                                    width: 20.w,
-                                  ),
-                                  const SkeletonText(
-                                    width: 30,
-                                    height: 30,
-                                    shape: BoxShape.circle,
-                                  )
-                                ],
+                        _displayWidget = SafeArea(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              const Padding(
+                                padding: EdgeInsets.all(12),
+                                child: SkeletonText(
+                                  width: 300,
+                                  height: 30,
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 10.h,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(12),
-                              child: SkeletonText(
-                                width: 400,
-                                height: 200,
+                              SizedBox(
+                                height: 10.h,
                               ),
-                            )
-                          ],
+                              const Padding(
+                                padding: EdgeInsets.all(12),
+                                child: SkeletonText(
+                                  width: 400,
+                                  height: 200,
+                                ),
+                              )
+                            ],
+                          ),
                         );
                         break;
                       default:

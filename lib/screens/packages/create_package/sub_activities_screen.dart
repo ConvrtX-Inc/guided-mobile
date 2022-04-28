@@ -73,8 +73,8 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
       ),
       title: Text(
         badges.name,
-        style: const TextStyle(
-          fontSize: 15,
+        style: TextStyle(
+          fontSize: 12.sp,
         ),
       ),
     );
@@ -96,8 +96,8 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
       ),
       title: Text(
         badges.name,
-        style: const TextStyle(
-          fontSize: 15,
+        style: TextStyle(
+          fontSize: 12.sp,
         ),
       ),
     );
@@ -139,7 +139,11 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(
+            fontSize: 12.sp, fontFamily: 'Gilroy', fontWeight: FontWeight.w400),
+      ),
     );
   }
 
@@ -185,7 +189,11 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(
+            fontSize: 12.sp, fontFamily: 'Gilroy', fontWeight: FontWeight.w400),
+      ),
     );
   }
 
@@ -243,13 +251,13 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: SizedBox(
-                          width: 70.w,
+                          // width: 70.w,
                           height: 30.h,
                           child: Align(
                             child: Text(
                               badges.name,
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                              style: TextStyle(fontSize: 12.sp),
                             ),
                           ),
                         ),
@@ -328,13 +336,13 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: SizedBox(
-                          width: 60.w,
+                          // width: 60.w,
                           height: 30.h,
                           child: Align(
                             child: Text(
                               badges.name,
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                              style: TextStyle(fontSize: 12.sp),
                             ),
                           ),
                         ),
@@ -407,13 +415,13 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: SizedBox(
-                          width: 70.w,
+                          // width: 70.w,
                           height: 30.h,
                           child: Align(
                             child: Text(
                               badges.name,
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                              style: TextStyle(fontSize: 12.sp),
                             ),
                           ),
                         ),
