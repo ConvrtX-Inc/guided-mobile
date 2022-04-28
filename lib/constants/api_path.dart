@@ -11,7 +11,7 @@ class AppAPIPath {
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
 
   ///Returns mode : (dev | staging | local )
-  static String mode = 'staging';
+  static String mode = 'dev';
 
   /// Returns API base url
   static String apiBaseUrl = getBaseUrl(mode);
