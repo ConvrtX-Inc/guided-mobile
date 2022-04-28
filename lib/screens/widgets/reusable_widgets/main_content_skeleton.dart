@@ -92,3 +92,44 @@ class MainContentSkeletonHorizontal extends StatelessWidget {
     );
   }
 }
+
+/// Main Content Loading Screen
+class MainContentSkeletonRequest extends StatelessWidget {
+  /// Constructor
+  const MainContentSkeletonRequest({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        padding: EdgeInsets.all(22.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const SkeletonText(
+              height: 200,
+              width: 900,
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            const SkeletonText(
+              height: 200,
+              width: 900,
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            const SkeletonText(
+              height: 200,
+              width: 900,
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

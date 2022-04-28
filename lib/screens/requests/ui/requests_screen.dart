@@ -7,6 +7,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/requests.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/requests.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -215,8 +216,10 @@ class _RequestsScreenState extends State<RequestsScreen> {
           );
         }
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Align(
-              alignment: Alignment.topLeft, child: CircularProgressIndicator());
+          return const SkeletonText(
+            width: 200,
+            height: 90,
+          );
         }
         return Container();
       },
