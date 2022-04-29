@@ -156,10 +156,16 @@ class _AdvertisementViewState extends State<AdvertisementView> {
               ],
             ),
             flexibleSpace: screenArguments['snapshot_img'] != ''
-                ? Image.memory(
-                    base64.decode(
-                        screenArguments['snapshot_img'].split(',').last),
-                    fit: BoxFit.fitHeight,
+                ? Image.network(
+                    screenArguments['snapshot_img'],
+                    loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) =>
+                        const SkeletonText(
+                      height: 100,
+                      width: 500,
+                      radius: 10,
+                    ),
+                    fit: BoxFit.cover,
                     gaplessPlayback: true,
                   )
                 : Container(),

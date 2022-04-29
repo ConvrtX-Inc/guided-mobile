@@ -11,7 +11,6 @@ import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 /// Widget for home features
 class PackageFeatures extends StatefulWidget {
@@ -141,20 +140,17 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    // child: CachedNetworkImage(
-                    //   imageUrl: widget._firebaseCoverImg,
-                    //   fit: BoxFit.contain,
-                    //   placeholder: (BuildContext context, String url) =>
-                    //       const SkeletonText(
-                    //     height: 100,
-                    //     width: 500,
-                    //     radius: 10,
-                    //   ),
-                    //   errorWidget: (context, url, error) =>
-                    //       const Icon(Icons.error),
-                    // ),
                     child: Image.network(
                       widget._firebaseCoverImg,
+                      loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) =>
+                          const SkeletonText(
+                        height: 100,
+                        width: 500,
+                        radius: 10,
+                      ),
+                      fit: BoxFit.cover,
+                      gaplessPlayback: true,
                     ),
                   ),
                 )),
@@ -418,7 +414,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'main_badge_id': widget._mainBadgeId,
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
-      'image_url': widget._imageUrl,
+      'image_url': widget._firebaseCoverImg,
       'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,
@@ -441,7 +437,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'main_badge_id': widget._mainBadgeId,
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
-      'image_url': widget._imageUrl,
+      'image_url': widget._firebaseCoverImg,
       'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,

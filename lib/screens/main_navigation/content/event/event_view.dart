@@ -11,6 +11,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -149,9 +150,15 @@ class _EventViewState extends State<EventView> {
               child: Stack(
                 children: <Widget>[
                   if (screenArguments['snapshot_img'] != '')
-                    Image.memory(
-                      base64.decode(
-                          screenArguments['snapshot_img'].split(',').last),
+                    Image.network(
+                      screenArguments['snapshot_img'],
+                      loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) =>
+                          const SkeletonText(
+                        height: 100,
+                        width: 500,
+                        radius: 10,
+                      ),
                       fit: BoxFit.cover,
                       gaplessPlayback: true,
                     )

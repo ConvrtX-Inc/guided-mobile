@@ -14,7 +14,7 @@ class ImageList {
 
   // ignore: public_member_api_docs
   Map<String, dynamic> toJson() =>
-      {'activity_advertisement_id': id, 'snapshot_img': img};
+      {'activity_advertisement_id': id, 'firebase_snapshot_img': img};
 }
 
 // ignore: public_member_api_docs,
@@ -38,7 +38,7 @@ class OutfitterImageList {
 
   // ignore: public_member_api_docs
   Map<String, dynamic> toJsonOutfitter() =>
-      {'activity_outfitter_id': id, 'snapshot_img': img};
+      {'activity_outfitter_id': id, 'firebase_snapshot_img': img};
 }
 
 // ignore: public_member_api_docs
@@ -62,7 +62,7 @@ class EventImageList {
 
   // ignore: public_member_api_docs
   Map<String, dynamic> toJsonOutfitter() =>
-      {'activity_event_id': id, 'snapshot_img': img};
+      {'activity_event_id': id, 'firebase_snapshot_img': img};
 }
 
 // ignore: public_member_api_docs

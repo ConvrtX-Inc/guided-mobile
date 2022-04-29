@@ -17,6 +17,7 @@ import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/main_navigation/content/packages/tab/tab_description.dart';
 import 'package:guided/screens/main_navigation/content/packages/tab/tab_slots_and_schedule.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -208,9 +209,15 @@ class _PackageViewState extends State<PackageView>
               flexibleSpace: Center(
                 child: Stack(
                   children: <Widget>[
-                    Image.memory(
-                      base64
-                          .decode(screenArguments['image_url'].split(',').last),
+                    Image.network(
+                      screenArguments['image_url'],
+                      loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) =>
+                          const SkeletonText(
+                        height: 100,
+                        width: 500,
+                        radius: 10,
+                      ),
                       fit: BoxFit.cover,
                       gaplessPlayback: true,
                     ),

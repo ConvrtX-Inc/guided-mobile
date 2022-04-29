@@ -339,7 +339,6 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                         child: FittedBox(
                           fit: BoxFit.fitWidth,
                           child: SizedBox(
-                            // width: 60.w,
                             height: 30.h,
                             child: Align(
                               child: Text(
@@ -423,7 +422,6 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                           child: FittedBox(
                             fit: BoxFit.fitWidth,
                             child: SizedBox(
-                              // width: 70.w,
                               height: 30.h,
                               child: Align(
                                 child: Expanded(
