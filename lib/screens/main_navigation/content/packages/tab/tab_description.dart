@@ -179,6 +179,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                                         const SkeletonText(
                                           width: 60,
                                           height: 30,
+                                          radius: 10,
                                         ),
                                       ],
                                     ),
@@ -254,6 +255,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                                 child: SkeletonText(
                                   width: 300,
                                   height: 30,
+                                  radius: 10,
                                 ),
                               ),
                               SizedBox(
@@ -264,6 +266,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                                 child: SkeletonText(
                                   width: 400,
                                   height: 200,
+                                  radius: 10,
                                 ),
                               )
                             ],

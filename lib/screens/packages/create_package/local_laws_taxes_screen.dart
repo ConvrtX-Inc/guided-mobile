@@ -124,7 +124,7 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
                             controller: _localLawsTaxes,
                             focusNode: _localLawsTaxesFocus,
                             decoration: InputDecoration(
-                              hintText: AppTextConstants.loremIpsum,
+                              hintText: AppTextConstants.localLawSet,
                               hintStyle: TextStyle(
                                 color: Colors.grey.shade800,
                               ),

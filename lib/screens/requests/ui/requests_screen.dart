@@ -221,6 +221,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
           return const SkeletonText(
             width: 200,
             height: 90,
+            radius: 10,
           );
         }
         return const Center(child: Text("You Don't Have Any Request Yet"));

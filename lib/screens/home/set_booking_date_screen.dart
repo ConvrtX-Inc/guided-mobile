@@ -205,6 +205,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                         child: SkeletonText(
                           height: 60,
                           width: 500,
+                          radius: 10,
                         ),
                       ),
                     ),
@@ -423,6 +424,7 @@ class _SetBookingDateScreenState extends State<SetBookingDateScreen> {
                             child: SkeletonText(
                               width: 400,
                               height: 40,
+                              radius: 10,
                             ),
                           ),
                         ),

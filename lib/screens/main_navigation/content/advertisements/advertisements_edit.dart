@@ -1130,7 +1130,8 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                                       ),
                                                       const SkeletonText(
                                                           width: 100,
-                                                          height: 30),
+                                                          height: 30,
+                                                          radius: 10,),
                                                       SizedBox(
                                                         width: 10.w,
                                                       ),

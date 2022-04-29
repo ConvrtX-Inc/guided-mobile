@@ -298,6 +298,7 @@ class _EventEditState extends State<EventEdit> {
                       return const SkeletonText(
                         width: 100,
                         height: 10,
+                        radius: 10,
                       );
                     }
                     return Container();
@@ -418,6 +419,7 @@ class _EventEditState extends State<EventEdit> {
                       return const SkeletonText(
                         width: 100,
                         height: 30,
+                        radius: 10,
                       );
                     }
                     return Container();
@@ -1175,6 +1177,7 @@ class _EventEditState extends State<EventEdit> {
                             return const SkeletonText(
                               width: 100,
                               height: 30,
+                              radius: 10,
                             );
                           }
                           return Container();
@@ -1366,6 +1369,7 @@ class _EventEditState extends State<EventEdit> {
                                                       const SkeletonText(
                                                         width: 100,
                                                         height: 30,
+                                                        radius: 10,
                                                       ),
                                                     ],
                                                   ),

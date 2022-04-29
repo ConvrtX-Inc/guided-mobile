@@ -11,6 +11,7 @@ import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 /// Widget for home features
 class PackageFeatures extends StatefulWidget {
@@ -32,6 +33,7 @@ class PackageFeatures extends StatefulWidget {
     String extraCost = '',
     String country = '',
     bool isPublished = false,
+    String firebaseCoverImg = '',
     Key? key,
   })  : _id = id,
         _name = name,
@@ -49,6 +51,7 @@ class PackageFeatures extends StatefulWidget {
         _extraCost = extraCost,
         _country = country,
         _isPublished = isPublished,
+        _firebaseCoverImg = firebaseCoverImg,
         super(key: key);
 
   final String _id;
@@ -67,6 +70,7 @@ class PackageFeatures extends StatefulWidget {
   final String _extraCost;
   final String _country;
   final bool _isPublished;
+  final String _firebaseCoverImg;
 
   @override
   State<PackageFeatures> createState() => _PackageFeaturesState();
@@ -137,12 +141,20 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.memory(
-                      base64.decode(
-                        widget._imageUrl.split(',').last,
-                      ),
-                      fit: BoxFit.cover,
-                      gaplessPlayback: true,
+                    // child: CachedNetworkImage(
+                    //   imageUrl: widget._firebaseCoverImg,
+                    //   fit: BoxFit.contain,
+                    //   placeholder: (BuildContext context, String url) =>
+                    //       const SkeletonText(
+                    //     height: 100,
+                    //     width: 500,
+                    //     radius: 10,
+                    //   ),
+                    //   errorWidget: (context, url, error) =>
+                    //       const Icon(Icons.error),
+                    // ),
+                    child: Image.network(
+                      widget._firebaseCoverImg,
                     ),
                   ),
                 )),
@@ -259,6 +271,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                       return const SkeletonText(
                         height: 200,
                         width: 900,
+                        radius: 10,
                       );
                     }
                     return Container();

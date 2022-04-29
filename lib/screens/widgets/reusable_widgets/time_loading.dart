@@ -18,6 +18,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -25,6 +26,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -32,6 +34,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -39,6 +42,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -46,6 +50,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -53,6 +58,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -60,6 +66,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -67,6 +74,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -74,6 +82,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -81,6 +90,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -88,6 +98,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -95,6 +106,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -102,6 +114,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -109,6 +122,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 10.h,
@@ -116,6 +130,7 @@ class TimeLoading extends StatelessWidget {
             const SkeletonText(
               height: 30,
               width: 900,
+              radius: 10,
             ),
           ],
         ),

@@ -50,7 +50,6 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
 
   @override
   void initState() {
-
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
       final DateTime dt = DateTime.parse(travellerMonthController.currentDate);
       final int mon = dt.month;
@@ -191,6 +190,7 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
               child: SkeletonText(
                 height: 500,
                 width: 500,
+                radius: 10,
               ),
             ),
           Padding(

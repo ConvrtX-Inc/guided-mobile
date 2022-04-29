@@ -201,6 +201,7 @@ class _AvailabilityBookingDateScreenState
                         child: SkeletonText(
                           height: 60,
                           width: 500,
+                          radius: 10,
                         ),
                       ),
                     ),
@@ -426,6 +427,7 @@ class _AvailabilityBookingDateScreenState
                             child: SkeletonText(
                               width: 400,
                               height: 40,
+                              radius: 10,
                             ),
                           ),
                         ),
