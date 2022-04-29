@@ -17,7 +17,7 @@ class ProfileDetailsModel {
       });
 
   /// String initialization
-  final String id,
+    String id,
       fullName,
       firstName,
       lastName,
