@@ -738,7 +738,7 @@ class AppTextConstants {
   static String biggerBullet = '●';
 
   /// Returns 'No Results Found' text
-  static String noResultFound = 'No Results Found';
+  static String noResultFound = 'Nothing to Show Here';
 
   /// Returns confirm payment
   static String confirmPayment = 'Confirm Payment';
@@ -1130,6 +1130,9 @@ class AppTextConstants {
 
  ///Returns address line 2
  static String addressLine2 = 'Address Line 2';
+  /// Returns local law pre set
+  static String localLawSet =
+      'I agree to abide by, follow and respect the local laws of the area I am traveling in.  If I have questions about these laws I will reach out to my Guide for information and guidance.';
 }
 
 /// Class for error messages text
@@ -1245,11 +1248,10 @@ class ErrorMessageConstants {
   static String datePick = 'You must pick a day to proceed';
 
   /// Returns 'Image file is too large' text
-  static String imageFileToSize = 'Image file is too large';
+  static String imageFileToSize = 'Maximum image size is 2MB';
 
   /// Returns 'Maximum keyword reach' text
   static String maximumKeyword = 'Maximum keyword reach';
-
 }
 
 /// Class for transaction history constants

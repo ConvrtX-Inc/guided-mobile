@@ -242,6 +242,7 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
             return const SkeletonText(
               height: 200,
               width: 900,
+              radius: 10,
             );
           }
           return Container();

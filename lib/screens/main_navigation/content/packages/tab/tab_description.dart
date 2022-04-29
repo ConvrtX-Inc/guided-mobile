@@ -1,4 +1,4 @@
-// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings, no_default_cases, sort_constructors_first
+// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings, no_default_cases, sort_constructors_first, always_put_required_named_parameters_first, public_member_api_docs, diagnostic_describe_all_properties
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -24,26 +24,28 @@ class TabDescriptionView extends StatefulWidget {
   final List<String> subActivityId;
   final double fee;
   final String description;
+  final int numberOfTouristMin;
   final int numberOfTourist;
   final String services;
   final double starRating;
 
   /// Constructor
-  const TabDescriptionView(
-      {Key? key,
-      required this.id,
-      required this.name,
-      required this.subActivityId,
-      required this.fee,
-      required this.description,
-      required this.numberOfTourist,
-      required this.services,
-      required this.starRating})
-      : super(key: key);
+  const TabDescriptionView({
+    Key? key,
+    required this.id,
+    required this.name,
+    required this.subActivityId,
+    required this.fee,
+    required this.description,
+    required this.numberOfTourist,
+    required this.services,
+    required this.starRating,
+    required this.numberOfTouristMin,
+  }) : super(key: key);
 
   @override
-  _TabDescriptionViewState createState() => _TabDescriptionViewState(id, name,
-      subActivityId, fee, description, numberOfTourist, services, starRating);
+  // ignore: no_logic_in_create_state
+  _TabDescriptionViewState createState() => _TabDescriptionViewState();
 }
 
 class _TabDescriptionViewState extends State<TabDescriptionView>
@@ -51,15 +53,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
   @override
   bool get wantKeepAlive => true;
 
-  _TabDescriptionViewState(
-      String id,
-      String name,
-      List<String> subActivityId,
-      double fee,
-      String description,
-      int numberOfTourist,
-      String services,
-      double starRating);
+  _TabDescriptionViewState();
 
   List<HomeModel> features = HomeUtils.getMockFeatures();
   late Map<dynamic, String> value;
@@ -115,7 +109,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                   Text('Team', style: AppTextStyle.semiBoldStyle),
                   SizedBox(width: 35.w),
                   Text(
-                    '${widget.numberOfTourist} Traveller',
+                    '${widget.numberOfTouristMin} - ${widget.numberOfTourist} Traveller',
                     style: TextStyle(
                         fontFamily: 'Gilroy',
                         fontSize: 12.sp,
@@ -185,6 +179,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                                         const SkeletonText(
                                           width: 60,
                                           height: 30,
+                                          radius: 10,
                                         ),
                                       ],
                                     ),
@@ -251,41 +246,31 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                     Widget _displayWidget;
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        _displayWidget = Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  const SkeletonText(
-                                    width: 300,
-                                    height: 30,
-                                  ),
-                                  SizedBox(
-                                    width: 20.w,
-                                  ),
-                                  const SkeletonText(
-                                    width: 30,
-                                    height: 30,
-                                    shape: BoxShape.circle,
-                                  )
-                                ],
+                        _displayWidget = SafeArea(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              const Padding(
+                                padding: EdgeInsets.all(12),
+                                child: SkeletonText(
+                                  width: 300,
+                                  height: 30,
+                                  radius: 10,
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 10.h,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(12),
-                              child: SkeletonText(
-                                width: 400,
-                                height: 200,
+                              SizedBox(
+                                height: 10.h,
                               ),
-                            )
-                          ],
+                              const Padding(
+                                padding: EdgeInsets.all(12),
+                                child: SkeletonText(
+                                  width: 400,
+                                  height: 200,
+                                  radius: 10,
+                                ),
+                              )
+                            ],
+                          ),
                         );
                         break;
                       default:
@@ -304,168 +289,169 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                 )
               ],
             ),
-            // Padding(
-            //   padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-            //   child: Row(
-            //     children: <Widget>[
-            //       Icon(
-            //         Icons.star,
-            //         color: AppColors.tealGreen,
-            //         size: 10,
-            //       ),
-            //       SizedBox(
-            //         width: 5.w,
-            //       ),
-            //       Text('5',
-            //           style: TextStyle(
-            //               fontFamily: 'Gilroy',
-            //               fontSize: 14.sp,
-            //               fontWeight: FontWeight.w600,
-            //               color: AppColors.tealGreen)),
-            //       SizedBox(
-            //         width: 15.w,
-            //       ),
-            //       Text(
-            //         '(1 Reviews)',
-            //         style: TextStyle(
-            //             fontFamily: 'Gilroy',
-            //             fontSize: 14.sp,
-            //             fontWeight: FontWeight.w400,
-            //             color: AppColors.osloGrey),
-            //       )
-            //     ],
-            //   ),
-            // ),
-            // Container(
-            //   margin: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-            //   decoration: BoxDecoration(
-            //     borderRadius: BorderRadius.circular(5.r),
-            //     border: Border.all(width: 1.w, color: AppColors.porcelain),
-            //   ),
-            //   child: Column(
-            //     children: <Widget>[
-            //       Row(
-            //         crossAxisAlignment: CrossAxisAlignment.start,
-            //         children: <Widget>[
-            //           Padding(
-            //             padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
-            //             child: Container(
-            //               width: 55.w,
-            //               height: 55.h,
-            //               decoration: BoxDecoration(
-            //                   boxShadow: <BoxShadow>[
-            //                     BoxShadow(
-            //                       color: Colors.grey.withOpacity(0.8),
-            //                       spreadRadius: 2,
-            //                       blurRadius: 5,
-            //                     ),
-            //                   ],
-            //                   color: Colors.white,
-            //                   shape: BoxShape.circle,
-            //                   image: const DecorationImage(
-            //                       fit: BoxFit.fitHeight,
-            //                       image: AssetImage(
-            //                           'assets/images/profile-photos-2.png'))),
-            //             ),
-            //           ),
-            //           Column(
-            //             crossAxisAlignment: CrossAxisAlignment.start,
-            //             children: <Widget>[
-            //               Padding(
-            //                   padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-            //                   child: Text(
-            //                     'Ann Sasha',
-            //                     style: TextStyle(
-            //                         color: Colors.black,
-            //                         fontFamily: 'Gilroy',
-            //                         fontSize: 14.sp,
-            //                         fontWeight: FontWeight.w600),
-            //                   )),
-            //               Padding(
-            //                   padding: EdgeInsets.fromLTRB(0, 10.h, 0, 0),
-            //                   child: SizedBox(
-            //                     width: 180.w,
-            //                     child: Text(
-            //                       'Architect',
-            //                       style: TextStyle(
-            //                           color: Colors.grey,
-            //                           fontFamily: 'Gilroy',
-            //                           fontSize: 12.sp,
-            //                           fontWeight: FontWeight.w400),
-            //                     ),
-            //                   )),
-            //             ],
-            //           ),
-            //           Row(
-            //             children: <Widget>[
-            //               Padding(
-            //                 padding: EdgeInsets.fromLTRB(0, 10.h, 5.w, 0.h),
-            //                 child: Text(
-            //                   '5',
-            //                   style: TextStyle(
-            //                       color: Colors.black,
-            //                       fontSize: 12.sp,
-            //                       fontWeight: FontWeight.w600,
-            //                       fontFamily: 'Gilroy'),
-            //                 ),
-            //               ),
-            //               Padding(
-            //                 padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-            //                 child: const Icon(
-            //                   Icons.star,
-            //                   color: Colors.black,
-            //                   size: 10,
-            //                 ),
-            //               ),
-            //               Padding(
-            //                 padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-            //                 child: const Icon(
-            //                   Icons.star,
-            //                   color: Colors.black,
-            //                   size: 10,
-            //                 ),
-            //               ),
-            //               Padding(
-            //                 padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-            //                 child: const Icon(
-            //                   Icons.star,
-            //                   color: Colors.black,
-            //                   size: 10,
-            //                 ),
-            //               ),
-            //               Padding(
-            //                 padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-            //                 child: const Icon(
-            //                   Icons.star,
-            //                   color: Colors.black,
-            //                   size: 10,
-            //                 ),
-            //               ),
-            //               Padding(
-            //                 padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-            //                 child: const Icon(
-            //                   Icons.star,
-            //                   color: Colors.black,
-            //                   size: 10,
-            //                 ),
-            //               )
-            //             ],
-            //           )
-            //         ],
-            //       ),
-            //       Padding(
-            //         padding:
-            //             EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-            //         child: Text(AppTextConstants.loremIpsum,
-            //             style: TextStyle(
-            //                 fontFamily: 'Poppins',
-            //                 fontSize: 14.sp,
-            //                 color: AppColors.osloGrey,
-            //                 fontWeight: FontWeight.w400)),
-            //       )
-            //     ],
-            //   ),
-            // ),
+            Padding(
+              padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
+              child: Row(
+                children: <Widget>[
+                  Icon(
+                    Icons.star,
+                    color: AppColors.tealGreen,
+                    size: 10,
+                  ),
+                  SizedBox(
+                    width: 5.w,
+                  ),
+                  Text('5',
+                      style: TextStyle(
+                          fontFamily: 'Gilroy',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.tealGreen)),
+                  SizedBox(
+                    width: 15.w,
+                  ),
+                  Text(
+                    '(1 Reviews)',
+                    style: TextStyle(
+                        fontFamily: 'Gilroy',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.osloGrey),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5.r),
+                border: Border.all(width: 1.w, color: AppColors.porcelain),
+              ),
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
+                        child: Container(
+                          width: 55.w,
+                          height: 55.h,
+                          decoration: BoxDecoration(
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.8),
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                ),
+                              ],
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              image: const DecorationImage(
+                                  fit: BoxFit.fitHeight,
+                                  image: AssetImage(
+                                      'assets/images/profile-photos-2.png'))),
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                              padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
+                              child: Text(
+                                'Ann Sasha',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'Gilroy',
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600),
+                              )),
+                          Padding(
+                              padding: EdgeInsets.fromLTRB(0, 10.h, 0, 0),
+                              child: SizedBox(
+                                width: 180.w,
+                                child: Text(
+                                  'Architect',
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontFamily: 'Gilroy',
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              )),
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 10.h, 5.w, 0.h),
+                            child: Text(
+                              '5',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Gilroy'),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
+                            child: const Icon(
+                              Icons.star,
+                              color: Colors.black,
+                              size: 10,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
+                            child: const Icon(
+                              Icons.star,
+                              color: Colors.black,
+                              size: 10,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
+                            child: const Icon(
+                              Icons.star,
+                              color: Colors.black,
+                              size: 10,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
+                            child: const Icon(
+                              Icons.star,
+                              color: Colors.black,
+                              size: 10,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
+                            child: const Icon(
+                              Icons.star,
+                              color: Colors.black,
+                              size: 10,
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
+                    child: Text(
+                        'Everything was perfect, and I would have to say it was the vacation of a life time. I will do all I can to promote your company and your services. Thank you so very much for having arranged the magnificent trip we took!!',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 14.sp,
+                            color: AppColors.osloGrey,
+                            fontWeight: FontWeight.w400)),
+                  )
+                ],
+              ),
+            ),
           ],
         ),
       ),

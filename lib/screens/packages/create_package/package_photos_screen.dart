@@ -15,7 +15,9 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/activity_destination_model.dart';
+import 'package:guided/utils/services/firebase_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_api_headers/google_api_headers.dart';
@@ -49,6 +51,8 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
 
   late List<ActivityDestinationModel> destinationList;
 
+  final String _destinationPath = 'destinationImg';
+  bool _isSubmit = false;
   Stack _default() {
     return Stack(
       children: <Widget>[
@@ -66,7 +70,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(25),
+            padding: const EdgeInsets.all(5),
             child: Row(
               children: <Widget>[
                 Image.asset(
@@ -148,6 +152,8 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.camera,
+                                      maxHeight: 800.h,
+                                      maxWidth: 800.w,
                                       imageQuality: 25);
                               if (image1 == null) {
                                 return;
@@ -158,15 +164,32 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                               int fileSize;
                               file = getFileSizeString(
                                   bytes: imageTemporary.lengthSync());
-                              fileSize = int.parse(
-                                  file.substring(0, file.indexOf('K')));
-                              if (fileSize >= 100) {
-                                AdvanceSnackBar(
-                                        message: ErrorMessageConstants
-                                            .imageFileToSize)
-                                    .show(context);
-                                    Navigator.pop(context);
-                                return;
+                              if (file.contains('KB')) {
+                                fileSize = int.parse(
+                                    file.substring(0, file.indexOf('K')));
+                                debugPrint('Filesize:: $fileSize');
+                                if (fileSize >= 2000) {
+                                  Navigator.pop(context);
+                                  AdvanceSnackBar(
+                                          message: ErrorMessageConstants
+                                              .imageFileToSize,
+                                          bgColor: Colors.red)
+                                      .show(context);
+                                  return;
+                                }
+                              } else {
+                                fileSize = int.parse(
+                                    file.substring(0, file.indexOf('M')));
+                                debugPrint('Filesize:: $fileSize');
+                                if (fileSize >= 2) {
+                                  Navigator.pop(context);
+                                  AdvanceSnackBar(
+                                          message: ErrorMessageConstants
+                                              .imageFileToSize,
+                                          bgColor: Colors.red)
+                                      .show(context);
+                                  return;
+                                }
                               }
                               setState(() {
                                 this.image1 = imageTemporary;
@@ -185,7 +208,9 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.gallery,
-                                      imageQuality: 10);
+                                      maxHeight: 800.h,
+                                      maxWidth: 800.w,
+                                      imageQuality: 25);
 
                               if (image1 == null) {
                                 return;
@@ -196,15 +221,32 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                               int fileSize;
                               file = getFileSizeString(
                                   bytes: imageTemporary.lengthSync());
-                              fileSize = int.parse(
-                                  file.substring(0, file.indexOf('K')));
-                              if (fileSize >= 100) {
-                                AdvanceSnackBar(
-                                        message: ErrorMessageConstants
-                                            .imageFileToSize)
-                                    .show(context);
-                                    Navigator.pop(context);
-                                return;
+                              if (file.contains('KB')) {
+                                fileSize = int.parse(
+                                    file.substring(0, file.indexOf('K')));
+                                debugPrint('Filesize:: $fileSize');
+                                if (fileSize >= 2000) {
+                                  Navigator.pop(context);
+                                  AdvanceSnackBar(
+                                          message: ErrorMessageConstants
+                                              .imageFileToSize,
+                                          bgColor: Colors.red)
+                                      .show(context);
+                                  return;
+                                }
+                              } else {
+                                fileSize = int.parse(
+                                    file.substring(0, file.indexOf('M')));
+                                debugPrint('Filesize:: $fileSize');
+                                if (fileSize >= 2) {
+                                  Navigator.pop(context);
+                                  AdvanceSnackBar(
+                                          message: ErrorMessageConstants
+                                              .imageFileToSize,
+                                          bgColor: Colors.red)
+                                      .show(context);
+                                  return;
+                                }
                               }
                               setState(() {
                                 this.image1 = imageTemporary;
@@ -276,6 +318,8 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
                                           imageQuality: 25);
 
                                   if (image2 == null) {
@@ -287,15 +331,32 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                        Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image2 = imageTemporary;
@@ -314,7 +375,9 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 10);
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
+                                          imageQuality: 25);
                                   if (image2 == null) {
                                     return;
                                   }
@@ -324,15 +387,32 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                        Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image2 = imageTemporary;
@@ -403,10 +483,13 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                               title: const Text('Camera'),
                               onTap: () async {
                                 try {
-                                  final XFile? image3 = await ImagePicker()
-                                      .pickImage(
-                                          source: ImageSource.camera,
-                                          imageQuality: 25);
+                                  final XFile? image3 =
+                                      await ImagePicker().pickImage(
+                                    source: ImageSource.camera,
+                                    imageQuality: 25,
+                                    maxHeight: 800.h,
+                                    maxWidth: 800.w,
+                                  );
 
                                   if (image3 == null) {
                                     return;
@@ -416,15 +499,32 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                        Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image3 = imageTemporary;
@@ -443,7 +543,9 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 10);
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
+                                          imageQuality: 25);
 
                                   if (image3 == null) {
                                     return;
@@ -454,15 +556,32 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                        Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image3 = imageTemporary;
@@ -658,8 +777,10 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         child: SizedBox(
           width: width,
           height: 60,
-          child: ElevatedButton(
-            onPressed: () => navigateGuideRuleScreen(context, screenArguments),
+          child: LoadingElevatedButton(
+            onPressed: () => _isSubmit
+                ? null
+                : navigateGuideRuleScreen(context, screenArguments),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -669,6 +790,11 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
               ),
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
+            ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             child: Text(
               AppTextConstants.next,
@@ -803,21 +929,35 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
 
   Future<void> navigateGuideRuleScreen(
       BuildContext context, Map<String, dynamic> data) async {
+    setState(() {
+      _isSubmit = true;
+    });
+
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
+    String snapshotUrl1 = '';
+    String snapshotUrl2 = '';
+    String snapshotUrl3 = '';
 
     if (_placeName.text.isEmpty || _description.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
           .show(context);
+      setState(() {
+        _isSubmit = false;
+      });
     } else {
       if (_uploadCount == 1) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
 
         details['snapshot_img_1'] = base64Image1;
+        snapshotUrl1 = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _destinationPath);
+        details['firebase_snapshot_img_1'] = snapshotUrl1;
         destinationList.add(ActivityDestinationModel(
             placeName: _placeName.text,
             placeDescription: _description.text,
             img1Holder: base64Image1,
+            img1FirebaseHolder: snapshotUrl1,
             latitude: latitute,
             longitude: longitude,
             uploadCount: _uploadCount));
@@ -830,12 +970,20 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
 
         details['snapshot_img_1'] = base64Image1;
         details['snapshot_img_2'] = base64Image2;
+        details['firebase_snapshot_img_1'] = image1;
+        details['firebase_snapshot_img_2'] = image2;
+        snapshotUrl1 = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _destinationPath);
+        snapshotUrl2 = await FirebaseServices()
+            .uploadImageToFirebase(image2!, _destinationPath);
 
         destinationList.add(ActivityDestinationModel(
             placeName: _placeName.text,
             placeDescription: _description.text,
             img1Holder: base64Image1,
             img2Holder: base64Image2,
+            img1FirebaseHolder: snapshotUrl1,
+            img2FirebaseHolder: snapshotUrl2,
             latitude: latitute,
             longitude: longitude,
             uploadCount: _uploadCount));
@@ -852,12 +1000,24 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
         details['snapshot_img_1'] = base64Image1;
         details['snapshot_img_2'] = base64Image2;
         details['snapshot_img_3'] = base64Image3;
+        details['firebase_snapshot_img_1'] = image1;
+        details['firebase_snapshot_img_2'] = image2;
+        details['firebase_snapshot_img_3'] = image3;
+        snapshotUrl1 = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _destinationPath);
+        snapshotUrl2 = await FirebaseServices()
+            .uploadImageToFirebase(image2!, _destinationPath);
+        snapshotUrl3 = await FirebaseServices()
+            .uploadImageToFirebase(image3!, _destinationPath);
         destinationList.add(ActivityDestinationModel(
           placeName: _placeName.text,
           placeDescription: _description.text,
           img1Holder: base64Image1,
           img2Holder: base64Image2,
           img3Holder: base64Image3,
+          img1FirebaseHolder: snapshotUrl1,
+          img2FirebaseHolder: snapshotUrl2,
+          img3FirebaseHolder: snapshotUrl3,
           latitude: latitute,
           longitude: longitude,
           uploadCount: _uploadCount,

@@ -116,17 +116,24 @@ class _EventFeaturesState extends State<EventFeatures> {
                       return Stack(
                         children: <Widget>[
                           GestureDetector(
-                            onTap: () => navigateEventDetails(context,
-                                imageDetails.snapshotImg, imageDetails.id),
+                            onTap: () => navigateEventDetails(
+                                context,
+                                imageDetails.firebaseSnapshotImg,
+                                imageDetails.id),
                             child: ListTile(
                               title: imageDetails.activityEventId != null
                                   ? SizedBox(
                                       height: 200.h,
-                                      child: Image.memory(
-                                        base64.decode(
-                                          imageDetails.snapshotImg
-                                              .split(',')
-                                              .last,
+                                      child: Image.network(
+                                        imageDetails.firebaseSnapshotImg,
+                                        loadingBuilder: (BuildContext context,
+                                                Widget child,
+                                                ImageChunkEvent?
+                                                    loadingProgress) =>
+                                            const SkeletonText(
+                                          height: 200,
+                                          width: 500,
+                                          radius: 10,
                                         ),
                                         fit: BoxFit.cover,
                                         gaplessPlayback: true,
@@ -254,7 +261,7 @@ class _EventFeaturesState extends State<EventFeatures> {
                                 GestureDetector(
                                   onTap: () => navigateEventDetailsEdit(
                                       context,
-                                      imageDetails.snapshotImg,
+                                      imageDetails.firebaseSnapshotImg,
                                       imageDetails.id),
                                   child: SizedBox(
                                     width: 50,
