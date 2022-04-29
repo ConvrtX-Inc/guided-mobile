@@ -1122,6 +1122,7 @@ class AppTextConstants {
   static String areYouSureYouWantToBlockMessages =
       'Are you sure you want to block messages from';
 
+ 
   ///Returns Maiden Name
   static String maidenName = 'Maiden Name';
 
@@ -1130,6 +1131,7 @@ class AppTextConstants {
 
  ///Returns address line 2
  static String addressLine2 = 'Address Line 2';
+ 
   /// Returns local law pre set
   static String localLawSet =
       'I agree to abide by, follow and respect the local laws of the area I am traveling in.  If I have questions about these laws I will reach out to my Guide for information and guidance.';
