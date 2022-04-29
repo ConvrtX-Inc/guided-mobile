@@ -411,6 +411,19 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
             fit: BoxFit.contain,
           )));
 
+
+
+  void sendMessageToServer() {
+    socket.emit('msgToServer', {
+      'receiver_id': chat.receiver!.id!,
+      'sender_id': UserSingleton.instance.user.user?.id,
+      'text': _textMessageController.text,
+      'type': 'text'
+    });
+    print('success');
+    _textMessageController.clear();
+  }
+
   handleMessage(payload) {
     // final dynamic dataFromServer = jsonDecode(payload);
     final Message message = Message(
@@ -426,26 +439,9 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
     scrollToBottom(timer: 200);
   }
 
-  void sendMessageToServer() {
-    socket.emit('msgToServer', {
-      'receiver_id': chat.receiver!.id!,
-      'sender_id': UserSingleton.instance.user.user?.id,
-      'text': _textMessageController.text,
-      'type': 'text'
-    });
-    print('success');
-    _textMessageController.clear();
-  }
-
   void scrollToBottom({int timer = 100}) {
     Timer(Duration(milliseconds: timer),
         () => _scrollController.jumpTo(index: chatMessages.length - 1));
-
-    /*scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: timer),
-        curve: Curves.fastOutSlowIn,
-      ),*/
   }
 
   Widget buildMessages() => StickyGroupedListView<Message, DateTime>(

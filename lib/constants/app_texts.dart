@@ -1121,6 +1121,15 @@ class AppTextConstants {
   ///Returns areYouSureYouWantBlockMessages text
   static String areYouSureYouWantToBlockMessages =
       'Are you sure you want to block messages from';
+
+  ///Returns Maiden Name
+  static String maidenName = 'Maiden Name';
+
+  ///Returns address line 1 text
+ static String addressLine1 = 'Address Line 1';
+
+ ///Returns address line 2
+ static String addressLine2 = 'Address Line 2';
 }
 
 /// Class for error messages text
