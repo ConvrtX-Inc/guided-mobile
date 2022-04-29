@@ -274,6 +274,7 @@ class _PackageEditState extends State<PackageEdit> {
                       return const SkeletonText(
                         width: 100,
                         height: 10,
+                        radius: 10,
                       );
                     }
                     return Container();
@@ -1068,6 +1069,7 @@ class _PackageEditState extends State<PackageEdit> {
                             return const SkeletonText(
                               width: 100,
                               height: 30,
+                              radius: 10,
                             );
                           }
                           return Container();
@@ -1255,6 +1257,7 @@ class _PackageEditState extends State<PackageEdit> {
                                                       const SkeletonText(
                                                         width: 100,
                                                         height: 30,
+                                                        radius: 10,
                                                       )
                                                     ],
                                                   ),

@@ -11,6 +11,7 @@ import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 /// Widget for home features
 class PackageFeatures extends StatefulWidget {
@@ -22,8 +23,9 @@ class PackageFeatures extends StatefulWidget {
     String subBadgeId = '',
     String description = '',
     String imageUrl = '',
+    int numberOfTouristMin = 0,
     int numberOfTourist = 0,
-    double starRating = 0.0,
+    double starRating = 5.0,
     double fee = 0.0,
     String dateRange = '',
     String services = '',
@@ -31,6 +33,7 @@ class PackageFeatures extends StatefulWidget {
     String extraCost = '',
     String country = '',
     bool isPublished = false,
+    String firebaseCoverImg = '',
     Key? key,
   })  : _id = id,
         _name = name,
@@ -38,6 +41,7 @@ class PackageFeatures extends StatefulWidget {
         _subBadgeId = subBadgeId,
         _description = description,
         _imageUrl = imageUrl,
+        _numberOfTouristMin = numberOfTouristMin,
         _numberOfTourist = numberOfTourist,
         _fee = fee,
         _starRating = starRating,
@@ -47,6 +51,7 @@ class PackageFeatures extends StatefulWidget {
         _extraCost = extraCost,
         _country = country,
         _isPublished = isPublished,
+        _firebaseCoverImg = firebaseCoverImg,
         super(key: key);
 
   final String _id;
@@ -55,6 +60,7 @@ class PackageFeatures extends StatefulWidget {
   final String _subBadgeId;
   final String _description;
   final String _imageUrl;
+  final int _numberOfTouristMin;
   final int _numberOfTourist;
   final double _starRating;
   final double _fee;
@@ -64,6 +70,7 @@ class PackageFeatures extends StatefulWidget {
   final String _extraCost;
   final String _country;
   final bool _isPublished;
+  final String _firebaseCoverImg;
 
   @override
   State<PackageFeatures> createState() => _PackageFeaturesState();
@@ -134,12 +141,20 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.memory(
-                      base64.decode(
-                        widget._imageUrl.split(',').last,
-                      ),
-                      fit: BoxFit.cover,
-                      gaplessPlayback: true,
+                    // child: CachedNetworkImage(
+                    //   imageUrl: widget._firebaseCoverImg,
+                    //   fit: BoxFit.contain,
+                    //   placeholder: (BuildContext context, String url) =>
+                    //       const SkeletonText(
+                    //     height: 100,
+                    //     width: 500,
+                    //     radius: 10,
+                    //   ),
+                    //   errorWidget: (context, url, error) =>
+                    //       const Icon(Icons.error),
+                    // ),
+                    child: Image.network(
+                      widget._firebaseCoverImg,
                     ),
                   ),
                 )),
@@ -189,7 +204,8 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                                       fontSize: 14),
                                 ),
                               ),
-                              Text('${widget._numberOfTourist} Traveller')
+                              Text(
+                                  '${widget._numberOfTouristMin} - ${widget._numberOfTourist} Traveller')
                             ],
                           ),
                         ),
@@ -255,6 +271,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                       return const SkeletonText(
                         height: 200,
                         width: 900,
+                        radius: 10,
                       );
                     }
                     return Container();
@@ -402,6 +419,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
       'image_url': widget._imageUrl,
+      'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,
       'fee': widget._fee,
@@ -424,6 +442,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
       'image_url': widget._imageUrl,
+      'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,
       'fee': widget._fee,

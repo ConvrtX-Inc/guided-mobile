@@ -64,6 +64,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                 _displayWidget = const SkeletonText(
                   height: 200,
                   width: 900,
+                  radius: 10,
                 );
                 break;
               default:

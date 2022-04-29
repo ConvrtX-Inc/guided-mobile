@@ -18,6 +18,7 @@ class MainContentSkeleton extends StatelessWidget {
             const SkeletonText(
               height: 200,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 20.h,
@@ -25,6 +26,7 @@ class MainContentSkeleton extends StatelessWidget {
             const SkeletonText(
               height: 200,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 20.h,
@@ -32,6 +34,7 @@ class MainContentSkeleton extends StatelessWidget {
             const SkeletonText(
               height: 200,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 20.h,
@@ -39,6 +42,7 @@ class MainContentSkeleton extends StatelessWidget {
             const SkeletonText(
               height: 200,
               width: 900,
+              radius: 10,
             ),
           ],
         ),

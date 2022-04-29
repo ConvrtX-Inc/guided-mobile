@@ -28,7 +28,7 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
   void initState() {
     super.initState();
 
-    _guideRules = TextEditingController(text: AppTextConstants.loremIpsum);
+    _guideRules = TextEditingController(text: '');
   }
 
   @override
@@ -110,7 +110,6 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
                             controller: _guideRules,
                             focusNode: _guideRulesFocus,
                             decoration: InputDecoration(
-                              hintText: AppTextConstants.loremIpsum,
                               hintStyle: TextStyle(
                                 color: Colors.grey.shade800,
                               ),

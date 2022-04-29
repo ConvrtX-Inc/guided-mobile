@@ -294,6 +294,7 @@ class _PackageViewState extends State<PackageView>
                   subActivityId: screenArguments['sub_badge_id'],
                   description: screenArguments['description'],
                   fee: screenArguments['fee'],
+                  numberOfTouristMin: screenArguments['number_of_tourist_min'],
                   numberOfTourist: screenArguments['number_of_tourist'],
                   services: screenArguments['services'],
                   starRating: screenArguments['star_rating'],

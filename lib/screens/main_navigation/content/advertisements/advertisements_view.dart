@@ -246,6 +246,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                                           const SkeletonText(
                                             width: 100,
                                             height: 30,
+                                            radius: 10,
                                           ),
                                         ],
                                       ),

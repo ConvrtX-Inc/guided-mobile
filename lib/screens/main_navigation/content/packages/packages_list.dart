@@ -44,8 +44,7 @@ class _PackageListState extends State<PackageList>
           children: <Widget>[
             FutureBuilder<PackageModelData>(
               future: _loadingData,
-              builder:
-                  (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                 Widget _displayWidget;
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
@@ -102,20 +101,21 @@ class _PackageListState extends State<PackageList>
       );
 
   Widget buildPackageInfo(PackageDetailsModel details) => PackageFeatures(
-        id: details.id,
-        name: details.name,
-        mainBadgeId: details.mainBadgeId,
-        subBadgeId: details.subBadgeId,
-        description: details.description,
-        imageUrl: details.coverImg,
-        numberOfTourist: details.maxTraveller,
-        starRating: 0,
-        fee: double.parse(details.basePrice),
-        dateRange: '1-9',
-        services: details.services,
-        country: details.country,
-        address: details.address,
-        extraCost: details.extraCostPerPerson,
-        isPublished: details.isPublished,
-      );
+      id: details.id,
+      name: details.name,
+      mainBadgeId: details.mainBadgeId,
+      subBadgeId: details.subBadgeId,
+      description: details.description,
+      imageUrl: details.coverImg,
+      numberOfTouristMin: details.minTraveller,
+      numberOfTourist: details.maxTraveller,
+      starRating: 0,
+      fee: double.parse(details.basePrice),
+      dateRange: '1-9',
+      services: details.services,
+      country: details.country,
+      address: details.address,
+      extraCost: details.extraCostPerPerson,
+      isPublished: details.isPublished,
+      firebaseCoverImg: details.firebaseCoverImg);
 }
