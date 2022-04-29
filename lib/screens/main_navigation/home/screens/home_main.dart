@@ -309,6 +309,8 @@ class _HomeScreenState extends State<HomeScreen>
                                       .packageDetails[index].extraCostPerPerson,
                                   isPublished: packageData
                                       .packageDetails[index].isPublished,
+                                  firebaseCoverImg: packageData
+                                      .packageDetails[index].firebaseCoverImg,
                                 );
                               });
                         }

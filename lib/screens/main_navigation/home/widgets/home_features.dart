@@ -30,6 +30,7 @@ class HomeFeatures extends StatefulWidget {
     double fee = 0.0,
     String dateRange = '',
     bool isPublished = false,
+    String firebaseCoverImg = '',
     Key? key,
   })  : _id = id,
         _mainBadgeId = mainBadgeId,
@@ -47,6 +48,7 @@ class HomeFeatures extends StatefulWidget {
         _starRating = starRating,
         _dateRange = dateRange,
         _isPublished = isPublished,
+        _firebaseCoverImg = firebaseCoverImg,
         super(key: key);
   final String _id;
   final String _mainBadgeId;
@@ -64,6 +66,7 @@ class HomeFeatures extends StatefulWidget {
   final double _fee;
   final String _dateRange;
   final bool _isPublished;
+  final String _firebaseCoverImg;
 
   @override
   State<HomeFeatures> createState() => _HomeFeaturesState();
@@ -137,9 +140,14 @@ class _HomeFeaturesState extends State<HomeFeatures>
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.memory(
-                      base64.decode(
-                        widget._imageUrl.split(',').last,
+                    child: Image.network(
+                      widget._firebaseCoverImg,
+                      loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) =>
+                          const SkeletonText(
+                        height: 100,
+                        width: 500,
+                        radius: 10,
                       ),
                       fit: BoxFit.cover,
                       gaplessPlayback: true,
@@ -411,7 +419,7 @@ class _HomeFeaturesState extends State<HomeFeatures>
       'main_badge_id': widget._mainBadgeId,
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
-      'image_url': widget._imageUrl,
+      'image_url': widget._firebaseCoverImg,
       'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,
@@ -434,7 +442,7 @@ class _HomeFeaturesState extends State<HomeFeatures>
       'main_badge_id': widget._mainBadgeId,
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
-      'image_url': widget._imageUrl,
+      'image_url': widget._firebaseCoverImg,
       'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,
