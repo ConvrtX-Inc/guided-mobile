@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/contained_tab_bar_view.dart';
@@ -12,6 +13,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/activity_availability_hours_model.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/main_navigation/content/packages/tab/tab_description.dart';
@@ -44,12 +46,11 @@ class _PackageViewState extends State<PackageView>
   List<DateTime> splitAvailabilityDate = [];
   int initIndex;
   String title = '';
-
+  int slots = 0;
   @override
   void initState() {
     super.initState();
     setTitle(initIndex);
-
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
@@ -61,7 +62,11 @@ class _PackageViewState extends State<PackageView>
   Future<void> getActivityAvailability(String activityPackageId) async {
     final List<ActivityAvailability> resForm =
         await APIServices().getActivityAvailability(activityPackageId);
-
+    if (resForm.isNotEmpty) {
+      final List<ActivityAvailabilityHour> resForm1 =
+          await APIServices().getActivityAvailabilityHour(resForm[0].id);
+      slots = resForm1[0].slots;
+    }
     for (int index = 0; index < resForm.length; index++) {
       splitId.add(resForm[index].id);
       splitAvailabilityDate
@@ -206,65 +211,57 @@ class _PackageViewState extends State<PackageView>
                   ),
                 ],
               ),
-              flexibleSpace: Center(
-                child: Stack(
-                  children: <Widget>[
-                    Image.network(
+              flexibleSpace: Stack(
+                children: <Widget>[
+                  Positioned.fill(
+                    child: ExtendedImage.network(
                       screenArguments['image_url'],
-                      loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) =>
-                          const SkeletonText(
-                        height: 100,
-                        width: 500,
-                        radius: 10,
-                      ),
                       fit: BoxFit.cover,
                       gaplessPlayback: true,
                     ),
-                    FutureBuilder<BadgeModelData>(
-                      future: APIServices()
-                          .getBadgesModelById(screenArguments['main_badge_id']),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<dynamic> snapshot) {
-                        if (snapshot.hasData) {
-                          final BadgeModelData badgeData = snapshot.data;
-                          final int length = badgeData.badgeDetails.length;
-                          return Padding(
-                            padding: EdgeInsets.only(left: 10.w),
-                            child: Column(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 110.h,
-                                ),
-                                Image.memory(
-                                  base64.decode(badgeData
-                                      .badgeDetails[0].imgIcon
-                                      .split(',')
-                                      .last),
-                                  gaplessPlayback: true,
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                        if (snapshot.connectionState != ConnectionState.done) {
-                          return Padding(
-                            padding: EdgeInsets.only(left: 10.w),
-                            child: Column(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 110.h,
-                                ),
-                                const CircularProgressIndicator(),
-                              ],
-                            ),
-                          );
-                        }
-                        return Container();
-                      },
-                    )
-                  ],
-                ),
+                  ),
+                  FutureBuilder<BadgeModelData>(
+                    future: APIServices()
+                        .getBadgesModelById(screenArguments['main_badge_id']),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasData) {
+                        final BadgeModelData badgeData = snapshot.data;
+                        final int length = badgeData.badgeDetails.length;
+                        return Padding(
+                          padding: EdgeInsets.only(left: 10.w),
+                          child: Column(
+                            children: <Widget>[
+                              SizedBox(
+                                height: 110.h,
+                              ),
+                              Image.memory(
+                                base64.decode(badgeData.badgeDetails[0].imgIcon
+                                    .split(',')
+                                    .last),
+                                gaplessPlayback: true,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return Padding(
+                          padding: EdgeInsets.only(left: 10.w),
+                          child: Column(
+                            children: <Widget>[
+                              SizedBox(
+                                height: 110.h,
+                              ),
+                              const CircularProgressIndicator(),
+                            ],
+                          ),
+                        );
+                      }
+                      return Container();
+                    },
+                  )
+                ],
               ),
             ),
           ),
@@ -307,11 +304,11 @@ class _PackageViewState extends State<PackageView>
                   starRating: screenArguments['star_rating'],
                 ),
                 TabSlotsAndScheduleView(
-                  id: screenArguments['id'],
-                  availabilityId: splitId,
-                  availabilityDate: splitAvailabilityDate,
-                  numberOfTourist: screenArguments['number_of_tourist'],
-                )
+                    id: screenArguments['id'],
+                    availabilityId: splitId,
+                    availabilityDate: splitAvailabilityDate,
+                    numberOfTourist: screenArguments['number_of_tourist'],
+                    slots: slots)
               ],
               onChange: setTitle,
               initialIndex: initIndex,

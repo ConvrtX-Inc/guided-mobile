@@ -1,6 +1,7 @@
 // ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, use_raw_strings, no_default_cases, sort_constructors_first, always_put_required_named_parameters_first, public_member_api_docs, diagnostic_describe_all_properties
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -301,7 +302,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                   SizedBox(
                     width: 5.w,
                   ),
-                  Text('5',
+                  Text('0.0',
                       style: TextStyle(
                           fontFamily: 'Gilroy',
                           fontSize: 14.sp,
@@ -311,143 +312,12 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                     width: 15.w,
                   ),
                   Text(
-                    '(1 Reviews)',
+                    '(0 Reviews)',
                     style: TextStyle(
                         fontFamily: 'Gilroy',
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w400,
                         color: AppColors.osloGrey),
-                  )
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5.r),
-                border: Border.all(width: 1.w, color: AppColors.porcelain),
-              ),
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
-                        child: Container(
-                          width: 55.w,
-                          height: 55.h,
-                          decoration: BoxDecoration(
-                              boxShadow: <BoxShadow>[
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.8),
-                                  spreadRadius: 2,
-                                  blurRadius: 5,
-                                ),
-                              ],
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              image: const DecorationImage(
-                                  fit: BoxFit.fitHeight,
-                                  image: AssetImage(
-                                      'assets/images/profile-photos-2.png'))),
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                              child: Text(
-                                'Ann Sasha',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: 'Gilroy',
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w600),
-                              )),
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(0, 10.h, 0, 0),
-                              child: SizedBox(
-                                width: 180.w,
-                                child: Text(
-                                  'Architect',
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontFamily: 'Gilroy',
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              )),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10.h, 5.w, 0.h),
-                            child: Text(
-                              '5',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Gilroy'),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                            child: const Icon(
-                              Icons.star,
-                              color: Colors.black,
-                              size: 10,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                            child: const Icon(
-                              Icons.star,
-                              color: Colors.black,
-                              size: 10,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                            child: const Icon(
-                              Icons.star,
-                              color: Colors.black,
-                              size: 10,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                            child: const Icon(
-                              Icons.star,
-                              color: Colors.black,
-                              size: 10,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                            child: const Icon(
-                              Icons.star,
-                              color: Colors.black,
-                              size: 10,
-                            ),
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-                    child: Text(
-                        'Everything was perfect, and I would have to say it was the vacation of a life time. I will do all I can to promote your company and your services. Thank you so very much for having arranged the magnificent trip we took!!',
-                        style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 14.sp,
-                            color: AppColors.osloGrey,
-                            fontWeight: FontWeight.w400)),
                   )
                 ],
               ),
@@ -556,12 +426,10 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                                     Radius.circular(15.r),
                                   ),
                                   image: DecorationImage(
-                                      image: Image.memory(
-                                    base64.decode(packageDestinationImage
+                                      image: ExtendedImage.network(
+                                    packageDestinationImage
                                         .packageDestinationImageDetails[i]
-                                        .snapshotImg
-                                        .split(',')
-                                        .last),
+                                        .firebaseSnapshotImg,
                                     fit: BoxFit.cover,
                                     gaplessPlayback: true,
                                   ).image),
@@ -593,16 +461,5 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
             ),
           )
         ],
-      );
-
-  Widget buildImage(PackageDestinationImageDetailsModel imgData, int index) =>
-      Container(
-        // margin: EdgeInsets.symmetric(horizontal: 1.w),
-        color: Colors.white,
-        child: Image.memory(
-          base64.decode(imgData.snapshotImg.split(',').last),
-          fit: BoxFit.fitWidth,
-          gaplessPlayback: true,
-        ),
       );
 }

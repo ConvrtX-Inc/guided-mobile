@@ -5,6 +5,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -758,7 +759,7 @@ class _PackageEditState extends State<PackageEdit> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(25),
+            padding: const EdgeInsets.all(5),
             child: Row(
               children: <Widget>[
                 Image.asset(
@@ -986,22 +987,12 @@ class _PackageEditState extends State<PackageEdit> {
       return Stack(
         children: <Widget>[
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              screenArguments['image_url'],
-              loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent? loadingProgress) =>
-                  const SkeletonText(
-                height: 100,
-                width: 100,
-                radius: 10,
-              ),
-              fit: BoxFit.cover,
-              gaplessPlayback: true,
-              width: 100,
-              height: 100,
-            ),
-          ),
+              borderRadius: BorderRadius.circular(10),
+              child: ExtendedImage.network(
+                screenArguments['image_url'],
+                fit: BoxFit.cover,
+                gaplessPlayback: true,
+              )),
           Positioned(
               right: 0,
               child: GestureDetector(

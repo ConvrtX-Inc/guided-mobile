@@ -54,65 +54,76 @@ class _AvailabilityBookingDateScreenState
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       getActivityAvailabilityHours(
-          screenArguments['id'], listTime, screenArguments['selected_date']);
+          screenArguments['id'],
+          listTime,
+          screenArguments['selected_date'],
+          screenArguments['number_of_tourist']);
       setState(() {
         _isLoadingDone = true;
       });
     });
   }
 
-  Future<void> getActivityAvailabilityHours(List<String> activityAvailabilityId,
-      List<dynamic> listTime, DateTime selectedDate) async {
-    String hourFormat;
-    String selectedDateFormat;
-    String splitDateFormat;
-    selectedDateFormat =
-        '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
+  Future<void> getActivityAvailabilityHours(
+      List<String> activityAvailabilityId,
+      List<dynamic> listTime,
+      DateTime selectedDate,
+      int numberOfTourist) async {
+    if (activityAvailabilityId.isNotEmpty) {
+      String hourFormat;
+      String selectedDateFormat;
+      String splitDateFormat;
+      selectedDateFormat =
+          '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
 
-    for (int num = 0; num < activityAvailabilityId.length; num++) {
-      final List<ActivityAvailabilityHour> resForm = await APIServices()
-          .getActivityAvailabilityHour(activityAvailabilityId[num]);
+      for (int num = 0; num < activityAvailabilityId.length; num++) {
+        final List<ActivityAvailabilityHour> resForm = await APIServices()
+            .getActivityAvailabilityHour(activityAvailabilityId[num]);
 
-      if (resForm.isEmpty) {
-        final dynamic response2 = await APIServices().request(
-            '${AppAPIPath.activityAvailability}/${activityAvailabilityId[num]}',
-            RequestType.DELETE,
-            needAccessToken: true);
-      }
-
-      for (int index = 0; index < resForm.length; index++) {
-        splitId.add(resForm[index].id);
-        splitAvailabilityDateHour.add(resForm[index].availability_date_hour);
-        splitSlot.add(resForm[index].slots);
-      }
-
-      for (int index = 0; index < splitAvailabilityDateHour.length; index++) {
-        splitDateFormat =
-            '${splitAvailabilityDateHour[index]?.year}-${splitAvailabilityDateHour[index]?.month}-${splitAvailabilityDateHour[index]?.day}';
-        if (selectedDateFormat == splitDateFormat) {
-          _newDate = false;
-          hourFormat =
-              '${splitAvailabilityDateHour[index]?.hour.toString()}:00:00';
-          for (int timeIndex = 0; timeIndex < listTime.length; timeIndex++) {
-            setState(() {
-              listTime[timeIndex][6] = activityAvailabilityId[num];
-            });
-            if (hourFormat == listTime[timeIndex][3]) {
-              setState(() {
-                listTime[timeIndex][1] = true;
-                listTime[timeIndex][2] = splitSlot[index];
-                listTime[timeIndex][5] = splitId[index];
-              });
-              setbookingtime.add(listTime[timeIndex]);
-            }
-          }
-        } else {
-          _newDate = true;
+        if (resForm.isEmpty) {
+          final dynamic response2 = await APIServices().request(
+              '${AppAPIPath.activityAvailability}/${activityAvailabilityId[num]}',
+              RequestType.DELETE,
+              needAccessToken: true);
         }
+
+        for (int index = 0; index < resForm.length; index++) {
+          splitId.add(resForm[index].id);
+          splitAvailabilityDateHour.add(resForm[index].availability_date_hour);
+          splitSlot.add(numberOfTourist);
+        }
+
+        for (int index = 0; index < splitAvailabilityDateHour.length; index++) {
+          splitDateFormat =
+              '${splitAvailabilityDateHour[index]?.year}-${splitAvailabilityDateHour[index]?.month}-${splitAvailabilityDateHour[index]?.day}';
+          if (selectedDateFormat == splitDateFormat) {
+            _newDate = false;
+            hourFormat =
+                '${splitAvailabilityDateHour[index]?.hour.toString()}:00:00';
+            for (int timeIndex = 0; timeIndex < listTime.length; timeIndex++) {
+              setState(() {
+                listTime[timeIndex][6] = activityAvailabilityId[num];
+              });
+              if (hourFormat == listTime[timeIndex][3]) {
+                setState(() {
+                  listTime[timeIndex][1] = true;
+                  listTime[timeIndex][2] = splitSlot[index];
+                  listTime[timeIndex][5] = splitId[index];
+                });
+                setbookingtime.add(listTime[timeIndex]);
+              }
+            }
+          } else {
+            _newDate = true;
+          }
+        }
+        splitId.clear();
+        splitAvailabilityDateHour.clear();
+        splitSlot.clear();
       }
-      splitId.clear();
-      splitAvailabilityDateHour.clear();
-      splitSlot.clear();
+    } else {
+      _newDate = true;
+      return;
     }
   }
 
@@ -279,7 +290,9 @@ class _AvailabilityBookingDateScreenState
                                                                 'id'],
                                                             listTime,
                                                             selectedDay,
-                                                            focusedDay);
+                                                            focusedDay,
+                                                            screenArguments[
+                                                                'number_of_tourist']);
                                                       },
                                                       style: ElevatedButton
                                                           .styleFrom(
@@ -393,7 +406,8 @@ class _AvailabilityBookingDateScreenState
                                   getActivityAvailabilityHours(
                                       screenArguments['id'],
                                       listTime,
-                                      _selectedDay);
+                                      _selectedDay,
+                                      screenArguments['number_of_tourist']);
                                 });
                               }
                             },
@@ -480,152 +494,19 @@ class _AvailabilityBookingDateScreenState
                                               SizedBox(
                                                 width: 10.w,
                                               ),
-                                              SizedBox(
-                                                  child: Wrap(
-                                                      alignment: WrapAlignment
-                                                          .spaceBetween,
-                                                      children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: <Widget>[
-                                                        Container(
-                                                          width: 30.w,
-                                                          height: 40.h,
-                                                          decoration: BoxDecoration(
-                                                              border: Border.all(
-                                                                  color: listTime[
-                                                                          i][1]
-                                                                      ? AppColors
-                                                                          .osloGrey
-                                                                      : AppColors
-                                                                          .deepGreen),
-                                                              color:
-                                                                  Colors.white,
-                                                              shape: BoxShape
-                                                                  .circle),
-                                                          child: IconButton(
-                                                              icon: Icon(
-                                                                Icons.remove,
-                                                                color: listTime[
-                                                                        i][1]
-                                                                    ? AppColors
-                                                                        .osloGrey
-                                                                    : AppColors
-                                                                        .primaryGreen,
-                                                                size: 15,
-                                                              ),
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  if (listTime[
-                                                                              i]
-                                                                          [1] ==
-                                                                      false) {
-                                                                    if (listTime[i]
-                                                                            [
-                                                                            2] !=
-                                                                        0) {
-                                                                      listTime[
-                                                                              i]
-                                                                          [2]--;
-                                                                    }
-                                                                  }
-                                                                });
-                                                              }),
-                                                        ),
-                                                        SizedBox(
-                                                          width: 5.w,
-                                                        ),
-                                                        Container(
-                                                          height: 40.h,
-                                                          width: 40.w,
-                                                          decoration: BoxDecoration(
-                                                              border: Border.all(
-                                                                  color: AppColors
-                                                                      .osloGrey),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          10.r)),
-                                                          child: Center(
-                                                            child: Text(
-                                                              ' ${listTime[i][2]}',
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      20.sp),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          width: 5.w,
-                                                        ),
-                                                        Container(
-                                                          width: 30.w,
-                                                          height: 40.h,
-                                                          decoration: BoxDecoration(
-                                                              border: Border.all(
-                                                                  color: listTime[
-                                                                          i][1]
-                                                                      ? AppColors
-                                                                          .osloGrey
-                                                                      : AppColors
-                                                                          .deepGreen),
-                                                              color:
-                                                                  Colors.white,
-                                                              shape: BoxShape
-                                                                  .circle),
-                                                          child: IconButton(
-                                                              icon: Icon(
-                                                                Icons.add,
-                                                                color: listTime[
-                                                                        i][1]
-                                                                    ? AppColors
-                                                                        .osloGrey
-                                                                    : AppColors
-                                                                        .primaryGreen,
-                                                                size: 15,
-                                                              ),
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  if (listTime[
-                                                                              i]
-                                                                          [1] ==
-                                                                      false) {
-                                                                    if (listTime[i]
-                                                                            [
-                                                                            2] <
-                                                                        screenArguments[
-                                                                            'number_of_tourist'])
-                                                                      listTime[
-                                                                              i]
-                                                                          [2]++;
-                                                                  }
-                                                                });
-                                                              }),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ]))
                                             ],
                                           ),
                                           onChanged: (bool? value) {
-                                            if (listTime[i][2] == 0) {
-                                              AdvanceSnackBar(
-                                                      message:
-                                                          ErrorMessageConstants
-                                                              .slotIsZero)
-                                                  .show(context);
-                                            } else {
-                                              setState(() {
-                                                listTime[i][1] = value!;
-                                              });
-                                              _onCheckedSelected(
-                                                  i,
-                                                  listTime[i][1],
-                                                  listTime[i][0],
-                                                  listTime[i][2]);
-                                            }
+                                            setState(() {
+                                              listTime[i][1] = value!;
+                                              listTime[i][2] = screenArguments[
+                                                  'number_of_tourist'];
+                                            });
+                                            _onCheckedSelected(
+                                                i,
+                                                listTime[i][1],
+                                                listTime[i][0],
+                                                listTime[i][2]);
                                           },
                                           value: listTime[i][1],
                                         ),
@@ -784,9 +665,10 @@ class _AvailabilityBookingDateScreenState
   }
 
   Future<void> setInitialDate(List<String> id, List<dynamic> listTime,
-      DateTime selectedDay, DateTime focusedDay) async {
+      DateTime selectedDay, DateTime focusedDay, int numberOfTourist) async {
     await timeSave();
-    await getActivityAvailabilityHours(id, listTime, selectedDay);
+    await getActivityAvailabilityHours(
+        id, listTime, selectedDay, numberOfTourist);
     setState(() {
       _selectedDay = selectedDay;
       _focusedDay = focusedDay;

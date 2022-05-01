@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -124,17 +125,8 @@ class _EventFeaturesState extends State<EventFeatures> {
                               title: imageDetails.activityEventId != null
                                   ? SizedBox(
                                       height: 200.h,
-                                      child: Image.network(
+                                      child: ExtendedImage.network(
                                         imageDetails.firebaseSnapshotImg,
-                                        loadingBuilder: (BuildContext context,
-                                                Widget child,
-                                                ImageChunkEvent?
-                                                    loadingProgress) =>
-                                            const SkeletonText(
-                                          height: 200,
-                                          width: 500,
-                                          radius: 10,
-                                        ),
                                         fit: BoxFit.cover,
                                         gaplessPlayback: true,
                                       ),
