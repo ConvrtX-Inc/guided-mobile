@@ -50,6 +50,7 @@ class _ManagePaymentState extends State<ManagePayment> {
       Get.put(UserProfileDetailsController());
 
   String stripeAcctId = '';
+
   @override
   void initState() {
     super.initState();
@@ -59,8 +60,6 @@ class _ManagePaymentState extends State<ManagePayment> {
 
     debugPrint(
         'Profile Details:: ${_profileDetailsController.userProfileDetails.id}  Stripe account id: ${_profileDetailsController.userProfileDetails.stripeAccountId} ');
-
-    // setupStripe();
 
     getPaymentData();
   }
@@ -92,24 +91,28 @@ class _ManagePaymentState extends State<ManagePayment> {
         ),
       ),
       // body: buildPaymentUI(),
-      body: (stripeAcctId.isEmpty && PaymentConfig.isPaymentEnabled) ?   buildSetupStripeAccount() : buildPaymentUI(),
+      body: (stripeAcctId.isEmpty && PaymentConfig.isPaymentEnabled)
+          ? buildSetupStripeAccount()
+          : buildPaymentUI(),
     );
   }
 
-  Widget buildPaymentUI() => isLoading ? buildFakePaymentDataUI() : Container(
-        padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 10.h),
-        child: SingleChildScrollView(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            buildPaymentCards(),
-            SizedBox(height: 20.h),
-            Divider(color: Colors.grey),
-            SizedBox(height: 20.h),
-            buildPaymentBanks(),
-          ],
-        )),
-      );
+  Widget buildPaymentUI() => isLoading
+      ? buildFakePaymentDataUI()
+      : Container(
+          padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 10.h),
+          child: SingleChildScrollView(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              buildPaymentCards(),
+              SizedBox(height: 20.h),
+              Divider(color: Colors.grey),
+              SizedBox(height: 20.h),
+              buildPaymentBanks(),
+            ],
+          )),
+        );
 
   ///Manage Cards
   Widget buildPaymentCards() =>
@@ -470,48 +473,26 @@ class _ManagePaymentState extends State<ManagePayment> {
     }
   }
 
-  Future<void> setupStripe() async {
-    setState(() {
-      isSettingUpStripe = true;
-    });
-
-    final String createAccountRes = await APIServices()
-        .createStripeAccount(_profileDetailsController.userProfileDetails);
-
-    // final dynamic accountDetails = jsonDecode(createAccountRes.successResponse);
-
-    debugPrint('Setup S response ${createAccountRes}');
-
-
-
-    final String onBoardAccountRes =
-        await APIServices().getOnboardAccountLink(createAccountRes);
-    debugPrint('Link::  ${onBoardAccountRes}');
-
-    if(onBoardAccountRes.isNotEmpty){
-      setState(() {
-        stripeAcctId = createAccountRes;
-        isSettingUpStripe = false;
-      });
-      await launch(onBoardAccountRes);
-    }
-
-
-
-
-    // await Navigator.of(context).pushNamed('/add_bank_account');
-  }
-
-  Widget buildSetupStripeAccount() =>Container(
-      padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 10.h), child: Column(
+  Widget buildSetupStripeAccount() => Container(
+      padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 10.h),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
               'GuidED partners with Stripe for secure payments and financial services. In order to start getting paid, you need to set up a Stripe account.'),
           SizedBox(height: 22.h),
-          CustomRoundedButton(title: 'Setup Now', onpressed: setupStripe , isLoading: isSettingUpStripe),
+          CustomRoundedButton(
+              title: 'Setup Now',
+              onpressed: () async {
+                final dynamic result = await Navigator.of(context)
+                    .pushNamed('/setup_stripe_account');
+                if (result != null) {
+                  setState(() {
+                    stripeAcctId = result;
+                  });
+                }
+              }),
           SizedBox(height: 22.h),
-         Center(child:  Text(" You'll be redirected to Stripe",))
         ],
       ));
 
