@@ -17,6 +17,10 @@ class BookingRequest {
   Null? deletedDate;
   Status? status;
   String? sEntity;
+  String? fromUserFullName;
+  String? fromUserEmail;
+  String? fromUserFirebaseProfilePic;
+  String? activityPackageName;
 
   BookingRequest(
       {this.id,
@@ -34,6 +38,10 @@ class BookingRequest {
       this.updatedDate,
       this.deletedDate,
       this.status,
+      this.fromUserFullName = '',
+      this.fromUserEmail = '',
+      this.fromUserFirebaseProfilePic = '',
+        this.activityPackageName = '',
       this.sEntity});
 
   BookingRequest.fromJson(Map<String, dynamic> json) {
@@ -52,6 +60,10 @@ class BookingRequest {
     updatedDate = json['updated_date'];
     deletedDate = json['deleted_date'];
     status = json['status'] != null ? Status.fromJson(json['status']) : null;
+    fromUserEmail = json['from_user'] !=null ? json['from_user']['email'] ?? '' : '';
+    fromUserFullName = json['from_user'] !=null ?  json['from_user']['full_name'] ?? '' :'';
+    fromUserFirebaseProfilePic =json['from_user'] !=null ?  json['from_user']['profile_photo_firebase_url'] ?? '' :'';
+    activityPackageName =json['from_user'] !=null ?  json['package']['name'] :  '';
     sEntity = json['__entity'];
   }
 
