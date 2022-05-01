@@ -18,27 +18,27 @@ class PackageModelData {
 /// Package Details model
 class PackageDetailsModel {
   /// Contructor
-  PackageDetailsModel({
-    this.id = '',
-    this.userId = '',
-    this.mainBadgeId = '',
-    this.subBadgeId = '',
-    this.packageNote = '',
-    this.name = '',
-    this.description = '',
-    this.coverImg = '',
-    this.maxTraveller = 0,
-    this.minTraveller = 0,
-    this.country = '',
-    this.address = '',
-    this.services = '',
-    this.basePrice = '',
-    this.extraCostPerPerson = '',
-    this.maxExtraPerson = 0,
-    this.currencyId = '',
-    this.priceNote = '',
-    this.isPublished = false,
-  });
+  PackageDetailsModel(
+      {this.id = '',
+      this.userId = '',
+      this.mainBadgeId = '',
+      this.subBadgeId = '',
+      this.packageNote = '',
+      this.name = '',
+      this.description = '',
+      this.coverImg = '',
+      this.maxTraveller = 0,
+      this.minTraveller = 0,
+      this.country = '',
+      this.address = '',
+      this.services = '',
+      this.basePrice = '',
+      this.extraCostPerPerson = '',
+      this.maxExtraPerson = 0,
+      this.currencyId = '',
+      this.priceNote = '',
+      this.isPublished = false,
+      this.firebaseCoverImg = ''});
 
   /// String property initialization
   final String id,
@@ -55,7 +55,8 @@ class PackageDetailsModel {
       basePrice,
       extraCostPerPerson,
       currencyId,
-      priceNote;
+      priceNote,
+      firebaseCoverImg;
 
   /// int initialization
   final int maxExtraPerson, maxTraveller, minTraveller;
@@ -64,9 +65,9 @@ class PackageDetailsModel {
   final bool isPublished;
 
   PackageDetailsModel.fromJson(Map<String, dynamic> parseJson)
-      : id = parseJson['id']??'',
-        userId = parseJson['user_id']??'',
-        mainBadgeId = parseJson['main_badge_id']??'',
+      : id = parseJson['id'] ?? '',
+        userId = parseJson['user_id'] ?? '',
+        mainBadgeId = parseJson['main_badge_id'] ?? '',
         subBadgeId = parseJson['sub_badge_ids'] ?? '',
         packageNote = parseJson['package_note'],
         name = parseJson['name'],
@@ -82,5 +83,6 @@ class PackageDetailsModel {
         maxExtraPerson = parseJson['max_extra_person'],
         currencyId = parseJson['currency_id'],
         priceNote = parseJson['price_note'],
-        isPublished = parseJson['is_published'];
+        isPublished = parseJson['is_published'],
+        firebaseCoverImg = parseJson['firebase_cover_img'];
 }

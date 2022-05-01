@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/models/advertisement_image_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Widget for Advertisement feature
@@ -97,14 +98,20 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
                         in advertisementImage.advertisementImageDetails) {
                       return GestureDetector(
                         onTap: () => navigateAdvertisementDetails(
-                            context, imageDetails.snapshotImg, imageDetails.id),
+                            context, imageDetails.firebaseImg, imageDetails.id),
                         child: ListTile(
                           title: imageDetails.activityAdvertisementId != null
                               ? SizedBox(
                                   height: 200.h,
-                                  child: Image.memory(
-                                    base64.decode(
-                                      imageDetails.snapshotImg.split(',').last,
+                                  child: Image.network(
+                                    imageDetails.firebaseImg,
+                                    loadingBuilder: (BuildContext context,
+                                            Widget child,
+                                            ImageChunkEvent? loadingProgress) =>
+                                        const SkeletonText(
+                                      height: 100,
+                                      width: 500,
+                                      radius: 10,
                                     ),
                                     fit: BoxFit.cover,
                                     gaplessPlayback: true,

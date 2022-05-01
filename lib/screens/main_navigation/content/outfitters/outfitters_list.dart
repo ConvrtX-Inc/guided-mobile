@@ -7,6 +7,7 @@ import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/outfitters_add.dart';
 import 'package:guided/screens/main_navigation/content/outfitters/widget/outfitter_features.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
+import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Outfitter List Screen
@@ -37,9 +38,7 @@ class _OutfitterListState extends State<OutfitterList>
                 Widget _displayWidget;
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
-                    _displayWidget = const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    _displayWidget = const MainContentSkeleton();
                     break;
                   default:
                     if (snapshot.hasError) {

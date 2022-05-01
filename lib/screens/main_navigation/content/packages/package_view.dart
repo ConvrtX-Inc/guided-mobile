@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/contained_tab_bar_view.dart';
@@ -12,10 +13,13 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/activity_availability_hours_model.dart';
+import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/main_navigation/content/packages/tab/tab_description.dart';
 import 'package:guided/screens/main_navigation/content/packages/tab/tab_slots_and_schedule.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -37,16 +41,37 @@ class _PackageViewState extends State<PackageView>
   @override
   bool get wantKeepAlive => true;
   _PackageViewState(this.initIndex);
-
   final screenshotController = ScreenshotController();
-
+  List<String> splitId = [];
+  List<DateTime> splitAvailabilityDate = [];
   int initIndex;
   String title = '';
-
+  int slots = 0;
   @override
   void initState() {
     super.initState();
     setTitle(initIndex);
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+      await getActivityAvailability(screenArguments['id']);
+    });
+  }
+
+  Future<void> getActivityAvailability(String activityPackageId) async {
+    final List<ActivityAvailability> resForm =
+        await APIServices().getActivityAvailability(activityPackageId);
+    if (resForm.isNotEmpty) {
+      final List<ActivityAvailabilityHour> resForm1 =
+          await APIServices().getActivityAvailabilityHour(resForm[0].id);
+      slots = resForm1[0].slots;
+    }
+    for (int index = 0; index < resForm.length; index++) {
+      splitId.add(resForm[index].id);
+      splitAvailabilityDate
+          .add(DateTime.parse(resForm[index].availability_date));
+    }
   }
 
   void setTitle(int initIndex) {
@@ -186,59 +211,57 @@ class _PackageViewState extends State<PackageView>
                   ),
                 ],
               ),
-              flexibleSpace: Center(
-                child: Stack(
-                  children: <Widget>[
-                    Image.memory(
-                      base64
-                          .decode(screenArguments['image_url'].split(',').last),
+              flexibleSpace: Stack(
+                children: <Widget>[
+                  Positioned.fill(
+                    child: ExtendedImage.network(
+                      screenArguments['image_url'],
                       fit: BoxFit.cover,
                       gaplessPlayback: true,
                     ),
-                    FutureBuilder<BadgeModelData>(
-                      future: APIServices()
-                          .getBadgesModelById(screenArguments['main_badge_id']),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<dynamic> snapshot) {
-                        if (snapshot.hasData) {
-                          final BadgeModelData badgeData = snapshot.data;
-                          final int length = badgeData.badgeDetails.length;
-                          return Padding(
-                            padding: EdgeInsets.only(left: 10.w),
-                            child: Column(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 110.h,
-                                ),
-                                Image.memory(
-                                  base64.decode(badgeData
-                                      .badgeDetails[0].imgIcon
-                                      .split(',')
-                                      .last),
-                                  gaplessPlayback: true,
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                        if (snapshot.connectionState != ConnectionState.done) {
-                          return Padding(
-                            padding: EdgeInsets.only(left: 10.w),
-                            child: Column(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 110.h,
-                                ),
-                                const CircularProgressIndicator(),
-                              ],
-                            ),
-                          );
-                        }
-                        return Container();
-                      },
-                    )
-                  ],
-                ),
+                  ),
+                  FutureBuilder<BadgeModelData>(
+                    future: APIServices()
+                        .getBadgesModelById(screenArguments['main_badge_id']),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasData) {
+                        final BadgeModelData badgeData = snapshot.data;
+                        final int length = badgeData.badgeDetails.length;
+                        return Padding(
+                          padding: EdgeInsets.only(left: 10.w),
+                          child: Column(
+                            children: <Widget>[
+                              SizedBox(
+                                height: 110.h,
+                              ),
+                              Image.memory(
+                                base64.decode(badgeData.badgeDetails[0].imgIcon
+                                    .split(',')
+                                    .last),
+                                gaplessPlayback: true,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return Padding(
+                          padding: EdgeInsets.only(left: 10.w),
+                          child: Column(
+                            children: <Widget>[
+                              SizedBox(
+                                height: 110.h,
+                              ),
+                              const CircularProgressIndicator(),
+                            ],
+                          ),
+                        );
+                      }
+                      return Container();
+                    },
+                  )
+                ],
               ),
             ),
           ),
@@ -275,14 +298,17 @@ class _PackageViewState extends State<PackageView>
                   subActivityId: screenArguments['sub_badge_id'],
                   description: screenArguments['description'],
                   fee: screenArguments['fee'],
+                  numberOfTouristMin: screenArguments['number_of_tourist_min'],
                   numberOfTourist: screenArguments['number_of_tourist'],
                   services: screenArguments['services'],
                   starRating: screenArguments['star_rating'],
                 ),
                 TabSlotsAndScheduleView(
-                  id: screenArguments['id'],
-                  numberOfTourist: screenArguments['number_of_tourist'],
-                )
+                    id: screenArguments['id'],
+                    availabilityId: splitId,
+                    availabilityDate: splitAvailabilityDate,
+                    numberOfTourist: screenArguments['number_of_tourist'],
+                    slots: slots)
               ],
               onChange: setTitle,
               initialIndex: initIndex,

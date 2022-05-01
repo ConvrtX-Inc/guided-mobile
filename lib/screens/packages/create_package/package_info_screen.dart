@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, cast_nullable_to_non_nullable
+// ignore_for_file: file_names, cast_nullable_to_non_nullable, always_declare_return_types, type_annotate_public_apis
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -150,6 +150,8 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
                                           final XFile? image1 =
                                               await ImagePicker().pickImage(
                                                   source: ImageSource.camera,
+                                                  maxHeight: 800.h,
+                                                  maxWidth: 800.w,
                                                   imageQuality: 25);
                                           if (image1 == null) {
                                             return;
@@ -162,16 +164,34 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
                                           file = getFileSizeString(
                                               bytes:
                                                   imageTemporary.lengthSync());
-                                          fileSize = int.parse(file.substring(
-                                              0, file.indexOf('K')));
-                                          if (fileSize >= 100) {
-                                            AdvanceSnackBar(
-                                                    message:
-                                                        ErrorMessageConstants
-                                                            .imageFileToSize)
-                                                .show(context);
-                                                Navigator.pop(context);
-                                            return;
+                                          if (file.contains('KB')) {
+                                            fileSize = int.parse(file.substring(
+                                                0, file.indexOf('K')));
+                                            debugPrint('Filesize:: $fileSize');
+                                            if (fileSize >= 2000) {
+                                              Navigator.pop(context);
+                                              AdvanceSnackBar(
+                                                      message:
+                                                          ErrorMessageConstants
+                                                              .imageFileToSize,
+                                                      bgColor: Colors.red)
+                                                  .show(context);
+                                              return;
+                                            }
+                                          } else {
+                                            fileSize = int.parse(file.substring(
+                                                0, file.indexOf('M')));
+                                            debugPrint('Filesize:: $fileSize');
+                                            if (fileSize >= 2) {
+                                              Navigator.pop(context);
+                                              AdvanceSnackBar(
+                                                      message:
+                                                          ErrorMessageConstants
+                                                              .imageFileToSize,
+                                                      bgColor: Colors.red)
+                                                  .show(context);
+                                              return;
+                                            }
                                           }
                                           setState(() {
                                             this.image1 = imageTemporary;
@@ -189,6 +209,8 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
                                           final XFile? image1 =
                                               await ImagePicker().pickImage(
                                                   source: ImageSource.gallery,
+                                                  maxHeight: 800.h,
+                                                  maxWidth: 800.w,
                                                   imageQuality: 25);
 
                                           if (image1 == null) {
@@ -198,21 +220,43 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
                                           final File imageTemporary =
                                               File(image1.path);
                                           String file;
-                                          int fileSize;
+                                          int fileSize = 0;
+                                          int fileSizeMB = 0;
+
                                           file = getFileSizeString(
                                               bytes:
                                                   imageTemporary.lengthSync());
-                                          fileSize = int.parse(file.substring(
-                                              0, file.indexOf('K')));
-                                          if (fileSize >= 100) {
-                                            AdvanceSnackBar(
-                                                    message:
-                                                        ErrorMessageConstants
-                                                            .imageFileToSize)
-                                                .show(context);
-                                                Navigator.pop(context);
-                                            return;
+
+                                          if (file.contains('KB')) {
+                                            fileSize = int.parse(file.substring(
+                                                0, file.indexOf('K')));
+                                            debugPrint('Filesize:: $fileSize');
+                                            if (fileSize >= 2000) {
+                                              Navigator.pop(context);
+                                              AdvanceSnackBar(
+                                                      message:
+                                                          ErrorMessageConstants
+                                                              .imageFileToSize,
+                                                      bgColor: Colors.red)
+                                                  .show(context);
+                                              return;
+                                            }
+                                          } else {
+                                            fileSize = int.parse(file.substring(
+                                                0, file.indexOf('M')));
+                                            debugPrint('Filesize:: $fileSize');
+                                            if (fileSize >= 2) {
+                                              Navigator.pop(context);
+                                              AdvanceSnackBar(
+                                                      message:
+                                                          ErrorMessageConstants
+                                                              .imageFileToSize,
+                                                      bgColor: Colors.red)
+                                                  .show(context);
+                                              return;
+                                            }
                                           }
+
                                           setState(() {
                                             this.image1 = imageTemporary;
                                           });
@@ -307,7 +351,7 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
       details['package_name'] = _packageName.text;
       details['description'] = _description.text;
       details['cover_img'] = base64Image1;
-
+      details['firebase_cover_img'] = image1;
       await Navigator.pushNamed(context, '/number_of_traveler',
           arguments: details);
     }

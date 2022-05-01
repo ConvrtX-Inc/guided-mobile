@@ -46,6 +46,8 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     );
     super.initState();
 
+    getProfileDetails();
+
     getUserSubscription();
 
     if (_creditCardController.cards.isEmpty) {
@@ -116,6 +118,7 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
 
   Future<void> getProfileDetails() async {
     final ProfileDetailsModel res = await APIServices().getProfileData();
+    debugPrint('Get Profile Details');
 
     _profileDetailsController.setUserProfileDetails(res);
   }

@@ -58,7 +58,7 @@ Future<dynamic> paymentSetDate(
                                   fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
-                            Container(
+                         /*   Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
                                   border:
@@ -75,7 +75,7 @@ Future<dynamic> paymentSetDate(
                                       fontWeight: FontWeight.w600),
                                 ),
                               ),
-                            ),
+                            ),*/
                           ],
                         ),
                         SizedBox(

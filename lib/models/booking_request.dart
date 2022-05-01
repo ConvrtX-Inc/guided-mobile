@@ -6,6 +6,7 @@ class BookingRequest {
   String? fromUserId;
   String? requestMsg;
   String? activityPackageId;
+  String? profilePhoto;
   String? statusId;
   String? bookingDateStart;
   String? bookingDateEnd;
@@ -23,6 +24,7 @@ class BookingRequest {
       this.fromUserId,
       this.requestMsg,
       this.activityPackageId,
+      this.profilePhoto,
       this.statusId,
       this.bookingDateStart,
       this.bookingDateEnd,
@@ -40,6 +42,7 @@ class BookingRequest {
     fromUserId = json['from_user_id'];
     requestMsg = json['request_msg'];
     activityPackageId = json['activity_package_id'];
+    profilePhoto = json['profile_photo_firebase_url'] ?? '';
     statusId = json['status_id'];
     bookingDateStart = json['booking_date_start'];
     bookingDateEnd = json['booking_date_end'];
@@ -59,6 +62,7 @@ class BookingRequest {
     data['from_user_id'] = fromUserId;
     data['request_msg'] = requestMsg;
     data['activity_package_id'] = activityPackageId;
+    data['profile_photo_firebase_url'] = profilePhoto;
     data['status_id'] = statusId;
     data['booking_date_start'] = bookingDateStart;
     data['booking_date_end'] = bookingDateEnd;

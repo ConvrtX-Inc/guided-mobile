@@ -1,12 +1,15 @@
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/activity_availability_hours_model.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Widget for home features
@@ -23,11 +26,13 @@ class HomeFeatures extends StatefulWidget {
     String extraCost = '',
     String name = '',
     String imageUrl = '',
+    int numberOfTouristMin = 0,
     int numberOfTourist = 0,
-    double starRating = 0.0,
+    double starRating = 5.0,
     double fee = 0.0,
     String dateRange = '',
     bool isPublished = false,
+    String firebaseCoverImg = '',
     Key? key,
   })  : _id = id,
         _mainBadgeId = mainBadgeId,
@@ -39,11 +44,13 @@ class HomeFeatures extends StatefulWidget {
         _extraCost = extraCost,
         _name = name,
         _imageUrl = imageUrl,
+        _numberOfTouristMin = numberOfTouristMin,
         _numberOfTourist = numberOfTourist,
         _fee = fee,
         _starRating = starRating,
         _dateRange = dateRange,
         _isPublished = isPublished,
+        _firebaseCoverImg = firebaseCoverImg,
         super(key: key);
   final String _id;
   final String _mainBadgeId;
@@ -55,11 +62,13 @@ class HomeFeatures extends StatefulWidget {
   final String _extraCost;
   final String _name;
   final String _imageUrl;
+  final int _numberOfTouristMin;
   final int _numberOfTourist;
   final double _starRating;
   final double _fee;
   final String _dateRange;
   final bool _isPublished;
+  final String _firebaseCoverImg;
 
   @override
   State<HomeFeatures> createState() => _HomeFeaturesState();
@@ -74,6 +83,7 @@ class _HomeFeaturesState extends State<HomeFeatures>
   late List<String> splitAddress;
   List<String> splitId = [];
   List<DateTime> splitAvailabilityDate = [];
+  int slots = 0;
   String dateStart = '';
   String dateEnd = '';
   DateTime now = DateTime.now();
@@ -93,6 +103,11 @@ class _HomeFeaturesState extends State<HomeFeatures>
     DateTime month = DateTime.now();
     final List<ActivityAvailability> resForm =
         await APIServices().getActivityAvailability(activityPackageId);
+    if (resForm.isNotEmpty) {
+      final List<ActivityAvailabilityHour> resForm1 =
+          await APIServices().getActivityAvailabilityHour(resForm[0].id);
+      slots = resForm1[0].slots;
+    }
 
     for (int index = 0; index < resForm.length; index++) {
       splitId.add(resForm[index].id);
@@ -133,10 +148,8 @@ class _HomeFeaturesState extends State<HomeFeatures>
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.memory(
-                      base64.decode(
-                        widget._imageUrl.split(',').last,
-                      ),
+                    child: ExtendedImage.network(
+                      widget._firebaseCoverImg,
                       fit: BoxFit.cover,
                       gaplessPlayback: true,
                     ),
@@ -188,7 +201,8 @@ class _HomeFeaturesState extends State<HomeFeatures>
                                       fontSize: 14),
                                 ),
                               ),
-                              Text('${widget._numberOfTourist} Traveller')
+                              Text(
+                                  '${widget._numberOfTouristMin} - ${widget._numberOfTourist} Traveller')
                             ],
                           ),
                         ),
@@ -251,17 +265,16 @@ class _HomeFeaturesState extends State<HomeFeatures>
                       );
                     }
                     if (snapshot.connectionState != ConnectionState.done) {
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Row(
-                          children: <Widget>[
-                            SizedBox(
-                              width: 10.w,
+                      return const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: SkeletonText(
+                              width: 30,
+                              height: 30,
+                              shape: BoxShape.circle,
                             ),
-                            const CircularProgressIndicator(),
-                          ],
-                        ),
-                      );
+                          ));
                     }
                     return Container();
                   },
@@ -407,7 +420,8 @@ class _HomeFeaturesState extends State<HomeFeatures>
       'main_badge_id': widget._mainBadgeId,
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
-      'image_url': widget._imageUrl,
+      'image_url': widget._firebaseCoverImg,
+      'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,
       'fee': widget._fee,
@@ -429,7 +443,8 @@ class _HomeFeaturesState extends State<HomeFeatures>
       'main_badge_id': widget._mainBadgeId,
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
-      'image_url': widget._imageUrl,
+      'image_url': widget._firebaseCoverImg,
+      'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,
       'fee': widget._fee,
@@ -448,7 +463,8 @@ class _HomeFeaturesState extends State<HomeFeatures>
       'id': splitId,
       'availability_date': splitAvailabilityDate,
       'package_id': widget._id,
-      'number_of_tourist': widget._numberOfTourist
+      'number_of_tourist': widget._numberOfTourist,
+      'slots': slots
     };
 
     await Navigator.pushNamed(context, '/calendar_availability',

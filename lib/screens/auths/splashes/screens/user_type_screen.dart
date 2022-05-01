@@ -57,25 +57,32 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                           border: Border.all(color: AppColors.galleryWhite)),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            SizedBox(
-                              width: 15.w,
-                            ),
-                            Text(
-                              'I\'m a Traveler',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Gilroy',
-                                  fontSize: 20.sp,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                            Image.asset(
-                              AssetsPath.rafikiImage,
-                              fit: BoxFit.fitHeight,
-                            ),
-                          ]),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Text(
+                                "I'm a Traveler",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'Gilroy',
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: SizedBox(
+                                  height: 100.h,
+                                  width: 100.w,
+                                  child: Image.asset(
+                                    AssetsPath.rafikiImage,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ]),
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -93,9 +100,39 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                             .pushNamed('/user_on_boarding', arguments: details);
                       });
                     },
-                    child: Image.asset(
-                      AssetsPath.guideImage,
-                      width: 345.w,
+                    child: Container(
+                      width: double.infinity,
+                      height: 200.h,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                          border: Border.all(color: AppColors.galleryWhite)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Text(
+                                "I'm a Guide/Outfitter",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'Gilroy',
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: SizedBox(
+                                  height: 100.h,
+                                  width: 100.w,
+                                  child: Image.asset(
+                                    AssetsPath.amico,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ]),
+                      ),
                     ),
                   ),
                 ],

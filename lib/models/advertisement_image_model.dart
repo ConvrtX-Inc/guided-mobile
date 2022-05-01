@@ -13,14 +13,18 @@ class AdvertisementImageModelData {
 class AdvertisementImageDetailsModel {
   /// Constructor
   AdvertisementImageDetailsModel(
-      {this.id = '', this.activityAdvertisementId = '', this.snapshotImg = ''});
+      {this.id = '',
+      this.activityAdvertisementId = '',
+      this.snapshotImg = '',
+      this.firebaseImg = ''});
 
   /// String property initialization
-  final String id, activityAdvertisementId, snapshotImg;
+  final String id, activityAdvertisementId, snapshotImg, firebaseImg;
 
   /// mapping
   AdvertisementImageDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
         activityAdvertisementId = parseJson['activity_advertisement_id'],
-        snapshotImg = parseJson['snapshot_img'];
+        snapshotImg = parseJson['snapshot_img'],
+        firebaseImg = parseJson['firebase_snapshot_img'];
 }

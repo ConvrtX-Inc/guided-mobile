@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, cast_nullable_to_non_nullable, unused_local_variable, avoid_dynamic_calls, always_specify_types
+// ignore_for_file: file_names, cast_nullable_to_non_nullable, unused_local_variable, avoid_dynamic_calls, always_specify_types, unused_field
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -21,9 +21,11 @@ import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/image_bulk_package.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/models/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Package Summary Screen
@@ -103,6 +105,8 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
   TextEditingController _price = TextEditingController();
   TextEditingController _extraCost = TextEditingController();
 
+  final String _storagePathCoverImg = 'coverImg';
+  final String _storagePathDestinationImg = 'destinationImg';
   @override
   void initState() {
     super.initState();
@@ -823,7 +827,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                                   final XFile? image1 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
-                                          imageQuality: 25);
+                                          imageQuality: 25,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w);
                                   if (image1 == null) {
                                     return;
                                   }
@@ -833,15 +839,32 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                        Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image1 = imageTemporary;
@@ -860,13 +883,46 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                                   final XFile? image1 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 10);
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
+                                          imageQuality: 25);
 
                                   if (image1 == null) {
                                     return;
                                   }
 
                                   final File imageTemporary = File(image1.path);
+                                  String file;
+                                  int fileSize;
+                                  file = getFileSizeString(
+                                      bytes: imageTemporary.lengthSync());
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  }
                                   setState(() {
                                     this.image1 = imageTemporary;
                                     _uploadCount += 1;
@@ -1040,173 +1096,181 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              ListTile(
-                  title: Row(
-                    children: <Widget>[
-                      Expanded(
-                          child: Text(
-                        AppTextConstants.subActivities,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (_isEnabledSubActivity) {
-                              _isEnabledSubActivity = false;
-                            } else {
-                              _isEnabledSubActivity = true;
-                              _isSubActivityEdited = true;
-                            }
-                          });
-                        },
-                        child: Text(
-                          _isEnabledSubActivity
-                              ? AppTextConstants.done
-                              : AppTextConstants.edit,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                            decoration: TextDecoration.underline,
-                            color: AppColors.primaryGreen,
+              SingleChildScrollView(
+                child: ListTile(
+                    title: Row(
+                      children: <Widget>[
+                        Expanded(
+                            child: Text(
+                          AppTextConstants.subActivities,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
                           ),
-                          textAlign: TextAlign.right,
+                        )),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (_isEnabledSubActivity) {
+                                _isEnabledSubActivity = false;
+                              } else {
+                                _isEnabledSubActivity = true;
+                                _isSubActivityEdited = true;
+                              }
+                            });
+                          },
+                          child: Text(
+                            _isEnabledSubActivity
+                                ? AppTextConstants.done
+                                : AppTextConstants.edit,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              decoration: TextDecoration.underline,
+                              color: AppColors.primaryGreen,
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  subtitle: _isEnabledSubActivity
-                      ? _subActivityDropdown(width)
-                      : _isSubActivityEdited
-                          ? Row(
-                              children: <Widget>[
-                                if (subActivities1 != null)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: AppColors.harp,
-                                        border:
-                                            Border.all(color: AppColors.harp),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(5.r))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text(
-                                          subActivities1.name.toString(),
-                                          style: TextStyle(
-                                              color: AppColors.nobel)),
-                                    ),
-                                  )
-                                else
-                                  Container(),
-                                SizedBox(
-                                  width: 5.w,
-                                ),
-                                if (subActivities2 != null)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: AppColors.harp,
-                                        border:
-                                            Border.all(color: AppColors.harp),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(5.r))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text(
-                                          subActivities2.name.toString(),
-                                          style: TextStyle(
-                                              color: AppColors.nobel)),
-                                    ),
-                                  )
-                                else
-                                  Container(),
-                                SizedBox(
-                                  width: 5.w,
-                                ),
-                                if (subActivities3 != null)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: AppColors.harp,
-                                        border:
-                                            Border.all(color: AppColors.harp),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(5.r))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text(
-                                          subActivities3.name.toString(),
-                                          style: TextStyle(
-                                              color: AppColors.nobel)),
-                                    ),
-                                  )
-                                else
-                                  Container(),
-                              ],
-                            )
-                          : Row(
-                              children: <Widget>[
-                                if (preSubActivities1 != null)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: AppColors.harp,
-                                        border:
-                                            Border.all(color: AppColors.harp),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(5.r))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text(
-                                          preSubActivities1.name.toString(),
-                                          style: TextStyle(
-                                              color: AppColors.nobel)),
-                                    ),
-                                  )
-                                else
-                                  Container(),
-                                SizedBox(
-                                  width: 5.w,
-                                ),
-                                if (preSubActivities2 != null)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: AppColors.harp,
-                                        border:
-                                            Border.all(color: AppColors.harp),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(5.r))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text(
-                                          preSubActivities2.name.toString(),
-                                          style: TextStyle(
-                                              color: AppColors.nobel)),
-                                    ),
-                                  )
-                                else
-                                  Container(),
-                                SizedBox(
-                                  width: 5.w,
-                                ),
-                                if (preSubActivities3 != null)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: AppColors.harp,
-                                        border:
-                                            Border.all(color: AppColors.harp),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(5.r))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text(
-                                          preSubActivities3.name.toString(),
-                                          style: TextStyle(
-                                              color: AppColors.nobel)),
-                                    ),
-                                  )
-                                else
-                                  Container(),
-                              ],
-                            )),
+                      ],
+                    ),
+                    subtitle: _isEnabledSubActivity
+                        ? _subActivityDropdown(width)
+                        : _isSubActivityEdited
+                            ? Row(
+                                children: <Widget>[
+                                  if (subActivities1 != null)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: AppColors.harp,
+                                          border:
+                                              Border.all(color: AppColors.harp),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5.r))),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                            subActivities1.name.toString(),
+                                            style: TextStyle(
+                                                color: AppColors.nobel,
+                                                fontSize: 12.sp)),
+                                      ),
+                                    )
+                                  else
+                                    Container(),
+                                  SizedBox(
+                                    width: 5.w,
+                                  ),
+                                  if (subActivities2 != null)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: AppColors.harp,
+                                          border:
+                                              Border.all(color: AppColors.harp),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5.r))),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                            subActivities2.name.toString(),
+                                            style: TextStyle(
+                                                color: AppColors.nobel,
+                                                fontSize: 12.sp)),
+                                      ),
+                                    )
+                                  else
+                                    Container(),
+                                  SizedBox(
+                                    width: 5.w,
+                                  ),
+                                  if (subActivities3 != null)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: AppColors.harp,
+                                          border:
+                                              Border.all(color: AppColors.harp),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5.r))),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                            subActivities3.name.toString(),
+                                            style: TextStyle(
+                                                color: AppColors.nobel,
+                                                fontSize: 12.sp)),
+                                      ),
+                                    )
+                                  else
+                                    Container(),
+                                ],
+                              )
+                            : Row(
+                                children: <Widget>[
+                                  if (preSubActivities1 != null)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: AppColors.harp,
+                                          border:
+                                              Border.all(color: AppColors.harp),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5.r))),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                            preSubActivities1.name.toString(),
+                                            style: TextStyle(
+                                                color: AppColors.nobel,
+                                                fontSize: 12.sp)),
+                                      ),
+                                    )
+                                  else
+                                    Container(),
+                                  SizedBox(
+                                    width: 5.w,
+                                  ),
+                                  if (preSubActivities2 != null)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: AppColors.harp,
+                                          border:
+                                              Border.all(color: AppColors.harp),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5.r))),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                            preSubActivities2.name.toString(),
+                                            style: TextStyle(
+                                                color: AppColors.nobel,
+                                                fontSize: 12.sp)),
+                                      ),
+                                    )
+                                  else
+                                    Container(),
+                                  SizedBox(
+                                    width: 5.w,
+                                  ),
+                                  if (preSubActivities3 != null)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: AppColors.harp,
+                                          border:
+                                              Border.all(color: AppColors.harp),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5.r))),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                            preSubActivities3.name.toString(),
+                                            style: TextStyle(
+                                                color: AppColors.nobel,
+                                                fontSize: 12.sp)),
+                                      ),
+                                    )
+                                  else
+                                    Container(),
+                                ],
+                              )),
+              ),
             ],
           ),
         );
@@ -1755,7 +1819,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         child: SizedBox(
           width: width,
           height: 60,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: () async => _isSubmit ? null : packageDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -1767,13 +1831,15 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: _isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.submit,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.submit,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),
@@ -1820,6 +1886,16 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       }
     }
 
+    /// Save image to firebase
+    String coverImgUrl = '';
+    if (image1 == null) {
+      coverImgUrl = await FirebaseServices().uploadImageToFirebase(
+          screenArguments['firebase_cover_img']!, _storagePathCoverImg);
+    } else {
+      coverImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image1!, _storagePathCoverImg);
+    }
+
     Map<String, dynamic> packageDetails = {
       'user_id': userId,
       'main_badge_id': mainBadge.id,
@@ -1827,7 +1903,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       'package_note': screenArguments['note'].toString(),
       'name': _packageName.text,
       'description': _description.text,
-      'cover_img': screenArguments['cover_img'].toString(),
+      'cover_img': '',
       'max_traveller': int.parse(screenArguments['maximum'].toString()),
       'min_traveller': int.parse(screenArguments['minimum'].toString()),
       'country': screenArguments['country'].toString(),
@@ -1839,7 +1915,8 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       'max_extra_person': int.parse(screenArguments['max_person'].toString()),
       'currency_id': screenArguments['currency_id'].toString(),
       'price_note': screenArguments['additional_notes'].toString(),
-      'is_published': true
+      'is_published': true,
+      'firebase_cover_img': coverImgUrl
     };
 
     /// Activity Package Details API
@@ -1874,7 +1951,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       if (item[i].uploadCount == 1) {
         final Map<String, dynamic> image = {
           'activity_package_destination_id': activityPackageDestinationId,
-          'snapshot_img': item[i].img1Holder,
+          'firebase_snapshot_img': item[i].img1FirebaseHolder
         };
 
         /// Activity Package Destination Image API
@@ -1883,9 +1960,11 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
             needAccessToken: true, data: image);
       } else if (item[i].uploadCount == 2) {
         final ImageListPackage objImg1 = ImageListPackage(
-            id: activityPackageDestinationId, img: item[i].img1Holder);
+            id: activityPackageDestinationId,
+            firebaseImg: item[i].img1FirebaseHolder);
         final ImageListPackage objImg2 = ImageListPackage(
-            id: activityPackageDestinationId, img: item[i].img2Holder);
+            id: activityPackageDestinationId,
+            firebaseImg: item[i].img2FirebaseHolder);
 
         final List<ImageListPackage> list = [objImg1, objImg2];
 
@@ -1899,11 +1978,14 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
             needAccessToken: true, data: finalJson);
       } else if (item[i].uploadCount == 3) {
         final ImageListPackage objImg1 = ImageListPackage(
-            id: activityPackageDestinationId, img: item[i].img1Holder);
+            id: activityPackageDestinationId,
+            firebaseImg: item[i].img1FirebaseHolder);
         final ImageListPackage objImg2 = ImageListPackage(
-            id: activityPackageDestinationId, img: item[i].img2Holder);
+            id: activityPackageDestinationId,
+            firebaseImg: item[i].img2FirebaseHolder);
         final ImageListPackage objImg3 = ImageListPackage(
-            id: activityPackageDestinationId, img: item[i].img3Holder);
+            id: activityPackageDestinationId,
+            firebaseImg: item[i].img3FirebaseHolder);
 
         final List<ImageListPackage> list = [objImg1, objImg2, objImg3];
 

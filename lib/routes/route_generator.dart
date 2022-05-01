@@ -67,6 +67,7 @@ import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
+import 'package:guided/screens/message/message_screen_traveler.dart';
 import 'package:guided/screens/notification/notification_screen.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
 import 'package:guided/screens/packages/create_package/free_service_screen.dart';
@@ -100,6 +101,7 @@ import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
+import 'package:guided/screens/stripe/setup_stripe.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:guided/screens/transaction_notifications/transaction_history_main.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
@@ -287,7 +289,8 @@ class RouteGenerator {
             settings: settings);
       case '/checkAvailability':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const CheckAvailability(), settings: settings);
+            builder: (_) => CheckAvailability(screenArguments: args),
+            settings: settings);
       case '/discovery_hub':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TabDiscoveryHub());
@@ -405,8 +408,19 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const UpdateProfileScreen());
       case '/test':
+        return MaterialPageRoute<dynamic>(builder: (_) => SettingsMain());
+      case '/manage_cards':
         return MaterialPageRoute<dynamic>(
-            builder: (_) =>  SettingsMain());
+            builder: (_) => const PaymentManageCard());
+
+      case '/traveller_message':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const MessageScreenTraveler());
+
+      case '/setup_stripe_account':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SetupStripeAccount());
+
       default:
         return _errorRoute();
     }

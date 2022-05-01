@@ -99,6 +99,13 @@ dependencies:
   skeleton_text: ^3.0.0
   firebase_core: ^1.13.1
   firebase_storage: ^10.2.2
+  timeago_flutter: ^1.0.0
+  sticky_grouped_list: ^2.1.0
+  emoji_picker_flutter: ^1.1.2
+  photo_view: ^0.13.0
+  cached_network_image: ^3.2.0
+  extended_image: ^4.0.0
+
 
 
   # flutter_expanded_tile: ^0.3.6

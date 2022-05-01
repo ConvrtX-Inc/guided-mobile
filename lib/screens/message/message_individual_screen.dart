@@ -1,20 +1,30 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/models/message.dart';
+import 'package:guided/controller/user_profile_controller.dart';
+import 'package:guided/models/chat_model.dart';
+import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/image_viewers/image_viewer.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+
 
 /// Notification Screen
 class MessageIndividual extends StatefulWidget {
-  final Message? message;
-
   /// Constructor
   const MessageIndividual({Key? key, this.message}) : super(key: key);
+
+  final ChatModel? message;
 
   @override
   _MessageIndividualState createState() => _MessageIndividualState();
@@ -25,16 +35,50 @@ class _MessageIndividualState extends State<MessageIndividual> {
   String message = 'test';
   final TextEditingController _textMessageController = TextEditingController();
 
+  ChatModel chat = ChatModel();
+
+  List<Message> chatMessages = [];
+
+  final UserProfileDetailsController _profileDetailsController =
+      Get.put(UserProfileDetailsController());
+
+  ProfileDetailsModel senderDetails = ProfileDetailsModel();
+
+  final ScrollController _scrollController = ScrollController();
+
+  late StreamSubscription<bool> keyboardSubscription;
+
   @override
   void initState() {
-    // TODO: implement initState
-    connectToServer();
     super.initState();
+
+    final KeyboardVisibilityController keyboardVisibilityController =
+        KeyboardVisibilityController();
+
+    chat = widget.message!;
+
+    chatMessages = List.from(widget.message!.messages!);
+
+    senderDetails = _profileDetailsController.userProfileDetails;
+
+    connectToServer();
+
+    scrollToBottom();
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      keyboardSubscription =
+          keyboardVisibilityController.onChange.listen((bool visible) {
+        if (visible) {
+          if (_scrollController.hasClients) {
+            scrollToBottom();
+          }
+        }
+      });
+    });
   }
 
   void connectToServer() {
-    socket = IO
-        .io('https://guided-api-dev.herokuapp.com/messenger', <String, dynamic>{
+    socket = IO.io(AppAPIPath.webSocketUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });
@@ -54,38 +98,11 @@ class _MessageIndividualState extends State<MessageIndividual> {
 
     // ignore: cascade_invocations
     socket.emit('connect_users', {
-      'receiver_id': widget.message?.id,
+      'receiver_id': chat.receiver!.id!,
       'sender_id': UserSingleton.instance.user.user?.id,
     });
 
     socket.on('msgToClient', handleMessage);
-  }
-
-  void sendMessage(e) {
-    // prevent frm submission refreshing page
-    e.preventDefault();
-    // send input value to server as type 'message'
-    socket.emit('message', 'test');
-  }
-
-  handleMessage(payload) {
-    final Message message = Message.fromJson(payload);
-    debugPrint('PAYLOAD MESSAGE FROM SERVER: ${message.message} ');
-  }
-
-  void sendMessageToServer() {
-    try {
-      socket.emit('msgToServer', {
-        'receiver_id': widget.message?.id,
-        'sender_id': UserSingleton.instance.user.user?.id,
-        'text': _textMessageController.text
-      });
-      print('success');
-      _textMessageController.clear();
-    } catch (e) {
-      print('error');
-      print(e);
-    }
   }
 
   @override
@@ -107,10 +124,10 @@ class _MessageIndividualState extends State<MessageIndividual> {
                         height: 40.h,
                         width: 40.w),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context, 'getMessages');
                     },
                   ),
-                  IconButton(
+                  /*   IconButton(
                     icon: Image.asset(
                         '${AssetsPath.assetsPNGPath}/phone_green.png',
                         height: 20.h,
@@ -118,7 +135,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                  ),
+                  ),*/
                 ],
               ),
             ),
@@ -127,8 +144,8 @@ class _MessageIndividualState extends State<MessageIndividual> {
             ),
             Padding(
               padding: EdgeInsets.only(left: 24.w),
-              child: const Text(
-                'Ann Sasah',
+              child: Text(
+                chat.receiver!.fullName!,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 22,
@@ -138,7 +155,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
             SizedBox(
               height: 15.h,
             ),
-            Container(
+            /* Container(
               height: 57.h,
               color: AppColors.tealGreen.withOpacity(0.15),
               child: Row(
@@ -179,22 +196,21 @@ class _MessageIndividualState extends State<MessageIndividual> {
                   )
                 ],
               ),
-            ),
+            ),*/
             Expanded(
               child: ListView.builder(
-                itemCount: 5 + 1,
+                itemCount: chatMessages.length,
+                controller: _scrollController,
                 itemBuilder: (BuildContext context, int index) {
-                  // final Message message = message.message[index] as Message;
-
-                  return index == 0 || index == 3
-                      ? _senderMessage()
-                      : index == 5
-                          ? _offerMessage()
-                          : _repliedMessage();
+                  final Message message = chatMessages[index];
+                  return message.senderId == senderDetails.id
+                      ? _repliedMessage(message)
+                      : _senderMessage(message);
                 },
               ),
             ),
-            Align(
+            if(!chat.isBlocked!)
+              Align(
               alignment: Alignment.bottomCenter,
               child: Stack(
                 children: <Widget>[
@@ -404,7 +420,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
     );
   }
 
-  Widget _repliedMessage() {
+  Widget _repliedMessage(Message message) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 15.w, vertical: 20.h),
       child: Row(
@@ -423,9 +439,9 @@ class _MessageIndividualState extends State<MessageIndividual> {
                 Radius.circular(10),
               ),
             ),
-            child: const Text(
-              'Sample tourist guide text message goes here ',
-              style: TextStyle(
+            child: Text(
+              message.message!,
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
                 color: Colors.black,
@@ -439,38 +455,18 @@ class _MessageIndividualState extends State<MessageIndividual> {
     );
   }
 
-  Widget _senderMessage() {
+  Widget _senderMessage(Message message) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 15.w, vertical: 20.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            height: 49.h,
-            width: 49.w,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white, width: 3),
-              shape: BoxShape.circle,
-              image: const DecorationImage(
-                image:
-                    AssetImage('${AssetsPath.assetsPNGPath}/profile_photo.png'),
-                fit: BoxFit.contain,
-              ),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  // offset: const Offset(
-                  //     0, 0), // changes position of shadow
-                ),
-              ],
-            ),
-          ),
+          buildProfilePicture(chat.receiver!.avatar!),
           SizedBox(
             width: 15.w,
           ),
-          Container(
+          if(message.messageType!.toLowerCase() == 'text')  
+            Container(
             width: 205.w,
             padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 15.w),
             decoration: BoxDecoration(
@@ -482,17 +478,18 @@ class _MessageIndividualState extends State<MessageIndividual> {
                 Radius.circular(10),
               ),
             ),
-            child: const Text(
-              // message.message,
-              'Sample tourist text message goes here to receive tourist guide Sample tourist text message goes here to receive tourist guide',
-              style: TextStyle(
+            child: Text(
+              message.message!,
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
                 color: Colors.black,
                 height: 2,
               ),
             ),
-          ),
+          )
+          else
+            buildChatAttachment(message.message!)
         ],
       ),
     );
@@ -523,4 +520,80 @@ class _MessageIndividualState extends State<MessageIndividual> {
 
     return Stack(children: stackLayers);
   }
+
+  Widget buildProfilePicture(String image) => Container(
+        height: 49.h,
+        width: 49.w,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white, width: 3),
+          shape: BoxShape.circle,
+          image: image.isEmpty
+              ? DecorationImage(
+                  image: AssetImage(AssetsPath.defaultProfilePic),
+                  fit: BoxFit.contain,
+                )
+              : DecorationImage(
+                  image: NetworkImage(image),
+                  fit: BoxFit.contain,
+                ),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 5,
+              // offset: const Offset(
+              //     0, 0), // changes position of shadow
+            ),
+          ],
+        ),
+      );
+
+  handleMessage(payload) {
+    // final dynamic dataFromServer = jsonDecode(payload);
+    final Message message = Message(
+        createdDate: payload['dateCreate'],
+        message: payload['text'],
+        senderId: payload['sender_id'],
+        receiverId: payload['receiver_id']);
+//
+    setState(() {
+      chatMessages.add(message);
+    });
+    scrollToBottom(timer: 200);
+  }
+
+  void sendMessageToServer() {
+    socket.emit('msgToServer', {
+      'receiver_id': chat.receiver!.id!,
+      'sender_id': UserSingleton.instance.user.user?.id,
+      'text': _textMessageController.text
+    });
+    print('success');
+    _textMessageController.clear();
+  }
+
+  void scrollToBottom({int timer = 100}) {
+    Timer(
+      Duration(milliseconds: timer),
+      () => _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: timer),
+        curve: Curves.fastOutSlowIn,
+      ),
+    );
+  }
+
+  Widget buildChatAttachment(String image) => GestureDetector(
+      onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) {
+          return ImageViewerScreen(imageUrl: image);
+        }));
+      },
+      child: ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Image.network(
+            image,
+            height: 150.h,
+            fit: BoxFit.contain,
+          )));
 }

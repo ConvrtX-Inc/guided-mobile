@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -11,6 +12,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/event_image_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Widget for home features
@@ -115,18 +117,16 @@ class _EventFeaturesState extends State<EventFeatures> {
                       return Stack(
                         children: <Widget>[
                           GestureDetector(
-                            onTap: () => navigateEventDetails(context,
-                                imageDetails.snapshotImg, imageDetails.id),
+                            onTap: () => navigateEventDetails(
+                                context,
+                                imageDetails.firebaseSnapshotImg,
+                                imageDetails.id),
                             child: ListTile(
                               title: imageDetails.activityEventId != null
                                   ? SizedBox(
                                       height: 200.h,
-                                      child: Image.memory(
-                                        base64.decode(
-                                          imageDetails.snapshotImg
-                                              .split(',')
-                                              .last,
-                                        ),
+                                      child: ExtendedImage.network(
+                                        imageDetails.firebaseSnapshotImg,
                                         fit: BoxFit.cover,
                                         gaplessPlayback: true,
                                       ),
@@ -233,7 +233,10 @@ class _EventFeaturesState extends State<EventFeatures> {
                                         SizedBox(
                                           width: 30.w,
                                         ),
-                                        const CircularProgressIndicator()
+                                        const SkeletonText(
+                                            width: 30,
+                                            height: 30,
+                                            shape: BoxShape.circle)
                                       ],
                                     ),
                                   ],
@@ -250,7 +253,7 @@ class _EventFeaturesState extends State<EventFeatures> {
                                 GestureDetector(
                                   onTap: () => navigateEventDetailsEdit(
                                       context,
-                                      imageDetails.snapshotImg,
+                                      imageDetails.firebaseSnapshotImg,
                                       imageDetails.id),
                                   child: SizedBox(
                                     width: 50,

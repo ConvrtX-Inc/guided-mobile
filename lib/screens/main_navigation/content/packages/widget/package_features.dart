@@ -2,13 +2,16 @@
 
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/activity_availability_hours_model.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Widget for home features
@@ -21,8 +24,9 @@ class PackageFeatures extends StatefulWidget {
     String subBadgeId = '',
     String description = '',
     String imageUrl = '',
+    int numberOfTouristMin = 0,
     int numberOfTourist = 0,
-    double starRating = 0.0,
+    double starRating = 5.0,
     double fee = 0.0,
     String dateRange = '',
     String services = '',
@@ -30,6 +34,7 @@ class PackageFeatures extends StatefulWidget {
     String extraCost = '',
     String country = '',
     bool isPublished = false,
+    String firebaseCoverImg = '',
     Key? key,
   })  : _id = id,
         _name = name,
@@ -37,6 +42,7 @@ class PackageFeatures extends StatefulWidget {
         _subBadgeId = subBadgeId,
         _description = description,
         _imageUrl = imageUrl,
+        _numberOfTouristMin = numberOfTouristMin,
         _numberOfTourist = numberOfTourist,
         _fee = fee,
         _starRating = starRating,
@@ -46,6 +52,7 @@ class PackageFeatures extends StatefulWidget {
         _extraCost = extraCost,
         _country = country,
         _isPublished = isPublished,
+        _firebaseCoverImg = firebaseCoverImg,
         super(key: key);
 
   final String _id;
@@ -54,6 +61,7 @@ class PackageFeatures extends StatefulWidget {
   final String _subBadgeId;
   final String _description;
   final String _imageUrl;
+  final int _numberOfTouristMin;
   final int _numberOfTourist;
   final double _starRating;
   final double _fee;
@@ -63,6 +71,7 @@ class PackageFeatures extends StatefulWidget {
   final String _extraCost;
   final String _country;
   final bool _isPublished;
+  final String _firebaseCoverImg;
 
   @override
   State<PackageFeatures> createState() => _PackageFeaturesState();
@@ -74,6 +83,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
   late List<String> splitAddress;
   List<String> splitId = [];
   List<DateTime> splitAvailabilityDate = [];
+  int slots = 0;
   String dateStart = '';
   String dateEnd = '';
   DateTime now = DateTime.now();
@@ -93,7 +103,11 @@ class _PackageFeaturesState extends State<PackageFeatures> {
     DateTime month = DateTime.now();
     final List<ActivityAvailability> resForm =
         await APIServices().getActivityAvailability(activityPackageId);
-
+    if (resForm.isNotEmpty) {
+      final List<ActivityAvailabilityHour> resForm1 =
+          await APIServices().getActivityAvailabilityHour(resForm[0].id);
+      slots = resForm1[0].slots;
+    }
     for (int index = 0; index < resForm.length; index++) {
       splitId.add(resForm[index].id);
       splitAvailabilityDate
@@ -132,15 +146,12 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                     navigatePackageDetails(context);
                   },
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.memory(
-                      base64.decode(
-                        widget._imageUrl.split(',').last,
-                      ),
-                      fit: BoxFit.cover,
-                      gaplessPlayback: true,
-                    ),
-                  ),
+                      borderRadius: BorderRadius.circular(8),
+                      child: ExtendedImage.network(
+                        widget._firebaseCoverImg,
+                        fit: BoxFit.cover,
+                        gaplessPlayback: true,
+                      )),
                 )),
                 Positioned(
                     bottom: 0,
@@ -188,7 +199,8 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                                       fontSize: 14),
                                 ),
                               ),
-                              Text('${widget._numberOfTourist} Traveller')
+                              Text(
+                                  '${widget._numberOfTouristMin} - ${widget._numberOfTourist} Traveller')
                             ],
                           ),
                         ),
@@ -251,16 +263,10 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                       );
                     }
                     if (snapshot.connectionState != ConnectionState.done) {
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Row(
-                          children: <Widget>[
-                            SizedBox(
-                              width: 10.w,
-                            ),
-                            const CircularProgressIndicator(),
-                          ],
-                        ),
+                      return const SkeletonText(
+                        height: 200,
+                        width: 900,
+                        radius: 10,
                       );
                     }
                     return Container();
@@ -407,7 +413,8 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'main_badge_id': widget._mainBadgeId,
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
-      'image_url': widget._imageUrl,
+      'image_url': widget._firebaseCoverImg,
+      'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,
       'fee': widget._fee,
@@ -429,7 +436,8 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'main_badge_id': widget._mainBadgeId,
       'sub_badge_id': splitSubActivitiesId,
       'description': widget._description,
-      'image_url': widget._imageUrl,
+      'image_url': widget._firebaseCoverImg,
+      'number_of_tourist_min': widget._numberOfTouristMin,
       'number_of_tourist': widget._numberOfTourist,
       'star_rating': widget._starRating,
       'fee': widget._fee,
@@ -449,7 +457,8 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'availability_date': splitAvailabilityDate,
       'count': splitAvailabilityDate.length,
       'package_id': widget._id,
-      'number_of_tourist': widget._numberOfTourist
+      'number_of_tourist': widget._numberOfTourist,
+      'slots': slots
     };
 
     await Navigator.pushNamed(context, '/calendar_availability',

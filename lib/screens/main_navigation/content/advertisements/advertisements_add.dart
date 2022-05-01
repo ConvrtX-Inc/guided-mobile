@@ -20,6 +20,7 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/badgesModel.dart';
 import 'package:guided/models/card_model.dart';
@@ -34,8 +35,10 @@ import 'package:guided/screens/payments/payment_set_date.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
 import 'package:guided/screens/widgets/reusable_widgets/payment_details.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Adding Advertisement Screen
@@ -95,6 +98,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   bool isLocationBtnClicked = false;
   late Future<BadgeModelData> _loadingData;
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+  final String _storagePathOutfitterImg = 'outfitterImg';
   @override
   void initState() {
     super.initState();
@@ -221,7 +225,9 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.camera,
-                                      imageQuality: 25);
+                                      imageQuality: 25,
+                                      maxHeight: 800.h,
+                                      maxWidth: 800.w);
                               if (image1 == null) {
                                 return;
                               }
@@ -231,15 +237,32 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               int fileSize;
                               file = getFileSizeString(
                                   bytes: imageTemporary.lengthSync());
-                              fileSize = int.parse(
-                                  file.substring(0, file.indexOf('K')));
-                              if (fileSize >= 100) {
-                                AdvanceSnackBar(
-                                        message: ErrorMessageConstants
-                                            .imageFileToSize)
-                                    .show(context);
-                                Navigator.pop(context);
-                                return;
+                              if (file.contains('KB')) {
+                                fileSize = int.parse(
+                                    file.substring(0, file.indexOf('K')));
+                                debugPrint('Filesize:: $fileSize');
+                                if (fileSize >= 2000) {
+                                  Navigator.pop(context);
+                                  AdvanceSnackBar(
+                                          message: ErrorMessageConstants
+                                              .imageFileToSize,
+                                          bgColor: Colors.red)
+                                      .show(context);
+                                  return;
+                                }
+                              } else {
+                                fileSize = int.parse(
+                                    file.substring(0, file.indexOf('M')));
+                                debugPrint('Filesize:: $fileSize');
+                                if (fileSize >= 2) {
+                                  Navigator.pop(context);
+                                  AdvanceSnackBar(
+                                          message: ErrorMessageConstants
+                                              .imageFileToSize,
+                                          bgColor: Colors.red)
+                                      .show(context);
+                                  return;
+                                }
                               }
                               setState(() {
                                 this.image1 = imageTemporary;
@@ -258,7 +281,9 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               final XFile? image1 = await ImagePicker()
                                   .pickImage(
                                       source: ImageSource.gallery,
-                                      imageQuality: 10);
+                                      imageQuality: 25,
+                                      maxHeight: 800.h,
+                                      maxWidth: 800.w);
 
                               if (image1 == null) {
                                 return;
@@ -269,15 +294,32 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                               int fileSize;
                               file = getFileSizeString(
                                   bytes: imageTemporary.lengthSync());
-                              fileSize = int.parse(
-                                  file.substring(0, file.indexOf('K')));
-                              if (fileSize >= 100) {
-                                AdvanceSnackBar(
-                                        message: ErrorMessageConstants
-                                            .imageFileToSize)
-                                    .show(context);
-                                    Navigator.pop(context);
-                                return;
+                              if (file.contains('KB')) {
+                                fileSize = int.parse(
+                                    file.substring(0, file.indexOf('K')));
+                                debugPrint('Filesize:: $fileSize');
+                                if (fileSize >= 2000) {
+                                  Navigator.pop(context);
+                                  AdvanceSnackBar(
+                                          message: ErrorMessageConstants
+                                              .imageFileToSize,
+                                          bgColor: Colors.red)
+                                      .show(context);
+                                  return;
+                                }
+                              } else {
+                                fileSize = int.parse(
+                                    file.substring(0, file.indexOf('M')));
+                                debugPrint('Filesize:: $fileSize');
+                                if (fileSize >= 2) {
+                                  Navigator.pop(context);
+                                  AdvanceSnackBar(
+                                          message: ErrorMessageConstants
+                                              .imageFileToSize,
+                                          bgColor: Colors.red)
+                                      .show(context);
+                                  return;
+                                }
                               }
                               setState(() {
                                 this.image1 = imageTemporary;
@@ -349,7 +391,9 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
-                                          imageQuality: 25);
+                                          imageQuality: 25,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w);
 
                                   if (image2 == null) {
                                     return;
@@ -360,15 +404,32 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                        Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image2 = imageTemporary;
@@ -387,7 +448,9 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 10);
+                                          imageQuality: 25,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w);
                                   if (image2 == null) {
                                     return;
                                   }
@@ -397,15 +460,32 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                        Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image2 = imageTemporary;
@@ -479,7 +559,9 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
-                                          imageQuality: 25);
+                                          imageQuality: 25,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w);
 
                                   if (image3 == null) {
                                     return;
@@ -489,15 +571,32 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                        Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image3 = imageTemporary;
@@ -516,7 +615,9 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 10);
+                                          imageQuality: 25,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w);
 
                                   if (image3 == null) {
                                     return;
@@ -527,15 +628,32 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                        Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image3 = imageTemporary;
@@ -659,11 +777,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _title,
                       focusNode: _titleFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.title,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -730,11 +848,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     ),
                     if (isLocationBtnClicked)
                       TextField(
+                        textAlign: TextAlign.left,
                         controller: _country,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding:
-                              EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                          contentPadding: EdgeInsets.only(left: 10.w),
                           hintText: AppTextConstants.country,
                           hintStyle: TextStyle(
                             color: AppColors.grey,
@@ -756,11 +874,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       height: 20.h,
                     ),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _street,
                       focusNode: _streetFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.street,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -781,11 +899,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _city,
                       focusNode: _cityFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.city,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -799,11 +917,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _province,
                       focusNode: _provinceFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.provinceState,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -817,11 +935,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     ),
                     SizedBox(height: 20.h),
                     TextField(
+                      textAlign: TextAlign.left,
                       controller: _postalCode,
                       focusNode: _postalCodeFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.postalCode,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -840,10 +958,10 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       onTap: () => _showDate(context),
                       child: AbsorbPointer(
                         child: TextField(
+                          textAlign: TextAlign.left,
                           controller: _date,
                           decoration: InputDecoration(
-                            contentPadding:
-                                EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                            contentPadding: EdgeInsets.only(left: 10.w),
                             hintText: AppTextConstants.date,
                             hintStyle: TextStyle(
                               color: AppColors.grey,
@@ -861,11 +979,12 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      maxLines: 10,
+                      textAlign: TextAlign.left,
                       controller: _description,
                       focusNode: _descriptionFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w, top: 20.h),
                         hintText: AppTextConstants.description,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -885,11 +1004,11 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       height: 20.h,
                     ),
                     FormBuilderTextField(
+                      textAlign: TextAlign.left,
                       controller: _price,
                       focusNode: _priceFocus,
                       decoration: InputDecoration(
-                        contentPadding:
-                            EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         hintText: AppTextConstants.price,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
@@ -932,11 +1051,15 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         child: SizedBox(
           width: width,
           height: 60.h,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: () {
               _formKey.currentState?.save();
               if (_formKey.currentState!.validate()) {
-                _isSubmit ? null : handlePayment();
+                _isSubmit
+                    ? null
+                    : PaymentConfig.isPaymentEnabled
+                        ? handlePayment()
+                        : advertisementDetail();
               } else {
                 print('validation failed');
               }
@@ -951,13 +1074,15 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: _isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.createAdvertisement,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.createAdvertisement,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),
@@ -1438,12 +1563,16 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   }
 
   Future<void> saveImage(String id) async {
-    final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-    final String base64Image1 = base64Encode(await image1Bytes);
+    /// Save image to firebase
+    String ImgUrl = '';
+
+    ImgUrl = await FirebaseServices()
+        .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
 
     final Map<String, dynamic> image = {
       'activity_advertisement_id': id,
-      'snapshot_img': base64Image1
+      'snapshot_img': '',
+      'firebase_snapshot_img': ImgUrl
     };
 
     await APIServices().request(AppAPIPath.imageUrl, RequestType.POST,
@@ -1451,14 +1580,17 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   }
 
   Future<void> save2Image(String id) async {
-    final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-    final String base64Image1 = base64Encode(await image1Bytes);
+    /// Save image to firebase
+    String coverImgUrl1 = '';
+    String coverImgUrl2 = '';
 
-    final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-    final String base64Image2 = base64Encode(await image2Bytes);
+    coverImgUrl1 = await FirebaseServices()
+        .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
+    coverImgUrl2 = await FirebaseServices()
+        .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
 
-    final ImageList objImg1 = ImageList(id: id, img: base64Image1);
-    final ImageList objImg2 = ImageList(id: id, img: base64Image2);
+    final ImageList objImg1 = ImageList(id: id, img: coverImgUrl1);
+    final ImageList objImg2 = ImageList(id: id, img: coverImgUrl2);
 
     final List<ImageList> list = [objImg1, objImg2];
 
@@ -1469,18 +1601,21 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   }
 
   Future<void> saveBulkImage(String id) async {
-    final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-    final String base64Image1 = base64Encode(await image1Bytes);
+    /// Save image to firebase
+    String coverImgUrl1 = '';
+    String coverImgUrl2 = '';
+    String coverImgUrl3 = '';
 
-    final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-    final String base64Image2 = base64Encode(await image2Bytes);
+    coverImgUrl1 = await FirebaseServices()
+        .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
+    coverImgUrl2 = await FirebaseServices()
+        .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
+    coverImgUrl3 = await FirebaseServices()
+        .uploadImageToFirebase(image3!, _storagePathOutfitterImg);
 
-    final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
-    final String base64Image3 = base64Encode(await image3Bytes);
-
-    final ImageList objImg1 = ImageList(id: id, img: base64Image1);
-    final ImageList objImg2 = ImageList(id: id, img: base64Image2);
-    final ImageList objImg3 = ImageList(id: id, img: base64Image3);
+    final ImageList objImg1 = ImageList(id: id, img: coverImgUrl1);
+    final ImageList objImg2 = ImageList(id: id, img: coverImgUrl2);
+    final ImageList objImg3 = ImageList(id: id, img: coverImgUrl3);
 
     final List<ImageList> list = [objImg1, objImg2, objImg3];
 
@@ -1490,8 +1625,12 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         needAccessToken: true, data: finalJson);
   }
 
-  Future<void> advertisementDetail(double price, String serviceName,
-      String transactionNumber, String mode) async {
+  Future<void> advertisementDetail(
+      {double? price,
+      String? serviceName,
+      String? transactionNumber,
+      String? mode}) async {
+    debugPrint('crate ad');
     if (image1 == null) {
       AdvanceSnackBar(message: ErrorMessageConstants.advertisementImageEmpty)
           .show(context);
@@ -1562,37 +1701,39 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         await saveBulkImage(activityOutfitterId);
       }
 
-      //Display payment successful when advertisement is created
-      await paymentSuccessful(
-          context: context,
-          onOkBtnPressed: () async {
-            int count = 0;
-            Navigator.popUntil(context, (route) {
-              return count++ == 3;
-            });
+      if (PaymentConfig.isPaymentEnabled) {
+        //Display payment successful when advertisement is created
+        await paymentSuccessful(
+            context: context,
+            onOkBtnPressed: () async {
+              int count = 0;
+              Navigator.popUntil(context, (route) {
+                return count++ == 3;
+              });
 
-            await Navigator.pushReplacement(
-                context,
-                MaterialPageRoute<dynamic>(
-                    builder: (BuildContext context) =>
-                        const MainNavigationScreen(
-                          navIndex: 1,
-                          contentIndex: 1,
-                        )));
-          },
-          paymentDetails: PaymentDetails(
-              serviceName: serviceName,
-              price: price.toStringAsFixed(2),
-              transactionNumber: transactionNumber),
-          paymentMethod: mode);
-
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
-                    navIndex: 1,
-                    contentIndex: 3,
-                  )));
+              await Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) =>
+                          const MainNavigationScreen(
+                            navIndex: 1,
+                            contentIndex: 1,
+                          )));
+            },
+            paymentDetails: PaymentDetails(
+                serviceName: serviceName!,
+                price: price!.toStringAsFixed(2),
+                transactionNumber: transactionNumber!),
+            paymentMethod: mode!);
+      } else {
+        await Navigator.pushReplacement(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => const MainNavigationScreen(
+                      navIndex: 1,
+                      contentIndex: 3,
+                    )));
+      }
     }
   }
 
@@ -1677,7 +1818,10 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                     onPaymentSuccessful: () {
                       // API Integration for create advertisement..
                       advertisementDetail(
-                          price, serviceName, transactionNumber, mode);
+                          price: price,
+                          serviceName: serviceName,
+                          transactionNumber: transactionNumber,
+                          mode: mode);
                     },
                     onPaymentFailed: () {
                       paymentFailed(

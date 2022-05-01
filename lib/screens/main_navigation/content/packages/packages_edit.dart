@@ -5,6 +5,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,8 +20,11 @@ import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
+import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Package Summary Screen
@@ -100,6 +104,7 @@ class _PackageEditState extends State<PackageEdit> {
 
   late CountryModel _countryDropdown;
   late List<CountryModel> listCountry;
+  final String _storagePathCoverImg = 'coverImg';
 
   @override
   void initState() {
@@ -138,7 +143,7 @@ class _PackageEditState extends State<PackageEdit> {
       _country = TextEditingController(text: _countryDropdown.name);
     });
   }
-  
+
   ListTile _choicesMainActivity(BadgeDetailsModel badges) {
     return ListTile(
       onTap: () {
@@ -242,7 +247,6 @@ class _PackageEditState extends State<PackageEdit> {
             elevation: 5,
             borderRadius: BorderRadius.circular(12.r),
             child: SizedBox(
-              height: 200.h,
               width: width,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
@@ -270,7 +274,11 @@ class _PackageEditState extends State<PackageEdit> {
                       );
                     }
                     if (snapshot.connectionState != ConnectionState.done) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const SkeletonText(
+                        width: 100,
+                        height: 10,
+                        radius: 10,
+                      );
                     }
                     return Container();
                   },
@@ -751,7 +759,7 @@ class _PackageEditState extends State<PackageEdit> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(25),
+            padding: const EdgeInsets.all(5),
             child: Row(
               children: <Widget>[
                 Image.asset(
@@ -829,6 +837,8 @@ class _PackageEditState extends State<PackageEdit> {
                                   final XFile? image1 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
                                           imageQuality: 25);
                                   if (image1 == null) {
                                     return;
@@ -839,15 +849,32 @@ class _PackageEditState extends State<PackageEdit> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image1 = imageTemporary;
@@ -866,7 +893,9 @@ class _PackageEditState extends State<PackageEdit> {
                                   final XFile? image1 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 10);
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
+                                          imageQuality: 25);
 
                                   if (image1 == null) {
                                     return;
@@ -877,15 +906,32 @@ class _PackageEditState extends State<PackageEdit> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image1 = imageTemporary;
@@ -941,15 +987,12 @@ class _PackageEditState extends State<PackageEdit> {
       return Stack(
         children: <Widget>[
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.memory(
-              base64.decode(screenArguments['image_url'].split(',').last),
-              fit: BoxFit.cover,
-              gaplessPlayback: true,
-              width: 100,
-              height: 100,
-            ),
-          ),
+              borderRadius: BorderRadius.circular(10),
+              child: ExtendedImage.network(
+                screenArguments['image_url'],
+                fit: BoxFit.cover,
+                gaplessPlayback: true,
+              )),
           Positioned(
               right: 0,
               child: GestureDetector(
@@ -1061,16 +1104,10 @@ class _PackageEditState extends State<PackageEdit> {
                           }
                           if (snapshot.connectionState !=
                               ConnectionState.done) {
-                            return Padding(
-                              padding: EdgeInsets.only(left: 10.w),
-                              child: Column(
-                                children: <Widget>[
-                                  SizedBox(
-                                    height: 140.h,
-                                  ),
-                                  const CircularProgressIndicator(),
-                                ],
-                              ),
+                            return const SkeletonText(
+                              width: 100,
+                              height: 30,
+                              radius: 10,
                             );
                           }
                           return Container();
@@ -1255,7 +1292,11 @@ class _PackageEditState extends State<PackageEdit> {
                                                       SizedBox(
                                                         width: 10.w,
                                                       ),
-                                                      const CircularProgressIndicator(),
+                                                      const SkeletonText(
+                                                        width: 100,
+                                                        height: 30,
+                                                        radius: 10,
+                                                      )
                                                     ],
                                                   ),
                                                 );
@@ -1831,7 +1872,7 @@ class _PackageEditState extends State<PackageEdit> {
         child: SizedBox(
           width: width,
           height: 60,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: () async => _isSubmit ? null : packageDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -1843,13 +1884,15 @@ class _PackageEditState extends State<PackageEdit> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: _isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.submit,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.submit,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),
@@ -1904,12 +1947,14 @@ class _PackageEditState extends State<PackageEdit> {
         }
       }
 
-      if (image1 != null) {
-        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-        final String base64Image1 = base64Encode(await image1Bytes);
-        imageByte = base64Image1;
+      /// Save image to firebase
+      String coverImgUrl = '';
+      if (image1 == null) {
+        coverImgUrl = await FirebaseServices().uploadImageToFirebase(
+            screenArguments['image_url']!, _storagePathCoverImg);
       } else {
-        imageByte = screenArguments['image_url'];
+        coverImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _storagePathCoverImg);
       }
 
       Map<String, dynamic> packageDetails = {
@@ -1926,7 +1971,8 @@ class _PackageEditState extends State<PackageEdit> {
         'base_price': _price.text,
         'extra_cost_per_person': _extraCost.text,
         'is_published': true,
-        'cover_img': imageByte,
+        'cover_img': '',
+        'firebase_cover_img': coverImgUrl
       };
 
       /// Activity Package Details API

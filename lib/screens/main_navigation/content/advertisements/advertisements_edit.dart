@@ -22,10 +22,13 @@ import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/secure_storage.dart';
+import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Edit Advertisement Screen
@@ -96,6 +99,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
   late CountryModel _countryDropdown;
   late List<CountryModel> listCountry;
   late Future<BadgeModelData> _loadingData;
+  final String _storagePathAdImg = 'advertisementImg';
   @override
   void initState() {
     super.initState();
@@ -680,6 +684,8 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                   final XFile? image1 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
                                           imageQuality: 25);
                                   if (image1 == null) {
                                     return;
@@ -690,15 +696,32 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image1 = imageTemporary;
@@ -717,7 +740,9 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                   final XFile? image1 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 10);
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
+                                          imageQuality: 25);
 
                                   if (image1 == null) {
                                     return;
@@ -728,15 +753,32 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image1 = imageTemporary;
@@ -793,8 +835,15 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.memory(
-              base64.decode(screenArguments['snapshot_img'].split(',').last),
+            child: Image.network(
+              screenArguments['snapshot_img'],
+              loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) =>
+                  const SkeletonText(
+                height: 100,
+                width: 100,
+                radius: 10,
+              ),
               fit: BoxFit.cover,
               gaplessPlayback: true,
               width: 100,
@@ -1126,7 +1175,14 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                                       SizedBox(
                                                         width: 10.w,
                                                       ),
-                                                      const CircularProgressIndicator(),
+                                                      const SkeletonText(
+                                                        width: 100,
+                                                        height: 30,
+                                                        radius: 10,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10.w,
+                                                      ),
                                                     ],
                                                   ),
                                                 );
@@ -1664,7 +1720,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
         child: SizedBox(
           width: width,
           height: 60.h,
-          child: ElevatedButton(
+          child: LoadingElevatedButton(
             onPressed: () async => _isSubmit ? null : advertisementEditDetail(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -1676,13 +1732,15 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
               primary: AppColors.primaryGreen,
               onPrimary: Colors.white,
             ),
-            child: _isSubmit
-                ? const Center(child: CircularProgressIndicator())
-                : Text(
-                    AppTextConstants.postEvent,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+            isLoading: _isSubmit,
+            loadingChild: const Text(
+              'Loading',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            child: Text(
+              AppTextConstants.postEvent,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
         ),
       ),
@@ -1690,12 +1748,15 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
   }
 
   Future<void> saveImage(String activityAdId, String imageId) async {
-    final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-    final String base64Image1 = base64Encode(await image1Bytes);
+    /// Save image to firebase
+    String coverImgUrl = '';
 
+    coverImgUrl = await FirebaseServices()
+        .uploadImageToFirebase(image1!, _storagePathAdImg);
     final Map<String, dynamic> image = {
       'activity_event_id': activityAdId,
-      'snapshot_img': base64Image1
+      'snapshot_img': '',
+      'firebase_snapshot_img': coverImgUrl
     };
 
     await APIServices().request(

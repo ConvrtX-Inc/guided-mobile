@@ -7,6 +7,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
@@ -23,7 +24,9 @@ import 'package:guided/models/popular_guide.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
+import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
@@ -50,7 +53,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   final ScrollToIndexController _scrollController = ScrollToIndexController();
   final travellerMonthController = Get.put(TravellerMonthController());
   final SwiperController _cardController = SwiperController();
-
+  double latitude = 0.0;
+  double longitude = 0.0;
   var result;
   @override
   void initState() {
@@ -69,7 +73,18 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         defaultDate.toString(),
       );
     });
+    getCurrentLocation();
     super.initState();
+  }
+
+  Future<void> getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      latitude = position.latitude;
+      longitude = position.longitude;
+    });
   }
 
   @override
@@ -113,6 +128,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
                       child: TextField(
+                        onSubmitted: (value) {
+                          widget.onItemPressed('guides');
+                        },
                         textAlign: TextAlign.left,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
@@ -666,14 +684,13 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.26,
           child: FutureBuilder<List<ActivityPackage>>(
-            future: APIServices().getClosestActivity(), // async work
+            future: APIServices()
+                .getClosestActivity(latitude, longitude), // async work
             builder: (BuildContext context,
                 AsyncSnapshot<List<ActivityPackage>> snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const MainContentSkeletonHorizontal();
                 default:
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
@@ -766,7 +783,11 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                       SizedBox(
                                                         height: 110.h,
                                                       ),
-                                                      const CircularProgressIndicator(),
+                                                      const SkeletonText(
+                                                        width: 30,
+                                                        height: 30,
+                                                        shape: BoxShape.circle,
+                                                      )
                                                     ],
                                                   ),
                                                 );
@@ -1111,9 +1132,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return const MainContentSkeletonHorizontal();
                   default:
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));

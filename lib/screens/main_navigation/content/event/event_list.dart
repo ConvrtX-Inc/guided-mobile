@@ -9,6 +9,7 @@ import 'package:guided/models/event_model.dart';
 import 'package:guided/models/home.dart';
 import 'package:guided/screens/main_navigation/content/event/widget/event_features.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
+import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/utils/event.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -42,39 +43,32 @@ class _EventListState extends State<EventList>
     return Scaffold(
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
-        child: SizedBox(
-          height: 600.h,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                child: FutureBuilder<EventModelData>(
-                  future: _loadingData,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                    Widget _displayWidget;
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        _displayWidget = const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                        break;
-                      default:
-                        if (snapshot.hasError) {
-                          _displayWidget = Center(
-                              child: APIMessageDisplay(
-                            message: 'Result: ${snapshot.error}',
-                          ));
-                        } else {
-                          _displayWidget = buildEventResult(snapshot.data!);
-                        }
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            FutureBuilder<EventModelData>(
+              future: _loadingData,
+              builder:
+                  (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                Widget _displayWidget;
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    _displayWidget = const MainContentSkeleton();
+                    break;
+                  default:
+                    if (snapshot.hasError) {
+                      _displayWidget = Center(
+                          child: APIMessageDisplay(
+                        message: 'Result: ${snapshot.error}',
+                      ));
+                    } else {
+                      _displayWidget = buildEventResult(snapshot.data!);
                     }
-                    return _displayWidget;
-                  },
-                ),
-              ),
-            ],
-          ),
+                }
+                return _displayWidget;
+              },
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
