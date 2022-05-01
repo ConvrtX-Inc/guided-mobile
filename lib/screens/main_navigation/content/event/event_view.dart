@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
@@ -16,6 +17,7 @@ import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:extended_image/extended_image.dart';
 
 /// Advertisement View Screen
 class EventView extends StatefulWidget {
@@ -146,64 +148,61 @@ class _EventViewState extends State<EventView> {
                 ),
               ],
             ),
-            flexibleSpace: Center(
-              child: Stack(
-                children: <Widget>[
-                  if (screenArguments['snapshot_img'] != '')
-                    Image.network(
+            flexibleSpace: Stack(
+              children: <Widget>[
+                if (screenArguments['snapshot_img'] != '')
+                  Positioned.fill(
+                    child: ExtendedImage.network(
                       screenArguments['snapshot_img'],
-                      loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) =>
-                          const SkeletonText(
-                        height: 100,
-                        width: 500,
-                        radius: 10,
-                      ),
                       fit: BoxFit.cover,
                       gaplessPlayback: true,
-                    )
-                  else
-                    Container(),
-                  FutureBuilder<BadgeModelData>(
-                    future: APIServices()
-                        .getBadgesModelById(screenArguments['badge_id']),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<dynamic> snapshot) {
-                      if (snapshot.hasData) {
-                        final BadgeModelData badgeData = snapshot.data;
-                        final int length = badgeData.badgeDetails.length;
-                        return Padding(
-                          padding: EdgeInsets.only(left: 10.w),
-                          child: Column(
-                            children: <Widget>[
-                              SizedBox(
-                                height: 110.h,
-                              ),
-                              Image.memory(
-                                base64.decode(badgeData.badgeDetails[0].imgIcon
-                                    .split(',')
-                                    .last),
-                                gaplessPlayback: true,
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      if (snapshot.connectionState != ConnectionState.done) {
-                        return Column(
+                    ),
+                  )
+                else
+                  Container(),
+                FutureBuilder<BadgeModelData>(
+                  future: APIServices()
+                      .getBadgesModelById(screenArguments['badge_id']),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasData) {
+                      final BadgeModelData badgeData = snapshot.data;
+                      final int length = badgeData.badgeDetails.length;
+                      return Padding(
+                        padding: EdgeInsets.only(left: 10.w),
+                        child: Column(
                           children: <Widget>[
                             SizedBox(
                               height: 110.h,
                             ),
-                            const CircularProgressIndicator(),
+                            Image.memory(
+                              base64.decode(badgeData.badgeDetails[0].imgIcon
+                                  .split(',')
+                                  .last),
+                              gaplessPlayback: true,
+                            ),
                           ],
-                        );
-                      }
-                      return Container();
-                    },
-                  )
-                ],
-              ),
+                        ),
+                      );
+                    }
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: 110.h,
+                          ),
+                          const SkeletonText(
+                            height: 30,
+                            width: 30,
+                            shape: BoxShape.circle,
+                          ),
+                        ],
+                      );
+                    }
+                    return Container();
+                  },
+                )
+              ],
             ),
           ),
         ),
@@ -302,7 +301,11 @@ class _EventViewState extends State<EventView> {
                                           SizedBox(
                                             width: 10.w,
                                           ),
-                                          const CircularProgressIndicator(),
+                                          const SkeletonText(
+                                            width: 80,
+                                            height: 30,
+                                            radius: 10,
+                                          ),
                                         ],
                                       ),
                                     );
@@ -472,7 +475,7 @@ class _EventViewState extends State<EventView> {
                       width: 10.w,
                     ),
                     Text(
-                      '(1 Reviews)',
+                      '(0 Reviews)',
                       style: AppTextStyle.greyStyle,
                     ),
                   ],
@@ -480,136 +483,6 @@ class _EventViewState extends State<EventView> {
               ),
               SizedBox(
                 height: 10.h,
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5.r),
-                  border: Border.all(width: 1.w, color: AppColors.porcelain),
-                ),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
-                          child: Container(
-                            width: 55.w,
-                            height: 55.h,
-                            decoration: BoxDecoration(
-                                boxShadow: <BoxShadow>[
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.8),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                image: const DecorationImage(
-                                    fit: BoxFit.fitHeight,
-                                    image: AssetImage(
-                                        'assets/images/profile-photos-2.png'))),
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Padding(
-                                padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                                child: Text(
-                                  'Ann Sasha',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontFamily: 'Gilroy',
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w600),
-                                )),
-                            Padding(
-                                padding: EdgeInsets.fromLTRB(0, 10.h, 0, 0),
-                                child: SizedBox(
-                                  width: 180.w,
-                                  child: Text(
-                                    'Architect',
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontFamily: 'Gilroy',
-                                        fontSize: 12.sp,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                )),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 10.h, 5.w, 0.h),
-                              child: Text(
-                                '5',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Gilroy'),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                              child: const Icon(
-                                Icons.star,
-                                color: Colors.black,
-                                size: 10,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                              child: const Icon(
-                                Icons.star,
-                                color: Colors.black,
-                                size: 10,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                              child: const Icon(
-                                Icons.star,
-                                color: Colors.black,
-                                size: 10,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                              child: const Icon(
-                                Icons.star,
-                                color: Colors.black,
-                                size: 10,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-                              child: const Icon(
-                                Icons.star,
-                                color: Colors.black,
-                                size: 10,
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-                      child: Text(AppTextConstants.loremIpsum,
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 14.sp,
-                              color: AppColors.osloGrey,
-                              fontWeight: FontWeight.w400)),
-                    )
-                  ],
-                ),
               ),
               Padding(
                 padding: EdgeInsets.only(

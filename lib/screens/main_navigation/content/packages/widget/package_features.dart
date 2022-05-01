@@ -2,11 +2,13 @@
 
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/activity_availability_hours_model.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
@@ -81,6 +83,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
   late List<String> splitAddress;
   List<String> splitId = [];
   List<DateTime> splitAvailabilityDate = [];
+  int slots = 0;
   String dateStart = '';
   String dateEnd = '';
   DateTime now = DateTime.now();
@@ -100,7 +103,11 @@ class _PackageFeaturesState extends State<PackageFeatures> {
     DateTime month = DateTime.now();
     final List<ActivityAvailability> resForm =
         await APIServices().getActivityAvailability(activityPackageId);
-
+    if (resForm.isNotEmpty) {
+      final List<ActivityAvailabilityHour> resForm1 =
+          await APIServices().getActivityAvailabilityHour(resForm[0].id);
+      slots = resForm1[0].slots;
+    }
     for (int index = 0; index < resForm.length; index++) {
       splitId.add(resForm[index].id);
       splitAvailabilityDate
@@ -139,20 +146,12 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                     navigatePackageDetails(context);
                   },
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      widget._firebaseCoverImg,
-                      loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) =>
-                          const SkeletonText(
-                        height: 100,
-                        width: 500,
-                        radius: 10,
-                      ),
-                      fit: BoxFit.cover,
-                      gaplessPlayback: true,
-                    ),
-                  ),
+                      borderRadius: BorderRadius.circular(8),
+                      child: ExtendedImage.network(
+                        widget._firebaseCoverImg,
+                        fit: BoxFit.cover,
+                        gaplessPlayback: true,
+                      )),
                 )),
                 Positioned(
                     bottom: 0,
@@ -458,7 +457,8 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'availability_date': splitAvailabilityDate,
       'count': splitAvailabilityDate.length,
       'package_id': widget._id,
-      'number_of_tourist': widget._numberOfTourist
+      'number_of_tourist': widget._numberOfTourist,
+      'slots': slots
     };
 
     await Navigator.pushNamed(context, '/calendar_availability',
