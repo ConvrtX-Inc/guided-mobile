@@ -1133,6 +1133,9 @@ class AppTextConstants {
   /// Returns local law pre set
   static String localLawSet =
       'I agree to abide by, follow and respect the local laws of the area I am traveling in.  If I have questions about these laws I will reach out to my Guide for information and guidance.';
+
+  ///Returns user id text
+ static String userId = 'user_id';
 }
 
 /// Class for error messages text
