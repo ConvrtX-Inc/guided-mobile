@@ -167,12 +167,6 @@ class _EventFeaturesState extends State<EventFeatures> {
                                               SizedBox(
                                                 width: 5.w,
                                               ),
-                                              const Text(
-                                                '(67)',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 14),
-                                              ),
                                             ],
                                           ),
                                         ),
