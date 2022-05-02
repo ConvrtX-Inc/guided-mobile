@@ -1138,6 +1138,9 @@ class AppTextConstants {
 
   ///Returns user id text
  static String userId = 'user_id';
+
+ ///Returns setup stripe info
+static String setupStripeInfo = 'GuidED partners with Stripe for secure payments and financial services. In order to start getting paid, you need to setup a Stripe account.';
 }
 
 /// Class for error messages text

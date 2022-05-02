@@ -478,8 +478,8 @@ class _ManagePaymentState extends State<ManagePayment> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-              'GuidED partners with Stripe for secure payments and financial services. In order to start getting paid, you need to set up a Stripe account.'),
+            Text(
+              AppTextConstants.setupStripeInfo),
           SizedBox(height: 22.h),
           CustomRoundedButton(
               title: 'Setup Now',

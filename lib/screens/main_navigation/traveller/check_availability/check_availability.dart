@@ -24,9 +24,10 @@ import 'package:collection/collection.dart';
 /// Check Availability
 class CheckAvailability extends StatefulWidget {
   ///constructor
-  const CheckAvailability({Key? key , this.screenArguments}) : super(key: key);
+  const CheckAvailability({Key? key, this.screenArguments}) : super(key: key);
 
   final dynamic screenArguments;
+
   @override
   State<CheckAvailability> createState() => _CheckAvailabilityState();
 }
@@ -48,6 +49,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
   late Map<String, dynamic> screenArguments;
 
   ActivityPackage activityPackage = ActivityPackage();
+
   @override
   void initState() {
     initializeDateFormatting('en', null);
@@ -55,9 +57,8 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
     super.initState();
 
     debugPrint('Arguments : ${widget.screenArguments}');
-    screenArguments  = widget.screenArguments;
-    activityPackage =
-    screenArguments['package'] as ActivityPackage;
+    screenArguments = widget.screenArguments;
+    activityPackage = screenArguments['package'] as ActivityPackage;
 
     getGuideDetails(activityPackage.userId!);
 
@@ -72,8 +73,6 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
         List<DateTime>.from(screenArguments['selectedDates'] as List);
     // final ActivityPackage activityPackage =
     //     screenArguments['package'] as ActivityPackage;
-
-
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -466,18 +465,19 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 GestureDetector(
-                  onTap: () {
-                    getGuideDetails(activityPackage.userId!);
+                  onTap: () async {
+                    await getGuideDetails(activityPackage.userId!);
 
-                    getMessageHistory(activityPackage.userId!);
-
-                    final ChatModel message = ChatModel(
+                    /*     final ChatModel message = ChatModel(
                         receiver: Receiver(
                             fullName: guideDetails.fullName,
                             id: activityPackage.userId,
                             avatar: guideDetails.firebaseProfilePicUrl),
-                        messages: messageHistory);
-                    Navigator.push(
+                        messages: messageHistory);*/
+
+                    final ChatModel message =
+                        await getMessageHistory(activityPackage.userId!);
+                    await Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (BuildContext context) =>
@@ -549,8 +549,6 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
           arguments: details);
     }
   }
-
-
 
   Widget noAvailableTime() {
     return Column(
@@ -684,18 +682,29 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
     });
   }
 
-  Future<void> getMessageHistory(String guideId) async {
+  Future<ChatModel> getMessageHistory(String guideId) async {
     final List<ChatModel> res = await APIServices()
         .getChatMessages(UserSingleton.instance.user.user!.id!, 'all');
 
-    final ChatModel chat = res.firstWhere((ChatModel element) =>  element.receiver!.id! == guideId, orElse: () => ChatModel() );
+    final ChatModel chat = res.firstWhere(
+        (ChatModel element) => element.receiver!.id! == guideId,
+        orElse: () => ChatModel());
 
     setState(() {
-      if(chat.messages != null){
+      if (chat.messages != null) {
         messageHistory = chat.messages!;
-      }else{
+      } else {
         messageHistory = [];
       }
     });
+
+    return ChatModel(
+        receiver: Receiver(
+            fullName: guideDetails.fullName,
+            id: activityPackage.userId,
+            avatar: guideDetails.firebaseProfilePicUrl),
+        messages: messageHistory,
+        isBlocked: chat.isBlocked);
   }
+
 }

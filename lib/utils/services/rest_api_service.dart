@@ -272,7 +272,8 @@ class APIServices {
 
   /// API service for profile model
   Future<ProfileDetailsModel> getProfileData() async {
-    final String userId = await SecureStorage.readValue(key: AppTextConstants.userId);
+    final String userId =
+        await SecureStorage.readValue(key: AppTextConstants.userId);
     final String url =
         '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/$userId';
     debugPrint('URL $url');
@@ -294,15 +295,19 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    debugPrint('BookingURL ${Uri.http(apiBaseUrl, '/${AppAPIPath.getBookingRequest}', queryParameters)}');
-    final http.Response response = await http.get(Uri.http(apiBaseUrl, '/${AppAPIPath.getBookingRequest}', queryParameters), headers: {
-      HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
-    });
+    debugPrint(
+        'BookingURL ${Uri.http(apiBaseUrl, '/${AppAPIPath.getBookingRequest}', queryParameters)}');
+    final http.Response response = await http.get(
+        Uri.http(
+            apiBaseUrl, '/${AppAPIPath.getBookingRequest}', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
 
     final dynamic jsonData = jsonDecode(response.body);
     final List<BookingRequest> bookingRequest = <BookingRequest>[];
-    final booking =
+    final List<BookingRequest> booking =
         (jsonData as List).map((i) => BookingRequest.fromJson(i)).toList();
     bookingRequest.addAll(booking);
     return bookingRequest;
@@ -422,7 +427,7 @@ class APIServices {
 
     final dynamic jsonData = jsonDecode(response.body);
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
-    final activityPackage =
+    final List<ActivityPackage> activityPackage =
         (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
@@ -568,8 +573,8 @@ class APIServices {
 
   ///API Service for transactions-byguide
   Future<APIStandardReturnFormat> getTransactionsByGuide(int status) async {
-    var tour_guide_id = UserSingleton.instance.user.user!.id;
-    var statusName = "";
+    String? tour_guide_id = UserSingleton.instance.user.user!.id;
+    String statusName = "";
     switch (status) {
       case 0:
         statusName = "all";
@@ -584,7 +589,7 @@ class APIServices {
         statusName = "rejected";
         break;
     }
-    var url = Uri.encodeFull(
+    String url = Uri.encodeFull(
         '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/${tour_guide_id}\/${statusName}');
     // var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/678036c1-9da6-43ae-bb21-253a5e9b54d5\/${statusName}');
     // var url  = Uri.encodeFull('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactionsByGuide}\/21ca70b3-9eee-4285-9473-fb518caa67be\/${statusName}');
@@ -608,8 +613,12 @@ class APIServices {
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
         body: jsonEncode({
-          'latitude': '$latitude',
+          /*'latitude': '$latitude',
           'longitude': '$longitude',
+          'distance': '20'*/
+
+          'latitude': '53.59',
+          'longitude': '-113.60',
           'distance': '20'
         }),
         headers: headers);
@@ -619,9 +628,10 @@ class APIServices {
     print(jsonData);
     print(jsonData['response']['data']['details']);
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
-    final activityPackage = (jsonData['response']['data']['details'] as List)
-        .map((i) => ActivityPackage.fromJson(i))
-        .toList();
+    final List<ActivityPackage> activityPackage =
+        (jsonData['response']['data']['details'] as List)
+            .map((i) => ActivityPackage.fromJson(i))
+            .toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
   }
@@ -691,7 +701,7 @@ class APIServices {
 
     final List<ActivityHourAvailability> activityHours =
         <ActivityHourAvailability>[];
-    final activityHour = (jsonData as List)
+    final List<ActivityHourAvailability> activityHour = (jsonData as List)
         .map((i) => ActivityHourAvailability.fromJson(i))
         .toList();
     activityHours.addAll(activityHour);
@@ -733,7 +743,7 @@ class APIServices {
     final dynamic jsonData = jsonDecode(response.body);
     print(jsonData);
     final List<ActivityBadge> badges = <ActivityBadge>[];
-    final badge =
+    final List<ActivityBadge> badge =
         (jsonData as List).map((i) => ActivityBadge.fromJson(i)).toList();
     badges.addAll(badge);
 
@@ -755,7 +765,7 @@ class APIServices {
     final dynamic jsonData = jsonDecode(response.body);
 
     final List<User> popularGuides = <User>[];
-    final activityPackage =
+    final List<User> activityPackage =
         (jsonData['data'] as List).map((i) => User.fromJson(i)).toList();
 
     final List<User> guides = activityPackage.where(
@@ -1500,7 +1510,7 @@ class APIServices {
   }
 
   /// API service for  stripe setup
-  Future<String> createStripeAccount(dynamic params) async {
+  Future<http.Response> createStripeAccount(dynamic params) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
@@ -1515,11 +1525,11 @@ class APIServices {
         },
         body: params);
 
-    return response.body;
+    return response;
   }
 
   /// API service for  stripe account link
-  Future<String> getOnboardAccountLink(String accountId) async {
+  Future<http.Response> getOnboardAccountLink(String accountId) async {
     final String? token = UserSingleton.instance.user.token;
 
     debugPrint(
@@ -1535,8 +1545,7 @@ class APIServices {
         }));
 
     debugPrint('Response  Account id $accountId ${response.body}');
-    final jsonData = jsonDecode(response.body);
-    return jsonData['url'];
+    return response;
   }
 
   /// API service add bank account to stripe
@@ -1605,7 +1614,7 @@ class APIServices {
 
     debugPrint('Response Payment Intent :: ${response.body}');
     final jsonData = jsonDecode(response.body);
-    return jsonData['paymentIntent'];
+    return jsonData['paymentIntent'] ?? '';
   }
 
   ///API Service for charging payment booking request
@@ -1740,5 +1749,37 @@ class APIServices {
     final ProfileDetailsModel dataSummary =
         ProfileDetailsModel.fromJson(json.decode(response.body));
     return dataSummary;
+  }
+
+  ///Api Service for approve booking request
+  Future<APIStandardReturnFormat> approveBookingRequest(String id) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    final http.Response response = await http.post(
+      Uri.parse(
+          '$apiBaseMode$apiBaseUrl/api/v1/booking-requests/approve-request/$id'),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+    );
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  ///Api Service for reject booking request
+  Future<APIStandardReturnFormat> rejectBookingRequest(String id) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    final http.Response response = await http.post(
+      Uri.parse(
+          '$apiBaseMode$apiBaseUrl/api/v1/booking-requests/reject-request/$id'),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+    );
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 }
