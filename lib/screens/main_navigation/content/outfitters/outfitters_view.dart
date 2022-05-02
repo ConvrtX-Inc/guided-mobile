@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
@@ -153,10 +154,9 @@ class _OutfitterViewState extends State<OutfitterView> {
               ],
             ),
             flexibleSpace: screenArguments['snapshot_img'] != ''
-                ? Image.memory(
-                    base64.decode(
-                        screenArguments['snapshot_img'].split(',').last),
-                    fit: BoxFit.fitHeight,
+                ? ExtendedImage.network(
+                    screenArguments['snapshot_img'],
+                    fit: BoxFit.cover,
                     gaplessPlayback: true,
                   )
                 : Container(),

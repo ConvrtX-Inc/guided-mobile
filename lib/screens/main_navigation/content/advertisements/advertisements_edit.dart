@@ -6,6 +6,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -292,14 +293,16 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -319,8 +322,6 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                                 if (subActivities3 != null) {
                                   subActivities2 = subActivities3;
                                   subActivities3 = null;
-                                } else {
-                                  subActivities2 = null;
                                 }
                                 count--;
                                 showLimitNote = false;
@@ -377,14 +378,16 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -433,7 +436,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
           },
           child: Container(
             height: 40.h,
-            width: 140.w,
+            width: 155.w,
             decoration: BoxDecoration(
                 color: AppColors.platinum.withOpacity(0.8),
                 border: Border.all(
@@ -454,16 +457,20 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                           height: 20,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: SizedBox(
+                              height: 30.h,
+                              child: Align(
+                                child: Text(
+                                  badges.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 12.sp),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -543,7 +550,10 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(badges.name,
+          style: TextStyle(
+            fontSize: 12.sp,
+          )),
     );
   }
 
@@ -589,7 +599,10 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(badges.name,
+          style: TextStyle(
+            fontSize: 12.sp,
+          )),
     );
   }
 
@@ -610,7 +623,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(25),
+            padding: const EdgeInsets.all(5),
             child: Row(
               children: <Widget>[
                 Image.asset(
@@ -834,22 +847,14 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
       return Stack(
         children: <Widget>[
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              screenArguments['snapshot_img'],
-              loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent? loadingProgress) =>
-                  const SkeletonText(
-                height: 100,
+              borderRadius: BorderRadius.circular(10),
+              child: ExtendedImage.network(
+                screenArguments['snapshot_img'],
+                fit: BoxFit.cover,
+                gaplessPlayback: true,
                 width: 100,
-                radius: 10,
-              ),
-              fit: BoxFit.cover,
-              gaplessPlayback: true,
-              width: 100,
-              height: 100,
-            ),
-          ),
+                height: 100,
+              )),
           Positioned(
               right: 0,
               child: GestureDetector(

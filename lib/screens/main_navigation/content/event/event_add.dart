@@ -34,6 +34,7 @@ import 'package:guided/screens/payments/payment_method.dart';
 import 'package:guided/screens/payments/payment_set_date.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
 import 'package:guided/screens/widgets/reusable_widgets/payment_details.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -334,7 +335,11 @@ class _EventAddState extends State<EventAdd> {
                       );
                     }
                     if (snapshot.connectionState != ConnectionState.done) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const SkeletonText(
+                        width: 100,
+                        height: 10,
+                        radius: 10,
+                      );
                     }
                     return Container();
                   },

@@ -189,7 +189,10 @@ class _EventEditState extends State<EventEdit> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(badges.name,
+          style: TextStyle(
+            fontSize: 12.sp,
+          )),
     );
   }
 
@@ -210,7 +213,7 @@ class _EventEditState extends State<EventEdit> {
             decoration: BoxDecoration(
               color: Colors.transparent,
               border: Border.all(
-                color: Color.fromARGB(255, 100, 17, 17),
+                color: Colors.grey.shade400,
                 width: 1.w,
               ),
               borderRadius: BorderRadius.circular(16.r),
@@ -474,14 +477,16 @@ class _EventEditState extends State<EventEdit> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -501,8 +506,6 @@ class _EventEditState extends State<EventEdit> {
                                 if (subActivities3 != null) {
                                   subActivities2 = subActivities3;
                                   subActivities3 = null;
-                                } else {
-                                  subActivities2 = null;
                                 }
                                 count--;
                                 showLimitNote = false;
@@ -559,14 +562,16 @@ class _EventEditState extends State<EventEdit> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -615,7 +620,7 @@ class _EventEditState extends State<EventEdit> {
           },
           child: Container(
             height: 40.h,
-            width: 140.w,
+            width: 155.w,
             decoration: BoxDecoration(
                 color: AppColors.platinum.withOpacity(0.8),
                 border: Border.all(
@@ -638,14 +643,16 @@ class _EventEditState extends State<EventEdit> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -728,7 +735,10 @@ class _EventEditState extends State<EventEdit> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(badges.name,
+          style: TextStyle(
+            fontSize: 12.sp,
+          )),
     );
   }
 
@@ -774,7 +784,10 @@ class _EventEditState extends State<EventEdit> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(badges.name,
+          style: TextStyle(
+            fontSize: 12.sp,
+          )),
     );
   }
 
@@ -1024,6 +1037,8 @@ class _EventEditState extends State<EventEdit> {
               screenArguments['snapshot_img'],
               fit: BoxFit.cover,
               gaplessPlayback: true,
+              width: 100,
+              height: 100,
             ),
           ),
           Positioned(
@@ -2048,7 +2063,7 @@ class _EventEditState extends State<EventEdit> {
           height: height,
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(10.w, 10.h, 10.w, 10.h),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
