@@ -279,7 +279,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                                 if (subActivities3 != null) {
                                   subActivities2 = subActivities3;
                                   subActivities3 = null;
-                                } 
+                                }
 
                                 count--;
                                 showLimitNote = false;
@@ -394,7 +394,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
           },
           child: Container(
             height: 40.h,
-            width: 150.w,
+            width: 155.w,
             decoration: BoxDecoration(
                 color: AppColors.platinum.withOpacity(0.8),
                 border: Border.all(
@@ -404,20 +404,19 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
             child: Align(
               child: Stack(
                 children: <Widget>[
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
-                          child: Image.memory(
-                            base64.decode(badges.imgIcon.split(',').last),
-                            gaplessPlayback: true,
-                            width: 20,
-                            height: 20,
-                          ),
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 0, 0),
+                        child: Image.memory(
+                          base64.decode(badges.imgIcon.split(',').last),
+                          gaplessPlayback: true,
+                          width: 20,
+                          height: 20,
                         ),
-                        Padding(
+                      ),
+                      Expanded(
+                        child: Padding(
                           padding: const EdgeInsets.all(8),
                           child: FittedBox(
                             fit: BoxFit.fitWidth,
@@ -435,7 +434,10 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                             ),
                           ),
                         ),
-                        InkWell(
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 10.w),
+                        child: InkWell(
                             onTap: () {
                               setState(() {
                                 subActivities3 = null;
@@ -446,8 +448,8 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                             child: const Icon(
                               Icons.close_rounded,
                             )),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),

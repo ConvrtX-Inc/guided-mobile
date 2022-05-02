@@ -55,7 +55,7 @@ class AppTextStyle {
   static TextStyle blackStyle = TextStyle(
       color: Colors.black,
       fontFamily: AppTextConstants.fontGilroy,
-      fontSize: 14,
+      fontSize: 12.sp,
       fontWeight: FontWeight.w600);
 
   /// Returns date text style
@@ -63,24 +63,27 @@ class AppTextStyle {
       color: AppColors.osloGrey,
       fontFamily: AppTextConstants.fontGilroy,
       fontWeight: FontWeight.w200,
-      fontSize: 12);
+      fontSize: 12.sp);
 
   /// Returns default styling
   static TextStyle defaultStyle = TextStyle(
       color: Colors.black,
       fontWeight: FontWeight.w600,
+      fontSize: 12.sp,
       fontFamily: AppTextConstants.fontGilroy);
 
   /// Returns inactive styling
   static TextStyle inactive = TextStyle(
       color: AppColors.osloGrey,
       fontWeight: FontWeight.w600,
+      fontSize: 12.sp,
       fontFamily: AppTextConstants.fontGilroy);
 
   /// Returns default styling
   static TextStyle activeStyle = TextStyle(
       color: AppColors.deepGreen,
       fontWeight: FontWeight.w600,
+      fontSize: 12.sp,
       fontFamily: AppTextConstants.fontGilroy);
 
   /// Returns style button
@@ -147,11 +150,9 @@ class HeaderText {
       child: Text(
         text,
         style: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 24,
-          fontFamily: 'Gilroy'
-          // fontFamily: 'GilRoy',
-        ),
+            fontWeight: FontWeight.w600, fontSize: 24, fontFamily: 'Gilroy'
+            // fontFamily: 'GilRoy',
+            ),
       ),
     );
   }

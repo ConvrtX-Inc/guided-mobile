@@ -28,6 +28,12 @@ class SecureStorage {
       key: key,
       aOptions: const AndroidOptions(encryptedSharedPreferences: true),
     );
+
     return value!;
+  }
+
+  /// Clear storage
+  static Future<void> clearAll() async {
+    await _secureStorage.deleteAll();
   }
 }

@@ -18,6 +18,7 @@ import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/utils/mixins/validator_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:http/src/response.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 ///Setup stripe account
@@ -204,22 +205,37 @@ class _SetupStripeAccountState extends State<SetupStripeAccount> {
         'product_description': 'Provide tour services'
       });
 
-      final String setupStripeRes =
-          await APIServices().createStripeAccount(params);
+      final setupStripeResult = await APIServices().createStripeAccount(params);
 
-      final String onBoardAccountRes =
-          await APIServices().getOnboardAccountLink(setupStripeRes);
 
-      if (onBoardAccountRes.isNotEmpty) {
-        final ProfileDetailsModel _profileDetails = _profileDetailsController
-            .userProfileDetails
-          ..stripeAccountId = setupStripeRes;
-        _profileDetailsController.setUserProfileDetails(_profileDetails);
+
+      debugPrint('Response Body: ${setupStripeResult.statusCode}');
+
+      if (setupStripeResult.statusCode == 201) {
+        debugPrint('New Account ${setupStripeResult.body.toString()}');
+        final res =
+            await APIServices().getOnboardAccountLink(setupStripeResult.body.toString());
+
+        final onBoardAccountRes = json.decode(res.body);
+        debugPrint('Onboard Account REs $onBoardAccountRes');
+        if (res.statusCode == 201) {
+          final ProfileDetailsModel _profileDetails = _profileDetailsController
+              .userProfileDetails
+            ..stripeAccountId = setupStripeResult.body.toString();
+          _profileDetailsController.setUserProfileDetails(_profileDetails);
+          setState(() {
+            isSettingUpStripe = false;
+          });
+          await launch(onBoardAccountRes['url']);
+          Navigator.pop(context, setupStripeResult.body.toString());
+        }
+      } else {
+        final setupStripeResponseBody = jsonDecode(setupStripeResult.body);
+        // final String errorMessage = onBoardAccountRes['errors']['account'];
         setState(() {
           isSettingUpStripe = false;
         });
-        await launch(onBoardAccountRes);
-        Navigator.pop(context, setupStripeRes);
+        _showToast(context, setupStripeResponseBody['errors']['account']);
       }
     }
   }
@@ -253,6 +269,18 @@ class _SetupStripeAccountState extends State<SetupStripeAccount> {
     setState(() {
       _country = value;
     });
+  }
+
+  void _showToast(BuildContext context, String message) {
+    final ScaffoldMessengerState scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+            label: 'OK', onPressed: scaffold.hideCurrentSnackBar),
+      ),
+    );
   }
 
   /// Country code

@@ -98,7 +98,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   bool isLocationBtnClicked = false;
   late Future<BadgeModelData> _loadingData;
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
-  final String _storagePathOutfitterImg = 'outfitterImg';
+  final String _storagePathAdvertisementImg = 'advertisementImg';
   @override
   void initState() {
     super.initState();
@@ -156,7 +156,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(25),
+            padding: const EdgeInsets.all(5),
             child: Row(
               children: <Widget>[
                 Image.asset(
@@ -1106,7 +1106,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
             decoration: BoxDecoration(
               color: Colors.transparent,
               border: Border.all(
-                color: Colors.grey.shade300,
+                color: Colors.grey.shade400,
                 // width: 1.w,
               ),
               borderRadius: BorderRadius.circular(16.r),
@@ -1115,31 +1115,28 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Align(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          height: 50.h,
-                          child: ListView(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              children: <Widget>[
-                                if (subActivities1 == null)
-                                  SizedBox(
-                                    height: 100.h,
-                                  )
-                                else
-                                  _chosenSubActivities1(subActivities1),
-                                if (subActivities2 == null)
-                                  SizedBox(
-                                    height: 100.h,
-                                  )
-                                else
-                                  _chosenSubActivities2(subActivities2),
-                              ]),
-                        ),
+                      child: SizedBox(
+                        height: 50.h,
+                        child: ListView(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            children: <Widget>[
+                              if (subActivities1 == null)
+                                SizedBox(
+                                  height: 100.h,
+                                )
+                              else
+                                _chosenSubActivities1(subActivities1),
+                              if (subActivities2 == null)
+                                SizedBox(
+                                  height: 100.h,
+                                )
+                              else
+                                _chosenSubActivities2(subActivities2),
+                            ]),
                       ),
                     ),
                   ],
@@ -1163,7 +1160,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
               width: width,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
-                // child: _choicesGridSubActivity(),
                 child: FutureBuilder<BadgeModelData>(
                   future: _loadingData,
                   builder:
@@ -1238,13 +1234,14 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(badges.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 12.sp)),
                             ),
                           ),
                         ),
@@ -1264,8 +1261,6 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                                 if (subActivities3 != null) {
                                   subActivities2 = subActivities3;
                                   subActivities3 = null;
-                                } else {
-                                  subActivities2 = null;
                                 }
                                 count--;
                                 showLimitNote = false;
@@ -1322,13 +1317,14 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(badges.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 12.sp)),
                             ),
                           ),
                         ),
@@ -1377,7 +1373,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
           },
           child: Container(
             height: 40.h,
-            width: 140.w,
+            width: 155.w,
             decoration: BoxDecoration(
                 color: AppColors.platinum.withOpacity(0.8),
                 border: Border.all(
@@ -1398,15 +1394,18 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                           height: 20,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: SizedBox(
+                              height: 30.h,
+                              child: Align(
+                                child: Text(badges.name,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 12.sp)),
+                              ),
                             ),
                           ),
                         ),
@@ -1492,7 +1491,10 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(badges.name,
+          style: TextStyle(
+            fontSize: 12.sp,
+          )),
     );
   }
 
@@ -1532,7 +1534,10 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(badges.name,
+          style: TextStyle(
+            fontSize: 12.sp,
+          )),
     );
   }
 
@@ -1567,7 +1572,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
     String ImgUrl = '';
 
     ImgUrl = await FirebaseServices()
-        .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
+        .uploadImageToFirebase(image1!, _storagePathAdvertisementImg);
 
     final Map<String, dynamic> image = {
       'activity_advertisement_id': id,
@@ -1581,16 +1586,16 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
 
   Future<void> save2Image(String id) async {
     /// Save image to firebase
-    String coverImgUrl1 = '';
-    String coverImgUrl2 = '';
+    String ImgUrl1 = '';
+    String ImgUrl2 = '';
 
-    coverImgUrl1 = await FirebaseServices()
-        .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
-    coverImgUrl2 = await FirebaseServices()
-        .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
+    ImgUrl1 = await FirebaseServices()
+        .uploadImageToFirebase(image1!, _storagePathAdvertisementImg);
+    ImgUrl2 = await FirebaseServices()
+        .uploadImageToFirebase(image2!, _storagePathAdvertisementImg);
 
-    final ImageList objImg1 = ImageList(id: id, img: coverImgUrl1);
-    final ImageList objImg2 = ImageList(id: id, img: coverImgUrl2);
+    final ImageList objImg1 = ImageList(id: id, img: ImgUrl1);
+    final ImageList objImg2 = ImageList(id: id, img: ImgUrl2);
 
     final List<ImageList> list = [objImg1, objImg2];
 
@@ -1602,20 +1607,20 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
 
   Future<void> saveBulkImage(String id) async {
     /// Save image to firebase
-    String coverImgUrl1 = '';
-    String coverImgUrl2 = '';
-    String coverImgUrl3 = '';
+    String ImgUrl1 = '';
+    String ImgUrl2 = '';
+    String ImgUrl3 = '';
 
-    coverImgUrl1 = await FirebaseServices()
-        .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
-    coverImgUrl2 = await FirebaseServices()
-        .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
-    coverImgUrl3 = await FirebaseServices()
-        .uploadImageToFirebase(image3!, _storagePathOutfitterImg);
+    ImgUrl1 = await FirebaseServices()
+        .uploadImageToFirebase(image1!, _storagePathAdvertisementImg);
+    ImgUrl2 = await FirebaseServices()
+        .uploadImageToFirebase(image2!, _storagePathAdvertisementImg);
+    ImgUrl3 = await FirebaseServices()
+        .uploadImageToFirebase(image3!, _storagePathAdvertisementImg);
 
-    final ImageList objImg1 = ImageList(id: id, img: coverImgUrl1);
-    final ImageList objImg2 = ImageList(id: id, img: coverImgUrl2);
-    final ImageList objImg3 = ImageList(id: id, img: coverImgUrl3);
+    final ImageList objImg1 = ImageList(id: id, img: ImgUrl1);
+    final ImageList objImg2 = ImageList(id: id, img: ImgUrl2);
+    final ImageList objImg3 = ImageList(id: id, img: ImgUrl3);
 
     final List<ImageList> list = [objImg1, objImg2, objImg3];
 

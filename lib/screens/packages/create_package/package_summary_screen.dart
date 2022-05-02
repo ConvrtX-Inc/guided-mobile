@@ -157,7 +157,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(badges.name, style: TextStyle(fontSize: 12.sp)),
     );
   }
 
@@ -178,7 +178,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
             decoration: BoxDecoration(
               color: Colors.transparent,
               border: Border.all(
-                color: Color.fromARGB(255, 100, 17, 17),
+                color: Colors.grey,
                 width: 1.w,
               ),
               borderRadius: BorderRadius.circular(16.r),
@@ -195,10 +195,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                   )
                 else
                   Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(4),
                     child: SizedBox(
-                      width: 140.w,
-                      height: 100.h,
+                      width: 160.w,
                       child: _choicesMainActivity(mainActivity),
                     ),
                   ),
@@ -304,10 +303,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
               borderRadius: BorderRadius.circular(16.r),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Align(
                       child: SizedBox(
@@ -427,14 +425,16 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 13.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -454,8 +454,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                                 if (subActivities3 != null) {
                                   subActivities2 = subActivities3;
                                   subActivities3 = null;
-                                } else {
-                                  subActivities2 = null;
                                 }
                                 count--;
                                 showLimitNote = false;
@@ -512,14 +510,16 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 13.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -568,7 +568,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
           },
           child: Container(
             height: 40.h,
-            width: 130.w,
+            width: 155.w,
             decoration: BoxDecoration(
                 color: AppColors.platinum.withOpacity(0.8),
                 border: Border.all(
@@ -589,16 +589,20 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                           height: 20,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: SizedBox(
+                              height: 30.h,
+                              child: Align(
+                                child: Text(
+                                  badges.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 13.sp),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -681,7 +685,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(badges.name, style: TextStyle(fontSize: 12.sp)),
     );
   }
 
@@ -727,7 +731,10 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(fontSize: 12.sp),
+      ),
     );
   }
 

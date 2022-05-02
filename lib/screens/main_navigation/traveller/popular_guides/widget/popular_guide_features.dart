@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -121,22 +122,25 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                     details.basePrice,
                     details.mainBadgeId,
                     details.address,
-                    details.name);
+                    details.name,
+                    details.firebaseCoverImg);
               },
               child: Stack(children: <Widget>[
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 16, 16, 16),
+                  color: Colors.grey.shade100,
                   child: SizedBox(
                     height: 280.h,
                     width: MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10.r),
-                          child: Image.memory(
-                            base64.decode(details.coverImg.split(',').last),
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10.r),
+                        child: Positioned.fill(
+                          child: ExtendedImage.network(
+                            details.firebaseCoverImg,
+                            fit: BoxFit.cover,
                             gaplessPlayback: true,
-                          )),
-                    ),
+                          ),
+                        )),
                   ),
                 ),
                 Positioned(
@@ -159,20 +163,37 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                           details.basePrice,
                           details.mainBadgeId,
                           details.address,
-                          details.name);
+                          details.name,
+                          details.firebaseCoverImg);
                     },
-                    child: Container(
-                      height: 100.h,
-                      width: 70.w,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          image: DecorationImage(
-                            image: AssetImage(AssetsPath.pmessage3),
-                            fit: BoxFit.cover,
+                    child: widget._profileImg == ''
+                        ? Container(
+                            height: 100.h,
+                            width: 100.w,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: const DecorationImage(
+                                  image: NetworkImage(
+                                      'https://img.icons8.com/office/344/person-male.png'),
+                                  fit: BoxFit.fill,
+                                ),
+                                border: Border.all(
+                                    color: Colors.white, width: 4.w)),
+                          )
+                        : Container(
+                            height: 100.h,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                image: DecorationImage(
+                                    image: ExtendedImage.network(
+                                  widget._profileImg.toString(),
+                                  fit: BoxFit.cover,
+                                  gaplessPlayback: true,
+                                ).image),
+                                border: Border.all(
+                                    color: Colors.white, width: 4.w)),
                           ),
-                          borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                          border: Border.all(color: Colors.white, width: 4.w)),
-                    ),
                   ),
                 )
               ]),
@@ -242,7 +263,8 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                         details.basePrice,
                         details.mainBadgeId,
                         details.address,
-                        details.name);
+                        details.name,
+                        details.firebaseCoverImg);
                   },
                   child: Padding(
                     padding:
@@ -352,7 +374,8 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
       String price,
       String mainBadgeId,
       String address,
-      String packageName) async {
+      String packageName,
+      String firebaseCoverImg) async {
     List<String> splitSubBadge = [];
     final Map<String, dynamic> details = {
       'id': widget._id,
@@ -367,7 +390,8 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
       'package_id': packageId,
       'profile_img': AssetsPath.pmessage3,
       'package_name': packageName,
-      'is_first_aid': widget._isFirstAid
+      'is_first_aid': widget._isFirstAid,
+      'firebase_cover_img': firebaseCoverImg
     };
 
     await Navigator.pushNamed(context, '/popular_guides_view',

@@ -11,6 +11,7 @@ import 'package:guided/models/settings.dart';
 import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 import 'package:guided/screens/main_navigation/settings/widgets/settings_items.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
+import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/settings.dart';
 
@@ -124,13 +125,10 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                           width: MediaQuery.of(context).size.width,
                           height: 60.h,
                           child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute<dynamic>(
-                                    builder: (BuildContext context) =>
-                                        const LoginScreen(),
-                                  ));
+                            onPressed: () async {
+                              await SecureStorage.clearAll();
+                              await Navigator.of(context)
+                                  .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
                             },
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
