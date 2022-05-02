@@ -613,12 +613,8 @@ class APIServices {
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
         body: jsonEncode({
-          /*'latitude': '$latitude',
+          'latitude': '$latitude',
           'longitude': '$longitude',
-          'distance': '20'*/
-
-          'latitude': '53.59',
-          'longitude': '-113.60',
           'distance': '20'
         }),
         headers: headers);
