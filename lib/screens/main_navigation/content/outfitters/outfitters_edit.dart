@@ -20,6 +20,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -94,6 +95,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
   bool _isSubmit = false;
   late CountryModel _countryDropdown;
   late List<CountryModel> listCountry;
+  final String _storagePathOutfitterImg = 'outfitterImg';
   @override
   void initState() {
     super.initState();
@@ -1733,11 +1735,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
   Future<void> _3image(String id) async {
     if (_didClickedImage3) {
       if (image3 != null) {
-        final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
-        final String base64Image3 = base64Encode(await image3Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image3!, _storagePathOutfitterImg);
         final Map<String, dynamic> img3Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image3
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img3response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img3Id', RequestType.PATCH,
@@ -1751,11 +1757,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
     }
     if (_didClickedImage2) {
       if (image2 != null) {
-        final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-        final String base64Image2 = base64Encode(await image2Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
         final Map<String, dynamic> img2Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image2
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img2response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img2Id', RequestType.PATCH,
@@ -1769,11 +1779,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
     }
     if (_didClickedImage1) {
       if (image1 != null) {
-        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-        final String base64Image1 = base64Encode(await image1Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
         final Map<String, dynamic> img1Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image1
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img1response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.PATCH,
@@ -1789,11 +1803,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
 
   Future<void> _2image(String id) async {
     if (image3 != null) {
-      final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
-      final String base64Image3 = base64Encode(await image3Bytes);
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image3!, _storagePathOutfitterImg);
       final Map<String, dynamic> img3Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image3
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img3response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
@@ -1801,11 +1819,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
     }
     if (_didClickedImage2) {
       if (image2 != null) {
-        final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-        final String base64Image2 = base64Encode(await image2Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
         final Map<String, dynamic> img2Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image2
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img2response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img2Id', RequestType.PATCH,
@@ -1819,11 +1841,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
     }
     if (_didClickedImage1) {
       if (image1 != null) {
-        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-        final String base64Image1 = base64Encode(await image1Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
         final Map<String, dynamic> img1Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image1
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img1response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.PATCH,
@@ -1841,20 +1867,31 @@ class _OutfitterEditState extends State<OutfitterEdit>
     if (image3 != null) {
       final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
       final String base64Image3 = base64Encode(await image3Bytes);
+
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image3!, _storagePathOutfitterImg);
       final Map<String, dynamic> img3Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image3
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img3response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
           needAccessToken: true, data: img3Details);
     }
     if (image2 != null) {
-      final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-      final String base64Image2 = base64Encode(await image2Bytes);
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
       final Map<String, dynamic> img2Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image2
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img2response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
@@ -1862,11 +1899,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
     }
     if (_didClickedImage1) {
       if (image1 != null) {
-        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-        final String base64Image1 = base64Encode(await image1Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
         final Map<String, dynamic> img1Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image1
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img1response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.PATCH,
@@ -1882,33 +1923,45 @@ class _OutfitterEditState extends State<OutfitterEdit>
 
   Future<void> _0image(String id) async {
     if (image3 != null) {
-      final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
-      final String base64Image3 = base64Encode(await image3Bytes);
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image3!, _storagePathOutfitterImg);
       final Map<String, dynamic> img3Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image3
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img3response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
           needAccessToken: true, data: img3Details);
     }
     if (image2 != null) {
-      final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-      final String base64Image2 = base64Encode(await image2Bytes);
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
       final Map<String, dynamic> img2Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image2
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img2response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
           needAccessToken: true, data: img2Details);
     }
     if (image1 != null) {
-      final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-      final String base64Image1 = base64Encode(await image1Bytes);
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
       final Map<String, dynamic> img1Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image1
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img1response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
