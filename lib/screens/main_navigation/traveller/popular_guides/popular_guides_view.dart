@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/contained_tab_bar_view.dart';
@@ -11,10 +12,6 @@ import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/constants/asset_path.dart';
-import 'package:guided/models/badge_model.dart';
-import 'package:guided/screens/main_navigation/content/packages/tab/tab_description.dart';
-import 'package:guided/screens/main_navigation/content/packages/tab/tab_slots_and_schedule.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_description_tab.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_traveler_limit_schedules.dart';
@@ -118,7 +115,7 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                     child: Padding(
                       padding: EdgeInsets.zero,
                       child: Container(
-                        width: 30.w,
+                        width: 40.w,
                         height: 40.h,
                         padding: EdgeInsets.zero,
                         decoration: BoxDecoration(
@@ -146,7 +143,7 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                     child: Padding(
                       padding: EdgeInsets.zero,
                       child: Container(
-                        width: 30.w,
+                        width: 40.w,
                         height: 40.h,
                         padding: EdgeInsets.zero,
                         decoration: BoxDecoration(
@@ -169,10 +166,11 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                   ),
                 ],
               ),
-              flexibleSpace: Center(
-                child: Image.memory(
-                  base64.decode(screenArguments['image_url'].split(',').last),
+              flexibleSpace: Positioned.fill(
+                child: ExtendedImage.network(
+                  screenArguments['firebase_cover_img'],
                   gaplessPlayback: true,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -215,13 +213,18 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                       SizedBox(
                         width: 2.w,
                       ),
-                      Text(
-                        screenArguments['address'],
-                        style: TextStyle(
-                            fontFamily: 'Gilroy',
-                            fontWeight: FontWeight.w400,
-                            fontSize: 15.sp,
-                            color: AppColors.doveGrey),
+                      FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: SizedBox(
+                          child: Text(
+                            screenArguments['address'],
+                            style: TextStyle(
+                                fontFamily: 'Gilroy',
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12.sp,
+                                color: AppColors.doveGrey),
+                          ),
+                        ),
                       ),
                     ],
                   ),

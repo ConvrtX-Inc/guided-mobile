@@ -22,12 +22,10 @@ class PopularGuidesList extends StatefulWidget {
 }
 
 class _PopularGuidesListState extends State<PopularGuidesList> {
-  List<PopularGuideModel> listPopularGuide = [];
   late Future<List<User>> _loadingData;
   @override
   void initState() {
     super.initState();
-    listPopularGuide = HomeUtils.getPopularGuideNearYou();
     _loadingData = APIServices().getPopularGuides();
   }
 
@@ -98,7 +96,8 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
                                     return PopularGuideFeatures(
                                         id: snapshot.data![i].id,
                                         name: snapshot.data![i].fullName,
-                                        profileImg: '',
+                                        profileImg: snapshot
+                                            .data![i].firebaseProfilePicUrl,
                                         starRating: '0',
                                         isFirstAid: snapshot
                                             .data![i].isFirstAidTrained);

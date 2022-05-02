@@ -173,7 +173,7 @@ class _EventViewState extends State<EventView> {
                         child: Column(
                           children: <Widget>[
                             SizedBox(
-                              height: 110.h,
+                              height: 90.h,
                             ),
                             Image.memory(
                               base64.decode(badgeData.badgeDetails[0].imgIcon
@@ -189,7 +189,7 @@ class _EventViewState extends State<EventView> {
                       return Column(
                         children: <Widget>[
                           SizedBox(
-                            height: 110.h,
+                            height: 90.h,
                           ),
                           const SkeletonText(
                             height: 30,
@@ -484,33 +484,33 @@ class _EventViewState extends State<EventView> {
               SizedBox(
                 height: 10.h,
               ),
-              Padding(
-                padding: EdgeInsets.only(
-                    top: 20.h, bottom: 20.h, right: 25.w, left: 25.w),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: 60.h,
-                  child: ElevatedButton(
-                    // onPressed: () async => advertisementDetail(),
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: AppColors.primaryGreen,
-                        ),
-                        borderRadius: BorderRadius.circular(18.r),
-                      ),
-                      primary: Colors.white,
-                      onPrimary: AppColors.primaryGreen,
-                    ),
-                    child: Text(
-                      AppTextConstants.viewMore,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: EdgeInsets.only(
+              //       top: 20.h, bottom: 20.h, right: 25.w, left: 25.w),
+              //   child: SizedBox(
+              //     width: MediaQuery.of(context).size.width,
+              //     height: 60.h,
+              //     child: ElevatedButton(
+              //       // onPressed: () async => advertisementDetail(),
+              //       onPressed: () {},
+              //       style: ElevatedButton.styleFrom(
+              //         shape: RoundedRectangleBorder(
+              //           side: BorderSide(
+              //             color: AppColors.primaryGreen,
+              //           ),
+              //           borderRadius: BorderRadius.circular(18.r),
+              //         ),
+              //         primary: Colors.white,
+              //         onPrimary: AppColors.primaryGreen,
+              //       ),
+              //       child: Text(
+              //         AppTextConstants.viewMore,
+              //         style: const TextStyle(
+              //             fontWeight: FontWeight.bold, fontSize: 16),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

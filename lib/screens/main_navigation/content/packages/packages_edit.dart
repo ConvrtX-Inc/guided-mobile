@@ -168,7 +168,12 @@ class _PackageEditState extends State<PackageEdit> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(
+          fontSize: 12.sp,
+        ),
+      ),
     );
   }
 
@@ -189,7 +194,7 @@ class _PackageEditState extends State<PackageEdit> {
             decoration: BoxDecoration(
               color: Colors.transparent,
               border: Border.all(
-                color: Color.fromARGB(255, 100, 17, 17),
+                color: Colors.grey.shade400,
                 width: 1.w,
               ),
               borderRadius: BorderRadius.circular(16.r),
@@ -206,15 +211,14 @@ class _PackageEditState extends State<PackageEdit> {
                   )
                 else
                   Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(4),
                     child: SizedBox(
-                      width: 140.w,
-                      height: 100.h,
+                      width: 160.w,
                       child: _choicesMainActivity(mainActivity),
                     ),
                   ),
                 SizedBox(
-                  width: 90.w,
+                  width: 80.w,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
@@ -247,6 +251,7 @@ class _PackageEditState extends State<PackageEdit> {
             elevation: 5,
             borderRadius: BorderRadius.circular(12.r),
             child: SizedBox(
+              height: 200.h,
               width: width,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
@@ -318,10 +323,9 @@ class _PackageEditState extends State<PackageEdit> {
               borderRadius: BorderRadius.circular(16.r),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Align(
                       child: SizedBox(
@@ -441,14 +445,16 @@ class _PackageEditState extends State<PackageEdit> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -468,8 +474,6 @@ class _PackageEditState extends State<PackageEdit> {
                                 if (subActivities3 != null) {
                                   subActivities2 = subActivities3;
                                   subActivities3 = null;
-                                } else {
-                                  subActivities2 = null;
                                 }
                                 count--;
                                 showLimitNote = false;
@@ -526,14 +530,16 @@ class _PackageEditState extends State<PackageEdit> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -582,7 +588,7 @@ class _PackageEditState extends State<PackageEdit> {
           },
           child: Container(
             height: 40.h,
-            width: 140.w,
+            width: 155.w,
             decoration: BoxDecoration(
                 color: AppColors.platinum.withOpacity(0.8),
                 border: Border.all(
@@ -603,16 +609,20 @@ class _PackageEditState extends State<PackageEdit> {
                           height: 20,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: SizedBox(
+                              height: 30.h,
+                              child: Align(
+                                child: Text(
+                                  badges.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 12.sp),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -692,7 +702,10 @@ class _PackageEditState extends State<PackageEdit> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(fontSize: 12.sp),
+      ),
     );
   }
 
@@ -738,7 +751,10 @@ class _PackageEditState extends State<PackageEdit> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(fontSize: 12.sp),
+      ),
     );
   }
 
@@ -992,6 +1008,8 @@ class _PackageEditState extends State<PackageEdit> {
                 screenArguments['image_url'],
                 fit: BoxFit.cover,
                 gaplessPlayback: true,
+                width: 100,
+                height: 100,
               )),
           Positioned(
               right: 0,
@@ -1090,7 +1108,6 @@ class _PackageEditState extends State<PackageEdit> {
                             final int length = badgeData.badgeDetails.length;
                             return ListTile(
                               onTap: () {},
-                              minLeadingWidth: 20,
                               leading: Image.memory(
                                 base64.decode(badgeData.badgeDetails[0].imgIcon
                                     .split(',')
@@ -1840,7 +1857,7 @@ class _PackageEditState extends State<PackageEdit> {
           height: height,
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -1950,8 +1967,7 @@ class _PackageEditState extends State<PackageEdit> {
       /// Save image to firebase
       String coverImgUrl = '';
       if (image1 == null) {
-        coverImgUrl = await FirebaseServices().uploadImageToFirebase(
-            screenArguments['image_url']!, _storagePathCoverImg);
+        coverImgUrl = screenArguments['image_url'];
       } else {
         coverImgUrl = await FirebaseServices()
             .uploadImageToFirebase(image1!, _storagePathCoverImg);

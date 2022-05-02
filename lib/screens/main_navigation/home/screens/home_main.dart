@@ -1,4 +1,4 @@
-// ignore_for_file: no_default_cases, always_specify_types, avoid_dynamic_calls, use_string_buffers, type_annotate_public_apis, always_declare_return_types
+// ignore_for_file: no_default_cases, always_specify_types, avoid_dynamic_calls, use_string_buffers, type_annotate_public_apis, always_declare_return_types, cascade_invocations
 
 import 'dart:convert';
 import 'dart:math';
@@ -688,11 +688,6 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
         String? concatStrings = '';
         if (snapshot.hasData) {
-          // for (int i = 0; i < 3; i++) {
-          //   concatStrings = '$concatStrings${snapshot.data!.firstName}, ';
-          // }
-          // concatStrings = concatStrings.substring(0, concatStrings.length - 2);
-
           concatStrings = '${snapshot.data!.firstName}';
           if (index < 3) {
             if (index == 2) {
@@ -710,47 +705,6 @@ class _HomeScreenState extends State<HomeScreen>
             }
           }
         }
-        // if (snapshot.hasData) {
-        //   for (int i = 0; i < 3; i++) {
-        //     concatStrings = '$concatStrings${snapshot.data!.firstName}, ';
-        //   }
-        //   concatStrings = concatStrings.substring(0, concatStrings.length - 2);
-
-        //   return Align(
-        //     alignment: index == 0
-        //         ? Alignment.centerRight
-        //         : (index == 1 ? Alignment.center : Alignment.centerRight),
-        //     child: Container(
-        //       decoration: BoxDecoration(
-        //         color: Colors.white,
-        //         shape: BoxShape.circle,
-        //         boxShadow: <BoxShadow>[
-        //           BoxShadow(
-        //               blurRadius: 5,
-        //               color: Colors.black.withOpacity(0.3),
-        //               spreadRadius: 3)
-        //         ],
-        //       ),
-        //       child: CircleAvatar(
-        //         backgroundColor: Colors.white,
-        //         child: Container(
-        //           height: 10.h,
-        //           width: 10.w,
-        //           decoration: BoxDecoration(
-        //               color: Colors.white,
-        //               image: DecorationImage(
-        //                   image: Image.memory(
-        //                 base64.decode(request.profilePhoto!.split(',').last),
-        //                 fit: BoxFit.cover,
-        //                 gaplessPlayback: true,
-        //               ).image),
-        //               borderRadius: BorderRadius.all(Radius.circular(50.r)),
-        //               border: Border.all(color: Colors.red, width: 4.w)),
-        //         ),
-        //       ),
-        //     ),
-        //   );
-        // }
         if (snapshot.connectionState != ConnectionState.done) {
           return const Align(
               alignment: Alignment.topLeft, child: CircularProgressIndicator());

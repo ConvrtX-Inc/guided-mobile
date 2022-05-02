@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_null_comparison
 import 'dart:convert';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -103,20 +104,11 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
                           title: imageDetails.activityAdvertisementId != null
                               ? SizedBox(
                                   height: 200.h,
-                                  child: Image.network(
+                                  child: ExtendedImage.network(
                                     imageDetails.firebaseImg,
-                                    loadingBuilder: (BuildContext context,
-                                            Widget child,
-                                            ImageChunkEvent? loadingProgress) =>
-                                        const SkeletonText(
-                                      height: 100,
-                                      width: 500,
-                                      radius: 10,
-                                    ),
                                     fit: BoxFit.cover,
                                     gaplessPlayback: true,
-                                  ),
-                                )
+                                  ))
                               : Container(
                                   height: 10.h,
                                   decoration:

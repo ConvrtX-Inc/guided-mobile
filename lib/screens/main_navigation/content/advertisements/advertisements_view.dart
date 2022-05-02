@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
@@ -156,15 +157,8 @@ class _AdvertisementViewState extends State<AdvertisementView> {
               ],
             ),
             flexibleSpace: screenArguments['snapshot_img'] != ''
-                ? Image.network(
+                ? ExtendedImage.network(
                     screenArguments['snapshot_img'],
-                    loadingBuilder: (BuildContext context, Widget child,
-                            ImageChunkEvent? loadingProgress) =>
-                        const SkeletonText(
-                      height: 100,
-                      width: 500,
-                      radius: 10,
-                    ),
                     fit: BoxFit.cover,
                     gaplessPlayback: true,
                   )
