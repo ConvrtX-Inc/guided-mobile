@@ -1,4 +1,4 @@
-// ignore_for_file: use_raw_strings
+// ignore_for_file: use_raw_strings, always_put_required_named_parameters_first, diagnostic_describe_all_properties, public_member_api_docs
 
 import 'dart:convert';
 
@@ -283,13 +283,18 @@ class _PopularGuidesTabDescriptionState
                   SizedBox(
                     width: 2.w,
                   ),
-                  Text(
-                    widget.address,
-                    style: TextStyle(
-                        fontFamily: 'Gilroy',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15.sp,
-                        color: AppColors.doveGrey),
+                  FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: SizedBox(
+                      child: Text(
+                        widget.address,
+                        style: TextStyle(
+                            fontFamily: 'Gilroy',
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12.sp,
+                            color: AppColors.doveGrey),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -981,7 +986,7 @@ class _PopularGuidesTabDescriptionState
             ),
             Positioned(
               bottom: 8,
-              right: -20,
+              right: -10,
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,

@@ -84,5 +84,5 @@ class PackageDetailsModel {
         currencyId = parseJson['currency_id'],
         priceNote = parseJson['price_note'],
         isPublished = parseJson['is_published'],
-        firebaseCoverImg = parseJson['firebase_cover_img'];
+        firebaseCoverImg = parseJson['firebase_cover_img'] ?? '';
 }
