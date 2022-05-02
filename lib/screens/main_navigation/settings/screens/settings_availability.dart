@@ -1,35 +1,28 @@
-import 'package:advance_notification/advance_notification.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/constants/api_path.dart';
-import 'package:guided/constants/app_colors.dart';
-import 'package:guided/constants/app_texts.dart';
-import 'package:guided/models/user_model.dart';
-import 'package:guided/screens/main_navigation/main_navigation.dart';
-import 'package:guided/screens/main_navigation/settings/screens/settings_main.dart';
-import 'package:guided/utils/services/rest_api_service.dart';
-import 'package:guided/utils/secure_storage.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// ignore_for_file: cascade_invocations, library_prefixes, always_specify_types
 
-import 'package:guided/models/activity_package.dart';
-import 'package:guided/models/popular_guide.dart';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_list.dart';
+import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/constants/app_texts.dart';
+import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/availability_controller.dart';
+import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/settings_availability.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
+import 'package:in_date_utils/in_date_utils.dart' as Indate;
+import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
-import 'package:card_swiper/card_swiper.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:guided/controller/availability_controller.dart';
-import 'package:guided/constants/asset_path.dart';
-import 'package:guided/helpers/hexColor.dart';
-import 'package:guided/constants/app_list.dart';
-import 'package:badges/badges.dart';
-import 'package:guided/utils/services/static_data_services.dart';
-import 'package:guided/constants/app_text_style.dart';
-import 'package:intl/intl.dart';
-import 'package:in_date_utils/in_date_utils.dart' as Indate;
+
+import '../../../../utils/services/rest_api_service.dart';
 
 /// Screen for settings contact us
 class SettingsAvailability extends StatefulWidget {
@@ -41,35 +34,73 @@ class SettingsAvailability extends StatefulWidget {
 }
 
 class _SettingsAvailability extends State<SettingsAvailability> {
+  final User? user = UserSingleton.instance.user.user;
 
   bool _isActive = true;
+  String availabilityId = '';
+  bool isLoading = true;
   DateTime _selDate = DateTime.now();
-
-  final TextEditingController _message = TextEditingController();
-  final FocusNode _messageFocus = FocusNode();
+  final TextEditingController _reasonController = TextEditingController();
+  final FocusNode _reasonFocus = FocusNode();
+  final DateRangePickerController _dateController = DateRangePickerController();
 
   int selectedmonth = 0;
   final ScrollToIndexController _scrollController = ScrollToIndexController();
-  final availabilityController = Get.put(AvailabilityController());
-  final SwiperController _cardController = SwiperController();
+  final AvailabilityController availabilityController = Get.put(AvailabilityController());
 
   var result;
   @override
   void initState() {
+    getSettingsAvailability();
+    super.initState();
+  }
+
+  Future<void> getSettingsAvailability() async {
+    setState(() => isLoading = true);
+    final SettingsAvailabilityModel res = await APIServices().getSettingsAvailability();
+    print('hello world from screen $res');
+
+
+    availabilityController.setSelectedDate(DateTime.parse(res.returnDate!).toString());
+    _reasonController.text = res.reason!;
+    setState(() {
+      _isActive = res.isAvailable!;
+      _selDate = DateTime.parse(res.returnDate!);
+      availabilityId = res.id!;
+    });
+    print('first load date $_selDate');
+
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
       _initData();
     });
-    super.initState();
+
+    setState(() => isLoading = false);
+  }
+
+  Future<void> toggleUpdateStatus(String id) async {
+    setState(() => isLoading = true);
+    final SettingsAvailabilityModel res = await APIServices().updateSettingsAvailability(
+        _isActive, _reasonController.text, _selDate, id);
+
+    availabilityController.setSelectedDate(DateTime.parse(res.returnDate!).toString());
+    setState(() {
+      _selDate = DateTime.parse(res.returnDate!);
+    });
+
+    print('seldate $_selDate');
+
+    _initData();
+
+    setState(() => isLoading = false);
   }
 
   void _initData() {
       final RxString _currentDate = _selDate.toString().obs;
       final DateTime dt = DateTime.parse(_currentDate.value);
-      final int mon = dt.month;
       availabilityController.setSelectedDate(_currentDate.value.toString());
       availabilityController.setIndexMonth(dt.month);
 
-      DateTime currentDate =
+      final DateTime currentDate =
           DateTime.parse(_currentDate.value);
 
       final DateTime defaultDate = DateTime(currentDate.year, currentDate.month,
@@ -79,18 +110,16 @@ class _SettingsAvailability extends State<SettingsAvailability> {
         defaultDate.toString(),
       );
 
-      print(availabilityController.selectedDate);
   }
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    print(args.value);
     setState(() {
       if (args.value is DateTime) {
+        print('date test ${args.value}');
         _selDate = args.value;
       }
     });
     availabilityController.setSelectedDate(_selDate.toString());
-    print(_selDate);
   }
 
   @override
@@ -124,7 +153,9 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                       ),
                     ),
                   ),
-                  Align(
+                  Column(
+                    children: isLoading == false ? [
+                      Align(
                     alignment: Alignment.centerLeft,
                       child: SizedBox(
                       // width: double.maxFinite, // set width to maxFinite
@@ -145,7 +176,7 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(_isActive ? 'Set yourself as unavailable' : 'Set yourself as available',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.black
@@ -153,17 +184,18 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                   textAlign: TextAlign.left
                                 ),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: Switch(
                                   value: _isActive,
-                                  activeColor: Color(0xFF00C853),
+                                  activeColor: const Color(0xFF00C853),
                                   onChanged: (bool value) {
                                     setState(() {
                                       _isActive = value;
+                                      print('value $value');
+                                      toggleUpdateStatus(availabilityId);
                                     });
-                                    print('_isActive $_isActive');
                                   }
                                 ),
                               ),
@@ -179,8 +211,8 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                     child: Visibility(
                       visible: _isActive ? false : true,
                       child: TextField(
-                        controller: _message,
-                        focusNode: _messageFocus,
+                        controller: _reasonController,
+                        focusNode: _reasonFocus,
                         minLines:
                             6, // any number you need (It works as the rows for the textarea)
                         keyboardType: TextInputType.multiline,
@@ -209,7 +241,7 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                           child: OutlinedButton(
                               style: ButtonStyle(
                                   padding: MaterialStateProperty.all<EdgeInsets>(
-                                      const EdgeInsets.all(20)),
+                                      const EdgeInsets.all(26)),
                                   backgroundColor: MaterialStateProperty.all<Color>(
                                       AppColors.dirtyWhite),
                                   shape: MaterialStateProperty.all<
@@ -221,7 +253,7 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                   Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(AppTextConstants.returnDate,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
                                         color: Colors.black,
@@ -229,13 +261,12 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                       textAlign: TextAlign.left
                                     ),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: Visibility(
-                                      visible: true,
                                       child: Text(DateFormat('dd MMMM yyyy').format(_selDate),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         // fontWeight: FontWeight.w700,
                                         color: Colors.grey,
@@ -331,7 +362,7 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                                             availabilityController
                                                                 .setIndexMonth(
                                                                     index + 1);
-                                                            DateTime dt = DateTime.parse(
+                                                            final DateTime dt = DateTime.parse(
                                                                 availabilityController
                                                                     .currentDate);
 
@@ -354,7 +385,6 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                                                     plustMonth.hour,
                                                                     plustMonth
                                                                         .minute);
-                                                            print(setLastday);
                                                             availabilityController
                                                                 .setCurrentMonth(
                                                               setLastday.toString(),
@@ -364,9 +394,6 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                                             () => Stack(
                                                               children: <Widget>[
                                                                 Align(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
                                                                   child: Container(
                                                                     margin: EdgeInsets
                                                                         .fromLTRB(
@@ -392,9 +419,7 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                                                                     ? HexColor(
                                                                                         '#FFC74A')
                                                                                     : HexColor(
-                                                                                        '#C4C4C4'),
-                                                                                width:
-                                                                                    1),
+                                                                                        '#C4C4C4')),
                                                                             color: index ==
                                                                                     availabilityController.selectedMonth - 1
                                                                                 ? HexColor('#FFC74A')
@@ -454,9 +479,12 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                                         padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
                                                         height: MediaQuery.of(context).size.height * 0.4,
                                                         child: SfDateRangePicker(
+                                                            enablePastDates: false,
+                                                          controller: _dateController,
                                                           minDate: DateTime.parse(availabilityController.currentDate),
                                                           maxDate: Indate.DateUtils.lastDayOfMonth(DateTime.parse(availabilityController.currentDate)),
                                                           initialDisplayDate: DateTime.parse(_selDate.toString()),
+                                                            initialSelectedDate: DateTime.parse(_selDate.toString()),
                                                           navigationMode: DateRangePickerNavigationMode.none,
                                                           monthViewSettings: const DateRangePickerMonthViewSettings(
                                                             dayFormat: 'E',
@@ -473,7 +501,6 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                                           selectionColor: HexColor('#FFC74A'),
                                                           todayHighlightColor: HexColor('#FFC74A'),
                                                           headerHeight: 0,
-                                                          selectionMode: DateRangePickerSelectionMode.single,
                                                           onSelectionChanged: _onSelectionChanged
                                                         ),
                                                       )
@@ -487,8 +514,9 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                               height: 54.h,
                                               child: ElevatedButton(
                                                 onPressed: () {
+                                                  print(UserSingleton.instance.user.user?.id);
+                                                  toggleUpdateStatus(availabilityId);
                                                   Navigator.pop(context);
-                                                  print(_selDate);
                                                 },
                                                 style: AppTextStyle.activeGreen,
                                                 child: const Text(
@@ -522,6 +550,17 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                         )
                       ),
                     ),
+                  )
+                  ] : [ Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                            child: CircularProgressIndicator(),
+                          )
+                        ],
+                      ),
+                    ] ,
                   ),
                 ],
               ),
@@ -529,4 +568,14 @@ class _SettingsAvailability extends State<SettingsAvailability> {
           ),
         ));
   }
-} 
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty('selectedmonth', selectedmonth));
+    properties.add(DiagnosticsProperty<AvailabilityController>('availabilityController', availabilityController));
+    properties.add(DiagnosticsProperty('result', result));
+    properties.add(DiagnosticsProperty<User?>('user', user));
+    properties.add(StringProperty('availabilityId', availabilityId));
+    properties.add(DiagnosticsProperty<bool>('isLoading', isLoading));
+  }
+}
