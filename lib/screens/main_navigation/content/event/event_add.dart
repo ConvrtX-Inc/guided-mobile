@@ -269,7 +269,6 @@ class _EventAddState extends State<EventAdd> {
                     padding: const EdgeInsets.all(4),
                     child: SizedBox(
                       width: 160.w,
-                      height: 100.h,
                       child: _choicesMainActivity(mainActivity),
                     ),
                   ),

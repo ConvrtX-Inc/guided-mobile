@@ -170,10 +170,9 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
               borderRadius: BorderRadius.circular(16.r),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Align(
                       child: SizedBox(

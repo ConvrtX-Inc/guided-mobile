@@ -211,10 +211,9 @@ class _PackageEditState extends State<PackageEdit> {
                   )
                 else
                   Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(4),
                     child: SizedBox(
                       width: 160.w,
-                      height: 100.h,
                       child: _choicesMainActivity(mainActivity),
                     ),
                   ),
@@ -324,10 +323,9 @@ class _PackageEditState extends State<PackageEdit> {
               borderRadius: BorderRadius.circular(16.r),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Align(
                       child: SizedBox(
@@ -611,17 +609,19 @@ class _PackageEditState extends State<PackageEdit> {
                           height: 20,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: FittedBox(
-                          fit: BoxFit.fitWidth,
-                          child: SizedBox(
-                            height: 30.h,
-                            child: Align(
-                              child: Text(
-                                badges.name,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 12.sp),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: SizedBox(
+                              height: 30.h,
+                              child: Align(
+                                child: Text(
+                                  badges.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 12.sp),
+                                ),
                               ),
                             ),
                           ),

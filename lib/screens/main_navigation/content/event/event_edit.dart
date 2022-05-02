@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
 import 'package:extended_image/extended_image.dart';
@@ -12,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:guided/common/widgets/country_dropdown.dart';
 import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/api_path.dart';
@@ -23,10 +21,8 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
-import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
-import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -230,10 +226,9 @@ class _EventEditState extends State<EventEdit> {
                   )
                 else
                   Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(4),
                     child: SizedBox(
                       width: 160.w,
-                      height: 100.h,
                       child: _choicesMainActivity(mainActivity),
                     ),
                   ),
@@ -347,10 +342,9 @@ class _EventEditState extends State<EventEdit> {
               borderRadius: BorderRadius.circular(16.r),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Align(
                       child: Padding(
@@ -641,17 +635,19 @@ class _EventEditState extends State<EventEdit> {
                           height: 20,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: FittedBox(
-                          fit: BoxFit.fitWidth,
-                          child: SizedBox(
-                            height: 30.h,
-                            child: Align(
-                              child: Text(
-                                badges.name,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 12.sp),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: SizedBox(
+                              height: 30.h,
+                              child: Align(
+                                child: Text(
+                                  badges.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 12.sp),
+                                ),
                               ),
                             ),
                           ),

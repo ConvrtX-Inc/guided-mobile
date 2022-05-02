@@ -233,7 +233,7 @@ class _PackageViewState extends State<PackageView>
                           child: Column(
                             children: <Widget>[
                               SizedBox(
-                                height: 110.h,
+                                height: 90.h,
                               ),
                               Image.memory(
                                 base64.decode(badgeData.badgeDetails[0].imgIcon
@@ -251,9 +251,13 @@ class _PackageViewState extends State<PackageView>
                           child: Column(
                             children: <Widget>[
                               SizedBox(
-                                height: 110.h,
+                                height: 90.h,
                               ),
-                              const CircularProgressIndicator(),
+                              const SkeletonText(
+                                height: 30,
+                                width: 30,
+                                shape: BoxShape.circle,
+                              ),
                             ],
                           ),
                         );
