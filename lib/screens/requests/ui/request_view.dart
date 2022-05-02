@@ -13,9 +13,11 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../models/activity_package.dart';
 import '../../../models/booking_request.dart';
@@ -47,22 +49,35 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
   UserTransaction transactionDetails = UserTransaction();
 
   final UserProfileDetailsController _profileDetailsController =
-  Get.put(UserProfileDetailsController());
+      Get.put(UserProfileDetailsController());
 
   bool isAccepted = false;
 
+  String stripeAcctId = '';
+
+  List<BankAccountModel> bankAccounts = [];
+
+
+  String requestStatus = '';
+
   @override
   void initState() {
-
     super.initState();
+    getBankAccounts();
   }
 
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> screenArguments =
-    ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
+        ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
     bookingRequest = screenArguments['bookingRequest'] as BookingRequest;
     travellerDetails = screenArguments['traveller'] as User;
+
+    stripeAcctId = _profileDetailsController.userProfileDetails.stripeAccountId;
+
+    debugPrint('Stripe Account id $stripeAcctId');
+
+    requestStatus = bookingRequest.status!.statusName!;
 
     //
     // getBookingPaymentIntentId(bookingRequest.id!);
@@ -333,7 +348,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                     SizedBox(
                       height: 40.h,
                     ),
-               /*     Center(
+                    /*     Center(
                       child: SizedBox(
                         width: 315.w,
                         child: ElevatedButton(
@@ -358,39 +373,54 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                         ),
                       ),
                     ),*/
-                    CustomRoundedButton(title: AppTextConstants.acceptRequest, onpressed: () {
-                      chargePayment();
-                    }, isLoading: isLoading, isEnabled: isAccepted ? false : true),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Center(
-                      child: SizedBox(
-                        width: 315.w,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                              padding: MaterialStateProperty.all<EdgeInsets>(
-                                  const EdgeInsets.all(20)),
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  HexColor('#F9F9F9')),
-                              shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18.r),
-                              ))),
-                          child: Text(
-                            AppTextConstants.rejectRequest,
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontFamily: 'Gilroy',
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
+                    if (requestStatus.toLowerCase() ==
+                        'pending')
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          CustomRoundedButton(
+                              title: AppTextConstants.acceptRequest,
+                              onpressed: () {
+                                chargePayment();
+                              },
+                              isLoading: isLoading,
+                              isEnabled: isAccepted ? false : true),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Center(
+                            child: SizedBox(
+                              width: 315.w,
+                              child: ElevatedButton(
+                                style: ButtonStyle(
+                                    padding:
+                                        MaterialStateProperty.all<EdgeInsets>(
+                                            const EdgeInsets.all(20)),
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            HexColor('#F9F9F9')),
+                                    shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18.r),
+                                    ))),
+                                child: Text(
+                                  AppTextConstants.rejectRequest,
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontFamily: 'Gilroy',
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  showRejectDialog(context,bookingRequest.id!);
+                                },
+                              ),
                             ),
                           ),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ),
+                        ],
+                      )
                   ],
                 ),
               );
@@ -408,8 +438,6 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
   Future<void> getBookingPaymentIntentId(String bookingRequestId) async {
     final result = await APIServices().getPaymentIntentId(bookingRequestId);
 
-    debugPrint(
-        "Result ${result['stripe_payment_intent_id']} ${result['stripe_payment_method_id']}");
     await getUserDetails(result['user_id']);
     setState(() {
       paymentIntentId = result['stripe_payment_intent_id'];
@@ -419,27 +447,49 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
   }
 
   Future<void> chargePayment() async {
-    setState(() {
-      isLoading = true;
-    });
+    debugPrint('Booking request id ${bookingRequest.id!}');
 
-    await getBookingPaymentIntentId(bookingRequest.id!);
-    await getBookingTransaction(bookingRequest.activityPackageId!,
-        travellerDetails.id!);
-    final String paymentIntent = await createTransferPaymentIntent();
+    if (stripeAcctId.isNotEmpty) {
+      final List<BankAccountModel> bankAccountsResult =
+          await APIServices().getUserBankAccounts();
 
-    if (paymentIntent.isNotEmpty) {
-      final paymentRes = await APIServices()
-          .chargeBookingPayment(paymentIntent, paymentMethodId);
-
-      if (paymentRes != '') {
-        debugPrint('Payment Accepted! $paymentRes');
+      if (bankAccountsResult.isEmpty) {
+        await _showAddBankAccountDialog(context);
+      } else {
         setState(() {
-          isLoading = false;
-          isAccepted = true;
+          isLoading = true;
         });
-        await _showDialog(context);
+        await getBookingPaymentIntentId(bookingRequest.id!);
+        await getBookingTransaction(
+            bookingRequest.activityPackageId!, travellerDetails.id!);
+        final String paymentIntent = await createTransferPaymentIntent();
+
+        if (paymentIntent.isNotEmpty) {
+          final paymentRes = await APIServices()
+              .chargeBookingPayment(paymentIntent, paymentMethodId);
+
+          if (paymentRes != '') {
+            await APIServices().approveBookingRequest(bookingRequest.id!);
+
+
+
+            setState(() {
+              isLoading = false;
+              isAccepted = true;
+              requestStatus = 'Completed';
+            });
+            await _showDialog(context,'Booking Request Accepted!');
+          }
+        } else {
+          debugPrint('Payment Unsuccessful!');
+          setState(() {
+            isLoading = false;
+          });
+          await _showCompleteSetupStripeDialog(context);
+        }
       }
+    } else {
+      await _showSetupStripeDialog(context);
     }
   }
 
@@ -471,10 +521,12 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
         0,
         fromUser.email!);
 
+    debugPrint('Payment intent_ $res');
+
     return res;
   }
 
-  Future<void> _showDialog(BuildContext context) async {
+  Future<void> _showDialog(BuildContext context,String message) async {
     await showDialog(
         context: context,
         builder: (BuildContext ctx) {
@@ -483,40 +535,324 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                 borderRadius: BorderRadius.all(Radius.circular(22.r))),
             elevation: 12,
             content: SizedBox(
-                 child: Column(
-                   mainAxisAlignment: MainAxisAlignment.center,
-                   mainAxisSize: MainAxisSize.min,
-
-                  children: <Widget>[
-
-                    Center(
-                      child: Container(
-                        child: Text(
-                           'Booking Request Accepted!',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 14.sp)),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                    Center(
-                        child: CustomRoundedButton(
-                          title: 'Ok',
-                          onpressed: () {
-                            int count = 0;
-                            Navigator.popUntil(context, (route) {
-                              return count++ == 2;
-                            });
-                          },
-                          buttonHeight: 40.h,
-                          buttonWidth: 120.w,
-                        ))
-                  ],
-                )),
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Center(
+                  child: Container(
+                    child: Text(message,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 14.sp)),
+                  ),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Center(
+                    child: CustomRoundedButton(
+                  title: 'Ok',
+                  onpressed: () {
+                    int count = 0;
+                    Navigator.popUntil(context, (route) {
+                      return count++ == 2;
+                    });
+                  },
+                  buttonHeight: 40.h,
+                  buttonWidth: 120.w,
+                ))
+              ],
+            )),
           );
         });
   }
 
+  Future<void> _showSetupStripeDialog(BuildContext context) async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(22.r))),
+            elevation: 12,
+            title: Text('Setup Stripe Account',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp)),
+            content: SizedBox(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  child: Text(
+                      // 'Please setup your Stripe Account to Process the Payment for this Booking Request',
+                      AppTextConstants.setupStripeInfo,
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500, fontSize: 16.sp)),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Center(
+                    child: CustomRoundedButton(
+                  title: 'Setup Stripe',
+                  onpressed: () async {
+                    Navigator.of(context).pop();
+                    final dynamic result = await Navigator.of(context)
+                        .pushNamed('/setup_stripe_account');
+                    if (result != null) {
+                      setState(() {
+                        stripeAcctId = result;
+                      });
+                    }
+                  },
+                  buttonHeight: 40.h,
+                  buttonWidth: 120.w,
+                )),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Center(
+                    child: TextButton(
+                  child:
+                      Text('Cancel', style: TextStyle(color: AppColors.grey)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ))
+              ],
+            )),
+          );
+        });
+  }
 
+  Future<void> _showCompleteSetupStripeDialog(BuildContext context) async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(22.r))),
+            elevation: 12,
+            title: Text('Complete Stripe Account Details',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp)),
+            content: SizedBox(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  child: Text(
+                      'Unable to process payment. Please complete your Stripe Account Details first.',
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500, fontSize: 16.sp)),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Center(
+                    child: CustomRoundedButton(
+                  title: 'Complete Stripe Account',
+                  onpressed: () {
+                    Navigator.pop(context);
+                    completeStripeAccountDetails();
+                  },
+                )),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Center(
+                    child: TextButton(
+                  child:
+                      Text('Cancel', style: TextStyle(color: AppColors.grey)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ))
+              ],
+            )),
+          );
+        });
+  }
+
+  Future<void> _showAddBankAccountDialog(BuildContext context) async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(22.r))),
+            elevation: 12,
+            title: Text('No Bank Account Added',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp)),
+            content: SizedBox(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  child: Text(
+                      'Please add your bank account to receive payments.',
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500, fontSize: 16.sp)),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Center(
+                    child: CustomRoundedButton(
+                  title: 'Add Bank Account',
+                  onpressed: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).pushNamed('/add_bank_account');
+                  },
+                )),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Center(
+                    child: TextButton(
+                  child:
+                      Text('Cancel', style: TextStyle(color: AppColors.grey)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ))
+              ],
+            )),
+          );
+        });
+  }
+
+  Future<void> completeStripeAccountDetails() async {
+    final res = await APIServices().getOnboardAccountLink(stripeAcctId);
+
+    final onBoardAccountRes = json.decode(res.body);
+    if (onBoardAccountRes['url'].isNotEmpty) {
+      Navigator.pop(context);
+      await launch(onBoardAccountRes['url']);
+    }
+  }
+
+  Future<void> getBankAccounts() async {
+    final List<BankAccountModel> bankAccountsResult =
+        await APIServices().getUserBankAccounts();
+
+    setState(() {
+      bankAccounts = bankAccountsResult;
+    });
+  }
+
+  void showRejectDialog(
+      BuildContext context,String bookingRequestId) {
+    bool _isRejectingRequest = false;
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(24.r))),
+              title: Text(
+                'Reject Request',
+                style: TextStyle(
+                    fontSize: 20.sp,
+                    fontFamily: 'Gilroy',
+                    fontWeight: FontWeight.w600),
+              ),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      'Are you sure you want to reject this booking request?',
+                      style: TextStyle(
+                          fontSize: 18.sp,
+                          fontFamily: 'Gilroy',
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            width: 75.w,
+                            height: 40.h,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: AppColors.deepGreen, width: 1.w),
+                                borderRadius: BorderRadius.circular(16)),
+                            child: Center(
+                                child: Text(
+                                  AppTextConstants.cancel,
+                                  style: TextStyle(
+                                      color: AppColors.deepGreen,
+                                      fontSize: 12.sp,
+                                      fontFamily: 'Gilroy',
+                                      fontWeight: FontWeight.w700),
+                                ))),
+                      ),
+                      InkWell(
+                        onTap: () async {
+                          setState(() {
+                            _isRejectingRequest = true;
+                          });
+
+                          final res = await APIServices().rejectBookingRequest(bookingRequestId);
+
+                          if(res.statusCode == 200){
+
+                            setState((){
+                              requestStatus = 'Rejected';
+                            });
+                            await _showDialog(context,'Booking Request Rejected!');
+
+                          }
+                        },
+                        child: Container(
+                            width: 75.w,
+                            height: 40.h,
+                            decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(16)),
+                            child: Center(
+                                child: !_isRejectingRequest
+                                    ? Text(
+                                  AppTextConstants.confirm,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12.sp,
+                                      fontFamily: 'Gilroy',
+                                      fontWeight: FontWeight.w700),
+                                )
+                                    : const SizedBox(
+                                    height: 12,
+                                    width: 12,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )))),
+                      ),
+                    ]),
+                SizedBox(
+                  height: 20.h,
+                ),
+              ],
+            );
+          });
+        });
+  }
 }

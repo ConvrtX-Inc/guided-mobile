@@ -6,6 +6,7 @@ import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/profile_data_model.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/content/content_main.dart';
 import 'package:guided/screens/main_navigation/home/screens/home_main.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_main.dart';
@@ -109,6 +110,12 @@ class _HomeScreenState extends State<MainNavigationScreen>
 
   Future<void> getProfileDetails() async {
     final ProfileDetailsModel res = await APIServices().getProfileData();
+
+    UserSingleton.instance.user.user = User(
+      id: res.id,
+      email: res.email,
+      fullName: res.fullName,
+    );
 
     _profileDetailsController.setUserProfileDetails(res);
   }

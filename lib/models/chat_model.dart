@@ -1,7 +1,7 @@
 ///Model For Chat
 class ChatModel {
   ///Constructor
-  ChatModel({this.userId, this.roomId, this.receiver, this.messages,this.isBlocked});
+  ChatModel({this.userId, this.roomId, this.receiver, this.messages,this.isBlocked = false});
 
   ///Initialization for user id
   String? userId;
