@@ -47,8 +47,10 @@ import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/global_api_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../../models/booking_request.dart';
+import '../../models/settings_availability.dart';
 
 enum RequestType { GET, POST, PATCH, DELETE }
 
@@ -1938,5 +1940,4 @@ class APIServices {
     print('tata response get become a guide request: $jsonData');
     return BecomeAGudeModel.fromJson(jsonData[0]);
   }
-}
 }
