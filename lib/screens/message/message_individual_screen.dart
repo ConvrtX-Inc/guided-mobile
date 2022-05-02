@@ -554,6 +554,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
         createdDate: payload['dateCreate'],
         message: payload['text'],
         senderId: payload['sender_id'],
+        messageType: payload['type'],
         receiverId: payload['receiver_id']);
 //
     setState(() {
