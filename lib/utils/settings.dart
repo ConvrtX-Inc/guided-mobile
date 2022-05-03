@@ -27,13 +27,13 @@ class SettingsUtils {
           color: Colors.black,
           imgUrl: 'assets/images/svg/settings_icon_payment.svg',
           subSettings: []),
-      // SettingsModel(
-      //     keyName: 'transaction_history',
-      //     name: 'Transaction History',
-      //     icon: 'test',
-      //     color: Colors.black,
-      //     imgUrl: 'assets/images/svg/settings_icon_transaction_history.svg',
-      //     subSettings: []),
+      SettingsModel(
+          keyName: 'transaction_history',
+          name: 'Transaction History',
+          icon: 'test',
+          color: Colors.black,
+          imgUrl: 'assets/images/svg/settings_icon_transaction_history.svg',
+          subSettings: []),
       SettingsModel(
           keyName: 'switch_user_type',
           name: 'Switch User Type',
