@@ -194,13 +194,23 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                               Expanded(
                                 child: Text(
                                   widget._name,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14),
+                                  style: TextStyle(
+                                      fontSize: RegExp(r"\w+(\'\w+)?")
+                                                  .allMatches(widget._name)
+                                                  .length >
+                                              5
+                                          ? 10.sp
+                                          : 14.sp,
+                                      fontWeight: FontWeight.w600),
                                 ),
                               ),
                               Text(
-                                  '${widget._numberOfTouristMin} - ${widget._numberOfTourist} Traveller')
+                                '${widget._numberOfTouristMin} - ${widget._numberOfTourist} Traveller',
+                                style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontFamily: 'Gilroy',
+                                    fontWeight: FontWeight.w400),
+                              )
                             ],
                           ),
                         ),

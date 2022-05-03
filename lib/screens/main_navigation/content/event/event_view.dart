@@ -219,8 +219,17 @@ class _EventViewState extends State<EventView> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(screenArguments['title'],
-                              style: AppTextStyle.txtStyle),
+                          Text(
+                            screenArguments['title'],
+                            style: TextStyle(
+                                fontSize: RegExp(r"\w+(\'\w+)?")
+                                            .allMatches(screenArguments['title'])
+                                            .length >
+                                        5
+                                    ? 12.sp
+                                    : 18.sp,
+                                fontWeight: FontWeight.w600),
+                          ),
                         ],
                       ),
                     ),

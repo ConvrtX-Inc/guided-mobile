@@ -146,7 +146,16 @@ class _EventFeaturesState extends State<EventFeatures> {
                                     padding: const EdgeInsets.all(8),
                                     child: Text(
                                       widget._name,
-                                      style: AppTextStyle.blackStyle,
+                                      style: TextStyle(
+                                          fontSize: RegExp(r"\w+(\'\w+)?")
+                                                      .allMatches(
+                                                          widget._name)
+                                                      .length >
+                                                  5
+                                              ? 10.sp
+                                              : 12.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black),
                                     ),
                                   ),
                                   Padding(
@@ -171,7 +180,7 @@ class _EventFeaturesState extends State<EventFeatures> {
                                           ),
                                         ),
                                         Text(
-                                          '\$${widget._fee.toString().substring(0, widget._fee.toString().indexOf('.'))}',
+                                          '\$${widget._fee}',
                                           style: TextStyle(
                                               color: HexColor('#181B1B'),
                                               fontWeight: FontWeight.w700,

@@ -85,7 +85,17 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(widget.name, style: AppTextStyle.txtStyle),
+                  Text(
+                    widget.name,
+                    style: TextStyle(
+                        fontSize: RegExp(r"\w+(\'\w+)?")
+                                    .allMatches(widget.name)
+                                    .length >
+                                5
+                            ? 12.sp
+                            : 18.sp,
+                        fontWeight: FontWeight.w600),
+                  ),
                   Text(
                       '\$${widget.fee.toString().substring(0, widget.fee.toString().indexOf('.'))}',
                       style: AppTextStyle.txtStyle)
@@ -97,10 +107,12 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
               child: Text(
                 widget.description,
                 style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.doveGrey),
+                  fontFamily: 'Gilroy',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.doveGrey,
+                ),
+                textAlign: TextAlign.justify,
               ),
             ),
             Padding(
@@ -458,6 +470,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                   fontWeight: FontWeight.w400,
                   fontSize: 14.sp,
                   color: AppColors.osloGrey),
+              textAlign: TextAlign.justify,
             ),
           )
         ],
