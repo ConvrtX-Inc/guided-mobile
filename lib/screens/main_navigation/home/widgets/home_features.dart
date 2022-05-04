@@ -257,34 +257,27 @@ class _HomeFeaturesState extends State<HomeFeatures>
                     if (snapshot.hasData) {
                       final BadgeModelData badgeData = snapshot.data;
                       final int length = badgeData.badgeDetails.length;
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Row(
-                          children: <Widget>[
-                            SizedBox(
-                              width: 10.w,
-                            ),
-                            Image.memory(
-                              base64.decode(badgeData.badgeDetails[0].imgIcon
-                                  .split(',')
-                                  .last),
-                              gaplessPlayback: true,
-                            )
-                          ],
+                      return Positioned(
+                        left: 10,
+                        bottom: 90,
+                        child: Image.memory(
+                          base64.decode(badgeData.badgeDetails[0].imgIcon
+                              .split(',')
+                              .last),
+                          gaplessPlayback: true,
                         ),
                       );
                     }
                     if (snapshot.connectionState != ConnectionState.done) {
-                      return const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: SkeletonText(
-                              width: 30,
-                              height: 30,
-                              shape: BoxShape.circle,
-                            ),
-                          ));
+                      return const Positioned(
+                        left: 10,
+                        bottom: 90,
+                        child: SkeletonText(
+                          width: 30,
+                          height: 30,
+                          shape: BoxShape.circle,
+                        ),
+                      );
                     }
                     return Container();
                   },

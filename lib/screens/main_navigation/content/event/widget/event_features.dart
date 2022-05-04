@@ -148,8 +148,7 @@ class _EventFeaturesState extends State<EventFeatures> {
                                       widget._name,
                                       style: TextStyle(
                                           fontSize: RegExp(r"\w+(\'\w+)?")
-                                                      .allMatches(
-                                                          widget._name)
+                                                      .allMatches(widget._name)
                                                       .length >
                                                   5
                                               ? 10.sp
@@ -202,47 +201,27 @@ class _EventFeaturesState extends State<EventFeatures> {
                                 final BadgeModelData badgeData = snapshot.data;
                                 final int length =
                                     badgeData.badgeDetails.length;
-                                return Column(
-                                  children: <Widget>[
-                                    SizedBox(
-                                      height: 150.h,
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        SizedBox(
-                                          width: 30.w,
-                                        ),
-                                        Image.memory(
-                                          base64.decode(badgeData
-                                              .badgeDetails[0].imgIcon
-                                              .split(',')
-                                              .last),
-                                          gaplessPlayback: true,
-                                        )
-                                      ],
-                                    ),
-                                  ],
+                                return Positioned(
+                                  left: 20,
+                                  bottom: 90,
+                                  child: Image.memory(
+                                    base64.decode(badgeData
+                                        .badgeDetails[0].imgIcon
+                                        .split(',')
+                                        .last),
+                                    gaplessPlayback: true,
+                                  ),
                                 );
                               }
                               if (snapshot.connectionState !=
                                   ConnectionState.done) {
-                                return Column(
-                                  children: <Widget>[
-                                    SizedBox(
-                                      height: 150.h,
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        SizedBox(
-                                          width: 30.w,
-                                        ),
-                                        const SkeletonText(
-                                            width: 30,
-                                            height: 30,
-                                            shape: BoxShape.circle)
-                                      ],
-                                    ),
-                                  ],
+                                return const Positioned(
+                                  left: 20,
+                                  bottom: 90,
+                                  child: SkeletonText(
+                                      width: 30,
+                                      height: 30,
+                                      shape: BoxShape.circle),
                                 );
                               }
                               return Container();

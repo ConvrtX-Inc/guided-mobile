@@ -30,6 +30,7 @@ import 'package:guided/screens/main_navigation/content/event/event_edit.dart';
 import 'package:guided/screens/main_navigation/content/event/event_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/package_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/packages_edit.dart';
+import 'package:guided/screens/main_navigation/content/packages/tab/tab_destination_edit.dart';
 import 'package:guided/screens/main_navigation/traveller/booking_journey/details.dart';
 import 'package:guided/screens/main_navigation/traveller/check_availability/check_availability.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
@@ -412,15 +413,16 @@ class RouteGenerator {
       case '/manage_cards':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PaymentManageCard());
-
       case '/traveller_message':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const MessageScreenTraveler());
-
       case '/setup_stripe_account':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SetupStripeAccount());
-
+      case '/tab_destination_edit':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TabDestinationEditScreen(),
+            settings: settings);
       default:
         return _errorRoute();
     }
