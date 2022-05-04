@@ -75,6 +75,7 @@ import 'package:guided/screens/packages/create_package/free_service_screen.dart'
 import 'package:guided/screens/packages/create_package/guide_rules_screen.dart';
 import 'package:guided/screens/packages/create_package/local_laws_taxes_screen.dart';
 import 'package:guided/screens/packages/create_package/location_screen.dart';
+import 'package:guided/screens/packages/create_package/not_included_free_services.dart';
 import 'package:guided/screens/packages/create_package/number_of_traveler_screen.dart';
 import 'package:guided/screens/packages/create_package/package_info_screen.dart';
 import 'package:guided/screens/packages/create_package/package_photos_screen.dart';
@@ -422,6 +423,10 @@ class RouteGenerator {
       case '/tab_destination_edit':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TabDestinationEditScreen(),
+            settings: settings);
+      case '/not_included_free_service':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const NotIncludedFreeServicesScreen(),
             settings: settings);
       default:
         return _errorRoute();

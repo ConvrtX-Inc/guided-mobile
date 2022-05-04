@@ -1061,7 +1061,10 @@ class AppTextConstants {
   static String provinceState = 'Province/State';
 
   /// Returns header
-  static String serviceHeader = "What's included & What's not included";
+  static String serviceHeader = "What's included";
+
+  /// Returns header
+  static String notIncludedServiceHeader = "What's not included";
 
   ///Returns transaction details text
   static String transactionDetails = 'Transaction Details';
