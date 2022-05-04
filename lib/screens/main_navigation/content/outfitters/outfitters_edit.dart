@@ -1665,13 +1665,13 @@ class _OutfitterEditState extends State<OutfitterEdit>
 
         _imageUpdate(screenArguments['id'], screenArguments['image_count']);
 
-        await Navigator.pushReplacement(
-            context,
-            MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => const MainNavigationScreen(
+        await Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(
                       navIndex: 1,
                       contentIndex: 2,
-                    )));
+                    )),
+            (Route<dynamic> route) => false);
       }
     } else if (_date.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
@@ -1707,13 +1707,13 @@ class _OutfitterEditState extends State<OutfitterEdit>
 
       _imageUpdate(screenArguments['id'], screenArguments['image_count']);
 
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
+      await Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => const MainNavigationScreen(
                     navIndex: 1,
                     contentIndex: 2,
-                  )));
+                  )),
+          (Route<dynamic> route) => false);
     }
   }
 

@@ -842,7 +842,7 @@ class AppTextConstants {
   static String slotsAndSchedule = 'Slots & Schedules';
 
   /// Returns Free services text
-  static String freeServices = 'Free Service';
+  static String freeServices = "What's included?";
 
   /// Returns Add schedule text
   static String addSchedule = 'Add Schedule';

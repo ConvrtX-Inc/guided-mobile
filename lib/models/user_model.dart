@@ -1,4 +1,3 @@
-
 /// User
 // ignore_for_file: public_member_api_docs, sort_constructors_first, prefer_collection_literals, unnecessary_question_mark, prefer_void_to_null
 
@@ -79,8 +78,9 @@ class User {
       this.photo,
       this.status,
       this.sEntity,
-      this.profilePhoto, this.stripeAccountId
-      });
+      this.profilePhoto,
+      this.stripeAccountId,
+      this.firebaseProfilePicUrl});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];

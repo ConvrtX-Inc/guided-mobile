@@ -18,6 +18,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/activity_destination_model.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -48,7 +49,7 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
   bool _didClickedImage1 = false;
   bool _didClickedImage2 = false;
   bool _didClickedImage3 = false;
-  bool _isEnabledImage = false;
+  bool _isEnabledImage = true;
   String img1Id = '';
   String img2Id = '';
   String img3Id = '';
@@ -114,7 +115,7 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
     );
   }
 
-  String latitute = '';
+  String latitude = '';
   String longitude = '';
 
   @override
@@ -122,6 +123,16 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
     super.initState();
 
     destinationList = [];
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      latitude = screenArguments['latitude'];
+      longitude = screenArguments['longitude'];
+      _placeName = TextEditingController(text: screenArguments['place_name']);
+      _description =
+          TextEditingController(text: screenArguments['place_description']);
+    });
   }
 
   // Format File Size
@@ -139,8 +150,7 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
 
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    _description =
-        TextEditingController(text: screenArguments['place_description']);
+
     Widget image1Placeholder(BuildContext context) {
       return GestureDetector(
         onTap: () {
@@ -928,7 +938,7 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
-                      hintText: AppTextConstants.description,
+                      hintText: screenArguments['place_description'],
                       hintStyle: TextStyle(
                         color: AppColors.grey,
                       ),
@@ -939,44 +949,6 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
                       ),
                     ),
                   ),
-                  // SizedBox(height: 20.h),
-                  // Row(
-                  //   children: <Widget>[
-                  //     Expanded(
-                  //       child: Text(
-                  //         AppTextConstants.addNewDestination,
-                  //         style: const TextStyle(
-                  //           fontWeight: FontWeight.w700,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     Container(
-                  //       decoration: BoxDecoration(
-                  //         borderRadius: BorderRadius.circular(20.r),
-                  //         color: AppColors.primaryGreen,
-                  //         boxShadow: <BoxShadow>[
-                  //           BoxShadow(
-                  //             color: AppColors.primaryGreen,
-                  //             spreadRadius: 1,
-                  //           ),
-                  //         ],
-                  //       ),
-                  //       child: GestureDetector(
-                  //         onTap: addDestination,
-                  //         child: const Icon(
-                  //           Icons.add,
-                  //           color: Colors.white,
-                  //           size: 23,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     SizedBox(height: 20.h),
-                  //   ],
-                  // ),
-                  // if (destinationList.isNotEmpty)
-                  //   _gridKeyword()
-                  // else
-                  //   const SizedBox(),
                 ],
               ),
             ),
@@ -1037,30 +1009,320 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
         final Map<String, dynamic> screenArguments =
             ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-        final Map<String, dynamic> outfitterEditDetails = {
+        final Map<String, dynamic> destinationDetails = {
           'activity_package_id': screenArguments['activity_package_id'],
-          'place_name': '',
-          'place_description': '',
-          'latitude': '',
-          'longitude': ''
+          'place_name': _placeName.text,
+          'place_description': _description.text,
+          'latitude': latitude,
+          'longitude': longitude
         };
 
         final dynamic response = await APIServices().request(
-            '${AppAPIPath.outfitterUrl}/${screenArguments['id']}',
+            '${AppAPIPath.activityDestinationDetails}/${screenArguments['activity_package_destination_id']}',
             RequestType.PATCH,
             needAccessToken: true,
-            data: outfitterEditDetails);
+            data: destinationDetails);
 
-        // _imageUpdate(screenArguments['id'], screenArguments['image_count']);
+        _imageUpdate(screenArguments['activity_package_destination_id'],
+            screenArguments['image_count']);
 
-        // await Navigator.pushReplacement(
-        //     context,
-        //     MaterialPageRoute<dynamic>(
-        //         builder: (BuildContext context) => const MainNavigationScreen(
-        //               navIndex: 1,
-        //               contentIndex: 2,
-        //             )));
+        await Navigator.pushReplacement(
+            context,
+            MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => const MainNavigationScreen(
+                      navIndex: 1,
+                      contentIndex: 0,
+                    )));
       }
+    } else {
+      setState(() {
+        _isSubmit = true;
+      });
+      final Map<String, dynamic> screenArguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+      final Map<String, dynamic> destinationDetails = {
+        'activity_package_id': screenArguments['activity_package_id'],
+        'place_name': _placeName.text,
+        'place_description': _description.text,
+        'latitude': latitude,
+        'longitude': longitude
+      };
+
+      final dynamic response = await APIServices().request(
+          '${AppAPIPath.activityDestinationDetails}/${screenArguments['activity_package_destination_id']}',
+          RequestType.PATCH,
+          needAccessToken: true,
+          data: destinationDetails);
+
+      _imageUpdate(screenArguments['activity_package_destination_id'],
+          screenArguments['image_count']);
+
+      await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const MainNavigationScreen(
+                    navIndex: 1,
+                    contentIndex: 0,
+                  )));
+    }
+  }
+
+  void _imageUpdate(String id, int imageCount) {
+    if (imageCount == 3) {
+      _3image(id);
+    }
+    if (imageCount == 2) {
+      _2image(id);
+    }
+    if (imageCount == 1) {
+      _1image(id);
+    }
+    if (imageCount == 0) {
+      _0image(id);
+    }
+  }
+
+  Future<void> _3image(String id) async {
+    if (_didClickedImage3) {
+      if (image3 != null) {
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image3!, _destinationPath);
+        final Map<String, dynamic> img3Details = {
+          'activity_package_destination_id': id,
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
+        };
+        final dynamic img3response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img3Id', RequestType.PATCH,
+            needAccessToken: true, data: img3Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img3response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img3Id',
+            RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+    if (_didClickedImage2) {
+      if (image2 != null) {
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image2!, _destinationPath);
+        final Map<String, dynamic> img2Details = {
+          'activity_package_destination_id': id,
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
+        };
+        final dynamic img2response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img2Id', RequestType.PATCH,
+            needAccessToken: true, data: img2Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img2response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img2Id',
+            RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+    if (_didClickedImage1) {
+      if (image1 != null) {
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _destinationPath);
+        final Map<String, dynamic> img1Details = {
+          'activity_package_destination_id': id,
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
+        };
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img1Id', RequestType.PATCH,
+            needAccessToken: true, data: img1Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img1Id',
+            RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+  }
+
+  Future<void> _2image(String id) async {
+    if (image3 != null) {
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image3!, _destinationPath);
+      final Map<String, dynamic> img3Details = {
+        'activity_package_destination_id': id,
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
+      };
+      final dynamic img3response = await APIServices().request(
+          AppAPIPath.activityDestinationImage, RequestType.POST,
+          needAccessToken: true, data: img3Details);
+    }
+    if (_didClickedImage2) {
+      if (image2 != null) {
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image2!, _destinationPath);
+        final Map<String, dynamic> img2Details = {
+          'activity_package_destination_id': id,
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
+        };
+        final dynamic img2response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img2Id', RequestType.PATCH,
+            needAccessToken: true, data: img2Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img2response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img2Id',
+            RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+    if (_didClickedImage1) {
+      if (image1 != null) {
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _destinationPath);
+        final Map<String, dynamic> img1Details = {
+          'activity_package_destination_id': id,
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
+        };
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img1Id', RequestType.PATCH,
+            needAccessToken: true, data: img1Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img1Id',
+            RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+  }
+
+  Future<void> _1image(String id) async {
+    if (image3 != null) {
+      final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
+      final String base64Image3 = base64Encode(await image3Bytes);
+
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image3!, _destinationPath);
+      final Map<String, dynamic> img3Details = {
+        'activity_package_destination_id': id,
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
+      };
+      final dynamic img3response = await APIServices().request(
+          AppAPIPath.activityDestinationImage, RequestType.POST,
+          needAccessToken: true, data: img3Details);
+    }
+    if (image2 != null) {
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image2!, _destinationPath);
+      final Map<String, dynamic> img2Details = {
+        'activity_package_destination_id': id,
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
+      };
+      final dynamic img2response = await APIServices().request(
+          AppAPIPath.activityDestinationImage, RequestType.POST,
+          needAccessToken: true, data: img2Details);
+    }
+    if (_didClickedImage1) {
+      if (image1 != null) {
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _destinationPath);
+        final Map<String, dynamic> img1Details = {
+          'activity_package_destination_id': id,
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
+        };
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img1Id', RequestType.PATCH,
+            needAccessToken: true, data: img1Details);
+      } else {
+        /// Delete the outfitter image
+        final dynamic img1response = await APIServices().request(
+            '${AppAPIPath.activityDestinationImage}/$img1Id',
+            RequestType.DELETE,
+            needAccessToken: true);
+      }
+    }
+  }
+
+  Future<void> _0image(String id) async {
+    if (image3 != null) {
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image3!, _destinationPath);
+      final Map<String, dynamic> img3Details = {
+        'activity_package_destination_id': id,
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
+      };
+      final dynamic img3response = await APIServices().request(
+          AppAPIPath.activityDestinationImage, RequestType.POST,
+          needAccessToken: true, data: img3Details);
+    }
+    if (image2 != null) {
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image2!, _destinationPath);
+      final Map<String, dynamic> img2Details = {
+        'activity_package_destination_id': id,
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
+      };
+      final dynamic img2response = await APIServices().request(
+          AppAPIPath.activityDestinationImage, RequestType.POST,
+          needAccessToken: true, data: img2Details);
+    }
+    if (image1 != null) {
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image1!, _destinationPath);
+      final Map<String, dynamic> img1Details = {
+        'activity_package_destination_id': id,
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
+      };
+      final dynamic img1response = await APIServices().request(
+          AppAPIPath.activityDestinationImage, RequestType.POST,
+          needAccessToken: true, data: img1Details);
     }
   }
 
@@ -1105,7 +1367,7 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
 
       setState(() {
         _placeName = TextEditingController(text: p.description);
-        latitute = lat.toString();
+        latitude = lat.toString();
         longitude = lng.toString();
       });
     }
