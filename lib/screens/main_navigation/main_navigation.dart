@@ -129,6 +129,7 @@ class _HomeScreenState extends State<MainNavigationScreen>
       id: res.id,
       email: res.email,
       fullName: res.fullName,
+      stripeAccountId: res.stripeAccountId
     );
 
     _profileDetailsController.setUserProfileDetails(res);

@@ -1,7 +1,12 @@
 ///Model For Chat
 class ChatModel {
   ///Constructor
-  ChatModel({this.userId, this.roomId, this.receiver, this.messages,this.isBlocked = false});
+  ChatModel(
+      {this.userId,
+      this.roomId,
+      this.receiver,
+      this.messages,
+      this.isBlocked = false});
 
   ///Initialization for user id
   String? userId;
@@ -23,6 +28,7 @@ class ChatModel {
 
   ///initialization for user message block from
   String? userMessageBlockFrom;
+
   ///Map Data
   ChatModel.fromJson(Map<String, dynamic> json) {
     userId = json['user_id'];
@@ -59,7 +65,8 @@ class ChatModel {
 ///Receiver Model
 class Receiver {
   ///Constructor
-  Receiver({this.id, this.fullName, this.avatar, this.isOnline});
+  Receiver(
+      {this.id, this.fullName, this.avatar, this.isOnline, this.phoneNumber});
 
   ///Initialization for id
   String? id;
@@ -73,12 +80,16 @@ class Receiver {
   ///Initialization for isOnline
   bool? isOnline;
 
+  ///Initialization for phone number
+  String? phoneNumber;
+
   ///Map Data
   Receiver.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     fullName = json['full_name'] ?? '';
     avatar = json['avatar'] ?? '';
     isOnline = json['isOnline'];
+    phoneNumber = json['phone_number'];
   }
 
   ///Map Data
@@ -88,6 +99,7 @@ class Receiver {
     data['full_name'] = fullName;
     data['avatar'] = avatar;
     data['isOnline'] = isOnline;
+    data['phone_number'] = phoneNumber;
     return data;
   }
 }
@@ -95,21 +107,20 @@ class Receiver {
 ///Message Model
 class Message {
   ///Constructor
-  Message({
-    this.id,
-    this.messageId,
-    this.userId,
-    this.senderId,
-    this.receiverId,
-    this.message,
-    this.isRead,
-    this.isSpam,
-    this.isSent,
-    this.isArchive,
-    this.createdDate,
-    this.updatedDate,
-    this.messageType = 'text'
-  });
+  Message(
+      {this.id,
+      this.messageId,
+      this.userId,
+      this.senderId,
+      this.receiverId,
+      this.message,
+      this.isRead,
+      this.isSpam,
+      this.isSent,
+      this.isArchive,
+      this.createdDate,
+      this.updatedDate,
+      this.messageType = 'text'});
 
   ///Initialization for strings
   String? id,
@@ -119,7 +130,8 @@ class Message {
       receiverId,
       message,
       createdDate,
-      updatedDate, messageType;
+      updatedDate,
+      messageType;
 
   ///Initialization for booleans
   bool? isRead, isSpam, isSent, isArchive;

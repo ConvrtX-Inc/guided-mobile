@@ -17,6 +17,7 @@ import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/image_viewers/image_viewer.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:url_launcher/url_launcher.dart';
 
 
 /// Notification Screen
@@ -127,15 +128,15 @@ class _MessageIndividualState extends State<MessageIndividual> {
                       Navigator.pop(context, 'getMessages');
                     },
                   ),
-                  /*   IconButton(
+                     IconButton(
                     icon: Image.asset(
                         '${AssetsPath.assetsPNGPath}/phone_green.png',
                         height: 20.h,
                         width: 20.w),
                     onPressed: () {
-                      Navigator.pop(context);
+                      launch('tel://${chat.receiver!.phoneNumber!}');
                     },
-                  ),*/
+                  ),
                 ],
               ),
             ),
@@ -155,7 +156,7 @@ class _MessageIndividualState extends State<MessageIndividual> {
             SizedBox(
               height: 15.h,
             ),
-            /* Container(
+         /*    Container(
               height: 57.h,
               color: AppColors.tealGreen.withOpacity(0.15),
               child: Row(

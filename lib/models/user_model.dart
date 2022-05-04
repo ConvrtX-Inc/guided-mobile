@@ -51,6 +51,7 @@ class User {
   String? profilePhoto;
   String? stripeAccountId;
   String? firebaseProfilePicUrl;
+  bool? hasPremiumSubscription;
 
   User(
       {this.id,
@@ -80,6 +81,7 @@ class User {
       this.sEntity,
       this.profilePhoto,
       this.stripeAccountId,
+      this.hasPremiumSubscription,
       this.firebaseProfilePicUrl});
 
   User.fromJson(Map<String, dynamic> json) {
@@ -148,7 +150,9 @@ class User {
 
 class UserSingleton {
   static final UserSingleton _singleton = UserSingleton._internal();
+
   UserSingleton._internal();
+
   static UserSingleton get instance => _singleton;
   UserModel user = UserModel();
 }

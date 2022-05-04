@@ -8,10 +8,14 @@ class UserSubscriptionController extends GetxController {
   /// Profile Details
   UserSubscription  userSubscription =   UserSubscription();
 
+  /// isUserSubscribed
+  bool isUserSubscribed = false;
+
   /// Set User Subscription function
   void setSubscription(UserSubscription data) {
     debugPrint('Data $data');
     userSubscription = data;
     update();
   }
+
 }
