@@ -1235,13 +1235,13 @@ class _OutfitterAddState extends State<OutfitterAdd> {
         await saveBulkImage(activityOutfitterId);
       }
 
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
+      await Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => const MainNavigationScreen(
                     navIndex: 1,
                     contentIndex: 2,
-                  )));
+                  )),
+          (Route<dynamic> route) => false);
     }
   }
 

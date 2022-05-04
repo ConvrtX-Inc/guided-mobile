@@ -405,7 +405,9 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                               details.name,
                               details.description,
                               imageList,
-                              imageIdList);
+                              imageIdList,
+                              details.latitude,
+                              details.longitude);
                         },
                       ),
                     ),
@@ -499,7 +501,9 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
       String placeName,
       String placeDescription,
       List<String> images,
-      List<String> imagesId) async {
+      List<String> imagesId,
+      String latitude,
+      String longitude) async {
     final Map<String, dynamic> details = {
       'activity_package_id': activityPackageId,
       'activity_package_destination_id': activityDestinationId,
@@ -507,7 +511,9 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
       'place_description': placeDescription,
       'image_list': images,
       'image_id_list': imagesId,
-      'image_count': imageCount
+      'image_count': imageCount,
+      'latitude': latitude,
+      'longitude': longitude
     };
 
     await Navigator.pushNamed(context, '/tab_destination_edit',

@@ -82,6 +82,7 @@ class User {
       this.profilePhoto,
       this.stripeAccountId,
       this.hasPremiumSubscription});
+      this.firebaseProfilePicUrl});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];

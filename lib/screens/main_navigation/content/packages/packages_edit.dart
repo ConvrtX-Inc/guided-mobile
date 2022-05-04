@@ -1998,13 +1998,13 @@ class _PackageEditState extends State<PackageEdit> {
           needAccessToken: true,
           data: packageDetails);
 
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
+      await Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => const MainNavigationScreen(
                     navIndex: 1,
                     contentIndex: 0,
-                  )));
+                  )),
+          (Route<dynamic> route) => false);
     }
   }
 
