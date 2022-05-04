@@ -42,9 +42,12 @@ class WelcomeScreen extends StatelessWidget {
                   child: Column(
                     children: <Widget>[
                       Text(
-                        AppTextConstants.loremIpsum,
+                        'Outdoor Adventure App',
                         style: TextStyle(
-                            color: AppColors.grey, fontWeight: FontWeight.w700),
+                            color: AppColors.lightningYellow,
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w700),
+                            textAlign: TextAlign.center,
                       ),
                     ],
                   ),
