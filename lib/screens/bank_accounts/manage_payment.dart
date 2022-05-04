@@ -13,13 +13,16 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/bank_account_controller.dart';
 import 'package:guided/controller/card_controller.dart';
+import 'package:guided/controller/stripe_bank_account_controller.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/profile_data_model.dart';
+import 'package:guided/models/stripe_bank_account_model.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/services/stripe_service.dart';
 import 'package:intl/intl.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -50,6 +53,10 @@ class _ManagePaymentState extends State<ManagePayment> {
       Get.put(UserProfileDetailsController());
 
   String stripeAcctId = '';
+
+  List<StripeBankAccountModel> stripeBankAccounts = [];
+  final StripeBankAccountController _stripeBankAccountController =
+      Get.put(StripeBankAccountController());
 
   @override
   void initState() {
@@ -140,10 +147,12 @@ class _ManagePaymentState extends State<ManagePayment> {
         );
       });
 
-  ///Manage Bank Accounts
-  Widget buildPaymentBanks() => GetBuilder<BankAccountController>(
-          builder: (BankAccountController _controller) {
-        bankAccounts = _controller.bankAccounts;
+
+
+  /// Manage Stripe Bank Accounts
+  Widget buildPaymentBanks() => GetBuilder<StripeBankAccountController>(
+          builder: (StripeBankAccountController _controller) {
+        stripeBankAccounts = _controller.bankAccounts;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -151,11 +160,12 @@ class _ManagePaymentState extends State<ManagePayment> {
                 style: TextStyle(fontSize: 14.sp, color: AppColors.grey)),
             SizedBox(height: 16.h),
             ListView.builder(
-                itemCount: bankAccounts.length,
+                itemCount: stripeBankAccounts.length,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
-                  final BankAccountModel bankAccount = bankAccounts[index];
+                  final StripeBankAccountModel bankAccount =
+                      stripeBankAccounts[index];
                   return buildBankItem(bankAccount);
                 }),
             SizedBox(height: 12.h),
@@ -201,7 +211,8 @@ class _ManagePaymentState extends State<ManagePayment> {
             }),
       ));
 
-  Widget buildBankItem(BankAccountModel bankAccount) => Container(
+
+  Widget buildBankItem(StripeBankAccountModel bankAccount) => Container(
       margin: EdgeInsets.only(bottom: 10.h),
       padding: EdgeInsets.all(10.w),
       decoration: BoxDecoration(
@@ -224,13 +235,11 @@ class _ManagePaymentState extends State<ManagePayment> {
             icon: SvgPicture.asset('${AssetsPath.assetsSVGPath}/trash.svg'),
             color: AppColors.lightRed,
             onPressed: () {
-              String accountNo = bankAccount.accountNumber
-                  .substring(bankAccount.accountNumber.length - 3);
               String logo = '${AssetsPath.assetsPNGPath}/bank.png';
               _showRemoveDialog(
                   type: 'Bank',
                   id: bankAccount.id,
-                  number: accountNo,
+                  number: bankAccount.last4,
                   logoUrl: logo,
                   bankName: bankAccount.bankName);
             }),
@@ -266,6 +275,11 @@ class _ManagePaymentState extends State<ManagePayment> {
     final List<CardModel> cardsResult = await APIServices().getCards();
 
     await _cardController.initCards(cardsResult);
+
+    final List<StripeBankAccountModel> stripeBankAccounts =
+        await StripeServices().getBankAccounts();
+
+    await _stripeBankAccountController.initBankAccounts(stripeBankAccounts);
 
     setState(() {
       isLoading = false;
@@ -462,12 +476,28 @@ class _ManagePaymentState extends State<ManagePayment> {
     }
   }
 
+
+
   Future<void> removeBankAccount(String id) async {
-    final BankAccountModel bankAccount =
-        bankAccounts.firstWhere((item) => item.id == id);
-    final dynamic res = await APIServices().removeBankAccount(id);
-    if (res.statusCode == 200) {
-      _bankAccountController.remove(bankAccount);
+    final StripeBankAccountModel bankAccount =
+        stripeBankAccounts.firstWhere((item) => item.id == id);
+    final dynamic res = await StripeServices().removeBankAccount(id);
+
+    if (res.statusCode == 400) {
+      final error = jsonDecode(res.body);
+      Navigator.of(context).pop();
+
+      String errorMessage = '';
+      if(error['error']['message'].contains(AppTextConstants.unableToDeleteStripeBankAccount)){
+        errorMessage = ErrorMessageConstants.unableToDeleteBankAccount;
+      }else{
+        errorMessage = error['error']['message'];
+      }
+      _showWarningDialog(
+          title: 'Unable to Remove Bank Account',
+          message: errorMessage);
+    } else {
+      _stripeBankAccountController.remove(bankAccount);
 
       Navigator.of(context).pop();
     }
@@ -478,8 +508,7 @@ class _ManagePaymentState extends State<ManagePayment> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-            Text(
-              AppTextConstants.setupStripeInfo),
+          Text(AppTextConstants.setupStripeInfo),
           SizedBox(height: 22.h),
           CustomRoundedButton(
               title: 'Setup Now',
@@ -495,6 +524,79 @@ class _ManagePaymentState extends State<ManagePayment> {
           SizedBox(height: 22.h),
         ],
       ));
+
+  void _showToast(BuildContext context, String message) {
+    final ScaffoldMessengerState scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+            label: 'OK', onPressed: scaffold.hideCurrentSnackBar),
+      ),
+    );
+  }
+
+  void _showWarningDialog({String title = '', String message = ''}) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(24.r))),
+            title: Text(
+              title,
+              style: TextStyle(
+                  fontSize: 20.sp,
+                  fontFamily: 'Gilroy',
+                  fontWeight: FontWeight.w500),
+            ),
+            content: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  message,
+                  style: TextStyle(
+                      fontSize: 18.sp,
+                      fontFamily: 'Gilroy',
+                      fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                          width: 75.w,
+                          height: 40.h,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: AppColors.deepGreen, width: 1.w),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Center(
+                              child: Text(
+                            AppTextConstants.ok,
+                            style: TextStyle(
+                                color: AppColors.deepGreen,
+                                fontSize: 12.sp,
+                                fontFamily: 'Gilroy',
+                                fontWeight: FontWeight.w700),
+                          ))),
+                    ),
+                  ]),
+              SizedBox(
+                height: 20.h,
+              ),
+            ],
+          );
+        });
+  }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

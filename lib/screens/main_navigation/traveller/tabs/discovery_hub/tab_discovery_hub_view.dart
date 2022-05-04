@@ -13,6 +13,7 @@ import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/discovery_hub.dart';
 import 'package:guided/models/hub_outfitter.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
 import 'package:guided/screens/payments/payment_failed.dart';
@@ -37,6 +38,15 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
   final UserSubscriptionController _userSubscriptionController =
       Get.put(UserSubscriptionController());
 
+    bool hasPremiumSubscription = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    hasPremiumSubscription = UserSingleton.instance.user.user!.hasPremiumSubscription!;
+  }
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> screenArguments =
@@ -239,8 +249,9 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                   height: 2),
             ),
           )),
+          /// show this button if user is not yet subscribed
           if (features[screenArguments['id']].isPremium &&
-              _userSubscriptionController.userSubscription.id.isEmpty && PaymentConfig.isPaymentEnabled)
+              !hasPremiumSubscription && PaymentConfig.isPaymentEnabled)
             Padding(
                 padding: EdgeInsets.only(
                     left: 20.w, right: 20.w, top: 10.h, bottom: 12.h),

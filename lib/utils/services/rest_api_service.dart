@@ -816,7 +816,7 @@ class APIServices {
   }
 
   /// Api service for adding bank account
-  Future<BankAccountModel> addBankAccount(BankAccountModel params) async {
+  Future<dynamic> addBankAccount(BankAccountModel params) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
@@ -844,10 +844,10 @@ class APIServices {
     debugPrint('BAnk Response ${jsonData} status code ${response.statusCode}');
 
     if (response.statusCode == 201) {
-      debugPrint('BAnk Response ${jsonData}');
+
       return BankAccountModel.fromJson(jsonData);
     } else {
-      return BankAccountModel();
+      return jsonData;
     }
   }
 
@@ -1549,7 +1549,7 @@ class APIServices {
   }
 
   /// API service add bank account to stripe
-  Future<String> addBankAccountToStripeAccount(
+  Future<http.Response> addBankAccountToStripeAccount(
       String accountId, String bankToken) async {
     final String? token = UserSingleton.instance.user.token;
 
@@ -1566,8 +1566,8 @@ class APIServices {
         }));
 
     debugPrint('Response Bank Account Account id $accountId ${response.body}');
-    final jsonData = jsonDecode(response.body);
-    return jsonData['id'];
+
+    return response;
   }
 
   ///API Service for Retrieving payment intent booking request

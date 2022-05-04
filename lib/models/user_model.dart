@@ -1,4 +1,3 @@
-
 /// User
 // ignore_for_file: public_member_api_docs, sort_constructors_first, prefer_collection_literals, unnecessary_question_mark, prefer_void_to_null
 
@@ -52,6 +51,7 @@ class User {
   String? profilePhoto;
   String? stripeAccountId;
   String? firebaseProfilePicUrl;
+  bool? hasPremiumSubscription;
 
   User(
       {this.id,
@@ -79,8 +79,9 @@ class User {
       this.photo,
       this.status,
       this.sEntity,
-      this.profilePhoto, this.stripeAccountId
-      });
+      this.profilePhoto,
+      this.stripeAccountId,
+      this.hasPremiumSubscription});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -148,7 +149,9 @@ class User {
 
 class UserSingleton {
   static final UserSingleton _singleton = UserSingleton._internal();
+
   UserSingleton._internal();
+
   static UserSingleton get instance => _singleton;
   UserModel user = UserModel();
 }
