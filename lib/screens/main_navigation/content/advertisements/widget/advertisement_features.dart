@@ -124,7 +124,15 @@ class _AdvertisementFeatureState extends State<AdvertisementFeature> {
                                 padding: const EdgeInsets.all(8),
                                 child: Text(
                                   widget._title,
-                                  style: AppTextStyle.blackStyle,
+                                  style: TextStyle(
+                                      fontSize: RegExp(r"\w+(\'\w+)?")
+                                                  .allMatches(widget._title)
+                                                  .length >
+                                              5
+                                          ? 10.sp
+                                          : 12.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black),
                                 ),
                               ),
                             ],

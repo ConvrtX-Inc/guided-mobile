@@ -228,13 +228,11 @@ class _PackageViewState extends State<PackageView>
                       if (snapshot.hasData) {
                         final BadgeModelData badgeData = snapshot.data;
                         final int length = badgeData.badgeDetails.length;
-                        return Padding(
-                          padding: EdgeInsets.only(left: 10.w),
+                        return Positioned(
+                          left: 10,
+                          bottom: 10,
                           child: Column(
                             children: <Widget>[
-                              SizedBox(
-                                height: 90.h,
-                              ),
                               Image.memory(
                                 base64.decode(badgeData.badgeDetails[0].imgIcon
                                     .split(',')
@@ -246,14 +244,12 @@ class _PackageViewState extends State<PackageView>
                         );
                       }
                       if (snapshot.connectionState != ConnectionState.done) {
-                        return Padding(
-                          padding: EdgeInsets.only(left: 10.w),
+                        return Positioned(
+                          left: 10,
+                          bottom: 10,
                           child: Column(
-                            children: <Widget>[
-                              SizedBox(
-                                height: 90.h,
-                              ),
-                              const SkeletonText(
+                            children: const <Widget>[
+                              SkeletonText(
                                 height: 30,
                                 width: 30,
                                 shape: BoxShape.circle,

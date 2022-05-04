@@ -168,35 +168,26 @@ class _EventViewState extends State<EventView> {
                     if (snapshot.hasData) {
                       final BadgeModelData badgeData = snapshot.data;
                       final int length = badgeData.badgeDetails.length;
-                      return Padding(
-                        padding: EdgeInsets.only(left: 10.w),
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: 90.h,
-                            ),
-                            Image.memory(
-                              base64.decode(badgeData.badgeDetails[0].imgIcon
-                                  .split(',')
-                                  .last),
-                              gaplessPlayback: true,
-                            ),
-                          ],
+                      return Positioned(
+                        left: 10,
+                        bottom: 10,
+                        child: Image.memory(
+                          base64.decode(badgeData.badgeDetails[0].imgIcon
+                              .split(',')
+                              .last),
+                          gaplessPlayback: true,
                         ),
                       );
                     }
                     if (snapshot.connectionState != ConnectionState.done) {
-                      return Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 90.h,
-                          ),
-                          const SkeletonText(
-                            height: 30,
-                            width: 30,
-                            shape: BoxShape.circle,
-                          ),
-                        ],
+                      return const Positioned(
+                        left: 10,
+                        bottom: 10,
+                        child: SkeletonText(
+                          height: 30,
+                          width: 30,
+                          shape: BoxShape.circle,
+                        ),
                       );
                     }
                     return Container();
@@ -219,8 +210,18 @@ class _EventViewState extends State<EventView> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(screenArguments['title'],
-                              style: AppTextStyle.txtStyle),
+                          Text(
+                            screenArguments['title'],
+                            style: TextStyle(
+                                fontSize: RegExp(r"\w+(\'\w+)?")
+                                            .allMatches(
+                                                screenArguments['title'])
+                                            .length >
+                                        5
+                                    ? 12.sp
+                                    : 18.sp,
+                                fontWeight: FontWeight.w600),
+                          ),
                         ],
                       ),
                     ),

@@ -60,7 +60,10 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
   late Map<dynamic, String> value;
   int activeIndex = 0;
   late Future<PackageDestinationModelData> _loadingData;
-
+  late List<String> imageList = [];
+  late List<String> imageIdList = [];
+  int imageCount = 0;
+  bool _isLoaded = true;
   @override
   void initState() {
     super.initState();
@@ -85,7 +88,17 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(widget.name, style: AppTextStyle.txtStyle),
+                  Text(
+                    widget.name,
+                    style: TextStyle(
+                        fontSize: RegExp(r"\w+(\'\w+)?")
+                                    .allMatches(widget.name)
+                                    .length >
+                                5
+                            ? 12.sp
+                            : 18.sp,
+                        fontWeight: FontWeight.w600),
+                  ),
                   Text(
                       '\$${widget.fee.toString().substring(0, widget.fee.toString().indexOf('.'))}',
                       style: AppTextStyle.txtStyle)
@@ -97,10 +110,12 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
               child: Text(
                 widget.description,
                 style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.doveGrey),
+                  fontFamily: 'Gilroy',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.doveGrey,
+                ),
+                textAlign: TextAlign.justify,
               ),
             ),
             Padding(
@@ -383,7 +398,15 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                           color: Colors.white,
                           size: 15,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          navigateTabDestinationEdit(
+                              widget.id,
+                              details.id,
+                              details.name,
+                              details.description,
+                              imageList,
+                              imageIdList);
+                        },
                       ),
                     ),
                   ),
@@ -406,6 +429,12 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       children: List<Widget>.generate(length, (int i) {
+                        imageList.add(packageDestinationImage
+                            .packageDestinationImageDetails[i]
+                            .firebaseSnapshotImg);
+                        imageIdList.add(packageDestinationImage
+                            .packageDestinationImageDetails[i].id);
+                        imageCount = length;
                         return Container(
                           margin: EdgeInsets.symmetric(
                               horizontal: 5.w, vertical: 20.h),
@@ -458,8 +487,30 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                   fontWeight: FontWeight.w400,
                   fontSize: 14.sp,
                   color: AppColors.osloGrey),
+              textAlign: TextAlign.justify,
             ),
           )
         ],
       );
+
+  Future<void> navigateTabDestinationEdit(
+      String activityPackageId,
+      String activityDestinationId,
+      String placeName,
+      String placeDescription,
+      List<String> images,
+      List<String> imagesId) async {
+    final Map<String, dynamic> details = {
+      'activity_package_id': activityPackageId,
+      'activity_package_destination_id': activityDestinationId,
+      'place_name': placeName,
+      'place_description': placeDescription,
+      'image_list': images,
+      'image_id_list': imagesId,
+      'image_count': imageCount
+    };
+
+    await Navigator.pushNamed(context, '/tab_destination_edit',
+        arguments: details);
+  }
 }
