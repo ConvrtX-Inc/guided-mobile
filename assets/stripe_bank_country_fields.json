@@ -1,0 +1,302 @@
+[
+  {
+    "country": "Australia",
+    "code": "AU",
+    "required_fields": [
+      "BSB"
+    ]
+  },
+  {
+    "country": "Austria",
+    "code": "AT",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Belgium",
+    "code": "BE",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Brazil",
+    "code": "BR",
+    "required_fields": [
+      "Bank Code",
+      "Branch Code"
+    ]
+  },
+  {
+    "country": "Bulgaria",
+    "code": "BG",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Canada",
+    "code": "CA",
+    "required_fields": [
+      "Transit number",
+      "Institution number"
+
+    ]
+  },
+  {
+    "country": "Cyprus",
+    "code": "CY",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Czech Republic",
+    "code": "CZ",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Denmark",
+    "code": "DK",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Estonia",
+    "code": "EE",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Finland",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "France",
+    "code": "FR",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Germany",
+    "code": "DE",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Gibraltar ",
+    "code": "(GI)",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Greece",
+    "code": "GR",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Hong Kong",
+    "code": "HK",
+    "required_fields": [
+      "Clearing Code",
+      "Branch code"
+    ]
+  },
+  {
+    "country": "Hungary",
+    "code": "HU",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "India",
+    "code": "IN",
+    "required_fields": [
+      "IFSC Code"
+    ]
+  },
+  {
+    "country": "Ireland",
+    "code": "IE",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Italy",
+    "code": "IT",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Japan",
+    "code": "JP",
+    "required_fields": [
+      "Bank name",
+      "Branch name",
+      "Bank code",
+      "Branch code",
+      "Account owner name"
+    ]
+  },
+  {
+    "country": "Liechtenstein",
+    "code": "LI",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Lithuania",
+    "code": "LT",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Luxembourg",
+    "code": "LU",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Latvia",
+    "code": "LV",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Malta",
+    "code": "MT",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Malaysia",
+    "code": "MY",
+    "required_fields": [
+    ]
+  },
+  {
+    "country": "Mexico",
+    "code": "MX",
+    "required_fields": [
+      "CLABE"
+    ]
+  },
+  {
+    "country": "Netherlands",
+    "code": "NL",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "New Zealand",
+    "code": "NZ",
+    "required_fields": [
+    ]
+  },
+  {
+    "country": "Norway",
+    "code": "NO",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Poland",
+    "code": "PL",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Portugal",
+    "code": "PT",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Romania",
+    "code": "RO",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Singapore",
+    "code": "SG",
+    "required_fields": [
+      "Bank code",
+      "Branch code"
+    ]
+  },
+  {
+    "country": "Slovakia",
+    "code": "SK",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Slovenia",
+    "code": "SI",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Spain",
+    "code": "ES",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Sweden",
+    "code": "SE",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "Switzerland",
+    "code": "CH",
+    "required_fields": [
+      "IBAN"
+    ]
+  },
+  {
+    "country": "United Kingdom",
+    "code": "GB",
+    "required_fields": [
+      "Sort Code"
+    ]
+  },
+  {
+    "country": "United States",
+    "code": "US",
+    "required_fields": [
+      "Routing Number"
+    ]
+  }
+]

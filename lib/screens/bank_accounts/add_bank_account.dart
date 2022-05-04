@@ -13,10 +13,13 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/bank_account_controller.dart';
+import 'package:guided/controller/stripe_bank_account_controller.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/country_currency_model.dart';
 import 'package:guided/models/country_model.dart';
+import 'package:guided/models/stripe_bank_account_model.dart';
+import 'package:guided/models/stripe_bank_accunt_fields_model.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/stripe_service.dart';
 import 'package:intl/intl.dart';
@@ -52,8 +55,14 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
       Get.put(BankAccountController());
 
   final UserProfileDetailsController _profileDetailsController =
-  Get.put(UserProfileDetailsController());
+      Get.put(UserProfileDetailsController());
 
+  List<StripeBankAccountField> stripeBankFieldsPerCountry = [];
+  List<String> requiredBankFields = [];
+  List<String> requiredBankFieldValues = [];
+
+  final StripeBankAccountController _stripeBankAccountController =
+      Get.put(StripeBankAccountController());
 
   @override
   void initState() {
@@ -73,6 +82,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
             _currency = currencies.firstWhere((CountryCurrencyModel item) =>
                 item.countryCode == _country.code);
           }
+          getStripeFields();
         }
       });
     });
@@ -168,7 +178,33 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                     },
                   ),
                   SizedBox(height: 20.h),
-                  BorderlessTextField(
+                  if (requiredBankFields.isNotEmpty)
+                    for (int i = 0; i < requiredBankFields.length; i++)
+                      Column(
+                        children: [
+                          BorderlessTextField(
+                            title: requiredBankFields[i],
+                            hint: 'Enter your ${requiredBankFields[i]}',
+                            onValidate: (String val) {
+                              if (val.trim().isEmpty) {
+                                return '${requiredBankFields[i]} is required';
+                              }
+                              return null;
+                            },
+                            onChanged: (String val) {
+                              requiredBankFieldValues[i] = val.trim();
+                            },
+                            onSaved: (String val) {
+                              debugPrint('ONSAVED');
+                              setState(() {
+                                requiredBankFieldValues[i] = val.trim();
+                              });
+                            },
+                          ),
+                          SizedBox(height: 20.h),
+                        ],
+                      ),
+                  /*   BorderlessTextField(
                     title: AppTextConstants.bankRoutingNumber,
                     hint: 'Enter your ${AppTextConstants.bankRoutingNumber}',
                     onValidate: (String val) {
@@ -181,7 +217,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                       _bankRoutingNumber = val.trim();
                     },
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 20.h),*/
 
                   DropDownCountry(
                     fontSize: 16.sp,
@@ -209,10 +245,11 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
           (CountryCurrencyModel item) => item.countryCode == _country.code);
     });
 
-    debugPrint('Currency ${_currency.currencyCode}');
+    setStripeFields();
   }
 
   Future<void> addBankAccount() async {
+    final String routingNumber = requiredBankFieldValues.join('-');
     if (validateAndSave()) {
       setState(() {
         isLoading = true;
@@ -222,14 +259,15 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
           accountName: _accountName,
           accountNumber: _accountNumber,
           bankName: _bankName,
-          bankRoutingNumber: _bankRoutingNumber,
+          bankRoutingNumber: routingNumber,
           countryId: _country.id,
           countryCode: _country.code,
           currency: _currency.currencyCode);
 
-      final BankAccountModel existingBankModel =
-          _bankAccountController.bankAccounts.firstWhere(
-              (item) => item.accountNumber == bankAccountParams.accountNumber,orElse: () => BankAccountModel());
+      final StripeBankAccountModel existingBankModel =
+          _stripeBankAccountController.bankAccounts.firstWhere(
+              (item) => item.accountNumber == bankAccountParams.accountNumber && item.routingNumber == routingNumber,
+              orElse: () => StripeBankAccountModel());
 
       if (existingBankModel.id.isNotEmpty) {
         _showToast(context, 'Bank Account Already Exists');
@@ -244,26 +282,8 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
           await StripeServices().createBankAccountToken(bankAccountParams);
 
       if (stripeValidationResult['id'] != null) {
-
         /// Add bank account to stripe connect
         await addBankAccountToStripeAccount(stripeValidationResult['id']);
-
-        // Save bank account to db
-        final BankAccountModel result =
-            await APIServices().addBankAccount(bankAccountParams);
-        if (result.id != '') {
-          debugPrint('SAVED!');
-          setState(() {
-            isLoading = false;
-          });
-          _bankAccountController.addBankAccount(result);
-          await _showDialog(context);
-        } else {
-          debugPrint('error in saving to databse');
-          setState(() {
-            isLoading = false;
-          });
-        }
       } else {
         AdvanceSnackBar(message: stripeValidationResult['error']['message'])
             .show(context);
@@ -343,6 +363,67 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
         });
   }
 
+  void _showWarningDialog({String title = '', String message = ''}) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(24.r))),
+            title: Text(
+              title,
+              style: TextStyle(
+                  fontSize: 20.sp,
+                  fontFamily: 'Gilroy',
+                  fontWeight: FontWeight.w500),
+            ),
+            content: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  message,
+                  style: TextStyle(
+                      fontSize: 18.sp,
+                      fontFamily: 'Gilroy',
+                      fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                          width: 75.w,
+                          height: 40.h,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: AppColors.deepGreen, width: 1.w),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Center(
+                              child: Text(
+                            AppTextConstants.ok,
+                            style: TextStyle(
+                                color: AppColors.deepGreen,
+                                fontSize: 12.sp,
+                                fontFamily: 'Gilroy',
+                                fontWeight: FontWeight.w700),
+                          ))),
+                    ),
+                  ]),
+              SizedBox(
+                height: 20.h,
+              ),
+            ],
+          );
+        });
+  }
+
   Future<void> getCurrencies() async {
     final String response =
         await rootBundle.loadString('assets/currencies.json');
@@ -351,6 +432,17 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
     for (dynamic res in data) {
       currencies.add(CountryCurrencyModel.fromJson(res));
     }
+  }
+
+  Future<void> getStripeFields() async {
+    final String response =
+        await rootBundle.loadString('assets/stripe_bank_country_fields.json');
+    final data = await json.decode(response);
+
+    for (dynamic res in data) {
+      stripeBankFieldsPerCountry.add(StripeBankAccountField.fromJson(res));
+    }
+    setStripeFields();
   }
 
   void _showToast(BuildContext context, String message) {
@@ -365,9 +457,53 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
     );
   }
 
-  Future<void> addBankAccountToStripeAccount(String bankToken) async {
-   final String res = await APIServices().addBankAccountToStripeAccount(_profileDetailsController.userProfileDetails.stripeAccountId, bankToken);
-   debugPrint('response bank account: $res ');
+  void setStripeFields() {
+    final StripeBankAccountField matchCountry =
+        stripeBankFieldsPerCountry.firstWhere(
+            (element) =>
+                element.code.toLowerCase() == _country.code.toLowerCase(),
+            orElse: () => StripeBankAccountField());
+    debugPrint('Matched Country ${matchCountry.country} ');
 
+    if (matchCountry.country.isNotEmpty) {
+      setState(() {
+        requiredBankFields = matchCountry.requiredFields;
+      });
+    } else {
+      setState(() {
+        requiredBankFields = ['Routing Number'];
+      });
+    }
+
+    setState(() {
+      requiredBankFieldValues = List.filled(requiredBankFields.length, '');
+    });
+  }
+
+  Future<void> addBankAccountToStripeAccount(String bankToken) async {
+    final res = await APIServices().addBankAccountToStripeAccount(
+        _profileDetailsController.userProfileDetails.stripeAccountId,
+        bankToken);
+    final jsonData = jsonDecode(res.body);
+    if (res.statusCode == 400) {
+      setState(() {
+        isLoading = false;
+      });
+      _showWarningDialog(
+          title: 'Unable to Add Bank Account', message: jsonData['message']);
+    } else {
+      final StripeBankAccountModel params = StripeBankAccountModel(
+          id: jsonData['id'],
+          bankName: _bankName,
+          accountNumber: _accountNumber);
+
+      final StripeBankAccountModel updateMetadataRes =
+          await StripeServices().updateAccount(params);
+      _stripeBankAccountController.addBankAccount(updateMetadataRes);
+      debugPrint(
+          'response bank account: $res  Meta data update ${updateMetadataRes.accountNumber}');
+
+      await _showDialog(context);
+    }
   }
 }

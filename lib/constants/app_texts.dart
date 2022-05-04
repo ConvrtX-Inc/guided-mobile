@@ -1144,6 +1144,10 @@ class AppTextConstants {
   ///Returns setup stripe info
   static String setupStripeInfo =
       'GuidED partners with Stripe for secure payments and financial services. In order to start getting paid, you need to setup a Stripe account.';
+
+  ///returns unable to delete stripe bank account text
+  static String unableToDeleteStripeBankAccount =
+      'You cannot delete the default external account for your default currency';
 }
 
 /// Class for error messages text
@@ -1266,6 +1270,10 @@ class ErrorMessageConstants {
 
   /// Returns 'Destination Image is Empty' text
   static String destinationImgEmpty = 'Destination Image is Empty';
+
+  ///Returns unable to delete bank account info text
+  static String unableToDeleteBankAccount =
+      'You cannot delete the default external account for your default currency. Please add another bank account first and delete this one';
 }
 
 /// Class for transaction history constants
