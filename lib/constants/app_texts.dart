@@ -1136,10 +1136,11 @@ class AppTextConstants {
       'I agree to abide by, follow and respect the local laws of the area I am traveling in.  If I have questions about these laws I will reach out to my Guide for information and guidance.';
 
   ///Returns user id text
- static String userId = 'user_id';
+  static String userId = 'user_id';
 
- ///Returns setup stripe info
-static String setupStripeInfo = 'GuidED partners with Stripe for secure payments and financial services. In order to start getting paid, you need to setup a Stripe account.';
+  ///Returns setup stripe info
+  static String setupStripeInfo =
+      'GuidED partners with Stripe for secure payments and financial services. In order to start getting paid, you need to setup a Stripe account.';
 }
 
 /// Class for error messages text
@@ -1259,6 +1260,9 @@ class ErrorMessageConstants {
 
   /// Returns 'Maximum keyword reach' text
   static String maximumKeyword = 'Maximum keyword reach';
+
+  /// Returns 'Destination Image is Empty' text
+  static String destinationImgEmpty = 'Destination Image is Empty';
 }
 
 /// Class for transaction history constants

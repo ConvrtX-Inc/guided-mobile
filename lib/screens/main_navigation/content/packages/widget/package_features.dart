@@ -194,13 +194,23 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                               Expanded(
                                 child: Text(
                                   widget._name,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14),
+                                  style: TextStyle(
+                                      fontSize: RegExp(r"\w+(\'\w+)?")
+                                                  .allMatches(widget._name)
+                                                  .length >
+                                              5
+                                          ? 10.sp
+                                          : 14.sp,
+                                      fontWeight: FontWeight.w600),
                                 ),
                               ),
                               Text(
-                                  '${widget._numberOfTouristMin} - ${widget._numberOfTourist} Traveller')
+                                '${widget._numberOfTouristMin} - ${widget._numberOfTourist} Traveller',
+                                style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontFamily: 'Gilroy',
+                                    fontWeight: FontWeight.w400),
+                              )
                             ],
                           ),
                         ),
@@ -245,13 +255,11 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                     if (snapshot.hasData) {
                       final BadgeModelData badgeData = snapshot.data;
                       final int length = badgeData.badgeDetails.length;
-                      return Align(
-                        alignment: Alignment.centerLeft,
+                      return Positioned(
+                        left: 10,
+                        bottom: 90,
                         child: Row(
                           children: <Widget>[
-                            SizedBox(
-                              width: 10.w,
-                            ),
                             Image.memory(
                               base64.decode(badgeData.badgeDetails[0].imgIcon
                                   .split(',')
@@ -263,10 +271,15 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                       );
                     }
                     if (snapshot.connectionState != ConnectionState.done) {
-                      return const SkeletonText(
-                        height: 200,
-                        width: 900,
-                        radius: 10,
+                      return const Positioned(
+                        left: 10,
+                        bottom: 90,
+                        child: SkeletonText(
+                          height: 30,
+                          width: 30,
+                          radius: 10,
+                          shape: BoxShape.circle,
+                        ),
                       );
                     }
                     return Container();

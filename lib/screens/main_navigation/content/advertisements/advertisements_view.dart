@@ -174,8 +174,18 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(screenArguments['title'],
-                        style: AppTextStyle.txtStyle),
+                    Text(
+                      screenArguments['title'],
+                      style: TextStyle(
+                          fontSize: RegExp(r"\w+(\'\w+)?")
+                                      .allMatches(screenArguments['title'])
+                                      .length >
+                                  5
+                              ? 10.sp
+                              : 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
+                    ),
                   ],
                 ),
               ),
@@ -184,6 +194,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                 child: Text(
                   screenArguments['description'],
                   style: AppTextStyle.descrStyle,
+                  textAlign: TextAlign.justify,
                 ),
               ),
               Padding(

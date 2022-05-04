@@ -115,9 +115,18 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(
-                      widget._title,
-                      style: AppTextStyle.txtStyle,
+                    Expanded(
+                      child: Text(
+                        widget._title,
+                        style: TextStyle(
+                            fontSize: RegExp(r"\w+(\'\w+)?")
+                                        .allMatches(widget._title)
+                                        .length >
+                                    5
+                                ? 10.sp
+                                : 18.sp,
+                            fontWeight: FontWeight.w600),
+                      ),
                     ),
                     Text(
                       widget._price,
@@ -250,16 +259,17 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
         },
       );
 
-  Widget buildImage(OutfitterImageDetailsModel imgData, int index) => GestureDetector(
-    onTap: () {
-      navigateOutfitterDetails(context, imgData.firebaseSnapshotImg);
-    },
-    child: ExtendedImage.network(
-      imgData.firebaseSnapshotImg,
-      fit: BoxFit.cover,
-      gaplessPlayback: true,
-    ),
-  );
+  Widget buildImage(OutfitterImageDetailsModel imgData, int index) =>
+      GestureDetector(
+        onTap: () {
+          navigateOutfitterDetails(context, imgData.firebaseSnapshotImg);
+        },
+        child: ExtendedImage.network(
+          imgData.firebaseSnapshotImg,
+          fit: BoxFit.cover,
+          gaplessPlayback: true,
+        ),
+      );
 
   Widget buildIndicator(int count) => AnimatedSmoothIndicator(
         activeIndex: activeIndex,

@@ -113,7 +113,7 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
             ),
           ),
           if (_isLoadingDone)
-            if (_isStatic)
+            if (_isStatic && splitDates.isNotEmpty)
               Stack(children: <Widget>[
                 Container(
                   padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
@@ -157,7 +157,7 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16.sp)),
                           content: Text(
-                              'Please choose one (1) date in order to proceed',
+                              'You are about to edit the Booking Dates. Proceed?',
                               style: TextStyle(
                                   color: AppColors.doveGrey,
                                   fontFamily: 'Gilroy',
@@ -165,9 +165,9 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
                                   fontSize: 12.sp)),
                           actions: <Widget>[
                             TextButton(
-                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              onPressed: () => Navigator.pop(context, 'No'),
                               child: Text(
-                                'Cancel',
+                                'No',
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontFamily: 'Gilroy',
@@ -180,9 +180,9 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
                                 setState(() {
                                   _isStatic = false;
                                 });
-                                Navigator.pop(context, 'OK');
+                                Navigator.pop(context, 'Yes');
                               },
-                              child: Text('OK',
+                              child: Text('Yes',
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontFamily: 'Gilroy',

@@ -165,14 +165,26 @@ class _OutfitterViewState extends State<OutfitterView> {
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(25),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(screenArguments['title'],
-                        style: AppTextStyle.txtStyle),
+                    Expanded(
+                      child: Text(
+                        screenArguments['title'],
+                        style: TextStyle(
+                            fontSize: RegExp(r"\w+(\'\w+)?")
+                                        .allMatches(screenArguments['title'])
+                                        .length >
+                                    5
+                                ? 10.sp
+                                : 18.sp,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
                     Text(
                       screenArguments['price'],
                       style: AppTextStyle.txtStyle,
