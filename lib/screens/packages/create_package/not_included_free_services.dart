@@ -10,16 +10,23 @@ import 'package:guided/constants/app_texts.dart';
 import 'dart:convert';
 
 /// Free Service Screen
-class FreeServicesScreen extends StatefulWidget {
+class NotIncludedFreeServicesScreen extends StatefulWidget {
   /// Constructor
-  const FreeServicesScreen({Key? key}) : super(key: key);
+  const NotIncludedFreeServicesScreen({Key? key}) : super(key: key);
 
   @override
-  _FreeServicesScreenState createState() => _FreeServicesScreenState();
+  _NotIncludedFreeServicesScreenState createState() =>
+      _NotIncludedFreeServicesScreenState();
 }
 
-class _FreeServicesScreenState extends State<FreeServicesScreen> {
-  final List<String> services = ['Hotel Pick Up', 'Your Guide', 'Lunch & Drinks', 'Fishing Rod'];
+class _NotIncludedFreeServicesScreenState
+    extends State<NotIncludedFreeServicesScreen> {
+  final List<String> services = [
+    'Sunscreen',
+    'Personal Camera',
+    'Hat',
+    'Sunglasses'
+  ];
 
   FocusNode _keywordFocus = FocusNode();
   TextEditingController _keyword = TextEditingController();
@@ -56,13 +63,9 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  HeaderText.headerText(AppTextConstants.serviceHeader),
+                  HeaderText.headerText(AppTextConstants.notIncludedServiceHeader),
                   SizedBox(
                     height: 30.h,
-                  ),
-                  SubHeaderText.subHeaderText(AppTextConstants.subHeader),
-                  SizedBox(
-                    height: 20.h,
                   ),
                   TextField(
                     onSubmitted: (text) {
@@ -211,10 +214,10 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
       BuildContext context, Map<String, dynamic> data) async {
     final Map<String, dynamic> details = Map<String, dynamic>.from(data);
 
-    details['services'] = services;
-    details['services_length'] = services.length.toString();
+    details['not_included_services'] = services;
+    details['not_included_services_length'] = services.length.toString();
 
-    await Navigator.pushNamed(context, '/not_included_free_service', arguments: details);
+    await Navigator.pushNamed(context, '/package_photo', arguments: details);
   }
 
   @override

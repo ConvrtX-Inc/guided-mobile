@@ -2001,14 +2001,13 @@ class _EventAddState extends State<EventAdd> {
                 return count++ == 3;
               });
 
-              await Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute<dynamic>(
-                      builder: (BuildContext context) =>
-                          const MainNavigationScreen(
+              await Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) => const MainNavigationScreen(
                             navIndex: 1,
                             contentIndex: 1,
-                          )));
+                          )),
+                  (Route<dynamic> route) => false);
             },
             paymentDetails: PaymentDetails(
                 serviceName: serviceName!,
@@ -2016,13 +2015,13 @@ class _EventAddState extends State<EventAdd> {
                 transactionNumber: transactionNumber!),
             paymentMethod: mode!);
       } else {
-        await Navigator.pushReplacement(
-            context,
-            MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => const MainNavigationScreen(
+        await Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(
                       navIndex: 1,
                       contentIndex: 1,
-                    )));
+                    )),
+            (Route<dynamic> route) => false);
       }
     }
   }

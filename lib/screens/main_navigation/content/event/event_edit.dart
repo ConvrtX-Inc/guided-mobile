@@ -2198,13 +2198,13 @@ class _EventEditState extends State<EventEdit> {
           }
         }
 
-        await Navigator.pushReplacement(
-            context,
-            MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => const MainNavigationScreen(
+        await Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(
                       navIndex: 1,
                       contentIndex: 1,
-                    )));
+                    )),
+            (Route<dynamic> route) => false);
       }
     } else {
       setState(() {
@@ -2259,13 +2259,13 @@ class _EventEditState extends State<EventEdit> {
         }
       }
 
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
+      await Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => const MainNavigationScreen(
                     navIndex: 1,
                     contentIndex: 1,
-                  )));
+                  )),
+          (Route<dynamic> route) => false);
     }
   }
 

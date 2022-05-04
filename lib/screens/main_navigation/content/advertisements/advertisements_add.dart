@@ -1716,14 +1716,13 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                 return count++ == 3;
               });
 
-              await Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute<dynamic>(
-                      builder: (BuildContext context) =>
-                          const MainNavigationScreen(
+              await Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) => const MainNavigationScreen(
                             navIndex: 1,
-                            contentIndex: 1,
-                          )));
+                            contentIndex: 3,
+                          )),
+                  (Route<dynamic> route) => false);
             },
             paymentDetails: PaymentDetails(
                 serviceName: serviceName!,
@@ -1731,13 +1730,13 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                 transactionNumber: transactionNumber!),
             paymentMethod: mode!);
       } else {
-        await Navigator.pushReplacement(
-            context,
-            MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => const MainNavigationScreen(
+        await Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(
                       navIndex: 1,
                       contentIndex: 3,
-                    )));
+                    )),
+            (Route<dynamic> route) => false);
       }
     }
   }
