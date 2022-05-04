@@ -42,7 +42,7 @@ class _HomeScreenState extends State<MainNavigationScreen>
   int contentIndex;
 
   _HomeScreenState(this.navIndex, this.contentIndex);
-  final CardController  _creditCardController  = Get.put(CardController());
+  final CardController  _creditCardController =Get.put(CardController());
   final UserProfileDetailsController _profileDetailsController =
   Get.put(UserProfileDetailsController());
 
@@ -78,15 +78,30 @@ class _HomeScreenState extends State<MainNavigationScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
-        // body: _mainNavigationWidgetOptions.elementAt(_selectedIndex),
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _mainNavigationWidgetOptions,
-        ),
-        bottomNavigationBar: GuidedBottomNavigationBar(
-            selectedIndex: _selectedIndex,
-            setBottomNavigationIndex: setBottomNavigationIndexHandler));
+    return WillPopScope(
+       /// listen on back button press -
+        onWillPop: () {
+          /// go back to home page when pressed
+          if (_selectedIndex > 0) {
+            setState(() {
+              _selectedIndex = 0;
+            });
+
+            return Future.value(false);
+          }
+
+          ///exit the app if current route is home page
+          return Future.value(true);
+        },
+        child: Scaffold(
+            // body: _mainNavigationWidgetOptions.elementAt(_selectedIndex),
+            body: IndexedStack(
+              index: _selectedIndex,
+              children: _mainNavigationWidgetOptions,
+            ),
+            bottomNavigationBar: GuidedBottomNavigationBar(
+                selectedIndex: _selectedIndex,
+                setBottomNavigationIndex: setBottomNavigationIndexHandler)));
   }
 
   Future<void> getUserCards() async {
@@ -96,7 +111,7 @@ class _HomeScreenState extends State<MainNavigationScreen>
     if (cards.isNotEmpty) {
       debugPrint('cards $cards');
       final CardModel card = cards.firstWhere(
-              (CardModel c) => c.isDefault == true,
+          (CardModel c) => c.isDefault == true,
           orElse: () => CardModel());
 
       if (card.id != '') {
@@ -106,7 +121,6 @@ class _HomeScreenState extends State<MainNavigationScreen>
       }
     }
   }
-
 
   Future<void> getProfileDetails() async {
     final ProfileDetailsModel res = await APIServices().getProfileData();
