@@ -1148,6 +1148,9 @@ class AppTextConstants {
   ///returns unable to delete stripe bank account text
   static String unableToDeleteStripeBankAccount =
       'You cannot delete the default external account for your default currency';
+
+  /// Returns not offered amenities text
+  static String notOfferedAmenities = 'Not Offered Amenities';
 }
 
 /// Class for error messages text

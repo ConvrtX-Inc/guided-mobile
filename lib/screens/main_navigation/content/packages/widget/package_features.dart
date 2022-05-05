@@ -35,6 +35,7 @@ class PackageFeatures extends StatefulWidget {
     String country = '',
     bool isPublished = false,
     String firebaseCoverImg = '',
+    String notIncluded = '',
     Key? key,
   })  : _id = id,
         _name = name,
@@ -53,6 +54,7 @@ class PackageFeatures extends StatefulWidget {
         _country = country,
         _isPublished = isPublished,
         _firebaseCoverImg = firebaseCoverImg,
+        _notIncluded = notIncluded,
         super(key: key);
 
   final String _id;
@@ -72,6 +74,7 @@ class PackageFeatures extends StatefulWidget {
   final String _country;
   final bool _isPublished;
   final String _firebaseCoverImg;
+  final String _notIncluded;
 
   @override
   State<PackageFeatures> createState() => _PackageFeaturesState();
@@ -436,6 +439,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'address': splitAddress,
       'country': widget._country,
       'extra_cost': widget._extraCost,
+      'not_included': widget._notIncluded
     };
 
     await Navigator.pushNamed(context, '/package_view', arguments: details);
@@ -459,6 +463,7 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'address': splitAddress,
       'country': widget._country,
       'extra_cost': widget._extraCost,
+      'not_included': widget._notIncluded
     };
 
     await Navigator.pushNamed(context, '/package_edit', arguments: details);

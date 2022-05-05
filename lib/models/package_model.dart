@@ -38,7 +38,8 @@ class PackageDetailsModel {
       this.currencyId = '',
       this.priceNote = '',
       this.isPublished = false,
-      this.firebaseCoverImg = ''});
+      this.firebaseCoverImg = '',
+      this.notIncludedServices = ''});
 
   /// String property initialization
   final String id,
@@ -56,7 +57,8 @@ class PackageDetailsModel {
       extraCostPerPerson,
       currencyId,
       priceNote,
-      firebaseCoverImg;
+      firebaseCoverImg,
+      notIncludedServices;
 
   /// int initialization
   final int maxExtraPerson, maxTraveller, minTraveller;
@@ -84,5 +86,6 @@ class PackageDetailsModel {
         currencyId = parseJson['currency_id'],
         priceNote = parseJson['price_note'],
         isPublished = parseJson['is_published'],
-        firebaseCoverImg = parseJson['firebase_cover_img'] ?? '';
+        firebaseCoverImg = parseJson['firebase_cover_img'] ?? '',
+        notIncludedServices = parseJson['not_included'] ?? '';
 }

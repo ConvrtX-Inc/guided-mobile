@@ -117,5 +117,6 @@ class _PackageListState extends State<PackageList>
       address: details.address,
       extraCost: details.extraCostPerPerson,
       isPublished: details.isPublished,
-      firebaseCoverImg: details.firebaseCoverImg);
+      firebaseCoverImg: details.firebaseCoverImg,
+      notIncluded: details.notIncludedServices);
 }
