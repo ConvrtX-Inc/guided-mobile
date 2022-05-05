@@ -5,6 +5,7 @@ class AppAPIPath {
 
   /// Returns staging mode (change to false if deploying to live)
   static bool isStaging = false;
+
   // static bool isStaging = true;
 
   /// Returns API mode
@@ -192,6 +193,11 @@ class AppAPIPath {
 
   ///Returns user transactions url
   static String userTransactionsUrl = 'api/v1/transactions';
+
+  static String eventDestination = 'api/v1/activity-event-destination';
+
+  static String eventDestinationImage =
+      'api/v1/activity-event-destination-image';
 }
 
 ///Get Api Base Url
