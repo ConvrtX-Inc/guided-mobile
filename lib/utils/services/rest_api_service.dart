@@ -428,10 +428,32 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-              'Bearer ${UserSingleton.instance.user.token}',
+              // 'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer $staticToken',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
+    final List<ActivityPackage> activityPackages = <ActivityPackage>[];
+    final activityPackage =
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+    activityPackages.addAll(activityPackage);
+    return activityPackages;
+  }
+
+  /// API service for currencies
+  Future<List<ActivityPackage>> getActivityPackagesbyDescOrder() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              // 'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer $staticToken',
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
     final List<ActivityPackage> activityPackage =
         (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
@@ -618,11 +640,8 @@ class APIServices {
     };
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
-        body: jsonEncode({
-          'latitude': '$latitude',
-          'longitude': '$longitude',
-          'distance': '20'
-        }),
+        body: jsonEncode(
+            {'latitude': '10.31', 'longitude': '123.89', 'distance': '20'}),
         headers: headers);
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -698,9 +717,9 @@ class APIServices {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
         });
-
+    print(response.request!.url);
+    print(response.body);
     final dynamic jsonData = jsonDecode(response.body);
-
     final List<ActivityHourAvailability> activityHours =
         <ActivityHourAvailability>[];
     final List<ActivityHourAvailability> activityHour = (jsonData as List)

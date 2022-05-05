@@ -55,6 +55,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   final SwiperController _cardController = SwiperController();
   double latitude = 0.0;
   double longitude = 0.0;
+  bool _hasLocationPermission = false;
   var result;
   @override
   void initState() {
@@ -78,13 +79,51 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   }
 
   Future<void> getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position position = await _determinePosition();
 
     setState(() {
       latitude = position.latitude;
       longitude = position.longitude;
+      _hasLocationPermission = true;
     });
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   @override
@@ -634,11 +673,15 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
-                child: nearbyActivities(context, activities),
+                child: _hasLocationPermission
+                    ? nearbyActivities(context, activities)
+                    : const CircularProgressIndicator(),
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 0.h),
-                child: popularGuidesNearYou(context, guides),
+                child: _hasLocationPermission
+                    ? popularGuidesNearYou(context, guides)
+                    : const CircularProgressIndicator(),
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 20.h),
@@ -684,8 +727,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.26,
           child: FutureBuilder<List<ActivityPackage>>(
-            future: APIServices()
-                .getClosestActivity(latitude, longitude), // async work
+            future:
+                APIServices().getActivityPackagesbyDescOrder(), // async work
             builder: (BuildContext context,
                 AsyncSnapshot<List<ActivityPackage>> snapshot) {
               switch (snapshot.connectionState) {
@@ -695,157 +738,172 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else {
-                    return ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: snapshot.data!.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 5.w, vertical: 20.h),
-                            height: 180.h,
-                            width: 168.w,
-                            decoration: const BoxDecoration(
-                              color: Colors.transparent,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap: () {
-                                    checkAvailability(
-                                        context, snapshot.data![index]);
-                                  },
-                                  child: Container(
-                                    height: 112.h,
-                                    width: 168.w,
-                                    decoration: BoxDecoration(
-                                      color: Colors.transparent,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(15.r),
-                                      ),
-                                      // image: DecorationImage(
-                                      //   image: AssetImage(
-                                      //       activities[index].featureImage),
-                                      //   fit: BoxFit.cover,
-                                      // ),
-                                      image: DecorationImage(
-                                          image: Image.memory(
-                                        base64.decode(snapshot
-                                            .data![index].coverImg!
-                                            .split(',')
-                                            .last),
-                                        fit: BoxFit.cover,
-                                        gaplessPlayback: true,
-                                      ).image),
-                                    ),
-                                    child: Stack(
-                                      children: <Widget>[
-                                        Positioned(
-                                          bottom: 10,
-                                          left: 20,
-                                          child: FutureBuilder<BadgeModelData>(
-                                            future: APIServices()
-                                                .getBadgesModelById(snapshot
-                                                    .data![index].mainBadgeId!),
-                                            builder: (BuildContext context,
-                                                AsyncSnapshot<dynamic>
-                                                    snapshot) {
-                                              if (snapshot.hasData) {
-                                                final BadgeModelData badgeData =
-                                                    snapshot.data;
-                                                final int length = badgeData
-                                                    .badgeDetails.length;
-                                                // return CircleAvatar(
-                                                //   backgroundColor:
-                                                //       Colors.transparent,
-                                                //   radius: 30,
-                                                //   backgroundImage: AssetImage(
-                                                //       activities[index].path),
-                                                // );
-                                                return Image.memory(
-                                                  base64.decode(badgeData
-                                                      .badgeDetails[0].imgIcon
-                                                      .split(',')
-                                                      .last),
-                                                  width: 30,
-                                                  height: 30,
-                                                  gaplessPlayback: true,
-                                                );
-                                              }
-                                              if (snapshot.connectionState !=
-                                                  ConnectionState.done) {
-                                                return Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 10.w),
-                                                  child: Column(
-                                                    children: <Widget>[
-                                                      SizedBox(
-                                                        height: 110.h,
-                                                      ),
-                                                      const SkeletonText(
-                                                        width: 30,
-                                                        height: 30,
-                                                        shape: BoxShape.circle,
-                                                      )
-                                                    ],
-                                                  ),
-                                                );
-                                              }
-                                              return Container();
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 5.h,
-                                ),
-                                Text(
-                                  snapshot.data![index].name!,
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.sp,
-                                      fontFamily: 'Gilroy',
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    Container(
-                                      height: 10.h,
-                                      width: 10.w,
+                    if (snapshot.data!.isNotEmpty) {
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 5.w, vertical: 20.h),
+                              height: 180.h,
+                              width: 168.w,
+                              decoration: const BoxDecoration(
+                                color: Colors.transparent,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      checkAvailability(
+                                          context, snapshot.data![index]);
+                                    },
+                                    child: Container(
+                                      height: 112.h,
+                                      width: 168.w,
                                       decoration: BoxDecoration(
                                         color: Colors.transparent,
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(15.r),
                                         ),
-                                        image: const DecorationImage(
-                                          image: AssetImage(
-                                              'assets/images/png/clock.png'),
-                                          fit: BoxFit.contain,
-                                        ),
+                                        // image: DecorationImage(
+                                        //   image: AssetImage(
+                                        //       activities[index].featureImage),
+                                        //   fit: BoxFit.cover,
+                                        // ),
+                                        image: DecorationImage(
+                                            image: Image.memory(
+                                          base64.decode(snapshot
+                                              .data![index].coverImg!
+                                              .split(',')
+                                              .last),
+                                          fit: BoxFit.cover,
+                                          gaplessPlayback: true,
+                                        ).image),
+                                      ),
+                                      child: Stack(
+                                        children: <Widget>[
+                                          Positioned(
+                                            bottom: 10,
+                                            left: 20,
+                                            child:
+                                                FutureBuilder<BadgeModelData>(
+                                              future: APIServices()
+                                                  .getBadgesModelById(snapshot
+                                                      .data![index]
+                                                      .mainBadgeId!),
+                                              builder: (BuildContext context,
+                                                  AsyncSnapshot<dynamic>
+                                                      snapshot) {
+                                                if (snapshot.hasData) {
+                                                  final BadgeModelData
+                                                      badgeData = snapshot.data;
+                                                  final int length = badgeData
+                                                      .badgeDetails.length;
+                                                  // return CircleAvatar(
+                                                  //   backgroundColor:
+                                                  //       Colors.transparent,
+                                                  //   radius: 30,
+                                                  //   backgroundImage: AssetImage(
+                                                  //       activities[index].path),
+                                                  // );
+                                                  return Image.memory(
+                                                    base64.decode(badgeData
+                                                        .badgeDetails[0].imgIcon
+                                                        .split(',')
+                                                        .last),
+                                                    width: 30,
+                                                    height: 30,
+                                                    gaplessPlayback: true,
+                                                  );
+                                                }
+                                                if (snapshot.connectionState !=
+                                                    ConnectionState.done) {
+                                                  return Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 10.w),
+                                                    child: Column(
+                                                      children: <Widget>[
+                                                        SizedBox(
+                                                          height: 110.h,
+                                                        ),
+                                                        const SkeletonText(
+                                                          width: 30,
+                                                          height: 30,
+                                                          shape:
+                                                              BoxShape.circle,
+                                                        )
+                                                      ],
+                                                    ),
+                                                  );
+                                                }
+                                                return Container();
+                                              },
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 2.w,
-                                    ),
-                                    Text(
-                                      // snapshot.data![index].timeToTravel!,
-                                      '0.0 hour drive',
-                                      style: TextStyle(
-                                          color: HexColor('#696D6D'),
-                                          fontSize: 11.sp,
-                                          fontFamily: 'Gilroy',
-                                          fontWeight: FontWeight.normal),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        });
+                                  ),
+                                  SizedBox(
+                                    height: 5.h,
+                                  ),
+                                  Text(
+                                    snapshot.data![index].name!,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16.sp,
+                                        fontFamily: 'Gilroy',
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Container(
+                                        height: 10.h,
+                                        width: 10.w,
+                                        decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(15.r),
+                                          ),
+                                          image: const DecorationImage(
+                                            image: AssetImage(
+                                                'assets/images/png/clock.png'),
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 2.w,
+                                      ),
+                                      Text(
+                                        // snapshot.data![index].timeToTravel!,
+                                        '0.0 hour drive',
+                                        style: TextStyle(
+                                            color: HexColor('#696D6D'),
+                                            fontSize: 11.sp,
+                                            fontFamily: 'Gilroy',
+                                            fontWeight: FontWeight.normal),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          });
+                    } else {
+                      return Center(
+                          child: Text(
+                        'No Nearby Activities',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.normal),
+                      ));
+                    }
                   }
               }
             },
