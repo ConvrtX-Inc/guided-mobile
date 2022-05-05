@@ -411,10 +411,32 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-              'Bearer ${UserSingleton.instance.user.token}',
+              // 'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer $staticToken',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
+    final List<ActivityPackage> activityPackages = <ActivityPackage>[];
+    final activityPackage =
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+    activityPackages.addAll(activityPackage);
+    return activityPackages;
+  }
+
+  /// API service for currencies
+  Future<List<ActivityPackage>> getActivityPackagesbyDescOrder() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              // 'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer $staticToken',
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
     final activityPackage =
         (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
@@ -601,11 +623,8 @@ class APIServices {
     };
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
-        body: jsonEncode({
-          'latitude': '$latitude',
-          'longitude': '$longitude',
-          'distance': '20'
-        }),
+        body: jsonEncode(
+            {'latitude': '10.31', 'longitude': '123.89', 'distance': '20'}),
         headers: headers);
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -680,9 +699,9 @@ class APIServices {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
         });
-
+    print(response.request!.url);
+    print(response.body);
     final dynamic jsonData = jsonDecode(response.body);
-
     final List<ActivityHourAvailability> activityHours =
         <ActivityHourAvailability>[];
     final activityHour = (jsonData as List)
@@ -1656,22 +1675,22 @@ class APIServices {
   }
 
   ///Api service to get chat messages
- Future<List<ChatModel>> getChatMessages(String userId, String filter) async {
-   final String? token = UserSingleton.instance.user.token;
+  Future<List<ChatModel>> getChatMessages(String userId, String filter) async {
+    final String? token = UserSingleton.instance.user.token;
 
-   final http.Response response = await http.get(
-       Uri.http(apiBaseUrl, '/api/v1/message-detail/$userId/$filter'),
-       headers: {
-         HttpHeaders.authorizationHeader: 'Bearer $token',
-       });
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/message-detail/$userId/$filter'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
-   final dynamic jsonData = jsonDecode(response.body);
-   final List<ChatModel> chatMessages = <ChatModel>[];
-   for (final dynamic res in jsonData) {
-     final ChatModel chat = ChatModel.fromJson(res);
-     chatMessages.add(chat);
-   }
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<ChatModel> chatMessages = <ChatModel>[];
+    for (final dynamic res in jsonData) {
+      final ChatModel chat = ChatModel.fromJson(res);
+      chatMessages.add(chat);
+    }
 
-   return chatMessages;
- }
+    return chatMessages;
+  }
 }

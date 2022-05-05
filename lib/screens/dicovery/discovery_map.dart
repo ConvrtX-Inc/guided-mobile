@@ -5,6 +5,7 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:pay/pay.dart';
 
 ///Discovery Screen
 class DiscoveryMapScreen extends StatefulWidget {
@@ -20,7 +21,13 @@ class _DiscoveryMapScreenState extends State<DiscoveryMapScreen> {
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
-
+    const _paymentItems = [
+      PaymentItem(
+        label: 'Total',
+        amount: '5.99',
+        status: PaymentItemStatus.final_price,
+      )
+    ];
     return Scaffold(
       backgroundColor: Colors.white,
       // appBar: AppBar(
@@ -162,8 +169,27 @@ class _DiscoveryMapScreenState extends State<DiscoveryMapScreen> {
                         SizedBox(
                           width: width * 0.4,
                           child: ElevatedButton(
-                            onPressed: () {
-                              // Navigator.of(context).pushNamed('/sign_up');
+                            onPressed: () async {
+                              Pay _payClient = Pay.withAssets(
+                                  ['default_payment_profile_apple_pay.json']);
+                              final result =
+                                  await _payClient.showPaymentSelector(
+                                provider: PayProvider.apple_pay,
+                                paymentItems: _paymentItems,
+                              );
+                              print(result);
+                              // ApplePayButton(
+                              //   paymentConfigurationAsset:
+                              //       'default_payment_profile_apple_pay.json',
+                              //   paymentItems: _paymentItems,
+                              //   style: ApplePayButtonStyle.black,
+                              //   type: ApplePayButtonType.buy,
+                              //   margin: const EdgeInsets.only(top: 15.0),
+                              //   onPaymentResult: onApplePayResult,
+                              //   loadingIndicator: const Center(
+                              //     child: CircularProgressIndicator(),
+                              //   ),
+                              // );
                             },
                             style: AppTextStyle.active,
                             child: const Text(
@@ -243,5 +269,9 @@ class _DiscoveryMapScreenState extends State<DiscoveryMapScreen> {
         ],
       )),
     );
+  }
+
+  void onApplePayResult(paymentResult) {
+    debugPrint(paymentResult.toString());
   }
 }

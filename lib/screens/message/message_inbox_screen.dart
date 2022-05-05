@@ -263,8 +263,7 @@ class _MessageInboxState extends State<MessageInbox> {
                                     Border.all(color: Colors.white, width: 3),
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
-                                  image:
-                                      AssetImage(requestsItems[0].imgUrl),
+                                  image: AssetImage(requestsItems[0].imgUrl),
                                   fit: BoxFit.contain,
                                 ),
                                 boxShadow: <BoxShadow>[

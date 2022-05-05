@@ -149,25 +149,26 @@ class _CalendarAvailabilityScreenState
                                 DateRangePickerSelectionMode.multiple),
                       ),
                       Positioned(
-                          top: 0,
-                          right: 0,
-                          left: 0,
-                          bottom: 0,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _isStatic = false;
-                              });
-                            },
-                            child: SizedBox(
-                              height: 500.h,
-                              width: 500.w,
-                              child: const DecoratedBox(
-                                decoration:
-                                    BoxDecoration(color: Colors.transparent),
-                              ),
+                        top: 0,
+                        right: 0,
+                        left: 0,
+                        bottom: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isStatic = false;
+                            });
+                          },
+                          child: SizedBox(
+                            height: 500.h,
+                            width: 500.w,
+                            child: const DecoratedBox(
+                              decoration:
+                                  BoxDecoration(color: Colors.transparent),
                             ),
-                          ))
+                          ),
+                        ),
+                      )
                     ])
                   else
                     Container(

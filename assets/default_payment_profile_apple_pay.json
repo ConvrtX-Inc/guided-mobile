@@ -1,0 +1,30 @@
+{
+    "provider": "apple_pay",
+    "data": {
+        "merchantIdentifier": "merchant.com.canada.guided",
+        "displayName": "Guided Premium Subscription",
+        "merchantCapabilities": [
+            "3DS",
+            "debit",
+            "credit"
+        ],
+        "supportedNetworks": [
+            "amex",
+            "visa",
+            "discover",
+            "masterCard"
+        ],
+        "countryCode": "US",
+        "currencyCode": "USD",
+        "requiredBillingContactFields": [],
+        "requiredShippingContactFields": [],
+        "shippingMethods": [
+            {
+                "amount": "5.99",
+                "detail": "Premium Subscription",
+                "identifier": "premium_subscription",
+                "label": "Premium Subscription"
+            }
+        ]
+    }
+}
