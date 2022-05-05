@@ -65,37 +65,6 @@ class _TabDiscoveryHubState extends State<TabDiscoveryHub> {
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
-                        child: TextField(
-                          textAlign: TextAlign.left,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            hintText: 'Search...',
-                            hintStyle: TextStyle(fontSize: 16.sp),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16.r),
-                              borderSide: const BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
-                              ),
-                            ),
-                            filled: true,
-                            contentPadding: const EdgeInsets.all(22),
-                            fillColor: Colors.white,
-                            prefixIcon: IconButton(
-                              icon: Image.asset(
-                                'assets/images/png/search_icon.png',
-                                width: 20.w,
-                                height: 20.h,
-                              ),
-                              onPressed: null,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 Row(
@@ -147,55 +116,55 @@ class _TabDiscoveryHubState extends State<TabDiscoveryHub> {
                         ],
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, '/discovery_hub_outfitter');
-                      },
-                      child: Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 9.h,
-                          ),
-                          Container(
-                            height: 70.h,
-                            width: 70.w,
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(15.r),
-                              ),
-                            ),
-                            child: Center(
-                              child: Container(
-                                height: 70.h,
-                                width: 70.w,
-                                decoration: const BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/png/red_shirt.png'),
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 9.h,
-                          ),
-                          Text(
-                            'Outfitter',
-                            style: TextStyle(
-                              color: AppColors.lightRed,
-                              fontFamily: 'Gilroy',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 16.sp,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     Navigator.pushNamed(
+                    //         context, '/discovery_hub_outfitter');
+                    //   },
+                    //   child: Column(
+                    //     children: <Widget>[
+                    //       SizedBox(
+                    //         height: 9.h,
+                    //       ),
+                    //       Container(
+                    //         height: 70.h,
+                    //         width: 70.w,
+                    //         padding: const EdgeInsets.all(10),
+                    //         decoration: BoxDecoration(
+                    //           color: Colors.transparent,
+                    //           borderRadius: BorderRadius.all(
+                    //             Radius.circular(15.r),
+                    //           ),
+                    //         ),
+                    //         child: Center(
+                    //           child: Container(
+                    //             height: 70.h,
+                    //             width: 70.w,
+                    //             decoration: const BoxDecoration(
+                    //               image: DecorationImage(
+                    //                 image: AssetImage(
+                    //                     'assets/images/png/red_shirt.png'),
+                    //                 fit: BoxFit.contain,
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //       SizedBox(
+                    //         height: 9.h,
+                    //       ),
+                    //       Text(
+                    //         'Outfitter',
+                    //         style: TextStyle(
+                    //           color: AppColors.lightRed,
+                    //           fontFamily: 'Gilroy',
+                    //           fontWeight: FontWeight.w400,
+                    //           fontSize: 16.sp,
+                    //         ),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
                 Padding(

@@ -27,9 +27,9 @@ class WelcomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  AppTextConstants.welcomeGuided,
-                  style: const TextStyle(
-                      fontSize: 20,
+                  'Welcome',
+                  style: TextStyle(
+                      fontSize: 20.sp,
                       fontFamily: 'Gilroy',
                       fontWeight: FontWeight.bold),
                 ),
