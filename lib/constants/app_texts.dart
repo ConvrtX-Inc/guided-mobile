@@ -738,7 +738,7 @@ class AppTextConstants {
   static String biggerBullet = '●';
 
   /// Returns 'No Results Found' text
-  static String noResultFound = 'No Results Found';
+  static String noResultFound = 'Nothing to Show Here';
 
   /// Returns confirm payment
   static String confirmPayment = 'Confirm Payment';
@@ -842,7 +842,7 @@ class AppTextConstants {
   static String slotsAndSchedule = 'Slots & Schedules';
 
   /// Returns Free services text
-  static String freeServices = 'Free Service';
+  static String freeServices = "What's included?";
 
   /// Returns Add schedule text
   static String addSchedule = 'Add Schedule';
@@ -1061,7 +1061,10 @@ class AppTextConstants {
   static String provinceState = 'Province/State';
 
   /// Returns header
-  static String serviceHeader = "What's included?";
+  static String serviceHeader = "What's included";
+
+  /// Returns header
+  static String notIncludedServiceHeader = "What's not included";
 
   ///Returns transaction details text
   static String transactionDetails = 'Transaction Details';
@@ -1110,6 +1113,41 @@ class AppTextConstants {
 
   ///Returns you've got an adventure request! text
   static String adventureRequest = "You've got an Adventure Request!";
+
+  ///Returns delete conversation text
+  static String deleteConversation = 'Delete Conversation';
+
+  ///Returns areYouSureYouWantToDeleteConversation text
+  static String areYouSureYouWantToDeleteConversation =
+      'Are you sure you want to delete this conversation?';
+
+  ///Returns areYouSureYouWantBlockMessages text
+  static String areYouSureYouWantToBlockMessages =
+      'Are you sure you want to block messages from';
+
+  ///Returns Maiden Name
+  static String maidenName = 'Maiden Name';
+
+  ///Returns address line 1 text
+  static String addressLine1 = 'Address Line 1';
+
+  ///Returns address line 2
+  static String addressLine2 = 'Address Line 2';
+
+  /// Returns local law pre set
+  static String localLawSet =
+      'I agree to abide by, follow and respect the local laws of the area I am traveling in.  If I have questions about these laws I will reach out to my Guide for information and guidance.';
+
+  ///Returns user id text
+  static String userId = 'user_id';
+
+  ///Returns setup stripe info
+  static String setupStripeInfo =
+      'GuidED partners with Stripe for secure payments and financial services. In order to start getting paid, you need to setup a Stripe account.';
+
+  ///returns unable to delete stripe bank account text
+  static String unableToDeleteStripeBankAccount =
+      'You cannot delete the default external account for your default currency';
 }
 
 /// Class for error messages text
@@ -1225,10 +1263,17 @@ class ErrorMessageConstants {
   static String datePick = 'You must pick a day to proceed';
 
   /// Returns 'Image file is too large' text
-  static String imageFileToSize = 'Image file is too large';
+  static String imageFileToSize = 'Maximum image size is 2MB';
 
   /// Returns 'Maximum keyword reach' text
   static String maximumKeyword = 'Maximum keyword reach';
+
+  /// Returns 'Destination Image is Empty' text
+  static String destinationImgEmpty = 'Destination Image is Empty';
+
+  ///Returns unable to delete bank account info text
+  static String unableToDeleteBankAccount =
+      'You cannot delete the default external account for your default currency. Please add another bank account first and delete this one';
 }
 
 /// Class for transaction history constants

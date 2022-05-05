@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -99,13 +100,13 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
         ? Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(16),
                 child: Container(
                     decoration: BoxDecoration(
                         border: Border.all(
                           color: Colors.grey,
                         ),
-                        borderRadius: BorderRadius.all(Radius.circular(20.r))),
+                        borderRadius: BorderRadius.all(Radius.circular(1.r))),
                     child: buildSlider(context)),
               ),
               SizedBox(height: 20.h),
@@ -114,9 +115,18 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(
-                      widget._title,
-                      style: AppTextStyle.txtStyle,
+                    Expanded(
+                      child: Text(
+                        widget._title,
+                        style: TextStyle(
+                            fontSize: RegExp(r"\w+(\'\w+)?")
+                                        .allMatches(widget._title)
+                                        .length >
+                                    5
+                                ? 10.sp
+                                : 18.sp,
+                            fontWeight: FontWeight.w600),
+                      ),
                     ),
                     Text(
                       widget._price,
@@ -192,8 +202,8 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
             imageCount = length;
 
             for (int i = 0; i < imageCount; i++) {
-              imageList
-                  .add(outfitterImage.outfitterImageDetails[i].snapshotImg);
+              imageList.add(
+                  outfitterImage.outfitterImageDetails[i].firebaseSnapshotImg);
               imageIdList.add(outfitterImage.outfitterImageDetails[i].id);
             }
 
@@ -204,8 +214,8 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
                   CarouselSlider.builder(
                       itemCount: length,
                       options: CarouselOptions(
-                        height: 300.h,
                         enableInfiniteScroll: false,
+                        height: 300.h,
                         viewportFraction: 1,
                         onPageChanged:
                             (int index, CarouselPageChangedReason reason) =>
@@ -224,7 +234,7 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
                         onTap: () {
                           navigateOutfitterDetails(context, '');
                         },
-                        child: Container(
+                        child: SizedBox(
                           width: 300.w,
                           height: 300.h,
                           child: const Text(''),
@@ -242,24 +252,22 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
             return const SkeletonText(
               height: 200,
               width: 900,
+              radius: 10,
             );
           }
           return Container();
         },
       );
 
-  Widget buildImage(OutfitterImageDetailsModel imgData, int index) => Container(
-        // margin: EdgeInsets.symmetric(horizontal: 1.w),
-        color: Colors.grey,
-        child: GestureDetector(
-          onTap: () {
-            navigateOutfitterDetails(context, imgData.snapshotImg);
-          },
-          child: Image.memory(
-            base64.decode(imgData.snapshotImg.split(',').last),
-            fit: BoxFit.fill,
-            gaplessPlayback: true,
-          ),
+  Widget buildImage(OutfitterImageDetailsModel imgData, int index) =>
+      GestureDetector(
+        onTap: () {
+          navigateOutfitterDetails(context, imgData.firebaseSnapshotImg);
+        },
+        child: ExtendedImage.network(
+          imgData.firebaseSnapshotImg,
+          fit: BoxFit.cover,
+          gaplessPlayback: true,
         ),
       );
 

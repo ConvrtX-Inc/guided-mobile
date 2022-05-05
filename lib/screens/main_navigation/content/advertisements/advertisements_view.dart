@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
@@ -156,10 +157,9 @@ class _AdvertisementViewState extends State<AdvertisementView> {
               ],
             ),
             flexibleSpace: screenArguments['snapshot_img'] != ''
-                ? Image.memory(
-                    base64.decode(
-                        screenArguments['snapshot_img'].split(',').last),
-                    fit: BoxFit.fitHeight,
+                ? ExtendedImage.network(
+                    screenArguments['snapshot_img'],
+                    fit: BoxFit.cover,
                     gaplessPlayback: true,
                   )
                 : Container(),
@@ -174,8 +174,18 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(screenArguments['title'],
-                        style: AppTextStyle.txtStyle),
+                    Text(
+                      screenArguments['title'],
+                      style: TextStyle(
+                          fontSize: RegExp(r"\w+(\'\w+)?")
+                                      .allMatches(screenArguments['title'])
+                                      .length >
+                                  5
+                              ? 10.sp
+                              : 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
+                    ),
                   ],
                 ),
               ),
@@ -184,6 +194,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                 child: Text(
                   screenArguments['description'],
                   style: AppTextStyle.descrStyle,
+                  textAlign: TextAlign.justify,
                 ),
               ),
               Padding(
@@ -246,6 +257,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                                           const SkeletonText(
                                             width: 100,
                                             height: 30,
+                                            radius: 10,
                                           ),
                                         ],
                                       ),

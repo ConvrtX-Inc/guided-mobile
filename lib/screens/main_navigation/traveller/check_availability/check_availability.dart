@@ -6,6 +6,10 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activity_availability_hours.dart';
+import 'package:guided/models/chat_model.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/message/message_screen_traveler.dart';
+
 // import 'package:horizontal_center_date_picker/datepicker_controller.dart';
 // import 'package:horizontal_center_date_picker/horizontal_date_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -20,7 +24,9 @@ import 'package:collection/collection.dart';
 /// Check Availability
 class CheckAvailability extends StatefulWidget {
   ///constructor
-  const CheckAvailability({Key? key}) : super(key: key);
+  const CheckAvailability({Key? key, this.screenArguments}) : super(key: key);
+
+  final dynamic screenArguments;
 
   @override
   State<CheckAvailability> createState() => _CheckAvailabilityState();
@@ -36,21 +42,38 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
   ActivityAvailabilityHours _activityAvailabilityHours =
       ActivityAvailabilityHours();
   late List<BookingHours> listTime = [];
+
+  User guideDetails = User();
+
+  List<Message> messageHistory = [];
+  late Map<String, dynamic> screenArguments;
+
+  ActivityPackage activityPackage = ActivityPackage();
+
   @override
   void initState() {
     initializeDateFormatting('en', null);
     listTime = AppListConstants.bookingHours;
     super.initState();
+
+    debugPrint('Arguments : ${widget.screenArguments}');
+    screenArguments = widget.screenArguments;
+    activityPackage = screenArguments['package'] as ActivityPackage;
+
+    getGuideDetails(activityPackage.userId!);
+
+    getMessageHistory(activityPackage.userId!);
   }
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> screenArguments =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    // final Map<String, dynamic> screenArguments =
+    //     ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final List<DateTime> ListDates =
         List<DateTime>.from(screenArguments['selectedDates'] as List);
-    final ActivityPackage activityPackage =
-        screenArguments['package'] as ActivityPackage;
+    // final ActivityPackage activityPackage =
+    //     screenArguments['package'] as ActivityPackage;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -441,17 +464,44 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                Image.asset(
-                  '${AssetsPath.assetsPNGPath}/messageTyping.png',
-                  height: 22.h,
-                  width: 22.w,
-                ),
-                Text(
-                  'Contact Tourist Guide',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.deepGreen,
+                GestureDetector(
+                  onTap: () async {
+                    await getGuideDetails(activityPackage.userId!);
+
+                    /*     final ChatModel message = ChatModel(
+                        receiver: Receiver(
+                            fullName: guideDetails.fullName,
+                            id: activityPackage.userId,
+                            avatar: guideDetails.firebaseProfilePicUrl),
+                        messages: messageHistory);*/
+
+                    final ChatModel message =
+                        await getMessageHistory(activityPackage.userId!);
+                    await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                MessageScreenTraveler(
+                                  message: message,
+                                )));
+                  },
+                  child: Row(
+                    children: <Widget>[
+                      Image.asset(
+                        '${AssetsPath.assetsPNGPath}/messageTyping.png',
+                        height: 22.h,
+                        width: 22.w,
+                      ),
+                      SizedBox(width: 10.w),
+                      Text(
+                        'Contact Tourist Guide',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.deepGreen,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(
@@ -623,4 +673,38 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
     final String outputDate = outputFormat.format(inputDate);
     return outputDate;
   }
+
+  Future<void> getGuideDetails(String guideId) async {
+    final User result = await APIServices().getUserDetails(guideId);
+
+    setState(() {
+      guideDetails = result;
+    });
+  }
+
+  Future<ChatModel> getMessageHistory(String guideId) async {
+    final List<ChatModel> res = await APIServices()
+        .getChatMessages(UserSingleton.instance.user.user!.id!, 'all');
+
+    final ChatModel chat = res.firstWhere(
+        (ChatModel element) => element.receiver!.id! == guideId,
+        orElse: () => ChatModel());
+
+    setState(() {
+      if (chat.messages != null) {
+        messageHistory = chat.messages!;
+      } else {
+        messageHistory = [];
+      }
+    });
+
+    return ChatModel(
+        receiver: Receiver(
+            fullName: guideDetails.fullName,
+            id: activityPackage.userId,
+            avatar: guideDetails.firebaseProfilePicUrl),
+        messages: messageHistory,
+        isBlocked: chat.isBlocked);
+  }
+
 }

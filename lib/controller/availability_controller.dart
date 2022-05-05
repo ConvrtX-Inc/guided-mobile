@@ -29,7 +29,7 @@ class AvailabilityController extends GetxController {
 
   ///set value
   void setSelectedDate(String value) {
-    _selectedDate.value = '04/25/2022';
+    _selectedDate.value = value;
     update(['calendar']);
   }
 }

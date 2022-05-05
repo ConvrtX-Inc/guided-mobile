@@ -99,7 +99,15 @@ dependencies:
   skeleton_text: ^3.0.0
   firebase_core: ^1.13.1
   firebase_storage: ^10.2.2
+  timeago_flutter: ^1.0.0
+  sticky_grouped_list: ^2.1.0
+  emoji_picker_flutter: ^1.1.2
+  photo_view: ^0.13.0
+  cached_network_image: ^3.2.0
+  extended_image: ^4.0.0
   in_app_purchase: ^3.0.2
+
+
   # flutter_expanded_tile: ^0.3.6
 dev_dependencies:
   build_runner: ^2.0.0
@@ -107,7 +115,14 @@ dev_dependencies:
 
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.9.2
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/logo_foreground.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -139,6 +154,7 @@ flutter:
     - assets/currencies.json
     - assets/google_pay_payment_profile.json
     - assets/apple_pay_payment_profile.json
+    - assets/stripe_bank_country_fields.json
     - assets/default_payment_profile_apple_pay.json
 
   # An image asset can refer to one or more resolution-specific "variants", see

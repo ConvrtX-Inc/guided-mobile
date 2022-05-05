@@ -5,6 +5,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -93,6 +95,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
   bool _isSubmit = false;
   late CountryModel _countryDropdown;
   late List<CountryModel> listCountry;
+  final String _storagePathOutfitterImg = 'outfitterImg';
   @override
   void initState() {
     super.initState();
@@ -150,7 +153,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(25),
+            padding: const EdgeInsets.all(5),
             child: Row(
               children: <Widget>[
                 Image.asset(
@@ -224,6 +227,8 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   final XFile? image1 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
                                           imageQuality: 25);
                                   if (image1 == null) {
                                     return;
@@ -234,16 +239,32 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image1 = imageTemporary;
@@ -262,7 +283,9 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   final XFile? image1 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 10);
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
+                                          imageQuality: 25);
 
                                   if (image1 == null) {
                                     return;
@@ -273,16 +296,32 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  print('Filesize: $fileSize');
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image1 = imageTemporary;
@@ -356,6 +395,8 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
                                           imageQuality: 25);
 
                                   if (image2 == null) {
@@ -367,15 +408,32 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image2 = imageTemporary;
@@ -394,7 +452,9 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   final XFile? image2 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 10);
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
+                                          imageQuality: 25);
                                   if (image2 == null) {
                                     return;
                                   }
@@ -404,15 +464,32 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image2 = imageTemporary;
@@ -486,6 +563,8 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
                                           imageQuality: 25);
 
                                   if (image3 == null) {
@@ -496,15 +575,32 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image3 = imageTemporary;
@@ -523,7 +619,9 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   final XFile? image3 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 10);
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
+                                          imageQuality: 25);
 
                                   if (image3 == null) {
                                     return;
@@ -534,15 +632,32 @@ class _OutfitterEditState extends State<OutfitterEdit>
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image3 = imageTemporary;
@@ -598,8 +713,8 @@ class _OutfitterEditState extends State<OutfitterEdit>
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.memory(
-              base64.decode(screenArguments['image_list'][0].split(',').last),
+            child: ExtendedImage.network(
+              screenArguments['image_list'][0],
               fit: BoxFit.cover,
               gaplessPlayback: true,
               width: 100,
@@ -637,8 +752,8 @@ class _OutfitterEditState extends State<OutfitterEdit>
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.memory(
-              base64.decode(screenArguments['image_list'][1].split(',').last),
+            child: ExtendedImage.network(
+              screenArguments['image_list'][1],
               fit: BoxFit.cover,
               gaplessPlayback: true,
               width: 100,
@@ -676,8 +791,8 @@ class _OutfitterEditState extends State<OutfitterEdit>
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.memory(
-              base64.decode(screenArguments['image_list'][2].split(',').last),
+            child: ExtendedImage.network(
+              screenArguments['image_list'][2],
               fit: BoxFit.cover,
               gaplessPlayback: true,
               width: 100,
@@ -1550,13 +1665,13 @@ class _OutfitterEditState extends State<OutfitterEdit>
 
         _imageUpdate(screenArguments['id'], screenArguments['image_count']);
 
-        await Navigator.pushReplacement(
-            context,
-            MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => const MainNavigationScreen(
+        await Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(
                       navIndex: 1,
                       contentIndex: 2,
-                    )));
+                    )),
+            (Route<dynamic> route) => false);
       }
     } else if (_date.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
@@ -1592,13 +1707,13 @@ class _OutfitterEditState extends State<OutfitterEdit>
 
       _imageUpdate(screenArguments['id'], screenArguments['image_count']);
 
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
+      await Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => const MainNavigationScreen(
                     navIndex: 1,
                     contentIndex: 2,
-                  )));
+                  )),
+          (Route<dynamic> route) => false);
     }
   }
 
@@ -1620,11 +1735,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
   Future<void> _3image(String id) async {
     if (_didClickedImage3) {
       if (image3 != null) {
-        final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
-        final String base64Image3 = base64Encode(await image3Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image3!, _storagePathOutfitterImg);
         final Map<String, dynamic> img3Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image3
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img3response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img3Id', RequestType.PATCH,
@@ -1638,11 +1757,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
     }
     if (_didClickedImage2) {
       if (image2 != null) {
-        final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-        final String base64Image2 = base64Encode(await image2Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
         final Map<String, dynamic> img2Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image2
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img2response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img2Id', RequestType.PATCH,
@@ -1656,11 +1779,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
     }
     if (_didClickedImage1) {
       if (image1 != null) {
-        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-        final String base64Image1 = base64Encode(await image1Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
         final Map<String, dynamic> img1Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image1
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img1response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.PATCH,
@@ -1676,11 +1803,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
 
   Future<void> _2image(String id) async {
     if (image3 != null) {
-      final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
-      final String base64Image3 = base64Encode(await image3Bytes);
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image3!, _storagePathOutfitterImg);
       final Map<String, dynamic> img3Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image3
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img3response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
@@ -1688,11 +1819,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
     }
     if (_didClickedImage2) {
       if (image2 != null) {
-        final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-        final String base64Image2 = base64Encode(await image2Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
         final Map<String, dynamic> img2Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image2
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img2response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img2Id', RequestType.PATCH,
@@ -1706,11 +1841,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
     }
     if (_didClickedImage1) {
       if (image1 != null) {
-        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-        final String base64Image1 = base64Encode(await image1Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
         final Map<String, dynamic> img1Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image1
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img1response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.PATCH,
@@ -1728,20 +1867,31 @@ class _OutfitterEditState extends State<OutfitterEdit>
     if (image3 != null) {
       final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
       final String base64Image3 = base64Encode(await image3Bytes);
+
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image3!, _storagePathOutfitterImg);
       final Map<String, dynamic> img3Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image3
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img3response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
           needAccessToken: true, data: img3Details);
     }
     if (image2 != null) {
-      final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-      final String base64Image2 = base64Encode(await image2Bytes);
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
       final Map<String, dynamic> img2Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image2
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img2response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
@@ -1749,11 +1899,15 @@ class _OutfitterEditState extends State<OutfitterEdit>
     }
     if (_didClickedImage1) {
       if (image1 != null) {
-        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-        final String base64Image1 = base64Encode(await image1Bytes);
+        /// Save image to firebase
+        String ImgUrl = '';
+
+        ImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
         final Map<String, dynamic> img1Details = {
           'activity_outfitter_id': id,
-          'snapshot_img': base64Image1
+          'snapshot_img': '',
+          'firebase_snapshot_img': ImgUrl
         };
         final dynamic img1response = await APIServices().request(
             '${AppAPIPath.outfitterImageUrl}/$img1Id', RequestType.PATCH,
@@ -1769,33 +1923,45 @@ class _OutfitterEditState extends State<OutfitterEdit>
 
   Future<void> _0image(String id) async {
     if (image3 != null) {
-      final Future<Uint8List> image3Bytes = File(image3!.path).readAsBytes();
-      final String base64Image3 = base64Encode(await image3Bytes);
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image3!, _storagePathOutfitterImg);
       final Map<String, dynamic> img3Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image3
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img3response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
           needAccessToken: true, data: img3Details);
     }
     if (image2 != null) {
-      final Future<Uint8List> image2Bytes = File(image2!.path).readAsBytes();
-      final String base64Image2 = base64Encode(await image2Bytes);
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image2!, _storagePathOutfitterImg);
       final Map<String, dynamic> img2Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image2
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img2response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,
           needAccessToken: true, data: img2Details);
     }
     if (image1 != null) {
-      final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-      final String base64Image1 = base64Encode(await image1Bytes);
+      /// Save image to firebase
+      String ImgUrl = '';
+
+      ImgUrl = await FirebaseServices()
+          .uploadImageToFirebase(image1!, _storagePathOutfitterImg);
       final Map<String, dynamic> img1Details = {
         'activity_outfitter_id': id,
-        'snapshot_img': base64Image1
+        'snapshot_img': '',
+        'firebase_snapshot_img': ImgUrl
       };
       final dynamic img1response = await APIServices().request(
           '${AppAPIPath.outfitterImageUrl}', RequestType.POST,

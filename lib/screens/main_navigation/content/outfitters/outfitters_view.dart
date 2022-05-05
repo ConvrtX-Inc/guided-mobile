@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
@@ -153,10 +154,9 @@ class _OutfitterViewState extends State<OutfitterView> {
               ],
             ),
             flexibleSpace: screenArguments['snapshot_img'] != ''
-                ? Image.memory(
-                    base64.decode(
-                        screenArguments['snapshot_img'].split(',').last),
-                    fit: BoxFit.fitHeight,
+                ? ExtendedImage.network(
+                    screenArguments['snapshot_img'],
+                    fit: BoxFit.cover,
                     gaplessPlayback: true,
                   )
                 : Container(),
@@ -165,14 +165,26 @@ class _OutfitterViewState extends State<OutfitterView> {
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(25),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(screenArguments['title'],
-                        style: AppTextStyle.txtStyle),
+                    Expanded(
+                      child: Text(
+                        screenArguments['title'],
+                        style: TextStyle(
+                            fontSize: RegExp(r"\w+(\'\w+)?")
+                                        .allMatches(screenArguments['title'])
+                                        .length >
+                                    5
+                                ? 10.sp
+                                : 18.sp,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
                     Text(
                       screenArguments['price'],
                       style: AppTextStyle.txtStyle,

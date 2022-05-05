@@ -1,7 +1,12 @@
 ///Model For Chat
 class ChatModel {
   ///Constructor
-  ChatModel({this.userId, this.roomId, this.receiver, this.messages});
+  ChatModel(
+      {this.userId,
+      this.roomId,
+      this.receiver,
+      this.messages,
+      this.isBlocked = false});
 
   ///Initialization for user id
   String? userId;
@@ -15,6 +20,15 @@ class ChatModel {
   ///Initialization for messages
   List<Message>? messages;
 
+  ///Initialization for is blocked
+  bool? isBlocked;
+
+  ///initialization for usermessageblockedid
+  String? userMessageBlockedId;
+
+  ///initialization for user message block from
+  String? userMessageBlockFrom;
+
   ///Map Data
   ChatModel.fromJson(Map<String, dynamic> json) {
     userId = json['user_id'];
@@ -27,6 +41,9 @@ class ChatModel {
         messages!.add(Message.fromJson(v));
       });
     }
+    isBlocked = json['is_blocked'] ?? false;
+    userMessageBlockedId = json['user_message_block_id'] ?? '';
+    userMessageBlockFrom = json['user_message_block_from'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
@@ -39,6 +56,8 @@ class ChatModel {
     if (messages != null) {
       data['messages'] = messages!.map((v) => v.toJson()).toList();
     }
+    data['is_blocked'] = isBlocked;
+    data['user_message_block_id'] = userMessageBlockedId;
     return data;
   }
 }
@@ -46,7 +65,8 @@ class ChatModel {
 ///Receiver Model
 class Receiver {
   ///Constructor
-  Receiver({this.id, this.fullName, this.avatar, this.isOnline});
+  Receiver(
+      {this.id, this.fullName, this.avatar, this.isOnline, this.phoneNumber});
 
   ///Initialization for id
   String? id;
@@ -60,12 +80,16 @@ class Receiver {
   ///Initialization for isOnline
   bool? isOnline;
 
+  ///Initialization for phone number
+  String? phoneNumber;
+
   ///Map Data
   Receiver.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     fullName = json['full_name'] ?? '';
     avatar = json['avatar'] ?? '';
     isOnline = json['isOnline'];
+    phoneNumber = json['phone_number'];
   }
 
   ///Map Data
@@ -75,6 +99,7 @@ class Receiver {
     data['full_name'] = fullName;
     data['avatar'] = avatar;
     data['isOnline'] = isOnline;
+    data['phone_number'] = phoneNumber;
     return data;
   }
 }
@@ -82,20 +107,20 @@ class Receiver {
 ///Message Model
 class Message {
   ///Constructor
-  Message({
-    this.id,
-    this.messageId,
-    this.userId,
-    this.senderId,
-    this.receiverId,
-    this.message,
-    this.isRead,
-    this.isSpam,
-    this.isSent,
-    this.isArchive,
-    this.createdDate,
-    this.updatedDate,
-  });
+  Message(
+      {this.id,
+      this.messageId,
+      this.userId,
+      this.senderId,
+      this.receiverId,
+      this.message,
+      this.isRead,
+      this.isSpam,
+      this.isSent,
+      this.isArchive,
+      this.createdDate,
+      this.updatedDate,
+      this.messageType = 'text'});
 
   ///Initialization for strings
   String? id,
@@ -105,7 +130,8 @@ class Message {
       receiverId,
       message,
       createdDate,
-      updatedDate;
+      updatedDate,
+      messageType;
 
   ///Initialization for booleans
   bool? isRead, isSpam, isSent, isArchive;
@@ -124,6 +150,7 @@ class Message {
     isArchive = json['is_archive'];
     createdDate = json['created_date'];
     updatedDate = json['updated_date'];
+    messageType = json['message_type'] ?? 'text';
   }
 
   Map<String, dynamic> toJson() {
@@ -140,6 +167,7 @@ class Message {
     data['is_archive'] = isArchive;
     data['created_date'] = createdDate;
     data['updated_date'] = updatedDate;
+    data['message_type'] = messageType;
 
     return data;
   }

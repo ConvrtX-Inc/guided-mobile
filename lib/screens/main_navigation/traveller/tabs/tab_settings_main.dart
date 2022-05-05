@@ -1,4 +1,3 @@
-
 // ignore_for_file: no_default_cases
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import 'package:guided/models/settings.dart';
 import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 import 'package:guided/screens/main_navigation/settings/widgets/settings_items.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
+import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/settings.dart';
 
@@ -68,28 +68,6 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                 color: AppColors.aquaHaze,
                 child: Row(
                   children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 3.w,
-                        ),
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                              blurRadius: 5,
-                              color: Colors.grey,
-                              spreadRadius: 2)
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 35.r,
-                        backgroundImage: const AssetImage(
-                            '${AssetsPath.assetsPNGPath}/student_profile.png'),
-                      ),
-                    ),
                     const SizedBox(
                       width: 24,
                     ),
@@ -126,14 +104,7 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                             return _displayWidget;
                           }),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.navigate_next),
-                      iconSize: 36,
-                      color: Colors.black,
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/profile');
-                      },
-                    ),
+
                   ],
                 ),
               ),
@@ -154,13 +125,10 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                           width: MediaQuery.of(context).size.width,
                           height: 60.h,
                           child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute<dynamic>(
-                                    builder: (BuildContext context) =>
-                                        const LoginScreen(),
-                                  ));
+                            onPressed: () async {
+                              await SecureStorage.clearAll();
+                              await Navigator.of(context)
+                                  .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
                             },
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
@@ -200,30 +168,121 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
     );
   }
 
-  Widget buildProfileData(ProfileDetailsModel profileData) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            if (profileData.fullName.isEmpty)
-              const Text('Unknown User')
-            else
+  Widget buildProfileData(ProfileDetailsModel profileData) =>
+      Row(
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.white,
+                width: 3.w,
+              ),
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                    blurRadius: 5,
+                    color: Colors.grey,
+                    spreadRadius: 2)
+              ],
+            ),
+            child: profileData.firebaseProfilePicUrl.isEmpty ?  CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 35.r,
+              backgroundImage: const AssetImage(
+                  '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
+            ) :CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 35.r,
+              backgroundImage: NetworkImage(profileData.firebaseProfilePicUrl),
+            ),
+          ),
+          const SizedBox(
+            width: 24,
+          ),
+          Expanded(
+              child:
               Column(
-                children: <Widget>[
-                  Text(
-                    profileData.fullName,
-                    style: TextStyle(
-                        letterSpacing: 1,
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(profileData.email,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    if (profileData.fullName.isEmpty)
+                      const Text('Unknown User')
+                    else
+                      Column(
+                        children: <Widget>[
+                          Text(
+                            profileData.fullName,
+                            style: TextStyle(
+                                letterSpacing: 1,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          Text(profileData.email,
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.grey))
+                        ],
+                      )
+                  ])),
+          IconButton(
+            icon: const Icon(Icons.navigate_next),
+            iconSize: 36,
+            color: Colors.black,
+            onPressed: () {
+              Navigator.pushNamed(context, '/profile');
+            },
+          ),
+        ],
+      );
+  /*    Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.white,
+              width: 3.w,
+            ),
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: const <BoxShadow>[
+              BoxShadow(blurRadius: 5, color: Colors.grey, spreadRadius: 2)
+            ],
+          ),
+          child: CircleAvatar(
+            backgroundColor: Colors.white,
+            radius: 35.r,
+            backgroundImage: const AssetImage(
+                '${AssetsPath.assetsPNGPath}/student_profile.png'),
+          ),
+        ),
+        Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              if (profileData.fullName.isEmpty)
+                const Text('Unknown User')
+              else
+                Column(
+                  children: <Widget>[
+                    Text(
+                      profileData.fullName,
                       style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.grey))
-                ],
-              )
-          ]);
+                          letterSpacing: 1,
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(profileData.email,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.grey))
+                  ],
+                )
+            ])
+      ]);*/
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

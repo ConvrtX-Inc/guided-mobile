@@ -52,7 +52,11 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(
+            fontSize: 12.sp, fontFamily: 'Gilroy', fontWeight: FontWeight.w400),
+      ),
     );
   }
 
@@ -112,7 +116,6 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
             ),
           ),
         ),
-
         if (showMainActivityChoices)
           Material(
             elevation: 5,

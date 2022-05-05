@@ -6,6 +6,7 @@ class BookingRequest {
   String? fromUserId;
   String? requestMsg;
   String? activityPackageId;
+  String? profilePhoto;
   String? statusId;
   String? bookingDateStart;
   String? bookingDateEnd;
@@ -16,6 +17,10 @@ class BookingRequest {
   Null? deletedDate;
   Status? status;
   String? sEntity;
+  String? fromUserFullName;
+  String? fromUserEmail;
+  String? fromUserFirebaseProfilePic;
+  String? activityPackageName;
 
   BookingRequest(
       {this.id,
@@ -23,6 +28,7 @@ class BookingRequest {
       this.fromUserId,
       this.requestMsg,
       this.activityPackageId,
+      this.profilePhoto,
       this.statusId,
       this.bookingDateStart,
       this.bookingDateEnd,
@@ -32,6 +38,10 @@ class BookingRequest {
       this.updatedDate,
       this.deletedDate,
       this.status,
+      this.fromUserFullName = '',
+      this.fromUserEmail = '',
+      this.fromUserFirebaseProfilePic = '',
+        this.activityPackageName = '',
       this.sEntity});
 
   BookingRequest.fromJson(Map<String, dynamic> json) {
@@ -40,6 +50,7 @@ class BookingRequest {
     fromUserId = json['from_user_id'];
     requestMsg = json['request_msg'];
     activityPackageId = json['activity_package_id'];
+    profilePhoto = json['profile_photo_firebase_url'] ?? '';
     statusId = json['status_id'];
     bookingDateStart = json['booking_date_start'];
     bookingDateEnd = json['booking_date_end'];
@@ -49,6 +60,10 @@ class BookingRequest {
     updatedDate = json['updated_date'];
     deletedDate = json['deleted_date'];
     status = json['status'] != null ? Status.fromJson(json['status']) : null;
+    fromUserEmail = json['from_user'] !=null ? json['from_user']['email'] ?? '' : '';
+    fromUserFullName = json['from_user'] !=null ?  json['from_user']['full_name'] ?? '' :'';
+    fromUserFirebaseProfilePic =json['from_user'] !=null ?  json['from_user']['profile_photo_firebase_url'] ?? '' :'';
+    activityPackageName =json['from_user'] !=null ?  json['package']['name'] :  '';
     sEntity = json['__entity'];
   }
 
@@ -59,6 +74,7 @@ class BookingRequest {
     data['from_user_id'] = fromUserId;
     data['request_msg'] = requestMsg;
     data['activity_package_id'] = activityPackageId;
+    data['profile_photo_firebase_url'] = profilePhoto;
     data['status_id'] = statusId;
     data['booking_date_start'] = bookingDateStart;
     data['booking_date_end'] = bookingDateEnd;

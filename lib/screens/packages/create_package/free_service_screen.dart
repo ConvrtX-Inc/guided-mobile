@@ -19,7 +19,7 @@ class FreeServicesScreen extends StatefulWidget {
 }
 
 class _FreeServicesScreenState extends State<FreeServicesScreen> {
-  final List<String> services = ['Transport', 'Breakfast', 'Water', 'Snacks'];
+  final List<String> services = ['Hotel Pick Up', 'Your Guide', 'Lunch & Drinks', 'Fishing Rod'];
 
   FocusNode _keywordFocus = FocusNode();
   TextEditingController _keyword = TextEditingController();
@@ -214,7 +214,7 @@ class _FreeServicesScreenState extends State<FreeServicesScreen> {
     details['services'] = services;
     details['services_length'] = services.length.toString();
 
-    await Navigator.pushNamed(context, '/package_photo', arguments: details);
+    await Navigator.pushNamed(context, '/not_included_free_service', arguments: details);
   }
 
   @override

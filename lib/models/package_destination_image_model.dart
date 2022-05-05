@@ -14,14 +14,18 @@ class PackageDestinationImageModelData {
 class PackageDestinationImageDetailsModel {
   /// Constructor
   PackageDestinationImageDetailsModel(
-      {this.id = '', this.packageDestinationId = '', this.snapshotImg = ''});
+      {this.id = '',
+      this.packageDestinationId = '',
+      this.snapshotImg = '',
+      this.firebaseSnapshotImg = ''});
 
   /// String property initialization
-  final String id, packageDestinationId, snapshotImg;
+  final String id, packageDestinationId, snapshotImg, firebaseSnapshotImg;
 
   /// mapping
   PackageDestinationImageDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
         packageDestinationId = parseJson['activity_package_destination_id'],
-        snapshotImg = parseJson['snapshot_img'];
+        snapshotImg = parseJson['snapshot_img'],
+        firebaseSnapshotImg = parseJson['firebase_snapshot_img'];
 }

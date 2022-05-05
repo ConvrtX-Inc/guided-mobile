@@ -146,14 +146,20 @@ class _LoginScreenState extends State<LoginScreen> {
         final UserModel user =
             UserModel.fromJson(json.decode(response.successResponse));
         UserSingleton.instance.user = user;
+        await SecureStorage.saveValue(
+            key: AppTextConstants.userToken, value: user.token!);
+        await SecureStorage.saveValue(
+            key: AppTextConstants.userId, value: user.user!.id!);
         if (user.user?.isTraveller != true) {
           await SecureStorage.saveValue(
               key: AppTextConstants.userType, value: 'guide');
-          await Navigator.pushReplacementNamed(context, '/main_navigation');
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/main_navigation', (Route<dynamic> route) => false);
         } else {
           await SecureStorage.saveValue(
               key: AppTextConstants.userType, value: 'traveller');
-          await Navigator.pushReplacementNamed(context, '/traveller_tab');
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/traveller_tab', (Route<dynamic> route) => false);
         }
       }
     });

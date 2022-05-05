@@ -1,35 +1,28 @@
-import 'package:advance_notification/advance_notification.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/constants/api_path.dart';
-import 'package:guided/constants/app_colors.dart';
-import 'package:guided/constants/app_texts.dart';
-import 'package:guided/models/user_model.dart';
-import 'package:guided/screens/main_navigation/main_navigation.dart';
-import 'package:guided/screens/main_navigation/settings/screens/settings_main.dart';
-import 'package:guided/utils/services/rest_api_service.dart';
-import 'package:guided/utils/secure_storage.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// ignore_for_file: cascade_invocations, library_prefixes, always_specify_types
 
-import 'package:guided/models/activity_package.dart';
-import 'package:guided/models/popular_guide.dart';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_list.dart';
+import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/constants/app_texts.dart';
+import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/availability_controller.dart';
+import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/settings_availability.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
+import 'package:in_date_utils/in_date_utils.dart' as Indate;
+import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
-import 'package:card_swiper/card_swiper.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:guided/controller/availability_controller.dart';
-import 'package:guided/constants/asset_path.dart';
-import 'package:guided/helpers/hexColor.dart';
-import 'package:guided/constants/app_list.dart';
-import 'package:badges/badges.dart';
-import 'package:guided/utils/services/static_data_services.dart';
-import 'package:guided/constants/app_text_style.dart';
-import 'package:intl/intl.dart';
-import 'package:in_date_utils/in_date_utils.dart' as Indate;
+
+import '../../../../utils/services/rest_api_service.dart';
 
 /// Screen for settings contact us
 class SettingsAvailability extends StatefulWidget {
@@ -41,24 +34,64 @@ class SettingsAvailability extends StatefulWidget {
 }
 
 class _SettingsAvailability extends State<SettingsAvailability> {
-  bool _isActive = true;
-  DateTime _selDate = DateTime.now();
+  final User? user = UserSingleton.instance.user.user;
 
-  final TextEditingController _message = TextEditingController();
-  final FocusNode _messageFocus = FocusNode();
+  bool _isActive = true;
+  String availabilityId = '';
+  bool isLoading = true;
+  DateTime _selDate = DateTime.now();
+  final TextEditingController _reasonController = TextEditingController();
+  final FocusNode _reasonFocus = FocusNode();
+  final DateRangePickerController _dateController = DateRangePickerController();
 
   int selectedmonth = 0;
   final ScrollToIndexController _scrollController = ScrollToIndexController();
-  final availabilityController = Get.put(AvailabilityController());
-  final SwiperController _cardController = SwiperController();
+  final AvailabilityController availabilityController = Get.put(AvailabilityController());
 
   var result;
   @override
   void initState() {
+    getSettingsAvailability();
+    super.initState();
+  }
+
+  Future<void> getSettingsAvailability() async {
+    setState(() => isLoading = true);
+    final SettingsAvailabilityModel res = await APIServices().getSettingsAvailability();
+    print('hello world from screen $res');
+
+
+    availabilityController.setSelectedDate(DateTime.parse(res.returnDate!).toString());
+    _reasonController.text = res.reason!;
+    setState(() {
+      _isActive = res.isAvailable!;
+      _selDate = DateTime.parse(res.returnDate!);
+      availabilityId = res.id!;
+    });
+    print('first load date $_selDate');
+
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
       _initData();
     });
-    super.initState();
+
+    setState(() => isLoading = false);
+  }
+
+  Future<void> toggleUpdateStatus(String id) async {
+    setState(() => isLoading = true);
+    final SettingsAvailabilityModel res = await APIServices().updateSettingsAvailability(
+        _isActive, _reasonController.text, _selDate, id);
+
+    availabilityController.setSelectedDate(DateTime.parse(res.returnDate!).toString());
+    setState(() {
+      _selDate = DateTime.parse(res.returnDate!);
+    });
+
+    print('seldate $_selDate');
+
+    _initData();
+
+    setState(() => isLoading = false);
   }
 
   void _initData() {
@@ -68,27 +101,27 @@ class _SettingsAvailability extends State<SettingsAvailability> {
     availabilityController.setSelectedDate(_currentDate.value.toString());
     availabilityController.setIndexMonth(dt.month);
 
-    DateTime currentDate = DateTime.parse(_currentDate.value);
+      final DateTime currentDate =
+          DateTime.parse(_currentDate.value);
 
-    final DateTime defaultDate = DateTime(currentDate.year, currentDate.month,
-        1, currentDate.hour, currentDate.minute);
+      final DateTime defaultDate = DateTime(currentDate.year, currentDate.month,
+          1, currentDate.hour, currentDate.minute);
 
-    availabilityController.setCurrentMonth(
-      defaultDate.toString(),
-    );
+      availabilityController.setCurrentMonth(
+        defaultDate.toString(),
+      );
 
     print(availabilityController.selectedDate);
   }
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    print(args.value);
     setState(() {
       if (args.value is DateTime) {
+        print('date test ${args.value}');
         _selDate = args.value;
       }
     });
     availabilityController.setSelectedDate(_selDate.toString());
-    print(_selDate);
   }
 
   @override
@@ -122,7 +155,9 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                       ),
                     ),
                   ),
-                  Align(
+                  Column(
+                    children: isLoading == false ? [
+                      Align(
                     alignment: Alignment.centerLeft,
                     child: SizedBox(
                       // width: double.maxFinite, // set width to maxFinite
@@ -143,28 +178,29 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                             children: <Widget>[
                               Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text(
-                                    _isActive
-                                        ? 'Set yourself as unavailable'
-                                        : 'Set yourself as available',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.black),
-                                    textAlign: TextAlign.left),
+                                child: Text(_isActive ? 'Set yourself as unavailable' : 'Set yourself as available',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.black
+                                  ),
+                                  textAlign: TextAlign.left
+                                ),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: Switch(
-                                    value: _isActive,
-                                    activeColor: Color(0xFF00C853),
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        _isActive = value;
-                                      });
-                                      print('_isActive $_isActive');
-                                    }),
+                                  value: _isActive,
+                                  activeColor: const Color(0xFF00C853),
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      _isActive = value;
+                                      print('value $value');
+                                      toggleUpdateStatus(availabilityId);
+                                    });
+                                  }
+                                ),
                               ),
                             ],
                           ),
@@ -176,169 +212,163 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Visibility(
-                        visible: _isActive ? false : true,
-                        child: TextField(
-                          controller: _message,
-                          focusNode: _messageFocus,
-                          minLines:
-                              6, // any number you need (It works as the rows for the textarea)
-                          keyboardType: TextInputType.multiline,
-                          maxLines: null,
-                          decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    const BorderSide(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    const BorderSide(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                              hintText: AppTextConstants.why),
-                        )),
+                      visible: _isActive ? false : true,
+                      child: TextField(
+                        controller: _reasonController,
+                        focusNode: _reasonFocus,
+                        minLines:
+                            6, // any number you need (It works as the rows for the textarea)
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            hintText: AppTextConstants.why),
+                      )
+                    ),
                   ),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: SizedBox(
                       // width: double.maxFinite, // set width to maxFinite
                       child: Padding(
-                          padding: EdgeInsets.fromLTRB(0, 25.h, 0, 25.h),
-                          child: Visibility(
-                            visible: _isActive ? false : true,
-                            child: OutlinedButton(
+                        padding: EdgeInsets.fromLTRB(0, 25.h, 0, 25.h),
+                        child: Visibility(
+                          visible: _isActive ? false : true,
+                          child: OutlinedButton(
                               style: ButtonStyle(
-                                  padding:
-                                      MaterialStateProperty.all<EdgeInsets>(
-                                          const EdgeInsets.all(20)),
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          AppColors.dirtyWhite),
+                                  padding: MaterialStateProperty.all<EdgeInsets>(
+                                      const EdgeInsets.all(26)),
+                                  backgroundColor: MaterialStateProperty.all<Color>(
+                                      AppColors.dirtyWhite),
                                   shape: MaterialStateProperty.all<
                                           RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ))),
                               child: Row(
-                                children: <Widget>[
+                                children: <Widget> [
                                   Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(AppTextConstants.returnDate,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.black,
-                                        ),
-                                        textAlign: TextAlign.left),
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.black,
+                                      ),
+                                      textAlign: TextAlign.left
+                                    ),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: Visibility(
-                                      visible: true,
-                                      child: Text(
-                                          DateFormat('dd MMMM yyyy')
-                                              .format(_selDate),
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            // fontWeight: FontWeight.w700,
-                                            color: Colors.grey,
-                                          ),
-                                          textAlign: TextAlign.right),
+                                      child: Text(DateFormat('dd MMMM yyyy').format(_selDate),
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        // fontWeight: FontWeight.w700,
+                                        color: Colors.grey,
+                                      ),
+                                      textAlign: TextAlign.right
+                                    ),
                                     ),
                                   ),
                                 ],
                               ),
                               onPressed: () async {
-                                result = showMaterialModalBottomSheet(
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(20),
+                                  result = showMaterialModalBottomSheet(
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20),
+                                      ),
                                     ),
-                                  ),
-                                  expand: false,
-                                  context: context,
-                                  backgroundColor: Colors.white,
-                                  builder: (BuildContext context) => SafeArea(
-                                    top: false,
-                                    child: Container(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.72,
-                                      decoration: const BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(20),
-                                              topRight: Radius.circular(20))),
-                                      child: Column(
-                                        children: <Widget>[
-                                          SizedBox(
-                                            height: 15.h,
-                                          ),
-                                          Align(
-                                            child: Image.asset(
-                                              AssetsPath.horizontalLine,
-                                              width: 60.w,
-                                              height: 5.h,
+                                    expand: false,
+                                    context: context,
+                                    backgroundColor: Colors.white,
+                                    builder: (BuildContext context) => SafeArea(
+                                      top: false,
+                                      child: Container(
+                                        height: MediaQuery.of(context).size.height *
+                                            0.72,
+                                        decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(20),
+                                                topRight: Radius.circular(20))),
+                                        child: Column(
+                                          children: <Widget>[
+                                            SizedBox(
+                                              height: 15.h,
                                             ),
-                                          ),
-                                          // SizedBox(
-                                          //   height: 15.h,
-                                          // ),
-                                          Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                20.w, 20.h, 20.w, 20.h),
-                                            child: Align(
-                                              alignment: Alignment.topLeft,
-                                              child: Text(
-                                                'Select date',
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 24.sp,
-                                                    fontWeight:
-                                                        FontWeight.w700),
+                                            Align(
+                                              child: Image.asset(
+                                                AssetsPath.horizontalLine,
+                                                width: 60.w,
+                                                height: 5.h,
                                               ),
                                             ),
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: <Widget>[
-                                              Icon(
-                                                Icons.chevron_left,
-                                                color: HexColor('#898A8D'),
+                                            // SizedBox(
+                                            //   height: 15.h,
+                                            // ),
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  20.w, 20.h, 20.w, 20.h),
+                                              child: Align(
+                                                alignment: Alignment.topLeft,
+                                                child: Text(
+                                                  'Select date',
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 24.sp,
+                                                      fontWeight: FontWeight.w700),
+                                                ),
                                               ),
-                                              Container(
-                                                  color: Colors.transparent,
-                                                  height: 80.h,
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.7,
-                                                  child: EasyScrollToIndex(
-                                                    controller:
-                                                        _scrollController, // ScrollToIndexController
-                                                    scrollDirection: Axis
-                                                        .horizontal, // default Axis.vertical
-                                                    itemCount: AppListConstants
-                                                        .calendarMonths
-                                                        .length, // itemCount
-                                                    itemWidth: 95,
-                                                    itemHeight: 70,
-                                                    itemBuilder:
-                                                        (BuildContext context,
-                                                            int index) {
-                                                      return InkWell(
-                                                        onTap: () {
-                                                          _scrollController
-                                                              .easyScrollToIndex(
-                                                                  index: index);
-                                                          availabilityController
-                                                              .setIndexMonth(
-                                                                  index + 1);
-                                                          DateTime dt = DateTime.parse(
-                                                              availabilityController
-                                                                  .currentDate);
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: <Widget>[
+                                                Icon(
+                                                  Icons.chevron_left,
+                                                  color: HexColor('#898A8D'),
+                                                ),
+                                                Container(
+                                                    color: Colors.transparent,
+                                                    height: 80.h,
+                                                    width: MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        0.7,
+                                                    child: EasyScrollToIndex(
+                                                      controller:
+                                                          _scrollController, // ScrollToIndexController
+                                                      scrollDirection: Axis
+                                                          .horizontal, // default Axis.vertical
+                                                      itemCount: AppListConstants
+                                                          .calendarMonths
+                                                          .length, // itemCount
+                                                      itemWidth: 95,
+                                                      itemHeight: 70,
+                                                      itemBuilder:
+                                                          (BuildContext context,
+                                                              int index) {
+                                                        return InkWell(
+                                                          onTap: () {
+                                                            _scrollController
+                                                                .easyScrollToIndex(
+                                                                    index: index);
+                                                            availabilityController
+                                                                .setIndexMonth(
+                                                                    index + 1);
+                                                            final DateTime dt = DateTime.parse(
+                                                                availabilityController
+                                                                    .currentDate);
 
                                                           final DateTime
                                                               plustMonth =
@@ -349,137 +379,118 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                                                   dt.hour,
                                                                   dt.minute);
 
-                                                          final DateTime
-                                                              setLastday =
-                                                              DateTime(
-                                                                  plustMonth
-                                                                      .year,
-                                                                  plustMonth
-                                                                      .month,
-                                                                  1,
-                                                                  plustMonth
-                                                                      .hour,
-                                                                  plustMonth
-                                                                      .minute);
-                                                          print(setLastday);
-                                                          availabilityController
-                                                              .setCurrentMonth(
-                                                            setLastday
-                                                                .toString(),
-                                                          );
-                                                        },
-                                                        child: Obx(
-                                                          () => Stack(
-                                                            children: <Widget>[
-                                                              Align(
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                                child:
-                                                                    Container(
-                                                                  margin: EdgeInsets.fromLTRB(
-                                                                      index == 0
-                                                                          ? 0.w
-                                                                          : 0.w,
-                                                                      0.h,
-                                                                      10.w,
-                                                                      0.h),
-                                                                  width: 89,
-                                                                  height: 45,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                          borderRadius: const BorderRadius
-                                                                              .all(
-                                                                            Radius.circular(10),
-                                                                          ),
-                                                                          border: Border.all(
-                                                                              color: index == availabilityController.selectedMonth - 1 ? HexColor('#FFC74A') : HexColor('#C4C4C4'),
-                                                                              width: 1),
-                                                                          color: index == availabilityController.selectedMonth - 1 ? HexColor('#FFC74A') : Colors.white),
-                                                                  child: Center(
-                                                                      child: Text(
-                                                                          AppListConstants
-                                                                              .calendarMonths[index])),
+                                                            final DateTime
+                                                                setLastday =
+                                                                DateTime(
+                                                                    plustMonth.year,
+                                                                    plustMonth
+                                                                        .month,
+                                                                    1,
+                                                                    plustMonth.hour,
+                                                                    plustMonth
+                                                                        .minute);
+                                                            availabilityController
+                                                                .setCurrentMonth(
+                                                              setLastday.toString(),
+                                                            );
+                                                          },
+                                                          child: Obx(
+                                                            () => Stack(
+                                                              children: <Widget>[
+                                                                Align(
+                                                                  child: Container(
+                                                                    margin: EdgeInsets
+                                                                        .fromLTRB(
+                                                                            index ==
+                                                                                    0
+                                                                                ? 0.w
+                                                                                : 0.w,
+                                                                            0.h,
+                                                                            10.w,
+                                                                            0.h),
+                                                                    width: 89,
+                                                                    height: 45,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                            borderRadius:
+                                                                                const BorderRadius
+                                                                                    .all(
+                                                                              Radius.circular(
+                                                                                  10),
+                                                                            ),
+                                                                            border: Border.all(
+                                                                                color: index == availabilityController.selectedMonth - 1
+                                                                                    ? HexColor(
+                                                                                        '#FFC74A')
+                                                                                    : HexColor(
+                                                                                        '#C4C4C4')),
+                                                                            color: index ==
+                                                                                    availabilityController.selectedMonth - 1
+                                                                                ? HexColor('#FFC74A')
+                                                                                : Colors.white),
+                                                                    child: Center(
+                                                                        child: Text(
+                                                                            AppListConstants
+                                                                                .calendarMonths[index])),
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              // Positioned(
-                                                              //     right: 2,
-                                                              //     top: 2,
-                                                              //     child: index
-                                                              //             .isOdd
-                                                              //         ? Badge(
-                                                              //             padding:
-                                                              //                 const EdgeInsets.all(8),
-                                                              //             badgeColor:
-                                                              //                 AppColors.deepGreen,
-                                                              //             badgeContent:
-                                                              //                 Text(
-                                                              //               '2',
-                                                              //               style: TextStyle(
-                                                              //                   color: Colors.white,
-                                                              //                   fontSize: 12.sp,
-                                                              //                   fontWeight: FontWeight.w800,
-                                                              //                   fontFamily: AppTextConstants.fontPoppins),
-                                                              //             ),
-                                                              //           )
-                                                              //         : Container()),
-                                                            ],
+                                                                // Positioned(
+                                                                //     right: 2,
+                                                                //     top: 2,
+                                                                //     child: index
+                                                                //             .isOdd
+                                                                //         ? Badge(
+                                                                //             padding:
+                                                                //                 const EdgeInsets.all(8),
+                                                                //             badgeColor:
+                                                                //                 AppColors.deepGreen,
+                                                                //             badgeContent:
+                                                                //                 Text(
+                                                                //               '2',
+                                                                //               style: TextStyle(
+                                                                //                   color: Colors.white,
+                                                                //                   fontSize: 12.sp,
+                                                                //                   fontWeight: FontWeight.w800,
+                                                                //                   fontFamily: AppTextConstants.fontPoppins),
+                                                                //             ),
+                                                                //           )
+                                                                //         : Container()),
+                                                              ],
+                                                            ),
                                                           ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  )),
-                                              Icon(
-                                                Icons.chevron_right,
-                                                color: HexColor('#898A8D'),
-                                              ),
-                                            ],
-                                          ),
-                                          GetBuilder<AvailabilityController>(
-                                              id: 'calendar',
-                                              builder: (AvailabilityController
-                                                  controller) {
-                                                // print(controller.currentDate);
-                                                return Container(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            20.w,
-                                                            0.h,
-                                                            20.w,
-                                                            0.h),
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.4,
-                                                    child: Container(
-                                                      padding:
-                                                          EdgeInsets.fromLTRB(
-                                                              20.w,
-                                                              0.h,
-                                                              20.w,
-                                                              0.h),
-                                                      height:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .height *
-                                                              0.4,
-                                                      child: SfDateRangePicker(
-                                                          minDate: DateTime.parse(
-                                                              availabilityController
-                                                                  .currentDate),
-                                                          maxDate: Indate.DateUtils.lastDayOfMonth(
-                                                              DateTime.parse(
-                                                                  availabilityController
-                                                                      .currentDate)),
-                                                          initialDisplayDate:
-                                                              DateTime.parse(_selDate
-                                                                  .toString()),
-                                                          navigationMode:
-                                                              DateRangePickerNavigationMode
-                                                                  .none,
-                                                          monthViewSettings:
-                                                              const DateRangePickerMonthViewSettings(
+                                                        );
+                                                      },
+                                                    )),
+                                                Icon(
+                                                  Icons.chevron_right,
+                                                  color: HexColor('#898A8D'),
+                                                ),
+                                              ],
+                                            ),
+                                            GetBuilder<AvailabilityController>(
+                                            id: 'calendar',
+                                            builder: (AvailabilityController
+                                                controller) {
+                                              // print(controller.currentDate);
+                                              return Container(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      20.w, 0.h, 20.w, 0.h),
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.4,
+                                                  child: Container(
+                                                        padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+                                                        height: MediaQuery.of(context).size.height * 0.4,
+                                                        child: SfDateRangePicker(
+                                                            enablePastDates: false,
+                                                          controller: _dateController,
+                                                          minDate: DateTime.parse(availabilityController.currentDate),
+                                                          maxDate: Indate.DateUtils.lastDayOfMonth(DateTime.parse(availabilityController.currentDate)),
+                                                          initialDisplayDate: DateTime.parse(_selDate.toString()),
+                                                            initialSelectedDate: DateTime.parse(_selDate.toString()),
+                                                          navigationMode: DateRangePickerNavigationMode.none,
+                                                          monthViewSettings: const DateRangePickerMonthViewSettings(
                                                             dayFormat: 'E',
                                                           ),
                                                           monthCellStyle:
@@ -506,43 +517,45 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                                           todayHighlightColor:
                                                               HexColor('#FFC74A'),
                                                           headerHeight: 0,
-                                                          selectionMode: DateRangePickerSelectionMode.single,
-                                                          onSelectionChanged: _onSelectionChanged),
-                                                    ));
-                                              }),
-                                          // SizedBox(
-                                          //   height: 20.h,
-                                          // ),
-                                          SizedBox(
-                                            width: 153.w,
-                                            height: 54.h,
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                                print(_selDate);
-                                              },
-                                              style: AppTextStyle.activeGreen,
-                                              child: const Text(
-                                                'Set Date',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12),
+                                                          onSelectionChanged: _onSelectionChanged
+                                                        ),
+                                                      )
+                                                );
+                                            }),
+                                            // SizedBox(
+                                            //   height: 20.h,
+                                            // ),
+                                            SizedBox(
+                                              width: 153.w,
+                                              height: 54.h,
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  print(UserSingleton.instance.user.user?.id);
+                                                  toggleUpdateStatus(availabilityId);
+                                                  Navigator.pop(context);
+                                                },
+                                                style: AppTextStyle.activeGreen,
+                                                child: const Text(
+                                                  'Set Date',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 12),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ).whenComplete(() {
-                                  _scrollController.easyScrollToIndex(index: 0);
-                                });
-                                Future.delayed(const Duration(seconds: 1), () {
-                                  _scrollController.easyScrollToIndex(
-                                      index:
-                                          availabilityController.selectedMonth -
-                                              1);
+                                  ).whenComplete(() {
+                                    _scrollController.easyScrollToIndex(index: 0);
+                                  });
+                                  Future.delayed(const Duration(seconds: 1), () {
+                                    _scrollController.easyScrollToIndex(
+                                        index:
+                                            availabilityController.selectedMonth -
+                                                1);
 
                                   // setState(() {
                                   //   selectedmonth = 7;
@@ -552,11 +565,32 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                             ),
                           )),
                     ),
+                  )
+                  ] : [ Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                            child: CircularProgressIndicator(),
+                          )
+                        ],
+                      ),
+                    ] ,
                   ),
                 ],
               ),
             ),
           ),
         ));
+  }
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty('selectedmonth', selectedmonth));
+    properties.add(DiagnosticsProperty<AvailabilityController>('availabilityController', availabilityController));
+    properties.add(DiagnosticsProperty('result', result));
+    properties.add(DiagnosticsProperty<User?>('user', user));
+    properties.add(StringProperty('availabilityId', availabilityId));
+    properties.add(DiagnosticsProperty<bool>('isLoading', isLoading));
   }
 }

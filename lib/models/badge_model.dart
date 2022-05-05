@@ -8,7 +8,7 @@ class BadgeModelData {
   late List<BadgeDetailsModel> badgeDetails = <BadgeDetailsModel>[];
 }
 
-/// Outfitter image class
+/// OutFitter image class
 class BadgeDetailsModel {
   /// Constructor
   BadgeDetailsModel(

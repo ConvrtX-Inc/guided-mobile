@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -116,18 +117,16 @@ class _EventFeaturesState extends State<EventFeatures> {
                       return Stack(
                         children: <Widget>[
                           GestureDetector(
-                            onTap: () => navigateEventDetails(context,
-                                imageDetails.snapshotImg, imageDetails.id),
+                            onTap: () => navigateEventDetails(
+                                context,
+                                imageDetails.firebaseSnapshotImg,
+                                imageDetails.id),
                             child: ListTile(
                               title: imageDetails.activityEventId != null
                                   ? SizedBox(
                                       height: 200.h,
-                                      child: Image.memory(
-                                        base64.decode(
-                                          imageDetails.snapshotImg
-                                              .split(',')
-                                              .last,
-                                        ),
+                                      child: ExtendedImage.network(
+                                        imageDetails.firebaseSnapshotImg,
                                         fit: BoxFit.cover,
                                         gaplessPlayback: true,
                                       ),
@@ -147,7 +146,15 @@ class _EventFeaturesState extends State<EventFeatures> {
                                     padding: const EdgeInsets.all(8),
                                     child: Text(
                                       widget._name,
-                                      style: AppTextStyle.blackStyle,
+                                      style: TextStyle(
+                                          fontSize: RegExp(r"\w+(\'\w+)?")
+                                                      .allMatches(widget._name)
+                                                      .length >
+                                                  5
+                                              ? 10.sp
+                                              : 12.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black),
                                     ),
                                   ),
                                   Padding(
@@ -168,17 +175,11 @@ class _EventFeaturesState extends State<EventFeatures> {
                                               SizedBox(
                                                 width: 5.w,
                                               ),
-                                              const Text(
-                                                '(67)',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 14),
-                                              ),
                                             ],
                                           ),
                                         ),
                                         Text(
-                                          '\$${widget._fee.toString().substring(0, widget._fee.toString().indexOf('.'))}',
+                                          '\$${widget._fee}',
                                           style: TextStyle(
                                               color: HexColor('#181B1B'),
                                               fontWeight: FontWeight.w700,
@@ -200,47 +201,27 @@ class _EventFeaturesState extends State<EventFeatures> {
                                 final BadgeModelData badgeData = snapshot.data;
                                 final int length =
                                     badgeData.badgeDetails.length;
-                                return Column(
-                                  children: <Widget>[
-                                    SizedBox(
-                                      height: 150.h,
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        SizedBox(
-                                          width: 30.w,
-                                        ),
-                                        Image.memory(
-                                          base64.decode(badgeData
-                                              .badgeDetails[0].imgIcon
-                                              .split(',')
-                                              .last),
-                                          gaplessPlayback: true,
-                                        )
-                                      ],
-                                    ),
-                                  ],
+                                return Positioned(
+                                  left: 20,
+                                  bottom: 90,
+                                  child: Image.memory(
+                                    base64.decode(badgeData
+                                        .badgeDetails[0].imgIcon
+                                        .split(',')
+                                        .last),
+                                    gaplessPlayback: true,
+                                  ),
                                 );
                               }
                               if (snapshot.connectionState !=
                                   ConnectionState.done) {
-                                return Column(
-                                  children: <Widget>[
-                                    SizedBox(
-                                      height: 150.h,
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        SizedBox(
-                                          width: 30.w,
-                                        ),
-                                        const SkeletonText(
-                                            width: 30,
-                                            height: 30,
-                                            shape: BoxShape.circle)
-                                      ],
-                                    ),
-                                  ],
+                                return const Positioned(
+                                  left: 20,
+                                  bottom: 90,
+                                  child: SkeletonText(
+                                      width: 30,
+                                      height: 30,
+                                      shape: BoxShape.circle),
                                 );
                               }
                               return Container();
@@ -254,7 +235,7 @@ class _EventFeaturesState extends State<EventFeatures> {
                                 GestureDetector(
                                   onTap: () => navigateEventDetailsEdit(
                                       context,
-                                      imageDetails.snapshotImg,
+                                      imageDetails.firebaseSnapshotImg,
                                       imageDetails.id),
                                   child: SizedBox(
                                     width: 50,

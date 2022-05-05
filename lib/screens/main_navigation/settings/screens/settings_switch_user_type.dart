@@ -51,8 +51,8 @@ class _SettingsSwitchUserType extends State<SettingsSwitchUserType> {
       };
       await storage.delete(key: AppTextConstants.userType);
       await SecureStorage.saveValue(
-              key: AppTextConstants.userType,
-              value: 'traveller')
+              value: 'traveller',
+              key: AppTextConstants.userType)
           .then((_) {
         Navigator.of(context)
             .pushNamed('/traveller_tab', arguments: details);
@@ -62,13 +62,13 @@ class _SettingsSwitchUserType extends State<SettingsSwitchUserType> {
         final Map<String, dynamic> details = {
         'user_type': 'guide'
       };
-      await storage.delete(key: AppTextConstants.userType);
-      await SecureStorage.saveValue(
-              key: AppTextConstants.userType, value: 'guide')
-          .then((_) {
-        Navigator.of(context)
+      // await storage.delete(key: AppTextConstants.userType);
+      // await SecureStorage.saveValue(
+      //         key: AppTextConstants.userType, value: 'guide')
+      //     .then((_) {
+        await Navigator.of(context)
             .pushNamed('/become_a_guide', arguments: details);
-      });
+      // });
     }
   }
 

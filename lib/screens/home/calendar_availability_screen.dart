@@ -1,25 +1,16 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable, unused_local_variable, avoid_dynamic_calls
-import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
-import 'package:guided/models/activity_availability_hours_model.dart';
-import 'package:guided/screens/home/set_booking_date_screen.dart';
-import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:in_date_utils/in_date_utils.dart' as Indate;
-
-import '../../utils/services/rest_api_service.dart';
 
 /// Calendar Availability Screen
 class CalendarAvailabilityScreen extends StatefulWidget {
@@ -47,9 +38,12 @@ class _CalendarAvailabilityScreenState
   List<String> splitId = [];
   List<DateTime> listDate = [];
   bool _isStatic = true;
+  int count = 1;
+  TextEditingController txtCount = TextEditingController();
   @override
   void initState() {
     super.initState();
+
     txtMinimum = TextEditingController(text: minimum.toString());
 
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
@@ -70,6 +64,11 @@ class _CalendarAvailabilityScreenState
         defaultDate.toString(),
       );
       _selectedDate = screenArguments['availability_date'][0];
+      setState(() {
+        txtCount =
+            TextEditingController(text: screenArguments['slots'].toString());
+      });
+      count = screenArguments['slots'];
     });
     selectedmonth = DateTime.now().month.toInt();
     selectedMonth = AppListConstants.numberList[selectedmonth - 1];
@@ -149,26 +148,65 @@ class _CalendarAvailabilityScreenState
                                 DateRangePickerSelectionMode.multiple),
                       ),
                       Positioned(
-                        top: 0,
-                        right: 0,
-                        left: 0,
-                        bottom: 0,
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isStatic = false;
-                            });
-                          },
-                          child: SizedBox(
-                            height: 500.h,
-                            width: 500.w,
-                            child: const DecoratedBox(
-                              decoration:
-                                  BoxDecoration(color: Colors.transparent),
+                          top: 0,
+                          right: 0,
+                          left: 0,
+                          bottom: 0,
+                          child: GestureDetector(
+                            onTap: () => showDialog(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: Text('Edit Slots & Schedules',
+                                    style: TextStyle(
+                                        fontFamily: 'Gilroy',
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16.sp)),
+                                content: Text(
+                                    'Please choose one (1) date in order to proceed',
+                                    style: TextStyle(
+                                        color: AppColors.doveGrey,
+                                        fontFamily: 'Gilroy',
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 12.sp)),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, 'Cancel'),
+                                    child: Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontFamily: 'Gilroy',
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _isStatic = false;
+                                      });
+                                      Navigator.pop(context, 'OK');
+                                    },
+                                    child: Text('OK',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontFamily: 'Gilroy',
+                                            fontSize: 12.sp,
+                                            fontWeight: FontWeight.w600)),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ),
-                      )
+                            child: SizedBox(
+                              height: 500.h,
+                              width: 500.w,
+                              child: const DecoratedBox(
+                                decoration:
+                                    BoxDecoration(color: Colors.transparent),
+                              ),
+                            ),
+                          ))
                     ])
                   else
                     Container(
@@ -198,6 +236,98 @@ class _CalendarAvailabilityScreenState
                         onSelectionChanged: _onSelectionChanged,
                       ),
                     ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                    child: Text(
+                      AppTextConstants.headerNumberOfPeople,
+                      style: TextStyle(
+                          fontFamily: 'Gilroy',
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.only(left: 20.w, top: 10.h, right: 20.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                if (count != 1) {
+                                  count--;
+                                  txtCount.text = count.toString();
+                                }
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: CircleBorder(
+                                side: count == 1
+                                    ? BorderSide(color: AppColors.grey)
+                                    : BorderSide(color: AppColors.primaryGreen),
+                              ),
+                              padding: const EdgeInsets.all(11),
+                              primary: Colors.white,
+                              onPrimary: Colors.green,
+                            ),
+                            child: Icon(Icons.remove,
+                                color: count == 1
+                                    ? AppColors.grey
+                                    : AppColors.primaryGreen),
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: <Widget>[
+                              TextField(
+                                enabled: false,
+                                controller: txtCount,
+                                decoration: InputDecoration(
+                                  hintStyle: TextStyle(
+                                    color: AppColors.grey,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14.r),
+                                    borderSide: BorderSide(
+                                        color: Colors.grey, width: 0.2.w),
+                                  ),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                if (count !=
+                                    screenArguments['number_of_tourist']) {
+                                  count++;
+                                }
+                                txtCount.text = count.toString();
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: CircleBorder(
+                                side: BorderSide(color: AppColors.primaryGreen),
+                              ),
+                              padding: const EdgeInsets.all(11),
+                              primary: Colors.white,
+                              onPrimary: Colors.green,
+                            ),
+                            child:
+                                Icon(Icons.add, color: AppColors.primaryGreen),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -244,7 +374,7 @@ class _CalendarAvailabilityScreenState
       'id': screenArguments['id'],
       'selected_date': _selectedDate,
       'package_id': screenArguments['package_id'],
-      'number_of_tourist': screenArguments['number_of_tourist']
+      'number_of_tourist': count
     };
 
     await Navigator.pushNamed(context, '/availability_booking_dates',

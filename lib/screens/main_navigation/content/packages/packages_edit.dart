@@ -5,6 +5,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,7 @@ import 'package:guided/models/country_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
+import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
@@ -102,6 +104,7 @@ class _PackageEditState extends State<PackageEdit> {
 
   late CountryModel _countryDropdown;
   late List<CountryModel> listCountry;
+  final String _storagePathCoverImg = 'coverImg';
 
   @override
   void initState() {
@@ -165,7 +168,12 @@ class _PackageEditState extends State<PackageEdit> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(
+          fontSize: 12.sp,
+        ),
+      ),
     );
   }
 
@@ -186,7 +194,7 @@ class _PackageEditState extends State<PackageEdit> {
             decoration: BoxDecoration(
               color: Colors.transparent,
               border: Border.all(
-                color: Color.fromARGB(255, 100, 17, 17),
+                color: Colors.grey.shade400,
                 width: 1.w,
               ),
               borderRadius: BorderRadius.circular(16.r),
@@ -203,15 +211,14 @@ class _PackageEditState extends State<PackageEdit> {
                   )
                 else
                   Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(4),
                     child: SizedBox(
-                      width: 140.w,
-                      height: 100.h,
+                      width: 160.w,
                       child: _choicesMainActivity(mainActivity),
                     ),
                   ),
                 SizedBox(
-                  width: 90.w,
+                  width: 80.w,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
@@ -244,6 +251,7 @@ class _PackageEditState extends State<PackageEdit> {
             elevation: 5,
             borderRadius: BorderRadius.circular(12.r),
             child: SizedBox(
+              height: 200.h,
               width: width,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(15.w, 10.h, 10.w, 20.h),
@@ -274,6 +282,7 @@ class _PackageEditState extends State<PackageEdit> {
                       return const SkeletonText(
                         width: 100,
                         height: 10,
+                        radius: 10,
                       );
                     }
                     return Container();
@@ -314,10 +323,9 @@ class _PackageEditState extends State<PackageEdit> {
               borderRadius: BorderRadius.circular(16.r),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Align(
                       child: SizedBox(
@@ -437,14 +445,16 @@ class _PackageEditState extends State<PackageEdit> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -464,8 +474,6 @@ class _PackageEditState extends State<PackageEdit> {
                                 if (subActivities3 != null) {
                                   subActivities2 = subActivities3;
                                   subActivities3 = null;
-                                } else {
-                                  subActivities2 = null;
                                 }
                                 count--;
                                 showLimitNote = false;
@@ -522,14 +530,16 @@ class _PackageEditState extends State<PackageEdit> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -578,7 +588,7 @@ class _PackageEditState extends State<PackageEdit> {
           },
           child: Container(
             height: 40.h,
-            width: 140.w,
+            width: 155.w,
             decoration: BoxDecoration(
                 color: AppColors.platinum.withOpacity(0.8),
                 border: Border.all(
@@ -599,16 +609,20 @@ class _PackageEditState extends State<PackageEdit> {
                           height: 20,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: SizedBox(
+                              height: 30.h,
+                              child: Align(
+                                child: Text(
+                                  badges.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 12.sp),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -688,7 +702,10 @@ class _PackageEditState extends State<PackageEdit> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(fontSize: 12.sp),
+      ),
     );
   }
 
@@ -734,7 +751,10 @@ class _PackageEditState extends State<PackageEdit> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(fontSize: 12.sp),
+      ),
     );
   }
 
@@ -755,7 +775,7 @@ class _PackageEditState extends State<PackageEdit> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(25),
+            padding: const EdgeInsets.all(5),
             child: Row(
               children: <Widget>[
                 Image.asset(
@@ -833,6 +853,8 @@ class _PackageEditState extends State<PackageEdit> {
                                   final XFile? image1 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.camera,
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
                                           imageQuality: 25);
                                   if (image1 == null) {
                                     return;
@@ -843,15 +865,32 @@ class _PackageEditState extends State<PackageEdit> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image1 = imageTemporary;
@@ -870,7 +909,9 @@ class _PackageEditState extends State<PackageEdit> {
                                   final XFile? image1 = await ImagePicker()
                                       .pickImage(
                                           source: ImageSource.gallery,
-                                          imageQuality: 10);
+                                          maxHeight: 800.h,
+                                          maxWidth: 800.w,
+                                          imageQuality: 25);
 
                                   if (image1 == null) {
                                     return;
@@ -881,15 +922,32 @@ class _PackageEditState extends State<PackageEdit> {
                                   int fileSize;
                                   file = getFileSizeString(
                                       bytes: imageTemporary.lengthSync());
-                                  fileSize = int.parse(
-                                      file.substring(0, file.indexOf('K')));
-                                  if (fileSize >= 100) {
-                                    AdvanceSnackBar(
-                                            message: ErrorMessageConstants
-                                                .imageFileToSize)
-                                        .show(context);
-                                    Navigator.pop(context);
-                                    return;
+                                  if (file.contains('KB')) {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('K')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2000) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
+                                  } else {
+                                    fileSize = int.parse(
+                                        file.substring(0, file.indexOf('M')));
+                                    debugPrint('Filesize:: $fileSize');
+                                    if (fileSize >= 2) {
+                                      Navigator.pop(context);
+                                      AdvanceSnackBar(
+                                              message: ErrorMessageConstants
+                                                  .imageFileToSize,
+                                              bgColor: Colors.red)
+                                          .show(context);
+                                      return;
+                                    }
                                   }
                                   setState(() {
                                     this.image1 = imageTemporary;
@@ -945,15 +1003,14 @@ class _PackageEditState extends State<PackageEdit> {
       return Stack(
         children: <Widget>[
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.memory(
-              base64.decode(screenArguments['image_url'].split(',').last),
-              fit: BoxFit.cover,
-              gaplessPlayback: true,
-              width: 100,
-              height: 100,
-            ),
-          ),
+              borderRadius: BorderRadius.circular(10),
+              child: ExtendedImage.network(
+                screenArguments['image_url'],
+                fit: BoxFit.cover,
+                gaplessPlayback: true,
+                width: 100,
+                height: 100,
+              )),
           Positioned(
               right: 0,
               child: GestureDetector(
@@ -1051,7 +1108,6 @@ class _PackageEditState extends State<PackageEdit> {
                             final int length = badgeData.badgeDetails.length;
                             return ListTile(
                               onTap: () {},
-                              minLeadingWidth: 20,
                               leading: Image.memory(
                                 base64.decode(badgeData.badgeDetails[0].imgIcon
                                     .split(',')
@@ -1068,6 +1124,7 @@ class _PackageEditState extends State<PackageEdit> {
                             return const SkeletonText(
                               width: 100,
                               height: 30,
+                              radius: 10,
                             );
                           }
                           return Container();
@@ -1255,6 +1312,7 @@ class _PackageEditState extends State<PackageEdit> {
                                                       const SkeletonText(
                                                         width: 100,
                                                         height: 30,
+                                                        radius: 10,
                                                       )
                                                     ],
                                                   ),
@@ -1799,7 +1857,7 @@ class _PackageEditState extends State<PackageEdit> {
           height: height,
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -1906,12 +1964,13 @@ class _PackageEditState extends State<PackageEdit> {
         }
       }
 
-      if (image1 != null) {
-        final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
-        final String base64Image1 = base64Encode(await image1Bytes);
-        imageByte = base64Image1;
+      /// Save image to firebase
+      String coverImgUrl = '';
+      if (image1 == null) {
+        coverImgUrl = screenArguments['image_url'];
       } else {
-        imageByte = screenArguments['image_url'];
+        coverImgUrl = await FirebaseServices()
+            .uploadImageToFirebase(image1!, _storagePathCoverImg);
       }
 
       Map<String, dynamic> packageDetails = {
@@ -1928,7 +1987,8 @@ class _PackageEditState extends State<PackageEdit> {
         'base_price': _price.text,
         'extra_cost_per_person': _extraCost.text,
         'is_published': true,
-        'cover_img': imageByte,
+        'cover_img': '',
+        'firebase_cover_img': coverImgUrl
       };
 
       /// Activity Package Details API
@@ -1938,13 +1998,13 @@ class _PackageEditState extends State<PackageEdit> {
           needAccessToken: true,
           data: packageDetails);
 
-      await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainNavigationScreen(
+      await Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => const MainNavigationScreen(
                     navIndex: 1,
                     contentIndex: 0,
-                  )));
+                  )),
+          (Route<dynamic> route) => false);
     }
   }
 

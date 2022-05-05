@@ -18,6 +18,7 @@ class MainContentSkeleton extends StatelessWidget {
             const SkeletonText(
               height: 200,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 20.h,
@@ -25,6 +26,7 @@ class MainContentSkeleton extends StatelessWidget {
             const SkeletonText(
               height: 200,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 20.h,
@@ -32,6 +34,7 @@ class MainContentSkeleton extends StatelessWidget {
             const SkeletonText(
               height: 200,
               width: 900,
+              radius: 10,
             ),
             SizedBox(
               height: 20.h,
@@ -39,6 +42,7 @@ class MainContentSkeleton extends StatelessWidget {
             const SkeletonText(
               height: 200,
               width: 900,
+              radius: 10,
             ),
           ],
         ),
@@ -85,6 +89,47 @@ class MainContentSkeletonHorizontal extends StatelessWidget {
             const SkeletonText(
               height: 200,
               width: 200,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Main Content Loading Screen
+class MainContentSkeletonRequest extends StatelessWidget {
+  /// Constructor
+  const MainContentSkeletonRequest({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        padding: EdgeInsets.all(22.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const SkeletonText(
+              height: 200,
+              width: 900,
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            const SkeletonText(
+              height: 200,
+              width: 900,
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            const SkeletonText(
+              height: 200,
+              width: 900,
+            ),
+            SizedBox(
+              height: 20.h,
             ),
           ],
         ),

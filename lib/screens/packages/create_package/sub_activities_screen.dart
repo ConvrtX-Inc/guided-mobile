@@ -73,8 +73,8 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
       ),
       title: Text(
         badges.name,
-        style: const TextStyle(
-          fontSize: 15,
+        style: TextStyle(
+          fontSize: 12.sp,
         ),
       ),
     );
@@ -96,8 +96,8 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
       ),
       title: Text(
         badges.name,
-        style: const TextStyle(
-          fontSize: 15,
+        style: TextStyle(
+          fontSize: 12.sp,
         ),
       ),
     );
@@ -139,7 +139,11 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(
+            fontSize: 12.sp, fontFamily: 'Gilroy', fontWeight: FontWeight.w400),
+      ),
     );
   }
 
@@ -185,7 +189,11 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
         width: 30,
         height: 30,
       ),
-      title: Text(badges.name),
+      title: Text(
+        badges.name,
+        style: TextStyle(
+            fontSize: 12.sp, fontFamily: 'Gilroy', fontWeight: FontWeight.w400),
+      ),
     );
   }
 
@@ -242,14 +250,17 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            // width: 70.w,
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -268,8 +279,6 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                                 if (subActivities3 != null) {
                                   subActivities2 = subActivities3;
                                   subActivities3 = null;
-                                } else {
-                                  subActivities2 = null;
                                 }
 
                                 count--;
@@ -327,14 +336,16 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 60.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
                             ),
                           ),
                         ),
@@ -383,7 +394,7 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
           },
           child: Container(
             height: 40.h,
-            width: 140.w,
+            width: 155.w,
             decoration: BoxDecoration(
                 color: AppColors.platinum.withOpacity(0.8),
                 border: Border.all(
@@ -404,16 +415,22 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                           height: 20,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          width: 70.w,
-                          height: 30.h,
-                          child: Align(
-                            child: Text(
-                              badges.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13.sp),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: SizedBox(
+                              height: 30.h,
+                              child: Align(
+                                child: Expanded(
+                                  child: Text(
+                                    badges.name,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 12.sp),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -563,31 +580,28 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Align(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          height: 50.h,
-                          child: ListView(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              children: <Widget>[
-                                if (subActivities1 == null)
-                                  SizedBox(
-                                    height: 100.h,
-                                  )
-                                else
-                                  _chosenSubActivities1(subActivities1),
-                                if (subActivities2 == null)
-                                  SizedBox(
-                                    height: 100.h,
-                                  )
-                                else
-                                  _chosenSubActivities2(subActivities2),
-                              ]),
-                        ),
+                      child: SizedBox(
+                        height: 50.h,
+                        child: ListView(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            children: <Widget>[
+                              if (subActivities1 == null)
+                                SizedBox(
+                                  height: 100.h,
+                                )
+                              else
+                                _chosenSubActivities1(subActivities1),
+                              if (subActivities2 == null)
+                                SizedBox(
+                                  height: 100.h,
+                                )
+                              else
+                                _chosenSubActivities2(subActivities2),
+                            ]),
                       ),
                     ),
                   ],

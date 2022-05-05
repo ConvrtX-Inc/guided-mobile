@@ -102,7 +102,7 @@ class _ResetVerifyPhoneState extends State<ResetVerifyPhone> {
                     ),
                     SizedBox(height: 20.h),
                     Text(
-                      'Verification code sent to your phone + ${screenArguments['phone_no']}',
+                      'Verification code sent to your phone ${screenArguments['dial_code']}${screenArguments['phone_no']}',
                       style: const TextStyle(
                         color: Colors.black,
                         fontFamily: 'Gilroy',

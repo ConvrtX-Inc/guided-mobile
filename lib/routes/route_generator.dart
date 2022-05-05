@@ -30,6 +30,7 @@ import 'package:guided/screens/main_navigation/content/event/event_edit.dart';
 import 'package:guided/screens/main_navigation/content/event/event_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/package_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/packages_edit.dart';
+import 'package:guided/screens/main_navigation/content/packages/tab/tab_destination_edit.dart';
 import 'package:guided/screens/main_navigation/traveller/booking_journey/details.dart';
 import 'package:guided/screens/main_navigation/traveller/check_availability/check_availability.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
@@ -67,12 +68,14 @@ import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
+import 'package:guided/screens/message/message_screen_traveler.dart';
 import 'package:guided/screens/notification/notification_screen.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
 import 'package:guided/screens/packages/create_package/free_service_screen.dart';
 import 'package:guided/screens/packages/create_package/guide_rules_screen.dart';
 import 'package:guided/screens/packages/create_package/local_laws_taxes_screen.dart';
 import 'package:guided/screens/packages/create_package/location_screen.dart';
+import 'package:guided/screens/packages/create_package/not_included_free_services.dart';
 import 'package:guided/screens/packages/create_package/number_of_traveler_screen.dart';
 import 'package:guided/screens/packages/create_package/package_info_screen.dart';
 import 'package:guided/screens/packages/create_package/package_photos_screen.dart';
@@ -100,6 +103,7 @@ import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
 import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
+import 'package:guided/screens/stripe/setup_stripe.dart';
 import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:guided/screens/transaction_notifications/transaction_history_main.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
@@ -287,7 +291,8 @@ class RouteGenerator {
             settings: settings);
       case '/checkAvailability':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const CheckAvailability(), settings: settings);
+            builder: (_) => CheckAvailability(screenArguments: args),
+            settings: settings);
       case '/discovery_hub':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TabDiscoveryHub());
@@ -405,12 +410,24 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const UpdateProfileScreen());
       case '/test':
-        return MaterialPageRoute<dynamic>(
-            builder: (_) =>  SettingsMain());
+        return MaterialPageRoute<dynamic>(builder: (_) => SettingsMain());
       case '/manage_cards':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PaymentManageCard());
-
+      case '/traveller_message':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const MessageScreenTraveler());
+      case '/setup_stripe_account':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SetupStripeAccount());
+      case '/tab_destination_edit':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TabDestinationEditScreen(),
+            settings: settings);
+      case '/not_included_free_service':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const NotIncludedFreeServicesScreen(),
+            settings: settings);
       default:
         return _errorRoute();
     }

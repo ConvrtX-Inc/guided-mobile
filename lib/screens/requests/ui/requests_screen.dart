@@ -7,6 +7,8 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/requests.dart';
+import 'package:guided/screens/widgets/reusable_widgets/date_time_ago.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/requests.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -25,6 +27,15 @@ class RequestsScreen extends StatefulWidget {
 class _RequestsScreenState extends State<RequestsScreen> {
   final List<RequestsScreenModel> requestsItems =
       RequestsScreenUtils.getMockedDataRequestsScreen();
+
+  List<BookingRequest> bookingRequests  =[];
+
+  @override
+  void initState() {
+    super.initState();
+
+    getBookingRequestList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +100,9 @@ class _RequestsScreenState extends State<RequestsScreen> {
                       if (snapshot.connectionState != ConnectionState.done) {
                         return const Center(child: CircularProgressIndicator());
                       }
-                      return Container();
+                      return const Center(
+                        child: Text("You Don't Have Any Request Yet"),
+                      );
                     },
                   ),
                 ],
@@ -113,13 +126,14 @@ class _RequestsScreenState extends State<RequestsScreen> {
 
   Widget _requestsListItem(
       BuildContext context, int index, BookingRequest request) {
-    return FutureBuilder<User>(
-      future: APIServices().getUserDetails(request.fromUserId!),
-      builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-        if (snapshot.hasData) {
-          return InkWell(
+    return
+            InkWell(
             onTap: () {
-              requestView(context, request, snapshot.data!);
+              final User traveller = User(
+                id: request.fromUserId,
+                fullName: request.fromUserFullName
+              );
+              requestView(context, request, traveller);
             },
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
@@ -145,7 +159,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
                               shape: BoxShape.circle,
                               image: DecorationImage(
                                   fit: BoxFit.fitHeight,
-                                  image: AssetImage(requestsItems[0].imgUrl))),
+                                  image: NetworkImage(request.fromUserFirebaseProfilePic!))),
                         ),
                       ),
                       Column(
@@ -155,7 +169,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
                               padding:
                                   EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
                               child: Text(
-                                snapshot.data!.fullName ?? '',
+                                request.fromUserFullName ?? '',
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontFamily: 'Gilroy',
@@ -167,7 +181,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
                               child: SizedBox(
                                 width: 220.w,
                                 child: Text(
-                                  '${snapshot.data!.fullName} has requested a new booking for package ${request.numberOfPerson}',
+                                  '${request.fromUserFullName} has requested a new booking for package ${request.numberOfPerson}',
                                   style: TextStyle(
                                       color: Colors.grey,
                                       fontFamily: 'Gilroy',
@@ -200,12 +214,11 @@ class _RequestsScreenState extends State<RequestsScreen> {
                           ),
                         ],
                       ),
-                      Text(
-                        '16 Sc',
-                        style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 10.sp,
-                            fontFamily: 'Poppins'),
+
+                      DateTimeAgo(
+                        dateString: request.createdDate!,
+                        color: Colors.grey,
+                        size: 10.sp,
                       )
                     ],
                   )
@@ -213,14 +226,21 @@ class _RequestsScreenState extends State<RequestsScreen> {
               ),
             ),
           );
-        }
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Align(
-              alignment: Alignment.topLeft, child: CircularProgressIndicator());
-        }
-        return Container();
-      },
-    );
+
+
+  }
+
+  Future<void> getBookingRequestList() async {
+    final List<BookingRequest> res = await APIServices().getBookingRequest();
+    debugPrint('Response:: $res');
+
+    if(res.isNotEmpty){
+      setState(() {
+        bookingRequests = res;
+      });
+    }
+
+    debugPrint('Total booking request ${bookingRequests.length}');
   }
 
   @override

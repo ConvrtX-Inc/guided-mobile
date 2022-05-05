@@ -181,7 +181,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       final dynamic response = await APIServices().request(
           AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
           data: userDetails);
-
+      userDetails['dial_code'] = _dialCode;
       await Navigator.pushNamed(context, '/verification_code',
           arguments: userDetails);
     } else if (emailController.text.isNotEmpty &&
@@ -194,7 +194,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       final dynamic response = await APIServices().request(
           AppAPIPath.sendVerificationCodeUrl, RequestType.POST,
           data: userDetails);
-
+      userDetails['dial_code'] = _dialCode;
       await Navigator.pushNamed(context, '/verification_code',
           arguments: userDetails);
     } else {

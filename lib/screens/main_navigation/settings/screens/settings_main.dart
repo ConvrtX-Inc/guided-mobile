@@ -234,14 +234,10 @@ class _SettingsMainState extends State<SettingsMain>
                             ),
                           ),
                           onPressed: () async {
-                            await storage.delete(
-                                key: AppTextConstants.userType);
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute<dynamic>(
-                                  builder: (BuildContext context) =>
-                                      const LoginScreen(),
-                                ));
+
+                            await SecureStorage.clearAll();
+                            await Navigator.of(context)
+                                .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
                           },
                         ),
                       );
