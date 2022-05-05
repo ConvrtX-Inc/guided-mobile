@@ -153,13 +153,13 @@ class _LoginScreenState extends State<LoginScreen> {
         if (user.user?.isTraveller != true) {
           await SecureStorage.saveValue(
               key: AppTextConstants.userType, value: 'guide');
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/main_navigation', (Route<dynamic> route) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/main_navigation', (Route<dynamic> route) => false);
         } else {
           await SecureStorage.saveValue(
               key: AppTextConstants.userType, value: 'traveller');
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/traveller_tab', (Route<dynamic> route) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/traveller_tab', (Route<dynamic> route) => false);
         }
       }
     });
@@ -597,7 +597,17 @@ class _LoginScreenState extends State<LoginScreen> {
         AppleIDAuthorizationScopes.fullName,
       ],
     );
-    print(credential);
+
+    print(credential.email);
+    print(credential.authorizationCode);
+    print(credential.givenName);
+    print(credential.familyName);
+    print(credential.identityToken);
+    print(credential.userIdentifier);
+
+    final state = await SignInWithApple.getCredentialState(
+        credential.userIdentifier.toString());
+    print(state);
   }
 
   Future<void> googleSignIn() async {

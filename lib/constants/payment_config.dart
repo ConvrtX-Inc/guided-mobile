@@ -1,5 +1,5 @@
 ///Payment Config
-class PaymentConfig{
+class PaymentConfig {
   ///Enable / Disable Payment Feature
-  static bool isPaymentEnabled = false;
+  static bool isPaymentEnabled = true;
 }

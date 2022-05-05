@@ -863,7 +863,6 @@ class APIServices {
     debugPrint('BAnk Response ${jsonData} status code ${response.statusCode}');
 
     if (response.statusCode == 201) {
-
       return BankAccountModel.fromJson(jsonData);
     } else {
       return jsonData;
@@ -1802,7 +1801,6 @@ class APIServices {
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
-
   ///API Service for Retrieving Settings Availability
   Future<SettingsAvailabilityModel> getSettingsAvailability() async {
     final String? token = UserSingleton.instance.user.token;
@@ -1815,25 +1813,25 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/user-availability', queryParameters)}');
+    debugPrint(
+        'DATA ${Uri.http(apiBaseUrl, '/api/v1/user-availability', queryParameters)}');
     debugPrint('params R$queryParameters');
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/api/v1/user-availability', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/user-availability', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
     final dynamic jsonData = jsonDecode(response.body);
-    if (jsonData.length > 0) {
-
-    }
+    if (jsonData.length > 0) {}
     print(response.request!.url);
     print('tata: $jsonData');
     if (jsonData.length > 0) {
       print('naay sulod nga data');
       return SettingsAvailabilityModel.fromJson(jsonData[0]);
     } else {
-      final http.Response res = await http
-          .post(Uri.http(apiBaseUrl, '/api/v1/user-availability'),
+      final http.Response res = await http.post(
+        Uri.http(apiBaseUrl, '/api/v1/user-availability'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           HttpHeaders.contentTypeHeader: 'application/json',
@@ -1853,7 +1851,8 @@ class APIServices {
   }
 
   ///API Service for Updating Settings Availability
-  Future<dynamic> updateSettingsAvailability(bool _isActive, String reason, DateTime _selDate, String id) async {
+  Future<dynamic> updateSettingsAvailability(
+      bool _isActive, String reason, DateTime _selDate, String id) async {
     print('body update $_isActive - $reason - $_selDate - $id');
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
@@ -1868,17 +1867,17 @@ class APIServices {
     final date = DateTime.now();
     final formattedDate = DateTime(date.year, date.month, date.day + 1);
 
-    final http.Response response = await http
-        .patch(Uri.http(apiBaseUrl, '/api/v1/user-availability/$id'),
-        headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
-          HttpHeaders.contentTypeHeader: 'application/json',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'is_available': _isActive,
-          'reason': reason,
-          'return_date': DateFormat('dd MMMM yyyy').format(_selDate),
-        }),
+    final http.Response response = await http.patch(
+      Uri.http(apiBaseUrl, '/api/v1/user-availability/$id'),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'is_available': _isActive,
+        'reason': reason,
+        'return_date': DateFormat('dd MMMM yyyy').format(_selDate),
+      }),
     );
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -1886,6 +1885,7 @@ class APIServices {
     print('update tata: $jsonData');
     return SettingsAvailabilityModel.fromJson(jsonData);
   }
+
   /// API service for all badges
   Future<List<ActivityModel>> getAllBadgesInBecomeAguide() async {
     final dynamic response = await http.get(
@@ -1893,14 +1893,14 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.badgesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(jsonData);
     final List<ActivityModel> badges = <ActivityModel>[];
     final List<ActivityModel> badge =
-    (jsonData as List).map((i) => ActivityModel.fromJson(i)).toList();
+        (jsonData as List).map((i) => ActivityModel.fromJson(i)).toList();
     badges.addAll(badge);
     return badges;
   }
@@ -1920,8 +1920,8 @@ class APIServices {
     final date = DateTime.now();
     final formattedDate = DateTime(date.year, date.month, date.day + 1);
 
-    final http.Response response = await http
-        .post(Uri.http(apiBaseUrl, '/api/v1/user-guide-request/'),
+    final http.Response response = await http.post(
+      Uri.http(apiBaseUrl, '/api/v1/user-guide-request/'),
       headers: {
         HttpHeaders.authorizationHeader: 'Bearer $token',
         HttpHeaders.contentTypeHeader: 'application/json',
@@ -1938,6 +1938,7 @@ class APIServices {
     print('update tata: $jsonData');
     return SettingsAvailabilityModel.fromJson(jsonData);
   }
+
   ///API Service for Retrieving Settings Availability
   Future<BecomeAGudeModel> getBecomeAGuideRequest() async {
     final String? token = UserSingleton.instance.user.token;
@@ -1947,12 +1948,14 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
+    debugPrint(
+        'DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
     debugPrint('params R$queryParameters');
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(response.request!.url);
