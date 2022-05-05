@@ -60,6 +60,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
   bool _didClickedImage = false;
   bool _isEnabledLocation = false;
   bool _isEnabledPackageDescription = false;
+  bool _isEnabledNotIncludedServices = false;
 
   dynamic mainActivity;
   dynamic subActivities1;
@@ -91,6 +92,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
   final FocusNode _servicesFocus = FocusNode();
   final FocusNode _priceFocus = FocusNode();
   final FocusNode _extraCostFocus = FocusNode();
+  final FocusNode _notIncludedServicesFocus = FocusNode();
   final TextStyle txtStyle = TextStyle(fontSize: 14.sp, fontFamily: 'Poppins');
 
   TextEditingController _packageName = TextEditingController();
@@ -104,6 +106,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
   TextEditingController _services = TextEditingController();
   TextEditingController _price = TextEditingController();
   TextEditingController _extraCost = TextEditingController();
+  TextEditingController _notIncludedServices = TextEditingController();
 
   final String _storagePathCoverImg = 'coverImg';
   final String _storagePathDestinationImg = 'destinationImg';
@@ -129,6 +132,8 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
           TextEditingController(text: screenArguments['services'].join(','));
       _price = TextEditingController(text: screenArguments['base_price']);
       _extraCost = TextEditingController(text: screenArguments['extra_cost']);
+      _notIncludedServices = TextEditingController(
+          text: screenArguments['not_included_services'].join(','));
     });
     _loadingData = APIServices().getBadgesModel();
   }
@@ -1627,6 +1632,73 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       );
     }
 
+    Card _notOfferedAmenities() {
+      return Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Text(
+                    AppTextConstants.notOfferedAmenities,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_isEnabledNotIncludedServices) {
+                          _isEnabledNotIncludedServices = false;
+                        } else {
+                          _isEnabledNotIncludedServices = true;
+                        }
+                      });
+                    },
+                    child: Text(
+                      _isEnabledNotIncludedServices
+                          ? AppTextConstants.done
+                          : AppTextConstants.edit,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        color: AppColors.primaryGreen,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  TextField(
+                    enabled: _isEnabledNotIncludedServices,
+                    controller: _notIncludedServices,
+                    focusNode: _notIncludedServicesFocus,
+                    decoration: InputDecoration(
+                      hintText:
+                          screenArguments['not_included_services'].join(', '),
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    style: txtStyle,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     Card _attachedPhotos() {
       return Card(
         child: Column(
@@ -1812,6 +1884,8 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                   SizedBox(height: 15.h),
                   _offeredAmenities(),
                   SizedBox(height: 15.h),
+                  _notOfferedAmenities(),
+                  SizedBox(height: 15.h),
                   _attachedPhotos(),
                   SizedBox(height: 15.h),
                   _basePrice(),
@@ -1858,6 +1932,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final String? userId = UserSingleton.instance.user.user!.id;
     List<String> list = screenArguments['services'];
+    List<String> notIncludedList = screenArguments['not_included_services'];
     dynamic mainBadge;
     String subBadges = '';
 
@@ -1916,14 +1991,16 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       'country': screenArguments['country'].toString(),
       'address':
           '${screenArguments['street']}, ${screenArguments['city']}, ${screenArguments['state']}, ${screenArguments['zip_code']}',
-      'services': list.join(','),
+      'services': _services.text,
       'base_price': screenArguments['base_price'].toString(),
       'extra_cost_per_person': screenArguments['extra_cost'].toString(),
       'max_extra_person': int.parse(screenArguments['max_person'].toString()),
       'currency_id': screenArguments['currency_id'].toString(),
       'price_note': screenArguments['additional_notes'].toString(),
       'is_published': true,
-      'firebase_cover_img': coverImgUrl
+      'firebase_cover_img': coverImgUrl,
+      'included': _services.text,
+      'not_included': _notIncludedServices.text
     };
 
     /// Activity Package Details API
@@ -1945,6 +2022,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         'place_description': item[i].placeDescription,
         'latitude': item[i].latitude,
         'longitude': item[i].longitude,
+        'code': screenArguments['country_code']
       };
 
       final dynamic response1 = await APIServices().request(
@@ -2039,12 +2117,13 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         needAccessToken: true,
         data: waiverDetails);
 
-
-    await Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-         const MainNavigationScreen(
-          navIndex: 1,
-          contentIndex: 0,
-        )), (Route<dynamic> route) => false);
+    await Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (context) => const MainNavigationScreen(
+                  navIndex: 1,
+                  contentIndex: 0,
+                )),
+        (Route<dynamic> route) => false);
   }
 
   @override

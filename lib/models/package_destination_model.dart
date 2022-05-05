@@ -25,10 +25,17 @@ class PackageDestinationDetailsModel {
       this.name = '',
       this.description = '',
       this.latitude = '',
-      this.longitude = ''});
+      this.longitude = '',
+      this.code = ''});
 
   /// String property initialization
-  final String id, activityPackageId, name, description, latitude, longitude;
+  final String id,
+      activityPackageId,
+      name,
+      description,
+      latitude,
+      longitude,
+      code;
 
   PackageDestinationDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
@@ -36,5 +43,6 @@ class PackageDestinationDetailsModel {
         name = parseJson['place_name'],
         description = parseJson['place_description'],
         latitude = parseJson['latitude'],
-        longitude = parseJson['longitude'];
+        longitude = parseJson['longitude'],
+        code = parseJson['code'] ?? '';
 }

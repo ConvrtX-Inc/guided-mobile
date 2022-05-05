@@ -45,7 +45,7 @@ class WelcomeScreen extends StatelessWidget {
                         'Outdoor Adventure App',
                         style: TextStyle(
                             color: AppColors.lightningYellow,
-                            fontSize: 30.sp,
+                            fontSize: 20.sp,
                             fontWeight: FontWeight.w700),
                             textAlign: TextAlign.center,
                       ),

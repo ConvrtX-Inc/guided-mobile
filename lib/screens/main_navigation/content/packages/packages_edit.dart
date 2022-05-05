@@ -59,6 +59,7 @@ class _PackageEditState extends State<PackageEdit> {
   bool _didClickedImage = false;
   bool _isEnabledLocation = false;
   bool _isEnabledPackageDescription = false;
+  bool _isEnabledNotIncludedServices = false;
 
   dynamic mainActivity;
   dynamic subActivities1;
@@ -87,6 +88,7 @@ class _PackageEditState extends State<PackageEdit> {
   final FocusNode _servicesFocus = FocusNode();
   final FocusNode _priceFocus = FocusNode();
   final FocusNode _extraCostFocus = FocusNode();
+  final FocusNode _notIncludedServicesFocus = FocusNode();
   final TextStyle txtStyle = TextStyle(fontSize: 14.sp, fontFamily: 'Poppins');
   late List<String> subActivityId;
 
@@ -101,6 +103,7 @@ class _PackageEditState extends State<PackageEdit> {
   TextEditingController _services = TextEditingController();
   TextEditingController _price = TextEditingController();
   TextEditingController _extraCost = TextEditingController();
+  TextEditingController _notIncludedServices = TextEditingController();
 
   late CountryModel _countryDropdown;
   late List<CountryModel> listCountry;
@@ -128,6 +131,8 @@ class _PackageEditState extends State<PackageEdit> {
       _services = TextEditingController(text: screenArguments['services']);
       _price = TextEditingController(text: screenArguments['fee'].toString());
       _extraCost = TextEditingController(text: screenArguments['extra_cost']);
+      _notIncludedServices =
+          TextEditingController(text: screenArguments['not_included']);
 
       setState(() {
         listCountry = resCountries;
@@ -1686,6 +1691,72 @@ class _PackageEditState extends State<PackageEdit> {
       );
     }
 
+    Card _notOfferedAmenities() {
+      return Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Text(
+                    AppTextConstants.notOfferedAmenities,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_isEnabledNotIncludedServices) {
+                          _isEnabledNotIncludedServices = false;
+                        } else {
+                          _isEnabledNotIncludedServices = true;
+                        }
+                      });
+                    },
+                    child: Text(
+                      _isEnabledNotIncludedServices
+                          ? AppTextConstants.done
+                          : AppTextConstants.edit,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        color: AppColors.primaryGreen,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  TextField(
+                    enabled: _isEnabledNotIncludedServices,
+                    controller: _notIncludedServices,
+                    focusNode: _notIncludedServicesFocus,
+                    decoration: InputDecoration(
+                      hintText: screenArguments['not_included'],
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    style: txtStyle,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     Card _attachedPhotos() {
       return Card(
         child: Column(
@@ -1875,6 +1946,8 @@ class _PackageEditState extends State<PackageEdit> {
                   SizedBox(height: 15.h),
                   _offeredAmenities(),
                   SizedBox(height: 15.h),
+                  _notOfferedAmenities(),
+                  SizedBox(height: 15.h),
                   _attachedPhotos(),
                   SizedBox(height: 15.h),
                   _basePrice(),
@@ -1988,7 +2061,8 @@ class _PackageEditState extends State<PackageEdit> {
         'extra_cost_per_person': _extraCost.text,
         'is_published': true,
         'cover_img': '',
-        'firebase_cover_img': coverImgUrl
+        'firebase_cover_img': coverImgUrl,
+        'not_included': _notIncludedServices.text
       };
 
       /// Activity Package Details API

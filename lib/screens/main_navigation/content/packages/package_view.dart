@@ -293,16 +293,17 @@ class _PackageViewState extends State<PackageView>
               ),
               views: <Widget>[
                 TabDescriptionView(
-                  id: screenArguments['id'],
-                  name: screenArguments['name'],
-                  subActivityId: screenArguments['sub_badge_id'],
-                  description: screenArguments['description'],
-                  fee: screenArguments['fee'],
-                  numberOfTouristMin: screenArguments['number_of_tourist_min'],
-                  numberOfTourist: screenArguments['number_of_tourist'],
-                  services: screenArguments['services'],
-                  starRating: screenArguments['star_rating'],
-                ),
+                    id: screenArguments['id'],
+                    name: screenArguments['name'],
+                    subActivityId: screenArguments['sub_badge_id'],
+                    description: screenArguments['description'],
+                    fee: screenArguments['fee'],
+                    numberOfTouristMin:
+                        screenArguments['number_of_tourist_min'],
+                    numberOfTourist: screenArguments['number_of_tourist'],
+                    services: screenArguments['services'],
+                    starRating: screenArguments['star_rating'],
+                    notIncluded: screenArguments['not_included']),
                 TabSlotsAndScheduleView(
                     id: screenArguments['id'],
                     availabilityId: splitId,
