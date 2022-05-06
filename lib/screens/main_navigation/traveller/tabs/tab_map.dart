@@ -934,12 +934,20 @@ class _TabMapScreenState extends State<TabMapScreen> {
                         mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
                       }
 
-                      if(mode == 'Apple Pay'){
+                      if (mode == 'Apple Pay') {
                         debugPrint('Data $data');
+                        saveSubscription(
+                            data, 'Premium Subscription', price.toString());
+                        paymentSuccessful(
+                            context: context,
+                            paymentDetails: DiscoveryPaymentDetails(
+                                transactionNumber: data),
+                            paymentMethod: mode);
+
                         /// Add Saving of Subscription here
-                      }else{
+                      } else {
                         final String transactionNumber =
-                        GlobalMixin().generateTransactionNumber();
+                            GlobalMixin().generateTransactionNumber();
                         confirmPaymentModal(
                             context: context,
                             serviceName: 'Premium Subscription',
@@ -967,7 +975,6 @@ class _TabMapScreenState extends State<TabMapScreen> {
                             paymentDetails: DiscoveryPaymentDetails(
                                 transactionNumber: transactionNumber));
                       }
-
                     },
                     price: price);
               },
