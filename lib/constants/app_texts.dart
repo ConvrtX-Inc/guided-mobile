@@ -1151,6 +1151,12 @@ class AppTextConstants {
 
   /// Returns not offered amenities text
   static String notOfferedAmenities = 'Not Offered Amenities';
+
+  ///returns deduction string
+  static String deduction = 'Deduction';
+
+  ///returns addition string
+  static String addition = 'Addition';
 }
 
 /// Class for error messages text

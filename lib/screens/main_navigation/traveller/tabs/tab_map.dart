@@ -948,7 +948,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                             Navigator.of(context).pop();
                             //Save Subscription
                             saveSubscription(transactionNumber,
-                                'Premium Subscription', price.toString());
+                                'Premium Subscription', price.toString(),mode);
 
                             paymentSuccessful(
                                 context: context,
@@ -981,7 +981,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
   }
 
   Future<void> saveSubscription(
-      String transactionNumber, String subscriptionName, String price) async {
+      String transactionNumber, String subscriptionName, String price, String paymentMethod) async {
     final DateTime startDate = DateTime.now();
 
     final DateTime endDate = GlobalMixin().getEndDate(startDate);
@@ -994,7 +994,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
         price: price);
 
     final APIStandardReturnFormat result =
-        await APIServices().addUserSubscription(subscriptionParams);
+        await APIServices().addUserSubscription(subscriptionParams,paymentMethod);
 
     UserSingleton.instance.user.user?.hasPremiumSubscription = true;
     setState(() {

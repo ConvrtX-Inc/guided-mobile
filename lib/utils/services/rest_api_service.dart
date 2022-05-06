@@ -29,11 +29,13 @@ import 'package:guided/models/country_model.dart';
 import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/event_image_model.dart';
 import 'package:guided/models/event_model.dart';
+import 'package:guided/models/notification_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/package_destination_image_model.dart';
 import 'package:guided/models/package_destination_model.dart';
 import 'package:guided/models/package_model.dart';
+import 'package:guided/models/payment_transaction.dart';
 import 'package:guided/models/popular_guide.dart';
 import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/profile_data_model.dart';
@@ -1144,7 +1146,7 @@ class APIServices {
 
   /// API service for user  adding subscription
   Future<APIStandardReturnFormat> addUserSubscription(
-      UserSubscription params) async {
+      UserSubscription params, String paymentMethod) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
@@ -1164,6 +1166,13 @@ class APIServices {
           'price': params.price
         }));
 
+    final PaymentTransactionModel transactionParams = PaymentTransactionModel(
+        serviceName: 'Premium Subscription',
+        transactionNumber: params.paymentReferenceNo,
+        amount: '${params.price}',
+        type: AppTextConstants.deduction,
+        paymentMethod: paymentMethod);
+    await savePaymentTransaction(transactionParams);
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
@@ -2013,7 +2022,6 @@ class APIServices {
   /// API service for outfitter image model
   Future<EventDestinationImageModel> getEventDestinationImageData(
       String id) async {
-
     final dynamic response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.eventDestinationImage}?s={"activity_event_destination_id": \"$id\"}'),
@@ -2033,5 +2041,121 @@ class APIServices {
     }
 
     return EventDestinationImageModel(eventDestinationImageDetails: details);
+  }
+
+  ///Api service for saving payment transaction
+  Future<PaymentTransactionModel> savePaymentTransaction(
+      PaymentTransactionModel params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.paymentTransactionUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'transaction_number': params.transactionNumber,
+          'payment_method': params.paymentMethod,
+          'service_name': params.serviceName,
+          'amount': params.amount,
+          'type': params.type,
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    PaymentTransactionModel paymentTransaction = PaymentTransactionModel();
+    if (response.statusCode == 201) {
+      debugPrint('DATA payment $jsonData');
+      paymentTransaction = PaymentTransactionModel.fromJson(jsonData);
+    }
+
+    return paymentTransaction;
+  }
+
+  /// API service payment transaction lists
+  Future<List<PaymentTransactionModel>> getPaymentTransactions() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+    };
+
+    final http.Response response = await http
+        .get(Uri.http(apiBaseUrl, '/${AppAPIPath.paymentTransactionUrl}', queryParameters), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
+
+    final List<PaymentTransactionModel> paymentTransactions =
+        <PaymentTransactionModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final PaymentTransactionModel _paymentTransaction =
+          PaymentTransactionModel.fromJson(data);
+      paymentTransactions.add(_paymentTransaction);
+    }
+
+    return paymentTransactions;
+  }
+
+
+  ///Api services for notifications
+  Future<List<NotificationModel>> getNotifications() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final Map<String, String> queryParameters = {
+      'filter': 'to_user_id||eq||"$userId"',
+    };
+
+    final http.Response response = await http
+        .get(Uri.http(apiBaseUrl, '/${AppAPIPath.notificationsUrl}', queryParameters), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
+
+    final List<NotificationModel> notifications =
+    <NotificationModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final NotificationModel _notification =
+      NotificationModel.fromJson(data);
+      notifications.add(_notification);
+    }
+
+    return notifications;
+  }
+
+  /// Api service to add Notification
+  Future<NotificationModel> addNotification(NotificationModel params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.notificationsUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'from_user_id': params.fromUserId!,
+          'to_user_id': params.toUserId!,
+          'title': params.title!,
+          'type': params.type!,
+          'booking_request_id': params.bookingRequestId!,
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    NotificationModel _notification = NotificationModel();
+    if (response.statusCode == 201) {
+      debugPrint('DATA notification $jsonData');
+      _notification = NotificationModel.fromJson(jsonData);
+    }
+
+    return _notification;
   }
 }

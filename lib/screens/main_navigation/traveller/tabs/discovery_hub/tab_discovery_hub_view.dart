@@ -300,7 +300,7 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                           onPaymentSuccessful: () {
                             Navigator.of(context).pop();
                             saveSubscription(transactionNumber,
-                                'Premium Subscription', price.toString());
+                                'Premium Subscription', price.toString(),mode);
 
                             paymentSuccessful(
                                 context: context,
@@ -333,7 +333,7 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
   }
 
   Future<void> saveSubscription(
-      String transactionNumber, String subscriptionName, String price) async {
+      String transactionNumber, String subscriptionName, String price, String paymentMethod) async {
     final DateTime startDate = DateTime.now();
 
     final DateTime endDate = GlobalMixin().getEndDate(startDate);
@@ -346,7 +346,7 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
         price: price);
 
     final APIStandardReturnFormat result =
-        await APIServices().addUserSubscription(subscriptionParams);
+        await APIServices().addUserSubscription(subscriptionParams,paymentMethod);
 
     UserSingleton.instance.user.user?.hasPremiumSubscription = true;
     setState(() {
