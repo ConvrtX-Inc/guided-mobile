@@ -24,12 +24,14 @@ class PopularGuideFeatures extends StatefulWidget {
     String? starRating = '',
     String? profileImg = '',
     bool? isFirstAid = false,
+    bool isTraveller = false,
     Key? key,
   })  : _id = id,
         _name = name,
         _profileImg = profileImg,
         _starRating = starRating,
         _isFirstAid = isFirstAid,
+        _isTraveller = isTraveller,
         super(key: key);
 
   final String? _id;
@@ -37,6 +39,7 @@ class PopularGuideFeatures extends StatefulWidget {
   final String? _profileImg;
   final String? _starRating;
   final bool? _isFirstAid;
+  final bool _isTraveller;
 
   @override
   State<PopularGuideFeatures> createState() => _PopularGuideFeaturesState();
@@ -109,6 +112,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
             else
               // for (PackageDetailsModel detail in packageData.packageDetails)
               buildPackageInfo(packageData.packageDetails[0])
+              // buildPackageInfo(detail)
           ],
         ),
       );
@@ -304,14 +308,10 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
               width: MediaQuery.of(context).size.width,
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(10.r),
-                  child: Positioned.fill(
-                    child: Container(
-                      child: ExtendedImage.network(
-                        details.firebaseCoverImg,
-                        fit: BoxFit.cover,
-                        gaplessPlayback: true,
-                      ),
-                    ),
+                  child: ExtendedImage.network(
+                    details.firebaseCoverImg,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
                   )),
             )
           else
@@ -320,9 +320,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
               width: MediaQuery.of(context).size.width,
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(10.r),
-                  child: Positioned.fill(
-                    child: Image.asset('assets/images/png/activity3.png'),
-                  )),
+                  child: Image.asset('assets/images/png/activity3.png')),
             ),
           Positioned(
               top: 10,
