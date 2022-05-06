@@ -356,7 +356,8 @@ class _PackageViewState extends State<PackageView>
       'services': screenArguments['services'],
       'address': screenArguments['address'],
       'extra_cost': screenArguments['extra_cost'],
-      'country': screenArguments['country']
+      'country': screenArguments['country'],
+      'not_included': screenArguments['not_included']
     };
 
     await Navigator.pushNamed(context, '/package_edit', arguments: details);

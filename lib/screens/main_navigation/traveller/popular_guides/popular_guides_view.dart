@@ -139,12 +139,10 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
 
                 ],
               ),
-              flexibleSpace: Positioned.fill(
-                child: ExtendedImage.network(
-                  screenArguments['firebase_cover_img'],
-                  gaplessPlayback: true,
-                  fit: BoxFit.cover,
-                ),
+              flexibleSpace: ExtendedImage.network(
+                screenArguments['firebase_cover_img'],
+                gaplessPlayback: true,
+                fit: BoxFit.cover,
               ),
             ),
           ),

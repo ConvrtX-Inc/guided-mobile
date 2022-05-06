@@ -30,7 +30,7 @@ class User {
   String? email;
   String? phoneNo;
   String? countryCode;
-  Null? isGuide;
+  bool? isGuide;
   bool? isTraveller;
   bool? isForThePlanet;
   bool? isFirstAidTrained;
@@ -81,7 +81,7 @@ class User {
       this.sEntity,
       this.profilePhoto,
       this.stripeAccountId,
-      this.hasPremiumSubscription  = false,
+      this.hasPremiumSubscription = false,
       this.firebaseProfilePicUrl});
 
   User.fromJson(Map<String, dynamic> json) {
@@ -92,7 +92,7 @@ class User {
     email = json['email'];
     phoneNo = json['phone_no'];
     countryCode = json['country_code'];
-    isGuide = json['is_guide'];
+    isGuide = json['is_guide'] ?? false;
     isTraveller = json['is_traveller'];
     isForThePlanet = json['is_for_the_planet'];
     isFirstAidTrained = json['is_first_aid_trained'];
