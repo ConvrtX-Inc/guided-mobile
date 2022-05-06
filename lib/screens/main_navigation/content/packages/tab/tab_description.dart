@@ -29,20 +29,22 @@ class TabDescriptionView extends StatefulWidget {
   final int numberOfTourist;
   final String services;
   final double starRating;
+  final String notIncluded;
 
   /// Constructor
-  const TabDescriptionView({
-    Key? key,
-    required this.id,
-    required this.name,
-    required this.subActivityId,
-    required this.fee,
-    required this.description,
-    required this.numberOfTourist,
-    required this.services,
-    required this.starRating,
-    required this.numberOfTouristMin,
-  }) : super(key: key);
+  const TabDescriptionView(
+      {Key? key,
+      required this.id,
+      required this.name,
+      required this.subActivityId,
+      required this.fee,
+      required this.description,
+      required this.numberOfTourist,
+      required this.services,
+      required this.starRating,
+      required this.numberOfTouristMin,
+      required this.notIncluded})
+      : super(key: key);
 
   @override
   // ignore: no_logic_in_create_state
@@ -58,6 +60,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
 
   List<HomeModel> features = HomeUtils.getMockFeatures();
   late Map<dynamic, String> value;
+  late Map<dynamic, String> notIncludedValue;
   int activeIndex = 0;
   late Future<PackageDestinationModelData> _loadingData;
   late List<String> imageList = [];
@@ -70,6 +73,11 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
 
     final split = widget.services.split(',');
     value = {for (int i = 0; i < split.length; i++) i: split[i]};
+
+    final notIncludedSplit = widget.notIncluded.split(',');
+    notIncludedValue = {
+      for (int i = 0; i < notIncludedSplit.length; i++) i: notIncludedSplit[i]
+    };
 
     _loadingData = APIServices().getPackageDestinationData(widget.id);
   }
@@ -123,7 +131,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
               child: Row(
                 children: <Widget>[
                   Text('Team', style: AppTextStyle.semiBoldStyle),
-                  SizedBox(width: 35.w),
+                  SizedBox(width: 60.w),
                   Text(
                     '${widget.numberOfTouristMin} - ${widget.numberOfTourist} Traveller',
                     style: TextStyle(
@@ -143,7 +151,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                   children: <Widget>[
                     Text(AppTextConstants.activities,
                         style: AppTextStyle.semiBoldStyle),
-                    SizedBox(width: 20.w),
+                    SizedBox(width: 45.w),
                     Expanded(
                       child: ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -218,7 +226,7 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                   children: <Widget>[
                     Text(AppTextConstants.freeServices,
                         style: AppTextStyle.semiBoldStyle),
-                    SizedBox(width: 10.w),
+                    SizedBox(width: 18.w),
                     Expanded(
                       child: ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -250,6 +258,54 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                 ),
               ),
             ),
+            SizedBox(
+              height: 10.h,
+            ),
+            if (notIncludedValue[0] != '')
+              Padding(
+                padding: EdgeInsets.only(top: 5.h, left: 25.w),
+                child: SizedBox(
+                  height: 50.h,
+                  child: Row(
+                    children: <Widget>[
+                      Text(AppTextConstants.notIncludedServiceHeader,
+                          style: AppTextStyle.semiBoldStyle),
+                      SizedBox(width: 10.w),
+                      Expanded(
+                        child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: notIncludedValue.length,
+                            itemBuilder: (BuildContext ctx, int index) {
+                              return Row(
+                                children: <Widget>[
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: AppColors.harp,
+                                        border:
+                                            Border.all(color: AppColors.harp),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5.r))),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(
+                                          notIncludedValue[index].toString(),
+                                          style: TextStyle(
+                                              color: AppColors.nobel)),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5.w,
+                                  )
+                                ],
+                              );
+                            }),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            else
+              Container(),
             SizedBox(
               height: 10.h,
             ),
@@ -407,7 +463,8 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
                               imageList,
                               imageIdList,
                               details.latitude,
-                              details.longitude);
+                              details.longitude,
+                              details.code);
                         },
                       ),
                     ),
@@ -503,7 +560,8 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
       List<String> images,
       List<String> imagesId,
       String latitude,
-      String longitude) async {
+      String longitude,
+      String code) async {
     final Map<String, dynamic> details = {
       'activity_package_id': activityPackageId,
       'activity_package_destination_id': activityDestinationId,
@@ -513,7 +571,8 @@ class _TabDescriptionViewState extends State<TabDescriptionView>
       'image_id_list': imagesId,
       'image_count': imageCount,
       'latitude': latitude,
-      'longitude': longitude
+      'longitude': longitude,
+      'code': code
     };
 
     await Navigator.pushNamed(context, '/tab_destination_edit',

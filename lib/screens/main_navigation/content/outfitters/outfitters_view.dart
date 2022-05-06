@@ -314,7 +314,7 @@ class _OutfitterViewState extends State<OutfitterView> {
                     ),
                     SizedBox(width: 60.w),
                     Text(
-                      'USD ${screenArguments['price'].toString().substring(1, 6)}',
+                      'USD ${screenArguments['price']}',
                       style: AppTextStyle.greyStyle,
                     )
                   ],

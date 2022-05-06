@@ -119,20 +119,23 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
   }
 
   Future<void> getProfileDetails() async {
+    debugPrint('Get Profile Details');
     final ProfileDetailsModel res = await APIServices().getProfileData();
 
     final UserSubscription subscription =
     await APIServices().getUserSubscription();
-
-    final DateTime currentDate = DateTime.now();
-    final DateTime endDate = DateTime.parse(subscription.endDate);
-
-    final bool isExpired = endDate.isBefore(currentDate);
     bool hasPremiumSubscription = false;
-    if (!isExpired) {
+    if(subscription.id.isNotEmpty){
+      final DateTime currentDate = DateTime.now();
+      final DateTime endDate = DateTime.parse(subscription.endDate);
 
-       hasPremiumSubscription = true;
-      _userSubscriptionController.setSubscription(subscription);
+      final bool isExpired = endDate.isBefore(currentDate);
+
+      if (!isExpired) {
+
+        hasPremiumSubscription = true;
+        _userSubscriptionController.setSubscription(subscription);
+      }
     }
 
     UserSingleton.instance.user.user = User(
@@ -142,6 +145,7 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
       hasPremiumSubscription: hasPremiumSubscription
     );
 
+    debugPrint('Has Subscription ${UserSingleton.instance.user.user?.hasPremiumSubscription}');
     _profileDetailsController.setUserProfileDetails(res);
   }
 

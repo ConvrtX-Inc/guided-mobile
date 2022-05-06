@@ -1397,15 +1397,12 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(8),
-                          child: FittedBox(
-                            fit: BoxFit.fitWidth,
-                            child: SizedBox(
-                              height: 30.h,
-                              child: Align(
-                                child: Text(badges.name,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 12.sp)),
-                              ),
+                          child: SizedBox(
+                            height: 30.h,
+                            child: Align(
+                              child: Text(badges.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 12.sp)),
                             ),
                           ),
                         ),

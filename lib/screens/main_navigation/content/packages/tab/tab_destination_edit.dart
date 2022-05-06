@@ -1347,7 +1347,7 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
           ),
         ),
       ),
-      components: [Component(Component.country, 'US')],
+      components: [Component(Component.country, screenArguments['code'])],
     );
 
     await displayPrediction(p, context);

@@ -12,6 +12,8 @@ import 'package:guided/models/activity_availability_hours.dart';
 import 'package:guided/models/activity_availability_hours_model.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/activity_destination_model.dart';
+import 'package:guided/models/activity_event_destination_image_model.dart';
+import 'package:guided/models/activity_event_destination_model.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/advertisement_image_model.dart';
@@ -27,6 +29,8 @@ import 'package:guided/models/country_model.dart';
 import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/event_image_model.dart';
 import 'package:guided/models/event_model.dart';
+import 'package:guided/models/newsfeed_image_model.dart';
+import 'package:guided/models/newsfeed_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/package_destination_image_model.dart';
@@ -1346,7 +1350,7 @@ class APIServices {
   Future<EventModelData> getAllEventData() async {
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityEventUrl}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityEventUrl}?s={"is_post": true}'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
@@ -1961,5 +1965,114 @@ class APIServices {
     print(response.request!.url);
     print('tata response get become a guide request: $jsonData');
     return BecomeAGudeModel.fromJson(jsonData[0]);
+  }
+
+  /// API service for event image model
+  Future<ActivityEventDestination> getEventDestinationDetails(String id) async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.eventDestination}?s={"activity_event_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<ActivityEventDestinationDetailsModel> details =
+        <ActivityEventDestinationDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final ActivityEventDestinationDetailsModel eventDestinationModel =
+          ActivityEventDestinationDetailsModel.fromJson(data);
+      details.add(eventDestinationModel);
+    }
+
+    return ActivityEventDestination(activityEventDestinationDetails: details);
+  }
+
+  /// API service for event image model
+  Future<EventImageModelData> getEventDestinationImage(String id) async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getEventImage}?s={"activity_event_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<EventImageDetailsModel> details = <EventImageDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final EventImageDetailsModel imageModel =
+          EventImageDetailsModel.fromJson(data);
+      details.add(imageModel);
+    }
+
+    return EventImageModelData(eventImageDetails: details);
+  }
+
+  /// API service for outfitter image model
+  Future<EventDestinationImageModel> getEventDestinationImageData(
+      String id) async {
+
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.eventDestinationImage}?s={"activity_event_destination_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<EventImageDestinationDetails> details =
+        <EventImageDestinationDetails>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final EventImageDestinationDetails eventImageDestination =
+          EventImageDestinationDetails.fromJson(data);
+      details.add(eventImageDestination);
+    }
+
+    return EventDestinationImageModel(eventDestinationImageDetails: details);
+  }
+
+  /// API service for NewsFeed Model
+  Future<NewsFeedModel> getNewsFeedData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.newsfeedList}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final NewsFeedModel dataSummary =
+        NewsFeedModel.fromJson(json.decode(response.body));
+
+    return NewsFeedModel(newsfeedDetails: dataSummary.newsfeedDetails);
+  }
+
+  /// API service for outfitter image model
+  Future<NewsfeedImageModel> getNewsfeedImageData(String id) async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.newsfeedImage}?s={"activity_newsfeed_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<NewsfeedImageDetails> details = <NewsfeedImageDetails>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final NewsfeedImageDetails eventImageDestination =
+          NewsfeedImageDetails.fromJson(data);
+      details.add(eventImageDestination);
+    }
+
+    return NewsfeedImageModel(newsfeedImageDetails: details);
   }
 }

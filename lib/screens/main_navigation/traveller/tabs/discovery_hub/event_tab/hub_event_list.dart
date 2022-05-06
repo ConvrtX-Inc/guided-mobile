@@ -2,16 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/event_model.dart';
-import 'package:guided/models/home.dart';
-import 'package:guided/screens/main_navigation/content/event/widget/event_features.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/event_tab/widget/hub_event_features.dart';
 import 'package:guided/screens/main_navigation/traveller/traveller_tabbar.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
-import 'package:guided/utils/event.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Package List Screen
@@ -85,37 +81,6 @@ class _HubEventListState extends State<HubEventList>
                       ),
                     ),
                   ),
-                  // Expanded(
-                  //   child: Padding(
-                  //     padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
-                  //     child: TextField(
-                  //       textAlign: TextAlign.left,
-                  //       keyboardType: TextInputType.text,
-                  //       decoration: InputDecoration(
-                  //         hintText: 'Search...',
-                  //         hintStyle: TextStyle(fontSize: 16.sp),
-                  //         border: OutlineInputBorder(
-                  //           borderRadius: BorderRadius.circular(16.r),
-                  //           borderSide: const BorderSide(
-                  //             width: 0,
-                  //             style: BorderStyle.none,
-                  //           ),
-                  //         ),
-                  //         filled: true,
-                  //         contentPadding: const EdgeInsets.all(22),
-                  //         fillColor: Colors.white,
-                  //         prefixIcon: IconButton(
-                  //           icon: Image.asset(
-                  //             'assets/images/png/search_icon.png',
-                  //             width: 20.w,
-                  //             height: 20.h,
-                  //           ),
-                  //           onPressed: null,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
               Padding(
@@ -209,23 +174,14 @@ class _HubEventListState extends State<HubEventList>
       );
 
   Widget buildEventInfo(EventDetailsModel details) => HubEventFeatures(
-        id: details.id,
-        name: details.title,
-        badgeId: details.badgeId,
-        description: details.description,
-        starRating: 0,
-        fee: double.parse(details.fee),
-        path: AssetsPath.paddle,
-        dateRange: '1-9',
-        country: details.country,
-        mainActivity: details.mainActivities,
-        subactivities: details.subActivities,
-        services: details.freeService,
-        address: details.address,
-        eventDate:
-            '${details.eventDate!.month.toString().padLeft(2, '0')}. ${details.eventDate!.day.toString().padLeft(2, '0')}. ${details.eventDate!.year.toString().padLeft(2, '0')}',
-        dateFormat:
-            '${details.eventDate!.year.toString().padLeft(4, '0')}-${details.eventDate!.month.toString().padLeft(2, '0')}. ${details.eventDate!.day.toString().padLeft(2, '0')}',
-        isPublished: details.isPublished,
-      );
+      id: details.id,
+      name: details.title,
+      description: details.description,
+      fee: double.parse(details.fee),
+      country: details.country,
+      subactivities: details.subActivities,
+      services: details.freeService,
+      address: details.address,
+      dateFormat:
+          '${details.eventDate!.year.toString().padLeft(4, '0')}-${details.eventDate!.month.toString().padLeft(2, '0')}. ${details.eventDate!.day.toString().padLeft(2, '0')}');
 }
