@@ -126,10 +126,8 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                     details.firebaseCoverImg);
               },
               child: Stack(children: <Widget>[
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 16, 16, 16),
-                  color: Colors.grey.shade100,
-                  child: SizedBox(
+                if (details.firebaseCoverImg.isNotEmpty)
+                  SizedBox(
                     height: 280.h,
                     width: MediaQuery.of(context).size.width,
                     child: ClipRRect(
@@ -141,8 +139,17 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                             gaplessPlayback: true,
                           ),
                         )),
+                  )
+                else
+                  SizedBox(
+                    height: 280.h,
+                    width: MediaQuery.of(context).size.width,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10.r),
+                        child: Positioned.fill(
+                          child: Image.asset('assets/images/png/activity3.png'),
+                        )),
                   ),
-                ),
                 Positioned(
                     top: 40,
                     right: 40,

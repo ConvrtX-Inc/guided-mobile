@@ -29,6 +29,8 @@ import 'package:guided/models/country_model.dart';
 import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/event_image_model.dart';
 import 'package:guided/models/event_model.dart';
+import 'package:guided/models/newsfeed_image_model.dart';
+import 'package:guided/models/newsfeed_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/package_destination_image_model.dart';
@@ -2032,5 +2034,44 @@ class APIServices {
     }
 
     return EventDestinationImageModel(eventDestinationImageDetails: details);
+  }
+
+  /// API service for NewsFeed Model
+  Future<NewsFeedModel> getNewsFeedData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.newsfeedList}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final NewsFeedModel dataSummary =
+        NewsFeedModel.fromJson(json.decode(response.body));
+
+    return NewsFeedModel(newsfeedDetails: dataSummary.newsfeedDetails);
+  }
+
+  /// API service for outfitter image model
+  Future<NewsfeedImageModel> getNewsfeedImageData(String id) async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.newsfeedImage}?s={"activity_newsfeed_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<NewsfeedImageDetails> details = <NewsfeedImageDetails>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final NewsfeedImageDetails eventImageDestination =
+          NewsfeedImageDetails.fromJson(data);
+      details.add(eventImageDestination);
+    }
+
+    return NewsfeedImageModel(newsfeedImageDetails: details);
   }
 }
