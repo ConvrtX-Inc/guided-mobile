@@ -97,6 +97,10 @@ class AppAPIPath {
   /// Returns activity packages url
   static String activityPackagesUrl = 'api/v1/activity-packages';
 
+  /// Returns activity packages url
+  static String activityPackagesUrlDescOrder =
+      'api/v1/activity-packages?sort=created_date%2CDESC';
+
   /// Returns closest-activity url
   static String closestActivity = 'api/v1/activity-packages/closest-activity';
 
@@ -196,8 +200,7 @@ class AppAPIPath {
 
   static String eventDestination = 'api/v1/activity-event-destination';
 
-  static String eventDestinationImage =
-      'api/v1/activity-event-destination-image';
+  static String eventDestinationImage = 'api/v1/activity-event-destination-image';
 }
 
 ///Get Api Base Url

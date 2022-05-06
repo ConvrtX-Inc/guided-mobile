@@ -19,7 +19,6 @@ import 'package:guided/screens/message/message_inbox.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'firebase/firebase_options.dart';
 
-
 String _defaultHome = '/';
 
 void main() async {
@@ -28,15 +27,12 @@ void main() async {
   SystemChrome.setEnabledSystemUIOverlays(
       [SystemUiOverlay.bottom, SystemUiOverlay.top]);
 
-  Stripe.publishableKey =
-      dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
+  Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
   Stripe.instance.applySettings();
 
   await Firebase.initializeApp(
-      name: 'Guided',
-      options: DefaultFirebaseConfig.platformOptions);
+      name: 'Guided', options: DefaultFirebaseConfig.platformOptions);
   runApp(const MyApp());
-
 
   initializeDateFormatting().then((_) => runApp(const MyApp()));
 }
@@ -54,11 +50,9 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
-
           return const MaterialApp(
               // home: Splash(),
               );
-
         } else {
           return ScreenUtilInit(
             builder: () => KeyboardDismissOnTap(

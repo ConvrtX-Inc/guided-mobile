@@ -33,6 +33,7 @@ class HomeFeatures extends StatefulWidget {
     String dateRange = '',
     bool isPublished = false,
     String firebaseCoverImg = '',
+    String notIncluded = '',
     Key? key,
   })  : _id = id,
         _mainBadgeId = mainBadgeId,
@@ -51,6 +52,7 @@ class HomeFeatures extends StatefulWidget {
         _dateRange = dateRange,
         _isPublished = isPublished,
         _firebaseCoverImg = firebaseCoverImg,
+        _notIncluded = notIncluded,
         super(key: key);
   final String _id;
   final String _mainBadgeId;
@@ -69,6 +71,7 @@ class HomeFeatures extends StatefulWidget {
   final String _dateRange;
   final bool _isPublished;
   final String _firebaseCoverImg;
+  final String _notIncluded;
 
   @override
   State<HomeFeatures> createState() => _HomeFeaturesState();
@@ -433,6 +436,7 @@ class _HomeFeaturesState extends State<HomeFeatures>
       'address': splitAddress,
       'country': widget._country,
       'extra_cost': widget._extraCost,
+      'not_included': widget._notIncluded
     };
 
     await Navigator.pushNamed(context, '/package_view', arguments: details);
@@ -456,6 +460,7 @@ class _HomeFeaturesState extends State<HomeFeatures>
       'address': splitAddress,
       'country': widget._country,
       'extra_cost': widget._extraCost,
+      'not_included': widget._notIncluded
     };
 
     await Navigator.pushNamed(context, '/package_edit', arguments: details);

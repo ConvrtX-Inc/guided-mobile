@@ -145,23 +145,23 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
-                        SizedBox(
-                          width: width * 0.4,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed('/sign_up');
-                            },
-                            style: AppTextStyle.active,
-                            child: const Text(
-                              'Subscribe',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 12),
-                            ),
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 20.h,
+                        // ),
+                        // SizedBox(
+                        //   width: width * 0.4,
+                        //   child: ElevatedButton(
+                        //     onPressed: () {
+                        //       Navigator.of(context).pushNamed('/sign_up');
+                        //     },
+                        //     style: AppTextStyle.active,
+                        //     child: const Text(
+                        //       'Subscribe',
+                        //       style: TextStyle(
+                        //           fontWeight: FontWeight.bold, fontSize: 12),
+                        //     ),
+                        //   ),
+                        // ),
                         SizedBox(
                           height: 20.h,
                         ),
@@ -176,7 +176,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
                         Navigator.of(context).pushNamed('/activities');
                       },
                       child: Text(
-                        'Skip',
+                        'Next',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,

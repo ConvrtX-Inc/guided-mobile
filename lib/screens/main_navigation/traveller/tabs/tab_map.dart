@@ -8,9 +8,14 @@ import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -69,19 +74,21 @@ class _TabMapScreenState extends State<TabMapScreen> {
   double activitiesContainer = 70;
   bool _isloading = true;
   List<int> _selectedActivity = [];
-  LatLng currentMapLatLong = LatLng(53.59, -113.60);
+  LatLng currentMapLatLong = const LatLng(53.59, -113.60);
   List<ActivityPackage> _loadingData = [];
   List<ActivityPackage> _filteredActivity = [];
   final CardController _creditCardController = Get.put(CardController());
   final UserSubscriptionController _userSubscriptionController =
       Get.put(UserSubscriptionController());
-
+  TextEditingController _placeName = new TextEditingController();
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
     setState(() {
       mapController = controller;
     });
   }
+
+  bool hasPremiumSubscription = false;
 
   @override
   void initState() {
@@ -95,6 +102,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
 /*    if (_creditCardController.cards.isEmpty) {
       getUserCards();
     }*/
+
+  hasPremiumSubscription = UserSingleton.instance.user.user!.hasPremiumSubscription!;
   }
 
   Future<void> addMarker(List<ActivityPackage> activityPackages) async {
@@ -137,6 +146,22 @@ class _TabMapScreenState extends State<TabMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
+        onPressed: () async {
+          final Position location = await _userCurrentPosition();
+          await mapController?.animateCamera(CameraUpdate.newCameraPosition(
+              CameraPosition(
+                  target: LatLng(location.latitude, location.longitude),
+                  zoom: 17)
+              //17 is new zoom level
+              ));
+        },
+        child: const Icon(
+          Icons.my_location,
+          color: Colors.black,
+        ),
+      ),
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -149,11 +174,13 @@ class _TabMapScreenState extends State<TabMapScreen> {
               markers: Set<Marker>.of(_markers),
               onMapCreated: _onMapCreated,
               zoomControlsEnabled: false,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
             ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
+                borderRadius: const BorderRadius.all(const Radius.circular(10)),
                 color: HexColor('#F8F7F6'),
               ),
               height: hideActivities
@@ -201,6 +228,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
                           child: TextField(
+                            controller: _placeName,
+                            onTap: _handlePressButton,
                             textAlign: TextAlign.left,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
@@ -239,60 +268,80 @@ class _TabMapScreenState extends State<TabMapScreen> {
                       ),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 20.w,
-                      ),
-                      Flexible(
-                        flex: 6,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            color: Colors.white,
-                          ),
-                          height: 44.h,
-                          child: Row(
-                            children: <Widget>[
-                              Container(
-                                margin: EdgeInsets.only(left: 10.w, right: 8.w),
-                                height: 15.h,
-                                width: 15.w,
+
+                  FutureBuilder<List<Placemark>>(
+                    future: _determinePosition(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<Placemark>> snapshot) {
+                      if (snapshot.hasData) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            SizedBox(
+                              width: 20.w,
+                            ),
+                            Flexible(
+                              flex: 6,
+                              child: Container(
                                 decoration: const BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/png/marker.png'),
-                                    fit: BoxFit.contain,
-                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  color: Colors.white,
+                                ),
+                                height: 44.h,
+                                child: Row(
+                                  children: <Widget>[
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          left: 10.w, right: 8.w),
+                                      height: 15.h,
+                                      width: 15.w,
+                                      decoration: const BoxDecoration(
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                              'assets/images/png/marker.png'),
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
+                                    if (snapshot.data!.isNotEmpty)
+                                      Text(
+                                          '${snapshot.data?.first.street} ${snapshot.data?.first.subLocality} ${snapshot.data?.first.locality}')
+                                    else
+                                      const Text(
+                                        "St. John's, Newfo...",
+                                      ),
+                                  ],
                                 ),
                               ),
-                              const Text(
-                                "St. John's, Newfo...",
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10.w,
-                      ),
-                      Flexible(
-                        flex: 3,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            color: Colors.white,
-                          ),
-                          height: 44.h,
-                          child: const Center(child: Text('Radius : 05')),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 15.w,
-                      ),
-                    ],
+                            ),
+                            // SizedBox(
+                            //   width: 10.w,
+                            // ),
+                            // Flexible(
+                            //   flex: 3,
+                            //   child: Container(
+                            //     decoration: const BoxDecoration(
+                            //       borderRadius: BorderRadius.all(Radius.circular(10)),
+                            //       color: Colors.white,
+                            //     ),
+                            //     height: 44.h,
+                            //     child: const Center(child: Text('Radius : 05')),
+                            //   ),
+                            // ),
+                            SizedBox(
+                              width: 15.w,
+                            ),
+                          ],
+                        );
+                      }
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return Container();
+                    },
                   ),
+
                   SizedBox(
                     height: hideActivities ? 20 : 40.h,
                   ),
@@ -363,103 +412,96 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           child: ListView(
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
-                            children: List<Widget>.generate(_loadingData.length,
-                                (int i) {
+                            children: List<Widget>.generate(
+                                _filteredActivity.length, (int i) {
                               final Activity? icon = activities
                                   .firstWhereOrNull((Activity element) =>
                                       element.id ==
-                                      _loadingData[i].mainBadgeId);
-                              final ActivityPackage? enable = _filteredActivity
-                                  .firstWhereOrNull((ActivityPackage element) =>
-                                      element.id == _loadingData[i].id);
-                              return InkWell(
-                                  onTap: () {
-                                    // Navigator.of(context)
-                                    //     .pushNamed('/discovery_map');
-                                    if(_userSubscriptionController.userSubscription.id.isEmpty && PaymentConfig.isPaymentEnabled){
-                                      _showDiscoveryBottomSheet(
-                                          tourList[i].featureImage);
-                                    }
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.symmetric(
-                                        horizontal: 5.w, vertical: 20.h),
-                                    height: 180.h,
-                                    width: 135.w,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.transparent,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          _loadingData[i].name!,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 12.sp,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 10.h,
-                                        ),
-                                        Container(
-                                          height: 90.h,
-                                          width: 135.w,
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(15.r),
+                                      _filteredActivity[i].mainBadgeId);
+                              // final ActivityPackage? enable = _filteredActivity
+                              //     .firstWhereOrNull((ActivityPackage element) =>
+                              //         element.id == _loadingData[i].id);
+                              if (icon != null) {
+                                return InkWell(
+                                    onTap: () {
+                                      // Navigator.of(context)
+                                      //     .pushNamed('/discovery_map');
+                                      if (!hasPremiumSubscription &&
+                                          PaymentConfig.isPaymentEnabled) {
+                                        _showDiscoveryBottomSheet(
+                                            tourList[i].featureImage);
+                                      }
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: 5.w, vertical: 20.h),
+                                      height: 180.h,
+                                      width: 135.w,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.transparent,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            _filteredActivity[i].name!,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 12.sp,
+                                              color: Colors.black,
                                             ),
-                                            image: DecorationImage(
-                                                image: Image.memory(
-                                              base64.decode(_loadingData[i]
-                                                  .coverImg!
-                                                  .split(',')
-                                                  .last),
-                                              fit: BoxFit.cover,
-                                              gaplessPlayback: true,
-                                            ).image),
-                                            // image: DecorationImage(
-                                            //   image: AssetImage(
-                                            //       tourList[0].featureImage),
-                                            //   fit: BoxFit.cover,
-                                            // ),
                                           ),
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Positioned(
-                                                left: 5,
-                                                bottom: 5,
-                                                child: CircleAvatar(
-                                                  backgroundColor:
-                                                      Colors.transparent,
-                                                  radius: 12,
-                                                  backgroundImage:
-                                                      AssetImage(icon!.path),
-                                                ),
+                                          SizedBox(
+                                            height: 10.h,
+                                          ),
+                                          Container(
+                                            height: 90.h,
+                                            width: 135.w,
+                                            decoration: BoxDecoration(
+                                              color: Colors.transparent,
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(15.r),
                                               ),
-                                              if (enable == null)
-                                                Container(
-                                                  height: 90.h,
-                                                  width: 135.w,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.8),
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                      Radius.circular(15.r),
-                                                    ),
+                                              image: DecorationImage(
+                                                  image: Image.memory(
+                                                base64.decode(
+                                                    _filteredActivity[i]
+                                                        .coverImg!
+                                                        .split(',')
+                                                        .last),
+                                                fit: BoxFit.cover,
+                                                gaplessPlayback: true,
+                                              ).image),
+                                              // image: DecorationImage(
+                                              //   image: AssetImage(
+                                              //       tourList[0].featureImage),
+                                              //   fit: BoxFit.cover,
+                                              // ),
+                                            ),
+                                            child: Stack(
+                                              children: <Widget>[
+                                                Positioned(
+                                                  left: 5,
+                                                  bottom: 5,
+                                                  child: CircleAvatar(
+                                                    backgroundColor:
+                                                        Colors.transparent,
+                                                    radius: 12,
+                                                    backgroundImage:
+                                                        AssetImage(icon.path),
                                                   ),
                                                 ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ));
+                                        ],
+                                      ),
+                                    ));
+                              } else {
+                                return Container();
+                              }
                             }),
                           ),
                         )
@@ -476,6 +518,137 @@ class _TabMapScreenState extends State<TabMapScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _handlePressButton() async {
+    final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    Prediction? p = await PlacesAutocomplete.show(
+      context: context,
+      apiKey: 'AIzaSyCPF7ygz63Zj5RWZ_wU4G61JTynfPRjOMg',
+      radius: 10000000,
+      types: [],
+      strictbounds: false,
+      mode: Mode.overlay,
+      language: 'en',
+      decoration: InputDecoration(
+        hintText: 'Search',
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(
+            color: Colors.white,
+          ),
+        ),
+      ),
+      components: [
+        Component(Component.country, screenArguments['country_code'])
+      ],
+    );
+
+    await displayPrediction(p, context);
+  }
+
+  Future<void> displayPrediction(Prediction? p, BuildContext context) async {
+    if (p != null) {
+      // get detail (lat/lng)
+      GoogleMapsPlaces _places = GoogleMapsPlaces(
+        apiKey: 'AIzaSyCPF7ygz63Zj5RWZ_wU4G61JTynfPRjOMg',
+        apiHeaders: await const GoogleApiHeaders().getHeaders(),
+      );
+      final PlacesDetailsResponse detail =
+          await _places.getDetailsByPlaceId(p.placeId!);
+      final lat = detail.result.geometry!.location.lat;
+      final lng = detail.result.geometry!.location.lng;
+      await mapController?.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(lat, lng), zoom: 17)
+          //17 is new zoom level
+          ));
+      setState(() {
+        _placeName = TextEditingController(text: p.description);
+      });
+    }
+  }
+
+  Future<Position> _userCurrentPosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
+
+  Future<List<Placemark>> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    List<Placemark> places = [];
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    final Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    try {
+      return await placemarkFromCoordinates(
+          position.latitude, position.longitude);
+    } catch (e) {
+      return places;
+    }
   }
 
   Widget overlapped(List<Activity> activities) {
@@ -522,7 +695,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 1,
                     blurRadius: 20,
-                    offset: Offset(0, 8), // changes position of shadow
+                    offset: const Offset(0, 8), // changes position of shadow
                   ),
                 ],
               ),
@@ -549,7 +722,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                       right: 8,
                       child: _selectedActivity.contains(i)
                           ? Container(
-                              padding: EdgeInsets.all(1),
+                              padding: const EdgeInsets.all(1),
                               decoration: BoxDecoration(
                                 color: Colors.black,
                                 border: Border.all(
@@ -638,7 +811,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 1,
                     blurRadius: 20,
-                    offset: Offset(0, 8), // changes position of shadow
+                    offset: const Offset(0, 8), // changes position of shadow
                   ),
                 ],
               ),
@@ -667,7 +840,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     right: 8,
                     child: _selectedActivity.contains(i)
                         ? Container(
-                            padding: EdgeInsets.all(1),
+                            padding: const EdgeInsets.all(1),
                             decoration: BoxDecoration(
                               color: Colors.black,
                               border: Border.all(
@@ -773,9 +946,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           price: price,
                           onPaymentSuccessful: () {
                             Navigator.of(context).pop();
+                            //Save Subscription
                             saveSubscription(transactionNumber,
                                 'Premium Subscription', price.toString());
-                            //Save Subscription
+
                             paymentSuccessful(
                                 context: context,
                                 paymentDetails: DiscoveryPaymentDetails(
@@ -822,6 +996,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
     final APIStandardReturnFormat result =
         await APIServices().addUserSubscription(subscriptionParams);
 
-    debugPrint('subscription result ${result.successResponse}');
-  }
+    UserSingleton.instance.user.user?.hasPremiumSubscription = true;
+    setState(() {
+      hasPremiumSubscription = true;
+    });
+
+   }
 }

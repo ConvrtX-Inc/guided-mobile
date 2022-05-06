@@ -95,10 +95,11 @@ class _SettingsAvailability extends State<SettingsAvailability> {
   }
 
   void _initData() {
-      final RxString _currentDate = _selDate.toString().obs;
-      final DateTime dt = DateTime.parse(_currentDate.value);
-      availabilityController.setSelectedDate(_currentDate.value.toString());
-      availabilityController.setIndexMonth(dt.month);
+    final RxString _currentDate = _selDate.toString().obs;
+    final DateTime dt = DateTime.parse(_currentDate.value);
+    final int mon = dt.month;
+    availabilityController.setSelectedDate(_currentDate.value.toString());
+    availabilityController.setIndexMonth(dt.month);
 
       final DateTime currentDate =
           DateTime.parse(_currentDate.value);
@@ -110,6 +111,7 @@ class _SettingsAvailability extends State<SettingsAvailability> {
         defaultDate.toString(),
       );
 
+    print(availabilityController.selectedDate);
   }
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
@@ -157,7 +159,7 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                     children: isLoading == false ? [
                       Align(
                     alignment: Alignment.centerLeft,
-                      child: SizedBox(
+                    child: SizedBox(
                       // width: double.maxFinite, // set width to maxFinite
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(0, 25.h, 0, 25.h),
@@ -168,11 +170,12 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   AppColors.dirtyWhite),
                               shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(RoundedRectangleBorder(
+                                      RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ))),
                           child: Row(
-                            children: <Widget> [
+                            children: <Widget>[
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(_isActive ? 'Set yourself as unavailable' : 'Set yourself as available',
@@ -232,7 +235,7 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                   ),
                   Align(
                     alignment: Alignment.centerLeft,
-                      child: SizedBox(
+                    child: SizedBox(
                       // width: double.maxFinite, // set width to maxFinite
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(0, 25.h, 0, 25.h),
@@ -245,7 +248,8 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                   backgroundColor: MaterialStateProperty.all<Color>(
                                       AppColors.dirtyWhite),
                                   shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(RoundedRectangleBorder(
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ))),
                               child: Row(
@@ -366,14 +370,14 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                                                 availabilityController
                                                                     .currentDate);
 
-                                                            final DateTime
-                                                                plustMonth =
-                                                                DateTime(
-                                                                    dt.year,
-                                                                    index + 1,
-                                                                    dt.day,
-                                                                    dt.hour,
-                                                                    dt.minute);
+                                                          final DateTime
+                                                              plustMonth =
+                                                              DateTime(
+                                                                  dt.year,
+                                                                  index + 1,
+                                                                  dt.day,
+                                                                  dt.hour,
+                                                                  dt.minute);
 
                                                             final DateTime
                                                                 setLastday =
@@ -489,17 +493,29 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                                           monthViewSettings: const DateRangePickerMonthViewSettings(
                                                             dayFormat: 'E',
                                                           ),
-                                                          monthCellStyle: DateRangePickerMonthCellStyle(
-                                                            textStyle: TextStyle(color: HexColor('#3E4242')),
-                                                            todayTextStyle:
-                                                                TextStyle(fontWeight: FontWeight.bold, color: HexColor('#3E4242')),
+                                                          monthCellStyle:
+                                                              DateRangePickerMonthCellStyle(
+                                                            textStyle: TextStyle(
+                                                                color: HexColor(
+                                                                    '#3E4242')),
+                                                            todayTextStyle: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: HexColor(
+                                                                    '#3E4242')),
                                                           ),
-                                                          selectionTextStyle: const TextStyle(
-                                                            fontWeight: FontWeight.bold,
+                                                          selectionTextStyle:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
                                                             color: Colors.black,
                                                           ),
-                                                          selectionColor: HexColor('#FFC74A'),
-                                                          todayHighlightColor: HexColor('#FFC74A'),
+                                                          selectionColor:
+                                                              HexColor(
+                                                                  '#FFC74A'),
+                                                          todayHighlightColor:
+                                                              HexColor('#FFC74A'),
                                                           headerHeight: 0,
                                                           onSelectionChanged: _onSelectionChanged
                                                         ),
@@ -541,14 +557,13 @@ class _SettingsAvailability extends State<SettingsAvailability> {
                                             availabilityController.selectedMonth -
                                                 1);
 
-                                    // setState(() {
-                                    //   selectedmonth = 7;
-                                    // });
-                                  });
-                                },
+                                  // setState(() {
+                                  //   selectedmonth = 7;
+                                  // });
+                                });
+                              },
                             ),
-                        )
-                      ),
+                          )),
                     ),
                   )
                   ] : [ Column(

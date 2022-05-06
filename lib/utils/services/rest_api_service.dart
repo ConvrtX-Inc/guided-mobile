@@ -12,6 +12,8 @@ import 'package:guided/models/activity_availability_hours.dart';
 import 'package:guided/models/activity_availability_hours_model.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/activity_destination_model.dart';
+import 'package:guided/models/activity_event_destination_image_model.dart';
+import 'package:guided/models/activity_event_destination_model.dart';
 import 'package:guided/models/activity_outfitter/activity_outfitter_model.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/advertisement_image_model.dart';
@@ -426,10 +428,32 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-              'Bearer ${UserSingleton.instance.user.token}',
+              // 'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer $staticToken',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
+    final List<ActivityPackage> activityPackages = <ActivityPackage>[];
+    final activityPackage =
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+    activityPackages.addAll(activityPackage);
+    return activityPackages;
+  }
+
+  /// API service for currencies
+  Future<List<ActivityPackage>> getActivityPackagesbyDescOrder() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              // 'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer $staticToken',
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
     final List<ActivityPackage> activityPackage =
         (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
@@ -616,11 +640,8 @@ class APIServices {
     };
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
-        body: jsonEncode({
-          'latitude': '$latitude',
-          'longitude': '$longitude',
-          'distance': '20'
-        }),
+        body: jsonEncode(
+            {'latitude': '10.31', 'longitude': '123.89', 'distance': '20'}),
         headers: headers);
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -696,9 +717,9 @@ class APIServices {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
         });
-
+    print(response.request!.url);
+    print(response.body);
     final dynamic jsonData = jsonDecode(response.body);
-
     final List<ActivityHourAvailability> activityHours =
         <ActivityHourAvailability>[];
     final List<ActivityHourAvailability> activityHour = (jsonData as List)
@@ -844,7 +865,6 @@ class APIServices {
     debugPrint('BAnk Response ${jsonData} status code ${response.statusCode}');
 
     if (response.statusCode == 201) {
-
       return BankAccountModel.fromJson(jsonData);
     } else {
       return jsonData;
@@ -1328,7 +1348,7 @@ class APIServices {
   Future<EventModelData> getAllEventData() async {
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityEventUrl}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityEventUrl}?s={"is_post": true}'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
@@ -1783,7 +1803,6 @@ class APIServices {
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
-
   ///API Service for Retrieving Settings Availability
   Future<SettingsAvailabilityModel> getSettingsAvailability() async {
     final String? token = UserSingleton.instance.user.token;
@@ -1796,25 +1815,25 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/user-availability', queryParameters)}');
+    debugPrint(
+        'DATA ${Uri.http(apiBaseUrl, '/api/v1/user-availability', queryParameters)}');
     debugPrint('params R$queryParameters');
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/api/v1/user-availability', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/user-availability', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
     final dynamic jsonData = jsonDecode(response.body);
-    if (jsonData.length > 0) {
-
-    }
+    if (jsonData.length > 0) {}
     print(response.request!.url);
     print('tata: $jsonData');
     if (jsonData.length > 0) {
       print('naay sulod nga data');
       return SettingsAvailabilityModel.fromJson(jsonData[0]);
     } else {
-      final http.Response res = await http
-          .post(Uri.http(apiBaseUrl, '/api/v1/user-availability'),
+      final http.Response res = await http.post(
+        Uri.http(apiBaseUrl, '/api/v1/user-availability'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           HttpHeaders.contentTypeHeader: 'application/json',
@@ -1834,7 +1853,8 @@ class APIServices {
   }
 
   ///API Service for Updating Settings Availability
-  Future<dynamic> updateSettingsAvailability(bool _isActive, String reason, DateTime _selDate, String id) async {
+  Future<dynamic> updateSettingsAvailability(
+      bool _isActive, String reason, DateTime _selDate, String id) async {
     print('body update $_isActive - $reason - $_selDate - $id');
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
@@ -1849,17 +1869,17 @@ class APIServices {
     final date = DateTime.now();
     final formattedDate = DateTime(date.year, date.month, date.day + 1);
 
-    final http.Response response = await http
-        .patch(Uri.http(apiBaseUrl, '/api/v1/user-availability/$id'),
-        headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
-          HttpHeaders.contentTypeHeader: 'application/json',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'is_available': _isActive,
-          'reason': reason,
-          'return_date': DateFormat('dd MMMM yyyy').format(_selDate),
-        }),
+    final http.Response response = await http.patch(
+      Uri.http(apiBaseUrl, '/api/v1/user-availability/$id'),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'is_available': _isActive,
+        'reason': reason,
+        'return_date': DateFormat('dd MMMM yyyy').format(_selDate),
+      }),
     );
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -1867,6 +1887,7 @@ class APIServices {
     print('update tata: $jsonData');
     return SettingsAvailabilityModel.fromJson(jsonData);
   }
+
   /// API service for all badges
   Future<List<ActivityModel>> getAllBadgesInBecomeAguide() async {
     final dynamic response = await http.get(
@@ -1874,14 +1895,14 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.badgesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(jsonData);
     final List<ActivityModel> badges = <ActivityModel>[];
     final List<ActivityModel> badge =
-    (jsonData as List).map((i) => ActivityModel.fromJson(i)).toList();
+        (jsonData as List).map((i) => ActivityModel.fromJson(i)).toList();
     badges.addAll(badge);
     return badges;
   }
@@ -1901,8 +1922,8 @@ class APIServices {
     final date = DateTime.now();
     final formattedDate = DateTime(date.year, date.month, date.day + 1);
 
-    final http.Response response = await http
-        .post(Uri.http(apiBaseUrl, '/api/v1/user-guide-request/'),
+    final http.Response response = await http.post(
+      Uri.http(apiBaseUrl, '/api/v1/user-guide-request/'),
       headers: {
         HttpHeaders.authorizationHeader: 'Bearer $token',
         HttpHeaders.contentTypeHeader: 'application/json',
@@ -1919,6 +1940,7 @@ class APIServices {
     print('update tata: $jsonData');
     return SettingsAvailabilityModel.fromJson(jsonData);
   }
+
   ///API Service for Retrieving Settings Availability
   Future<BecomeAGudeModel> getBecomeAGuideRequest() async {
     final String? token = UserSingleton.instance.user.token;
@@ -1928,16 +1950,88 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
+    debugPrint(
+        'DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
     debugPrint('params R$queryParameters');
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(response.request!.url);
     print('tata response get become a guide request: $jsonData');
     return BecomeAGudeModel.fromJson(jsonData[0]);
+  }
+
+  /// API service for event image model
+  Future<ActivityEventDestination> getEventDestinationDetails(String id) async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.eventDestination}?s={"activity_event_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<ActivityEventDestinationDetailsModel> details =
+        <ActivityEventDestinationDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final ActivityEventDestinationDetailsModel eventDestinationModel =
+          ActivityEventDestinationDetailsModel.fromJson(data);
+      details.add(eventDestinationModel);
+    }
+
+    return ActivityEventDestination(activityEventDestinationDetails: details);
+  }
+
+  /// API service for event image model
+  Future<EventImageModelData> getEventDestinationImage(String id) async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getEventImage}?s={"activity_event_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<EventImageDetailsModel> details = <EventImageDetailsModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final EventImageDetailsModel imageModel =
+          EventImageDetailsModel.fromJson(data);
+      details.add(imageModel);
+    }
+
+    return EventImageModelData(eventImageDetails: details);
+  }
+
+  /// API service for outfitter image model
+  Future<EventDestinationImageModel> getEventDestinationImageData(
+      String id) async {
+
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.eventDestinationImage}?s={"activity_event_destination_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<EventImageDestinationDetails> details =
+        <EventImageDestinationDetails>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final EventImageDestinationDetails eventImageDestination =
+          EventImageDestinationDetails.fromJson(data);
+      details.add(eventImageDestination);
+    }
+
+    return EventDestinationImageModel(eventDestinationImageDetails: details);
   }
 }

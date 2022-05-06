@@ -27,9 +27,9 @@ class WelcomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  AppTextConstants.welcomeGuided,
-                  style: const TextStyle(
-                      fontSize: 20,
+                  'Welcome',
+                  style: TextStyle(
+                      fontSize: 20.sp,
                       fontFamily: 'Gilroy',
                       fontWeight: FontWeight.bold),
                 ),
@@ -42,9 +42,12 @@ class WelcomeScreen extends StatelessWidget {
                   child: Column(
                     children: <Widget>[
                       Text(
-                        AppTextConstants.loremIpsum,
+                        'Outdoor Adventure App',
                         style: TextStyle(
-                            color: AppColors.grey, fontWeight: FontWeight.w700),
+                            color: AppColors.lightningYellow,
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w700),
+                            textAlign: TextAlign.center,
                       ),
                     ],
                   ),
