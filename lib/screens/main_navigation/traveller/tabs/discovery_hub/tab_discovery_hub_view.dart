@@ -1,18 +1,24 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/user_subscription_controller.dart';
 import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/discovery_hub.dart';
 import 'package:guided/models/hub_outfitter.dart';
+import 'package:guided/models/newsfeed_image_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
@@ -21,10 +27,12 @@ import 'package:guided/screens/payments/payment_method.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_payment_details.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/event.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class TabDiscoveryHubView extends StatefulWidget {
   const TabDiscoveryHubView({Key? key}) : super(key: key);
@@ -39,11 +47,15 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
       Get.put(UserSubscriptionController());
 
   bool hasPremiumSubscription = false;
-
+  late List<String> imageList;
+  late List<String> imageIdList;
+  int activeIndex = 0;
+  int imageCount = 0;
   @override
   void initState() {
     super.initState();
-
+    imageList = [];
+    imageIdList = [];
     hasPremiumSubscription =
         UserSingleton.instance.user.user!.hasPremiumSubscription!;
   }
@@ -61,198 +73,72 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
       ),
       body: Column(
         children: <Widget>[
-          ImageSlideshow(
-            width: 375,
-            height: 200,
-            initialPage: 0,
-            indicatorColor: Colors.white,
-            indicatorBackgroundColor: Colors.grey[100],
-            autoPlayInterval: 3000,
-            isLoop: true,
-            children: <Widget>[
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15.r),
-                  ),
-                  image: DecorationImage(
-                      image: AssetImage(features[screenArguments['id']].img1),
-                      fit: BoxFit.cover),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(1.r))),
+                      child: buildSlider(context, screenArguments['id'],
+                          screenArguments['main_badge_id'])),
                 ),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                        bottom: 0,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          radius: 30,
-                          backgroundImage:
-                              AssetImage(features[screenArguments['id']].path),
-                        )),
-                    Positioned(
-                        top: 9,
-                        right: 14,
-                        child: Image(
-                          image: AssetImage(AssetsPath.heartOutlined),
-                          width: 30,
-                          height: 30,
-                        ))
-                  ],
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15.r),
-                  ),
-                  image: DecorationImage(
-                      image: AssetImage(features[screenArguments['id']].img2),
-                      fit: BoxFit.cover),
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                        bottom: 0,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          radius: 30,
-                          backgroundImage:
-                              AssetImage(features[screenArguments['id']].path),
-                        )),
-                    Positioned(
-                        top: 9,
-                        right: 14,
-                        child: Image(
-                          image: AssetImage(AssetsPath.heartOutlined),
-                          width: 30,
-                          height: 30,
-                        ))
-                  ],
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15.r),
-                  ),
-                  image: DecorationImage(
-                      image: AssetImage(features[screenArguments['id']].img3),
-                      fit: BoxFit.cover),
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                        bottom: 0,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          radius: 30,
-                          backgroundImage:
-                              AssetImage(features[screenArguments['id']].path),
-                        )),
-                    Positioned(
-                        top: 9,
-                        right: 14,
-                        child: Image(
-                          image: AssetImage(AssetsPath.heartOutlined),
-                          width: 30,
-                          height: 30,
-                        ))
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(left: 20.w, top: 10.h),
-                child: Text(
-                  features[screenArguments['id']].title,
-                  style: TextStyle(
-                      fontSize: 18.sp,
-                      fontFamily: 'Gilroy',
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(right: 20.w, top: 10.h),
-                child: Text(
-                  features[screenArguments['id']].date,
-                  style: TextStyle(
-                      color: AppColors.doveGrey,
-                      fontFamily: 'Gilroy',
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w400),
-                ),
-              )
-            ],
-          ),
-          Row(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(left: 15.w, top: 15.h),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width / 1.4,
-                  child: Row(children: <Widget>[
-                    Image.asset(
-                      '${AssetsPath.assetsPNGPath}/mark_chen.png',
-                      width: 50.w,
-                      height: 50.h,
-                    ),
-                    Column(
-                      children: <Widget>[
-                        Text(
-                          'Matt Parker',
+                SizedBox(height: 20.h),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          screenArguments['title'],
                           style: TextStyle(
-                              fontFamily: 'Gilroy',
-                              fontSize: 14.sp,
+                              fontSize: RegExp(r"\w+(\'\w+)?")
+                                          .allMatches(screenArguments['title'])
+                                          .length >
+                                      5
+                                  ? 10.sp
+                                  : 18.sp,
                               fontWeight: FontWeight.w600),
                         ),
-                        Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.star,
-                              color: Colors.green[900],
-                            ),
-                            Text(
-                              '16 reviews',
-                              style: TextStyle(
-                                  fontFamily: 'Gilroy',
-                                  color: AppColors.doveGrey,
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w400),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  ]),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.calendar_today_outlined,
+                            size: 15,
+                            color: AppColors.osloGrey,
+                          ),
+                          SizedBox(width: 5.w),
+                          Text(
+                            screenArguments['availability_date'],
+                            style: AppTextStyle.dateStyle,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // Image.asset(
-              //   '${AssetsPath.assetsPNGPath}/phone_circle.png',
-              //   width: 70.w,
-              //   height: 70.h,
-              // ),
-            ],
-          ),
-          Expanded(
-              child: Padding(
-            padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.h),
-            child: Text(
-              features[screenArguments['id']].description,
-              textAlign: TextAlign.justify,
-              style: TextStyle(
-                  fontFamily: 'Gilroy',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14.sp,
-                  height: 2),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                    screenArguments['description'],
+                    style: AppTextStyle.descrStyle,
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ],
             ),
-          )),
+          ),
 
           /// show this button if user is not yet subscribed
-          if (features[screenArguments['id']].isPremium &&
+          if (screenArguments['is_premium'] &&
               !hasPremiumSubscription &&
               PaymentConfig.isPaymentEnabled)
             Padding(
@@ -266,6 +152,123 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
       ),
     );
   }
+
+  Widget buildSlider(BuildContext context, String id, String mainBadgeId) =>
+      FutureBuilder<NewsfeedImageModel>(
+        future: APIServices().getNewsfeedImageData(id),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            final NewsfeedImageModel newsfeedImage = snapshot.data;
+            final int length = newsfeedImage.newsfeedImageDetails.length;
+            imageCount = length;
+
+            for (int i = 0; i < imageCount; i++) {
+              imageList.add(
+                  newsfeedImage.newsfeedImageDetails[i].firebaseSnapshotImg);
+              imageIdList.add(newsfeedImage.newsfeedImageDetails[i].id);
+            }
+
+            return Center(
+              child: Stack(
+                alignment: AlignmentDirectional.center,
+                children: <Widget>[
+                  CarouselSlider.builder(
+                      itemCount: length,
+                      options: CarouselOptions(
+                        enableInfiniteScroll: false,
+                        height: 300.h,
+                        viewportFraction: 1,
+                        onPageChanged:
+                            (int index, CarouselPageChangedReason reason) =>
+                                setState(() => activeIndex = index),
+                      ),
+                      itemBuilder:
+                          (BuildContext context, int index, int realIndex) {
+                        final NewsfeedImageDetails imgData =
+                            newsfeedImage.newsfeedImageDetails[index];
+
+                        return buildImage(imgData, index);
+                      }),
+                  if (length == 1) Container(),
+                  if (length == 0)
+                    GestureDetector(
+                        onTap: () {
+                          // navigateEventDetails(context, '');
+                        },
+                        child: SizedBox(
+                          width: 300.w,
+                          height: 300.h,
+                          child: const Text(''),
+                        ))
+                  else
+                    Positioned(
+                      bottom: 10,
+                      child: buildIndicator(length),
+                    ),
+                  FutureBuilder<BadgeModelData>(
+                    future: APIServices().getBadgesModelById(mainBadgeId),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasData) {
+                        final BadgeModelData badgeData = snapshot.data;
+                        final int length = badgeData.badgeDetails.length;
+                        return Positioned(
+                          left: 20,
+                          bottom: 20,
+                          child: Image.memory(
+                            base64.decode(badgeData.badgeDetails[0].imgIcon
+                                .split(',')
+                                .last),
+                            gaplessPlayback: true,
+                          ),
+                        );
+                      }
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return const Positioned(
+                          left: 20,
+                          bottom: 20,
+                          child: SkeletonText(
+                              width: 30, height: 30, shape: BoxShape.circle),
+                        );
+                      }
+                      return Container();
+                    },
+                  )
+                ],
+              ),
+            );
+          }
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const SkeletonText(
+              height: 200,
+              width: 900,
+              radius: 10,
+            );
+          }
+          return Container();
+        },
+      );
+
+  Widget buildImage(NewsfeedImageDetails imgData, int index) => GestureDetector(
+        onTap: () {
+          // navigateEventDetails(context, imgData.firebaseSnapshotImg);
+        },
+        child: ExtendedImage.network(
+          imgData.firebaseSnapshotImg,
+          fit: BoxFit.cover,
+          gaplessPlayback: true,
+        ),
+      );
+
+  Widget buildIndicator(int count) => AnimatedSmoothIndicator(
+        activeIndex: activeIndex,
+        count: count,
+        effect: SlideEffect(
+            activeDotColor: Colors.white,
+            dotColor: Colors.grey.shade800,
+            dotHeight: 10.h,
+            dotWidth: 10.w),
+      );
 
   void _showDiscoveryBottomSheet(String backgroundImage) {
     showCupertinoModalBottomSheet(

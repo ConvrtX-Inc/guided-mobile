@@ -204,6 +204,12 @@ class AppAPIPath {
   ///Returns activity event image destination
   static String eventDestinationImage =
       'api/v1/activity-event-destination-image';
+
+  ///Returns newsfeed list url
+  static String newsfeedList = 'api/v1/activity-newsfeed/list';
+
+  ///Returns news feed image url
+  static String newsfeedImage = 'api/v1/activity-newsfeed-image';
 }
 
 ///Get Api Base Url
