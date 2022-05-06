@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -13,6 +14,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/user_subscription_controller.dart';
 import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/discovery_hub.dart';
 import 'package:guided/models/hub_outfitter.dart';
@@ -84,7 +86,8 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                             color: Colors.grey,
                           ),
                           borderRadius: BorderRadius.all(Radius.circular(1.r))),
-                      child: buildSlider(context, screenArguments['id'])),
+                      child: buildSlider(context, screenArguments['id'],
+                          screenArguments['main_badge_id'])),
                 ),
                 SizedBox(height: 20.h),
                 Padding(
@@ -127,7 +130,7 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                   child: Text(
                     screenArguments['description'],
                     style: AppTextStyle.descrStyle,
-                    textAlign: TextAlign.justify,
+                    textAlign: TextAlign.left,
                   ),
                 ),
               ],
@@ -153,7 +156,7 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
     );
   }
 
-  Widget buildSlider(BuildContext context, String id) =>
+  Widget buildSlider(BuildContext context, String id, String mainBadgeId) =>
       FutureBuilder<NewsfeedImageModel>(
         future: APIServices().getNewsfeedImageData(id),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -205,6 +208,35 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                       bottom: 10,
                       child: buildIndicator(length),
                     ),
+                  FutureBuilder<BadgeModelData>(
+                    future: APIServices().getBadgesModelById(mainBadgeId),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasData) {
+                        final BadgeModelData badgeData = snapshot.data;
+                        final int length = badgeData.badgeDetails.length;
+                        return Positioned(
+                          left: 20,
+                          bottom: 20,
+                          child: Image.memory(
+                            base64.decode(badgeData.badgeDetails[0].imgIcon
+                                .split(',')
+                                .last),
+                            gaplessPlayback: true,
+                          ),
+                        );
+                      }
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return const Positioned(
+                          left: 20,
+                          bottom: 20,
+                          child: SkeletonText(
+                              width: 30, height: 30, shape: BoxShape.circle),
+                        );
+                      }
+                      return Container();
+                    },
+                  )
                 ],
               ),
             );

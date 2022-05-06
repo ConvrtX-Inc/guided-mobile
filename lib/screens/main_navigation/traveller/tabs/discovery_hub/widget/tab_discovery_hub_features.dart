@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/newsfeed_image_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -110,7 +113,7 @@ class _DiscoveryHubFeaturesState extends State<DiscoveryHubFeatures> {
             child: Text(
               widget._description,
               style: AppTextStyle.descrStyle,
-              textAlign: TextAlign.justify,
+              textAlign: TextAlign.left,
             ),
           ),
         ],
@@ -169,6 +172,36 @@ class _DiscoveryHubFeaturesState extends State<DiscoveryHubFeatures> {
                       bottom: 10,
                       child: buildIndicator(length),
                     ),
+                  FutureBuilder<BadgeModelData>(
+                    future:
+                        APIServices().getBadgesModelById(widget._mainBadgeId),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasData) {
+                        final BadgeModelData badgeData = snapshot.data;
+                        final int length = badgeData.badgeDetails.length;
+                        return Positioned(
+                          left: 20,
+                          bottom: 20,
+                          child: Image.memory(
+                            base64.decode(badgeData.badgeDetails[0].imgIcon
+                                .split(',')
+                                .last),
+                            gaplessPlayback: true,
+                          ),
+                        );
+                      }
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return const Positioned(
+                          left: 20,
+                          bottom: 20,
+                          child: SkeletonText(
+                              width: 30, height: 30, shape: BoxShape.circle),
+                        );
+                      }
+                      return Container();
+                    },
+                  )
                 ],
               ),
             );
@@ -212,7 +245,8 @@ class _DiscoveryHubFeaturesState extends State<DiscoveryHubFeatures> {
       'description': widget._description,
       'availability_date':
           '${widget._date!.day}/ ${widget._date!.month}/ ${widget._date!.year}',
-      'is_premium': widget._isPremium
+      'is_premium': widget._isPremium,
+      'main_badge_id': widget._mainBadgeId
     };
 
     await Navigator.pushNamed(context, '/discovery_hub_view',
