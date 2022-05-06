@@ -423,6 +423,22 @@ class APIServices {
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
+  /// API service for login
+  Future<APIStandardReturnFormat> loginWithApple(String idToken) async {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    };
+    final http.Response response = await http.post(
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.facebookLogin}'),
+      body: jsonEncode(
+          {'idToken': idToken, 'firstName': 'user', 'lastName': 'apple'}),
+      headers: headers,
+    );
+    print(response.body);
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
   /// API service for currencies
   Future<List<ActivityPackage>> getActivityPackages() async {
     final http.Response response = await http.get(
@@ -2015,7 +2031,6 @@ class APIServices {
   /// API service for outfitter image model
   Future<EventDestinationImageModel> getEventDestinationImageData(
       String id) async {
-
     final dynamic response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.eventDestinationImage}?s={"activity_event_destination_id": \"$id\"}'),
