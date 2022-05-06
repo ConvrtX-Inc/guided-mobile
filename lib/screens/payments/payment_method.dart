@@ -76,16 +76,15 @@ Future<dynamic> paymentMethod(
                     Row(children: <Widget>[
                       GestureDetector(
                           onTap: () => Navigator.pop(context),
-                          child: 
-                      Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            color: Colors.grey.withOpacity(0.2)),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                        ),
-                      )),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: Colors.grey.withOpacity(0.2)),
+                            child: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.black,
+                            ),
+                          )),
                       SizedBox(width: 20.w),
                       Text(
                         'Payment Method',
@@ -137,7 +136,7 @@ Future<dynamic> paymentMethod(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: <Widget>[
                                 for (int i = 0; i < paymentModes.length; i++)
-                                  if(paymentModes[i].isEnabled)
+                                  if (paymentModes[i].isEnabled)
                                     getMethods(
                                         data: paymentModes[i],
                                         isSelected: selectedPaymentMode == i,
@@ -293,17 +292,19 @@ Future<dynamic> paymentMethod(
                         width: MediaQuery.of(context).size.width * 0.85,
                         child: pay.ApplePayButton(
                           paymentConfigurationAsset:
-                              'apple_pay_payment_profile.json',
+                              'default_payment_profile_apple_pay.json',
                           paymentItems: _paymentItems,
                           // margin: const EdgeInsets.only(top: 15),
                           onPaymentResult: (result) async {
-                            debugPrint('Apple Pay Result ${result}');
+                            // debugPrint('Apple Pay Result ${result}');
 
-                            final TokenData token = await Stripe.instance
-                                .createApplePayToken(result);
-                            debugPrint('Apple Token $token');
-
-                            onContinueBtnPressed(token);
+                            // final TokenData token = await Stripe.instance
+                            //     .createApplePayToken(result);
+                            // debugPrint('Apple Token $token');
+                            final jsonData = jsonDecode(result['token']);
+                            print(jsonData['header']['transactionId']);
+                            onContinueBtnPressed(
+                                jsonData['header']['transactionId'].toString());
 
                             // debugPrint('Params ${params}');
                             // onContinueBtnPressed(tokenJson);

@@ -424,6 +424,22 @@ class APIServices {
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
+  /// API service for login
+  Future<APIStandardReturnFormat> loginWithApple(String idToken) async {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    };
+    final http.Response response = await http.post(
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.facebookLogin}'),
+      body: jsonEncode(
+          {'idToken': idToken, 'firstName': 'user', 'lastName': 'apple'}),
+      headers: headers,
+    );
+    print(response.body);
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
   /// API service for currencies
   Future<List<ActivityPackage>> getActivityPackages() async {
     final http.Response response = await http.get(
