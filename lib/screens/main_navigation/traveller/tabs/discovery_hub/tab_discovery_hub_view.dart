@@ -38,15 +38,16 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
   final UserSubscriptionController _userSubscriptionController =
       Get.put(UserSubscriptionController());
 
-    bool hasPremiumSubscription = false;
-
+  bool hasPremiumSubscription = false;
 
   @override
   void initState() {
     super.initState();
 
-    hasPremiumSubscription = UserSingleton.instance.user.user!.hasPremiumSubscription!;
+    hasPremiumSubscription =
+        UserSingleton.instance.user.user!.hasPremiumSubscription!;
   }
+
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> screenArguments =
@@ -249,19 +250,18 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                   height: 2),
             ),
           )),
+
           /// show this button if user is not yet subscribed
           if (features[screenArguments['id']].isPremium &&
-              !hasPremiumSubscription && PaymentConfig.isPaymentEnabled)
+              !hasPremiumSubscription &&
+              PaymentConfig.isPaymentEnabled)
             Padding(
                 padding: EdgeInsets.only(
                     left: 20.w, right: 20.w, top: 10.h, bottom: 12.h),
                 child: CustomRoundedButton(
                     title: 'Know More About This Event',
-                    onpressed: () =>
-                        _userSubscriptionController.userSubscription.id.isEmpty
-                            ? _showDiscoveryBottomSheet(
-                                features[screenArguments['id']].img1)
-                            : null))
+                    onpressed: () => _showDiscoveryBottomSheet(
+                        features[screenArguments['id']].img1)))
         ],
       ),
     );
@@ -348,6 +348,12 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
     final APIStandardReturnFormat result =
         await APIServices().addUserSubscription(subscriptionParams);
 
-    debugPrint('subscription result ${result.successResponse}');
+    UserSingleton.instance.user.user?.hasPremiumSubscription = true;
+    setState(() {
+      hasPremiumSubscription = true;
+    });
+
+    debugPrint(
+        'subscription result ${result.successResponse} Has Subscription ${UserSingleton.instance.user.user?.hasPremiumSubscription} State Premium Subscription $hasPremiumSubscription');
   }
 }
