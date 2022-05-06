@@ -81,7 +81,7 @@ class User {
       this.sEntity,
       this.profilePhoto,
       this.stripeAccountId,
-      this.hasPremiumSubscription,
+      this.hasPremiumSubscription  = false,
       this.firebaseProfilePicUrl});
 
   User.fromJson(Map<String, dynamic> json) {

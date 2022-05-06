@@ -2015,6 +2015,7 @@ class APIServices {
   /// API service for outfitter image model
   Future<EventDestinationImageModel> getEventDestinationImageData(
       String id) async {
+
     final dynamic response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.eventDestinationImage}?s={"activity_event_destination_id": \"$id\"}'),

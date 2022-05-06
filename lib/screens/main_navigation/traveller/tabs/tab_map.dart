@@ -88,6 +88,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
     });
   }
 
+  bool hasPremiumSubscription = false;
+
   @override
   void initState() {
     APIServices().getActivityPackages().then((List<ActivityPackage> value) {
@@ -100,6 +102,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
 /*    if (_creditCardController.cards.isEmpty) {
       getUserCards();
     }*/
+
+  hasPremiumSubscription = UserSingleton.instance.user.user!.hasPremiumSubscription!;
   }
 
   Future<void> addMarker(List<ActivityPackage> activityPackages) async {
@@ -422,8 +426,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                     onTap: () {
                                       // Navigator.of(context)
                                       //     .pushNamed('/discovery_map');
-                                      if (_userSubscriptionController
-                                              .userSubscription.id.isEmpty &&
+                                      if (!hasPremiumSubscription &&
                                           PaymentConfig.isPaymentEnabled) {
                                         _showDiscoveryBottomSheet(
                                             tourList[i].featureImage);
@@ -943,9 +946,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           price: price,
                           onPaymentSuccessful: () {
                             Navigator.of(context).pop();
+                            //Save Subscription
                             saveSubscription(transactionNumber,
                                 'Premium Subscription', price.toString());
-                            //Save Subscription
+
                             paymentSuccessful(
                                 context: context,
                                 paymentDetails: DiscoveryPaymentDetails(
@@ -992,6 +996,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
     final APIStandardReturnFormat result =
         await APIServices().addUserSubscription(subscriptionParams);
 
-    debugPrint('subscription result ${result.successResponse}');
-  }
+    UserSingleton.instance.user.user?.hasPremiumSubscription = true;
+    setState(() {
+      hasPremiumSubscription = true;
+    });
+
+   }
 }

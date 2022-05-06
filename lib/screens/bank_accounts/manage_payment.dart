@@ -40,7 +40,7 @@ class _ManagePaymentState extends State<ManagePayment> {
   List<BankAccountModel> bankAccounts = <BankAccountModel>[];
 
   final BankAccountController _bankAccountController =
-      Get.put(BankAccountController());
+  Get.put(BankAccountController());
 
   List<CardModel> cards = <CardModel>[];
 
@@ -50,13 +50,13 @@ class _ManagePaymentState extends State<ManagePayment> {
   bool isSettingUpStripe = false;
 
   final UserProfileDetailsController _profileDetailsController =
-      Get.put(UserProfileDetailsController());
+  Get.put(UserProfileDetailsController());
 
   String stripeAcctId = '';
 
   List<StripeBankAccountModel> stripeBankAccounts = [];
   final StripeBankAccountController _stripeBankAccountController =
-      Get.put(StripeBankAccountController());
+  Get.put(StripeBankAccountController());
 
   @override
   void initState() {
@@ -107,19 +107,19 @@ class _ManagePaymentState extends State<ManagePayment> {
   Widget buildPaymentUI() => isLoading
       ? buildFakePaymentDataUI()
       : Container(
-          padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 10.h),
-          child: SingleChildScrollView(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              buildPaymentCards(),
-              SizedBox(height: 20.h),
-              Divider(color: Colors.grey),
-              SizedBox(height: 20.h),
-              buildPaymentBanks(),
-            ],
-          )),
-        );
+    padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 10.h),
+    child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            buildPaymentCards(),
+            SizedBox(height: 20.h),
+            Divider(color: Colors.grey),
+            SizedBox(height: 20.h),
+            buildPaymentBanks(),
+          ],
+        )),
+  );
 
   ///Manage Cards
   Widget buildPaymentCards() =>
@@ -151,7 +151,7 @@ class _ManagePaymentState extends State<ManagePayment> {
 
   /// Manage Stripe Bank Accounts
   Widget buildPaymentBanks() => GetBuilder<StripeBankAccountController>(
-          builder: (StripeBankAccountController _controller) {
+      builder: (StripeBankAccountController _controller) {
         stripeBankAccounts = _controller.bankAccounts;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,7 +165,7 @@ class _ManagePaymentState extends State<ManagePayment> {
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
                   final StripeBankAccountModel bankAccount =
-                      stripeBankAccounts[index];
+                  stripeBankAccounts[index];
                   return buildBankItem(bankAccount);
                 }),
             SizedBox(height: 12.h),
@@ -221,7 +221,7 @@ class _ManagePaymentState extends State<ManagePayment> {
       child: ListTile(
         // contentPadding: EdgeInsets.zero,
         leading:
-            Image.asset('${AssetsPath.assetsPNGPath}/bank.png', height: 40.h),
+        Image.asset('${AssetsPath.assetsPNGPath}/bank.png', height: 40.h),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -269,17 +269,19 @@ class _ManagePaymentState extends State<ManagePayment> {
 
   Future<void> getPaymentData() async {
     final List<BankAccountModel> bankAccountsResult =
-        await APIServices().getUserBankAccounts();
+    await APIServices().getUserBankAccounts();
     await _bankAccountController.initBankAccounts(bankAccountsResult);
 
     final List<CardModel> cardsResult = await APIServices().getCards();
 
     await _cardController.initCards(cardsResult);
 
-    final List<StripeBankAccountModel> stripeBankAccounts =
-        await StripeServices().getBankAccounts();
+    if(stripeAcctId != ''){
+      final List<StripeBankAccountModel> stripeBankAccounts =
+      await StripeServices().getBankAccounts();
 
-    await _stripeBankAccountController.initBankAccounts(stripeBankAccounts);
+      await _stripeBankAccountController.initBankAccounts(stripeBankAccounts);
+    }
 
     setState(() {
       isLoading = false;
@@ -288,11 +290,11 @@ class _ManagePaymentState extends State<ManagePayment> {
 
   void _showRemoveDialog(
       {required String type,
-      required String id,
-      required String number,
-      String logoUrl = '',
-      String expiryDate = '',
-      String bankName = ''}) {
+        required String id,
+        required String number,
+        String logoUrl = '',
+        String expiryDate = '',
+        String bankName = ''}) {
     bool _isRemovingPayment = false;
     showDialog(
         context: context,
@@ -323,28 +325,28 @@ class _ManagePaymentState extends State<ManagePayment> {
                     SizedBox(height: 20.h),
                     Expanded(
                         child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Image.asset(logoUrl, height: 40.h, width: 40.w),
-                        Text(
-                          '${AppTextConstants.endingIn} in $number',
-                          style: TextStyle(
-                              fontSize: 18.sp,
-                              fontFamily: 'Gilroy',
-                              fontWeight: FontWeight.w500),
-                        ),
-                        Text(
-                          type == AppTextConstants.card
-                              ? DateFormat('MM/yy')
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Image.asset(logoUrl, height: 40.h, width: 40.w),
+                            Text(
+                              '${AppTextConstants.endingIn} in $number',
+                              style: TextStyle(
+                                  fontSize: 18.sp,
+                                  fontFamily: 'Gilroy',
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            Text(
+                              type == AppTextConstants.card
+                                  ? DateFormat('MM/yy')
                                   .format(DateTime.parse(expiryDate))
-                              : bankName,
-                          style: TextStyle(
-                              fontSize: 18.sp,
-                              fontFamily: 'Gilroy',
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ))
+                                  : bankName,
+                              style: TextStyle(
+                                  fontSize: 18.sp,
+                                  fontFamily: 'Gilroy',
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ))
                   ],
                 ),
               ),
@@ -365,13 +367,13 @@ class _ManagePaymentState extends State<ManagePayment> {
                                 borderRadius: BorderRadius.circular(16)),
                             child: Center(
                                 child: Text(
-                              AppTextConstants.cancel,
-                              style: TextStyle(
-                                  color: AppColors.deepGreen,
-                                  fontSize: 12.sp,
-                                  fontFamily: 'Gilroy',
-                                  fontWeight: FontWeight.w700),
-                            ))),
+                                  AppTextConstants.cancel,
+                                  style: TextStyle(
+                                      color: AppColors.deepGreen,
+                                      fontSize: 12.sp,
+                                      fontFamily: 'Gilroy',
+                                      fontWeight: FontWeight.w700),
+                                ))),
                       ),
                       InkWell(
                         onTap: () {
@@ -394,19 +396,19 @@ class _ManagePaymentState extends State<ManagePayment> {
                             child: Center(
                                 child: !_isRemovingPayment
                                     ? Text(
-                                        AppTextConstants.confirm,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12.sp,
-                                            fontFamily: 'Gilroy',
-                                            fontWeight: FontWeight.w700),
-                                      )
+                                  AppTextConstants.confirm,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12.sp,
+                                      fontFamily: 'Gilroy',
+                                      fontWeight: FontWeight.w700),
+                                )
                                     : const SizedBox(
-                                        height: 12,
-                                        width: 12,
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                        )))),
+                                    height: 12,
+                                    width: 12,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )))),
                       ),
                     ]),
                 SizedBox(
@@ -419,52 +421,52 @@ class _ManagePaymentState extends State<ManagePayment> {
   }
 
   Widget buildFakePaymentDataUI() => ListView.builder(
-        itemCount: 5,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-              margin: EdgeInsets.only(bottom: 10.h),
-              padding: EdgeInsets.all(10.w),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20.r))),
-              child: ListTile(
-                leading: SkeletonAnimation(
+    itemCount: 5,
+    itemBuilder: (BuildContext context, int index) {
+      return Container(
+          margin: EdgeInsets.only(bottom: 10.h),
+          padding: EdgeInsets.all(10.w),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(20.r))),
+          child: ListTile(
+            leading: SkeletonAnimation(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: Colors.grey[300]),
+                )),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SkeletonAnimation(
+                    curve: Curves.linear,
                     borderRadius: BorderRadius.circular(10.0),
                     child: Container(
-                      width: 40,
-                      height: 40,
+                      width: MediaQuery.of(context).size.width,
+                      height: 20,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10.0),
                           color: Colors.grey[300]),
                     )),
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SkeletonAnimation(
-                        curve: Curves.linear,
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 20,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              color: Colors.grey[300]),
-                        )),
-                    SizedBox(height: 8.h),
-                    SkeletonAnimation(
-                        curve: Curves.linear,
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: Container(
-                          width: 80,
-                          height: 20,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              color: Colors.grey[300]),
-                        ))
-                  ],
-                ),
-              ));
-        },
-      );
+                SizedBox(height: 8.h),
+                SkeletonAnimation(
+                    curve: Curves.linear,
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Container(
+                      width: 80,
+                      height: 20,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Colors.grey[300]),
+                    ))
+              ],
+            ),
+          ));
+    },
+  );
 
   Future<void> removeCard(String id) async {
     final CardModel card = cards.firstWhere((item) => item.id == id);
@@ -480,7 +482,7 @@ class _ManagePaymentState extends State<ManagePayment> {
 
   Future<void> removeBankAccount(String id) async {
     final StripeBankAccountModel bankAccount =
-        stripeBankAccounts.firstWhere((item) => item.id == id);
+    stripeBankAccounts.firstWhere((item) => item.id == id);
     final dynamic res = await StripeServices().removeBankAccount(id);
 
     if (res.statusCode == 400) {
@@ -581,13 +583,13 @@ class _ManagePaymentState extends State<ManagePayment> {
                               borderRadius: BorderRadius.circular(16)),
                           child: Center(
                               child: Text(
-                            AppTextConstants.ok,
-                            style: TextStyle(
-                                color: AppColors.deepGreen,
-                                fontSize: 12.sp,
-                                fontFamily: 'Gilroy',
-                                fontWeight: FontWeight.w700),
-                          ))),
+                                AppTextConstants.ok,
+                                style: TextStyle(
+                                    color: AppColors.deepGreen,
+                                    fontSize: 12.sp,
+                                    fontFamily: 'Gilroy',
+                                    fontWeight: FontWeight.w700),
+                              ))),
                     ),
                   ]),
               SizedBox(

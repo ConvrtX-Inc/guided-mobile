@@ -139,20 +139,19 @@ class StripeServices {
 
     final dynamic jsonData = jsonDecode(response.body);
     final List<StripeBankAccountModel> bankAccounts =
-        <StripeBankAccountModel>[];
+    <StripeBankAccountModel>[];
     for (final dynamic res in jsonData['data']) {
       final StripeBankAccountModel bankAccount =
-          StripeBankAccountModel.fromJson(res);
+      StripeBankAccountModel.fromJson(res);
       bankAccounts.add(bankAccount);
     }
-    debugPrint('BANK ACCOUNT ${bankAccounts[0].accountHolderName}');
+    // debugPrint('BANK ACCOUNT ${bankAccounts[0].accountHolderName}');
     return bankAccounts;
   }
 
   /// API service for Bank account update metadata
-  Future<StripeBankAccountModel> updateAccount(StripeBankAccountModel params) async {
-    final String? stripeAccountId =
-        UserSingleton.instance.user.user?.stripeAccountId;
+  Future<StripeBankAccountModel> updateAccount(StripeBankAccountModel params,String accountId) async {
+
 
     Map<String, String> bankDetails = {
       'metadata[bank_name]': params.bankName,
@@ -165,7 +164,7 @@ class StripeServices {
     };
 
     final http.Response response = await http.post(
-        Uri.parse('$stripeApiUrl/accounts/$stripeAccountId/external_accounts/${params.id}'),
+        Uri.parse('$stripeApiUrl/accounts/$accountId/external_accounts/${params.id}'),
         body: bankDetails,
         headers: headers);
 
