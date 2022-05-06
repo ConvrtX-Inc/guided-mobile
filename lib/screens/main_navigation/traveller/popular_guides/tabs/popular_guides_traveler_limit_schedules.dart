@@ -35,20 +35,26 @@ class _PopularGuidesTravelerLimitSchedulesState
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       List<ActivityAvailability> resAvailabilityDate =
           await APIServices().getActivityAvailability(widget.packageId);
-      List<ActivityAvailabilityHour> resAvailabilityTime = await APIServices()
-          .getActivityAvailabilityHour(resAvailabilityDate[0].id);
-
-      DateTime? tempDate = resAvailabilityTime[0].availability_date_hour;
-
-      setState(() {
-        slots = resAvailabilityTime[0].slots;
-        date = '${tempDate!.month}. ${tempDate.day}. ${tempDate.year}';
-        if (tempDate.hour <= 11) {
-          time = '${tempDate.hour}:00 AM to ${tempDate.hour + 1} AM';
-        } else {
-          time = '${tempDate.hour}:00 PM to ${tempDate.hour + 1} PM';
-        }
-      });
+      if (resAvailabilityDate.isNotEmpty) {
+        List<ActivityAvailabilityHour> resAvailabilityTime = await APIServices()
+            .getActivityAvailabilityHour(resAvailabilityDate[0].id);
+        DateTime? tempDate = resAvailabilityTime[0].availability_date_hour;
+        setState(() {
+          slots = resAvailabilityTime[0].slots;
+          date = '${tempDate!.month}. ${tempDate.day}. ${tempDate.year}';
+          if (tempDate.hour <= 11) {
+            time = '${tempDate.hour}:00 AM to ${tempDate.hour + 1} AM';
+          } else {
+            time = '${tempDate.hour}:00 PM to ${tempDate.hour + 1} PM';
+          }
+        });
+      }
+      else{
+        setState(() {
+          time = 'Nothing to show here';
+          date = 'Nothing to show here';
+        });
+      }
     });
   }
 
