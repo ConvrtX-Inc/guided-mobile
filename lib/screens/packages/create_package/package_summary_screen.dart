@@ -1573,7 +1573,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                 children: <Widget>[
                   Expanded(
                       child: Text(
-                    AppTextConstants.offeredAmenities,
+                    AppTextConstants.freeServices,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -1639,7 +1639,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                 children: <Widget>[
                   Expanded(
                       child: Text(
-                    AppTextConstants.notOfferedAmenities,
+                    AppTextConstants.notIncludedServiceHeader,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),

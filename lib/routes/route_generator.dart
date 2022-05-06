@@ -428,6 +428,9 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const NotIncludedFreeServicesScreen(),
             settings: settings);
+      case '/popular_guide_list':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PopularGuidesList());
       default:
         return _errorRoute();
     }

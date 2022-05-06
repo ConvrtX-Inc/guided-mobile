@@ -42,6 +42,7 @@ import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/profile_image.dart';
+import 'package:guided/models/user_list_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/models/user_terms_and_condition_model.dart';
@@ -2089,5 +2090,39 @@ class APIServices {
     }
 
     return NewsfeedImageModel(newsfeedImageDetails: details);
+  }
+
+  /// API service for advertisement model
+  Future<UserListModel> getUserListData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    // final dynamic jsonData = jsonDecode(response.body);
+
+    // /// seeding for data summary
+    // final UserListModel dataSummary =
+    //     UserListModel.fromJson(jsonData['data']['value']);
+
+    // return UserListModel(userDetails: dataSummary.userDetails);
+
+    // final UserListModel dataSummary =
+    //     UserListModel.fromJson(json.decode(response.body));
+
+    final List<UserDetailsModel> details = <UserDetailsModel>[];
+
+    final Map<String, dynamic> jsonData = jsonDecode(response.body);
+    final List<dynamic> res = jsonData['data'];
+
+    for (final dynamic data in res) {
+      final UserDetailsModel user = UserDetailsModel.fromJson(data);
+      details.add(user);
+    }
+
+    return UserListModel(userDetails: details);
   }
 }
