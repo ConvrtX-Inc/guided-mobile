@@ -4,15 +4,15 @@ class AppAPIPath {
   const AppAPIPath();
 
   /// Returns staging mode (change to false if deploying to live)
-  static bool isStaging = false;
+  // static bool isStaging = false;
 
-  // static bool isStaging = true;
+  static bool isStaging = true;
 
   /// Returns API mode
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
 
   ///Returns mode : (dev | staging | local )
-  static String mode = 'staging';
+  static String mode = 'local';
 
   /// Returns API base url
   static String apiBaseUrl = getBaseUrl(mode);
@@ -204,6 +204,12 @@ class AppAPIPath {
   ///Returns activity event image destination
   static String eventDestinationImage =
       'api/v1/activity-event-destination-image';
+
+  ///Returns notifications url
+ static String notificationsUrl ='api/v1/notifications';
+
+ ///Returns payment transactions url
+ static String paymentTransactionUrl = 'api/v1/transaction-payment';
 }
 
 ///Get Api Base Url

@@ -2128,10 +2128,12 @@ class APIServices {
     return notifications;
   }
 
-  /// Api service to add Notification
-  Future<NotificationModel> addNotification(NotificationModel params) async {
+  /// Api service to send Notification
+  Future<NotificationModel> sendNotification(NotificationModel params) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint('Params: ${params.bookingRequestId} ${params.toUserId} ${params.title} ${params.type}');
 
     final http.Response response = await http.post(
         Uri.parse(
@@ -2141,18 +2143,21 @@ class APIServices {
           HttpHeaders.contentTypeHeader: 'application/json',
         },
         body: jsonEncode(<String, String>{
-          'user_id': userId.toString(),
-          'from_user_id': params.fromUserId!,
+          'from_user_id':userId.toString(),
           'to_user_id': params.toUserId!,
           'title': params.title!,
           'type': params.type!,
+          'notification_msg':params.notificationMsg!,
           'booking_request_id': params.bookingRequestId!,
+          'transaction_no': params.transactionNo!
         }));
 
     final jsonData = jsonDecode(response.body);
     NotificationModel _notification = NotificationModel();
+
+    debugPrint('DATA notification $jsonData ${response.statusCode}');
     if (response.statusCode == 201) {
-      debugPrint('DATA notification $jsonData');
+
       _notification = NotificationModel.fromJson(jsonData);
     }
 

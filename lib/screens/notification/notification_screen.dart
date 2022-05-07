@@ -62,19 +62,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
               SizedBox(
                 height: 15.h,
               ),
-              /* Expanded(
-                  child: Column(
-                children: List<Widget>.generate(3, (int index) {
-                  return Padding(
-                    padding: EdgeInsets.fromLTRB(4.w, 15.h, 0, 15.h),
-                    child: (index == 0)
-                        ? _requestPending()
-                        : (index == 1)
-                            ? _requestAccepted()
-                            : _newMessage(),
-                  );
-                }),
-              ))*/
               Expanded(child: buildNotificationList())
             ],
           ),

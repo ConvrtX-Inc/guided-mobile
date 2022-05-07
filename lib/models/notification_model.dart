@@ -8,6 +8,7 @@ class NotificationModel {
       notificationMsg,
       bookingRequestId,
       type,
+      transactionNo,
       createdDate,
       bookingRequestStatus,
       updatedDate;
@@ -27,6 +28,7 @@ class NotificationModel {
       this.createdDate,
       this.updatedDate,
       this.bookingRequestStatus,
+      this.transactionNo,
       this.fromUser});
 
   /// Map Data
@@ -38,6 +40,7 @@ class NotificationModel {
     notificationMsg = json['notification_msg'];
     bookingRequestId = json['booking_request_id'];
     type = json['type'];
+    transactionNo = json['transaction_no'];
     createdDate = json['created_date'];
     updatedDate = json['updated_date'];
     bookingRequestStatus = json['booking_request'] != null
