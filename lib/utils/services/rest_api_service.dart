@@ -1960,8 +1960,8 @@ class APIServices {
     return SettingsAvailabilityModel.fromJson(jsonData);
   }
 
-  ///API Service for Retrieving Settings Availability
-  Future<BecomeAGudeModel> getBecomeAGuideRequest() async {
+  ///API Service for Retrieving BecomeAGuideRequest
+  Future<dynamic> getBecomeAGuideRequest() async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
@@ -1969,19 +1969,21 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    debugPrint(
-        'DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
+    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
     debugPrint('params R$queryParameters');
-    final http.Response response = await http.get(
-        Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters),
-        headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
-        });
+    final http.Response response = await http
+        .get(Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(response.request!.url);
     print('tata response get become a guide request: $jsonData');
-    return BecomeAGudeModel.fromJson(jsonData[0]);
+    if(jsonData.length > 0) {
+      return BecomeAGudeModel.fromJson(jsonData[0]);
+    } else {
+      return BecomeAGudeModel();
+    }
   }
 
   /// API service for event image model
