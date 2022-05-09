@@ -1159,13 +1159,22 @@ class AppTextConstants {
   static String addition = 'Addition';
 
   ///Returns you have youHavePendingRequest request text
-  static String youHavePendingRequest ='You have Pending Request';
+  static String youHavePendingRequest = 'You have Pending Request';
 
   ///Returns your request has approved by
- static String yourRequestHasApprovedBy='Your Request has approved by';
+  static String yourRequestHasApprovedBy = 'Your Request has approved by';
 
   ///Returns your request has rejected by
-  static String yourRequestHasRejectedBy='Your Request has rejected by';
+  static String yourRequestHasRejectedBy = 'Your Request has rejected by';
+
+  ///Returns All text
+  static String all = 'All';
+
+  ///Returns accepted text
+  static String accepted = 'Accepted';
+
+  ///Returns rejected text
+  static String rejected ='Rejected';
 }
 
 /// Class for error messages text
@@ -1292,8 +1301,6 @@ class ErrorMessageConstants {
   ///Returns unable to delete bank account info text
   static String unableToDeleteBankAccount =
       'You cannot delete the default external account for your default currency. Please add another bank account first and delete this one';
-
-
 }
 
 /// Class for transaction history constants

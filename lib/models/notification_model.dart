@@ -11,6 +11,7 @@ class NotificationModel {
       transactionNo,
       createdDate,
       bookingRequestStatus,
+      bookingRequestDate,
       updatedDate;
 
   /// Initialization for from User
@@ -29,6 +30,7 @@ class NotificationModel {
       this.updatedDate,
       this.bookingRequestStatus,
       this.transactionNo,
+        this.bookingRequestDate,
       this.fromUser});
 
   /// Map Data
@@ -48,6 +50,9 @@ class NotificationModel {
         : '';
     fromUser =
         json['from_user'] != null ? FromUser.fromJson(json['from_user']) : null;
+    bookingRequestDate = json['booking_request'] != null
+        ? json['booking_request']['booking_date'] ?? ''
+        : '';
   }
 
   Map<String, dynamic> toJson() {

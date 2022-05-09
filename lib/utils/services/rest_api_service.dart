@@ -2163,4 +2163,28 @@ class APIServices {
 
     return _notification;
   }
+
+
+  ///Api services to get traveler notifications
+  Future<List<NotificationModel>> getTravelerNotifications(String filter) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http
+        .get(Uri.http(apiBaseUrl, '/${AppAPIPath.notificationsUrl}/traveler/$userId/$filter'), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
+
+    final List<NotificationModel> notifications =
+    <NotificationModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final NotificationModel _notification =
+      NotificationModel.fromJson(data);
+      notifications.add(_notification);
+    }
+
+    return notifications;
+  }
 }
