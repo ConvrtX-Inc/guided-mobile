@@ -51,7 +51,7 @@ class DiscoveryBottomSheet extends StatelessWidget {
                           topRight: Radius.circular(40.r),
                         ),
                         image: DecorationImage(
-                          image: AssetImage(backgroundImage),
+                          image: NetworkImage(backgroundImage),
                           fit: BoxFit.cover,
                         ),
                       ),

@@ -39,7 +39,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
   late CountryModel _country = CountryModel();
 
   final GlobalKey<FormState> addBankAccountGlobalFormKey =
-  GlobalKey<FormState>();
+      GlobalKey<FormState>();
 
   bool isLoading = false;
 
@@ -52,17 +52,17 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
   CountryCurrencyModel _currency = CountryCurrencyModel();
 
   final BankAccountController _bankAccountController =
-  Get.put(BankAccountController());
+      Get.put(BankAccountController());
 
   final UserProfileDetailsController _profileDetailsController =
-  Get.put(UserProfileDetailsController());
+      Get.put(UserProfileDetailsController());
 
   List<StripeBankAccountField> stripeBankFieldsPerCountry = [];
   List<String> requiredBankFields = [];
   List<String> requiredBankFieldValues = [];
 
   final StripeBankAccountController _stripeBankAccountController =
-  Get.put(StripeBankAccountController());
+      Get.put(StripeBankAccountController());
 
   @override
   void initState() {
@@ -72,7 +72,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
 
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final List<CountryModel> resCountries =
-      await APIServices().getCountries();
+          await APIServices().getCountries();
 
       setState(() {
         listCountry = resCountries;
@@ -80,7 +80,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
           _country = listCountry[38];
           if (_country.id != '') {
             _currency = currencies.firstWhere((CountryCurrencyModel item) =>
-            item.countryCode == _country.code);
+                item.countryCode == _country.code);
           }
           getStripeFields();
         }
@@ -120,91 +120,91 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
   }
 
   Widget buildAddBankAccountUI() => Container(
-    padding: EdgeInsets.symmetric(horizontal: 26.w),
-    // decoration: const BoxDecoration(
-    //   color: Colors.white
-    // ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Expanded(
-            child: SingleChildScrollView(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(height: 20.h),
-                      Text(AppTextConstants.bankInformation,
-                          style: TextStyle(fontSize: 18.sp)),
-                      SizedBox(height: 40.h),
-                      BorderlessTextField(
-                        title: AppTextConstants.accountName,
-                        hint: AppTextConstants.typeHere,
-                        onValidate: (String val) {
-                          if (val.trim().isEmpty) {
-                            return '${AppTextConstants.accountName} is required';
-                          }
-                          return null;
-                        },
-                        onSaved: (String val) {
-                          _accountName = val.trim();
-                        },
-                      ),
-                      SizedBox(height: 20.h),
-                      BorderlessTextField(
-                        title: AppTextConstants.bankName,
-                        hint: 'Enter your ${AppTextConstants.bankName}',
-                        onValidate: (String val) {
-                          if (val.trim().isEmpty) {
-                            return '${AppTextConstants.bankName} is required';
-                          }
-                          return null;
-                        },
-                        onSaved: (String val) {
-                          _bankName = val.trim();
-                        },
-                      ),
-                      SizedBox(height: 20.h),
-                      BorderlessTextField(
-                        title: AppTextConstants.accountNumber,
-                        hint: 'Enter your ${AppTextConstants.accountNumber}',
-                        onValidate: (String val) {
-                          if (val.trim().isEmpty) {
-                            return '${AppTextConstants.accountNumber} is required';
-                          }
-                          return null;
-                        },
-                        onSaved: (String val) {
-                          _accountNumber = val.trim();
-                        },
-                      ),
-                      SizedBox(height: 20.h),
-                      if (requiredBankFields.isNotEmpty)
-                        for (int i = 0; i < requiredBankFields.length; i++)
-                          Column(
-                            children: [
-                              BorderlessTextField(
-                                title: requiredBankFields[i],
-                                hint: 'Enter your ${requiredBankFields[i]}',
-                                onValidate: (String val) {
-                                  if (val.trim().isEmpty) {
-                                    return '${requiredBankFields[i]} is required';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (String val) {
-                                  requiredBankFieldValues[i] = val.trim();
-                                },
-                                onSaved: (String val) {
-                                  debugPrint('ONSAVED');
-                                  setState(() {
-                                    requiredBankFieldValues[i] = val.trim();
-                                  });
-                                },
-                              ),
-                              SizedBox(height: 20.h),
-                            ],
+        padding: EdgeInsets.symmetric(horizontal: 26.w),
+        // decoration: const BoxDecoration(
+        //   color: Colors.white
+        // ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+                child: SingleChildScrollView(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                  SizedBox(height: 20.h),
+                  Text(AppTextConstants.bankInformation,
+                      style: TextStyle(fontSize: 18.sp)),
+                  SizedBox(height: 40.h),
+                  BorderlessTextField(
+                    title: AppTextConstants.accountName,
+                    hint: AppTextConstants.typeHere,
+                    onValidate: (String val) {
+                      if (val.trim().isEmpty) {
+                        return '${AppTextConstants.accountName} is required';
+                      }
+                      return null;
+                    },
+                    onSaved: (String val) {
+                      _accountName = val.trim();
+                    },
+                  ),
+                  SizedBox(height: 20.h),
+                  BorderlessTextField(
+                    title: AppTextConstants.bankName,
+                    hint: 'Enter your ${AppTextConstants.bankName}',
+                    onValidate: (String val) {
+                      if (val.trim().isEmpty) {
+                        return '${AppTextConstants.bankName} is required';
+                      }
+                      return null;
+                    },
+                    onSaved: (String val) {
+                      _bankName = val.trim();
+                    },
+                  ),
+                  SizedBox(height: 20.h),
+                  BorderlessTextField(
+                    title: AppTextConstants.accountNumber,
+                    hint: 'Enter your ${AppTextConstants.accountNumber}',
+                    onValidate: (String val) {
+                      if (val.trim().isEmpty) {
+                        return '${AppTextConstants.accountNumber} is required';
+                      }
+                      return null;
+                    },
+                    onSaved: (String val) {
+                      _accountNumber = val.trim();
+                    },
+                  ),
+                  SizedBox(height: 20.h),
+                  if (requiredBankFields.isNotEmpty)
+                    for (int i = 0; i < requiredBankFields.length; i++)
+                      Column(
+                        children: [
+                          BorderlessTextField(
+                            title: requiredBankFields[i],
+                            hint: 'Enter your ${requiredBankFields[i]}',
+                            onValidate: (String val) {
+                              if (val.trim().isEmpty) {
+                                return '${requiredBankFields[i]} is required';
+                              }
+                              return null;
+                            },
+                            onChanged: (String val) {
+                              requiredBankFieldValues[i] = val.trim();
+                            },
+                            onSaved: (String val) {
+                              debugPrint('ONSAVED');
+                              setState(() {
+                                requiredBankFieldValues[i] = val.trim();
+                              });
+                            },
                           ),
-                      /*   BorderlessTextField(
+                          SizedBox(height: 20.h),
+                        ],
+                      ),
+                  /*   BorderlessTextField(
                     title: AppTextConstants.bankRoutingNumber,
                     hint: 'Enter your ${AppTextConstants.bankRoutingNumber}',
                     onValidate: (String val) {
@@ -219,30 +219,28 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                   ),
                   SizedBox(height: 20.h),*/
 
-                      DropDownCountry(
-                        fontSize: 16.sp,
-                        value: _country,
-                        setCountry: setCountry,
-                        list: listCountry,
-                      ),
-                      SizedBox(height: 20.h),
-                    ]))),
-        CustomRoundedButton(
-            isLoading: isLoading,
-            title: !isLoading
-                ? AppTextConstants.save
-                : AppTextConstants.pleaseWait,
-            onpressed: addBankAccount),
-        SizedBox(height: 30.h),
-      ],
-    ),
-  );
+                  DropDownCountry(
+                    fontSize: 16.sp,
+                    value: _country,
+                    setCountry: setCountry,
+                    list: listCountry,
+                  ),
+                  SizedBox(height: 20.h),
+                ]))),
+            CustomRoundedButton(
+                isLoading: isLoading,
+                title: AppTextConstants.save,
+                onpressed: addBankAccount),
+            SizedBox(height: 30.h),
+          ],
+        ),
+      );
 
   void setCountry(dynamic value) {
     setState(() {
       _country = value;
       _currency = currencies.firstWhere(
-              (CountryCurrencyModel item) => item.countryCode == _country.code);
+          (CountryCurrencyModel item) => item.countryCode == _country.code);
     });
 
     setStripeFields();
@@ -265,9 +263,11 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
           currency: _currency.currencyCode);
 
       final StripeBankAccountModel existingBankModel =
-      _stripeBankAccountController.bankAccounts.firstWhere(
-              (item) => item.accountNumber == bankAccountParams.accountNumber && item.routingNumber == routingNumber,
-          orElse: () => StripeBankAccountModel());
+          _stripeBankAccountController.bankAccounts.firstWhere(
+              (item) =>
+                  item.accountNumber == bankAccountParams.accountNumber &&
+                  item.routingNumber == routingNumber,
+              orElse: () => StripeBankAccountModel());
 
       if (existingBankModel.id.isNotEmpty) {
         _showToast(context, 'Bank Account Already Exists');
@@ -279,7 +279,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
 
       ///Validate details on stripe
       final dynamic stripeValidationResult =
-      await StripeServices().createBankAccountToken(bankAccountParams);
+          await StripeServices().createBankAccountToken(bankAccountParams);
 
       if (stripeValidationResult['id'] != null) {
         /// Add bank account to stripe connect
@@ -347,16 +347,16 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                     ),
                     Center(
                         child: CustomRoundedButton(
-                          title: 'Close',
-                          onpressed: () {
-                            int count = 0;
-                            Navigator.popUntil(context, (route) {
-                              return count++ == 2;
-                            });
-                          },
-                          buttonHeight: 40.h,
-                          buttonWidth: 120.w,
-                        ))
+                      title: 'Close',
+                      onpressed: () {
+                        int count = 0;
+                        Navigator.popUntil(context, (route) {
+                          return count++ == 2;
+                        });
+                      },
+                      buttonHeight: 40.h,
+                      buttonWidth: 120.w,
+                    ))
                   ],
                 )),
           );
@@ -407,13 +407,13 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                               borderRadius: BorderRadius.circular(16)),
                           child: Center(
                               child: Text(
-                                AppTextConstants.ok,
-                                style: TextStyle(
-                                    color: AppColors.deepGreen,
-                                    fontSize: 12.sp,
-                                    fontFamily: 'Gilroy',
-                                    fontWeight: FontWeight.w700),
-                              ))),
+                            AppTextConstants.ok,
+                            style: TextStyle(
+                                color: AppColors.deepGreen,
+                                fontSize: 12.sp,
+                                fontFamily: 'Gilroy',
+                                fontWeight: FontWeight.w700),
+                          ))),
                     ),
                   ]),
               SizedBox(
@@ -426,7 +426,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
 
   Future<void> getCurrencies() async {
     final String response =
-    await rootBundle.loadString('assets/currencies.json');
+        await rootBundle.loadString('assets/currencies.json');
     final data = await json.decode(response);
 
     for (dynamic res in data) {
@@ -436,7 +436,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
 
   Future<void> getStripeFields() async {
     final String response =
-    await rootBundle.loadString('assets/stripe_bank_country_fields.json');
+        await rootBundle.loadString('assets/stripe_bank_country_fields.json');
     final data = await json.decode(response);
 
     for (dynamic res in data) {
@@ -459,10 +459,10 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
 
   void setStripeFields() {
     final StripeBankAccountField matchCountry =
-    stripeBankFieldsPerCountry.firstWhere(
+        stripeBankFieldsPerCountry.firstWhere(
             (element) =>
-        element.code.toLowerCase() == _country.code.toLowerCase(),
-        orElse: () => StripeBankAccountField());
+                element.code.toLowerCase() == _country.code.toLowerCase(),
+            orElse: () => StripeBankAccountField());
     debugPrint('Matched Country ${matchCountry.country} ');
 
     if (matchCountry.country.isNotEmpty) {
@@ -497,8 +497,9 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
           bankName: _bankName,
           accountNumber: _accountNumber);
 
-      final StripeBankAccountModel updateMetadataRes =
-      await StripeServices().updateAccount(params,_profileDetailsController.userProfileDetails.stripeAccountId);
+      final StripeBankAccountModel updateMetadataRes = await StripeServices()
+          .updateAccount(params,
+              _profileDetailsController.userProfileDetails.stripeAccountId);
       _stripeBankAccountController.addBankAccount(updateMetadataRes);
       debugPrint(
           'response bank account: $res  Meta data update ${updateMetadataRes.accountNumber}');

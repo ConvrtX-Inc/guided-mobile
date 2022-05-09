@@ -93,6 +93,9 @@ class _SettingsItemsState extends State<SettingsItems> {
           case 'manage_cards':
             Navigator.pushNamed(context, '/manage_cards');
             break;
+          case 'notification_traveler':
+            Navigator.pushNamed(context, '/notification_traveler');
+            break;
         }
       },
       leading: SvgPicture.asset(widget._imgUrl),

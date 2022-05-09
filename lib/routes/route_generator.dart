@@ -70,6 +70,7 @@ import 'package:guided/screens/message/message_inbox.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
 import 'package:guided/screens/message/message_screen_traveler.dart';
 import 'package:guided/screens/notification/notification_screen.dart';
+import 'package:guided/screens/notification/notifications_traveler.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
 import 'package:guided/screens/packages/create_package/free_service_screen.dart';
 import 'package:guided/screens/packages/create_package/guide_rules_screen.dart';
@@ -428,6 +429,9 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const NotIncludedFreeServicesScreen(),
             settings: settings);
+      case '/notification_traveler':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const NotificationTraveler());
       case '/popular_guide_list':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PopularGuidesList());
