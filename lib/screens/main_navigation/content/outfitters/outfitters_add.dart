@@ -775,6 +775,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(context),
                       ]),
+                      maxLength: 40,
                     ),
                     SizedBox(height: 20.h),
                     FormBuilderTextField(

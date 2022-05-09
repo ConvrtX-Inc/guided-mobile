@@ -1556,6 +1556,7 @@ class _EventEditState extends State<EventEdit> {
                         ),
                       ),
                       style: txtStyle,
+                      maxLength: 40,
                     )
                   ],
                 ),

@@ -1492,6 +1492,7 @@ class _EventAddState extends State<EventAdd> {
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(context),
                       ]),
+                      maxLength: 40,
                     ),
                     SizedBox(
                       height: 20.h,

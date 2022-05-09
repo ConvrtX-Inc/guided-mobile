@@ -112,7 +112,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
             else
               // for (PackageDetailsModel detail in packageData.packageDetails)
               buildPackageInfo(packageData.packageDetails[0])
-              // buildPackageInfo(detail)
+            // buildPackageInfo(detail)
           ],
         ),
       );
@@ -320,7 +320,9 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
               width: MediaQuery.of(context).size.width,
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(10.r),
-                  child: Image.asset('assets/images/png/activity3.png')),
+                  child: Image.asset(
+                    'assets/images/png/activity3.png',
+                  )),
             ),
           Positioned(
               top: 10,
@@ -351,11 +353,12 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                       height: 100.h,
                       width: 100.w,
                       decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
                           shape: BoxShape.circle,
                           image: const DecorationImage(
                             image: NetworkImage(
-                                'https://img.icons8.com/office/344/person-male.png'),
-                            fit: BoxFit.fill,
+                                'https://img.icons8.com/external-coco-line-kalash/344/external-person-human-body-anatomy-coco-line-kalash-4.png'),
+                            fit: BoxFit.cover,
                           ),
                           border: Border.all(color: Colors.white, width: 4.w)),
                     )
@@ -401,7 +404,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
       'fee': price,
       'address': address,
       'package_id': packageId,
-      'profile_img': AssetsPath.pmessage3,
+      'profile_img': widget._profileImg,
       'package_name': packageName,
       'is_first_aid': widget._isFirstAid,
       'firebase_cover_img': firebaseCoverImg
