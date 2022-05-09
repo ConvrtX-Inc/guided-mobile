@@ -137,41 +137,12 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                     ),
                   ),
 
-                  /// Edit Icon
-                  Transform.scale(
-                    scale: 0.8,
-                    child: Padding(
-                      padding: EdgeInsets.zero,
-                      child: Container(
-                        width: 40.w,
-                        height: 40.h,
-                        padding: EdgeInsets.zero,
-                        decoration: BoxDecoration(
-                          color: AppColors.harp,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.favorite_border_outlined,
-                            color: Colors.black,
-                            size: 25,
-                          ),
-                          onPressed: () {
-                            _takeScreenshot(screenArguments['name'],
-                                '\$${screenArguments['fee']}');
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
-              flexibleSpace: Positioned.fill(
-                child: ExtendedImage.network(
-                  screenArguments['firebase_cover_img'],
-                  gaplessPlayback: true,
-                  fit: BoxFit.cover,
-                ),
+              flexibleSpace: ExtendedImage.network(
+                screenArguments['firebase_cover_img'],
+                gaplessPlayback: true,
+                fit: BoxFit.cover,
               ),
             ),
           ),

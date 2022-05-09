@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
@@ -57,6 +58,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   double longitude = 0.0;
   bool _hasLocationPermission = false;
   var result;
+  List<String> userIds = [];
   @override
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
@@ -1222,24 +1224,32 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         Radius.circular(15.r),
                                       ),
                                       image: DecorationImage(
-                                        image:
-                                            AssetImage(guides[1].featureImage),
+                                        image: snapshot.data![i]
+                                                    .firebaseProfilePicUrl ==
+                                                ''
+                                            ? const NetworkImage(
+                                                'https://img.icons8.com/office/344/person-male.png')
+                                            : ExtendedImage.network(
+                                                snapshot.data![i]
+                                                    .firebaseProfilePicUrl
+                                                    .toString(),
+                                              ).image,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
-                                    child: Stack(
-                                      children: <Widget>[
-                                        Positioned(
-                                          bottom: 0,
-                                          child: CircleAvatar(
-                                            backgroundColor: Colors.transparent,
-                                            radius: 30,
-                                            backgroundImage:
-                                                AssetImage(guides[1].path),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    // child: Stack(
+                                    //   children: <Widget>[
+                                    //     Positioned(
+                                    //       bottom: 0,
+                                    //       child: CircleAvatar(
+                                    //         backgroundColor: Colors.transparent,
+                                    //         radius: 30,
+                                    //         backgroundImage:
+                                    //             AssetImage(guides[1].path),
+                                    //       ),
+                                    //     ),
+                                    //   ],
+                                    // ),
                                   ),
                                   SizedBox(
                                     height: 5.h,

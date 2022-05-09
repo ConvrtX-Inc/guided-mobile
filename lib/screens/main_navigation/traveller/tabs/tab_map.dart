@@ -429,7 +429,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                       if (!hasPremiumSubscription &&
                                           PaymentConfig.isPaymentEnabled) {
                                         _showDiscoveryBottomSheet(
-                                            tourList[i].featureImage);
+                                            _filteredActivity[i].coverImg!);
                                       }
                                     },
                                     child: Container(
@@ -936,35 +936,48 @@ class _TabMapScreenState extends State<TabMapScreen> {
                       } else {
                         mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
                       }
-                      final String transactionNumber =
-                          GlobalMixin().generateTransactionNumber();
-                      confirmPaymentModal(
-                          context: context,
-                          serviceName: 'Premium Subscription',
-                          paymentMethod: data,
-                          paymentMode: mode,
-                          price: price,
-                          onPaymentSuccessful: () {
-                            Navigator.of(context).pop();
-                            //Save Subscription
-                            saveSubscription(transactionNumber,
-                                'Premium Subscription', price.toString(),mode);
 
-                            paymentSuccessful(
-                                context: context,
-                                paymentDetails: DiscoveryPaymentDetails(
-                                    transactionNumber: transactionNumber),
-                                paymentMethod: mode);
-                          },
-                          onPaymentFailed: () {
-                            paymentFailed(
-                                context: context,
-                                paymentDetails: DiscoveryPaymentDetails(
-                                    transactionNumber: transactionNumber),
-                                paymentMethod: mode);
-                          },
-                          paymentDetails: DiscoveryPaymentDetails(
-                              transactionNumber: transactionNumber));
+                      if (mode == 'Apple Pay') {
+                        debugPrint('Data $data');
+                        saveSubscription(
+                            data, 'Premium Subscription', price.toString(),mode);
+                        paymentSuccessful(
+                            context: context,
+                            paymentDetails: DiscoveryPaymentDetails(
+                                transactionNumber: data),
+                            paymentMethod: mode);
+
+                        /// Add Saving of Subscription here
+                      } else {
+                        final String transactionNumber =
+                            GlobalMixin().generateTransactionNumber();
+                        confirmPaymentModal(
+                            context: context,
+                            serviceName: 'Premium Subscription',
+                            paymentMethod: data,
+                            paymentMode: mode,
+                            price: price,
+                            onPaymentSuccessful: () {
+                              Navigator.of(context).pop();
+                              saveSubscription(transactionNumber,
+                                  'Premium Subscription', price.toString(),mode);
+                              //Save Subscription
+                              paymentSuccessful(
+                                  context: context,
+                                  paymentDetails: DiscoveryPaymentDetails(
+                                      transactionNumber: transactionNumber),
+                                  paymentMethod: mode);
+                            },
+                            onPaymentFailed: () {
+                              paymentFailed(
+                                  context: context,
+                                  paymentDetails: DiscoveryPaymentDetails(
+                                      transactionNumber: transactionNumber),
+                                  paymentMethod: mode);
+                            },
+                            paymentDetails: DiscoveryPaymentDetails(
+                                transactionNumber: transactionNumber));
+                      }
                     },
                     price: price);
               },

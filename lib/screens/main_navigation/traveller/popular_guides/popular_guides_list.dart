@@ -2,14 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
-import 'package:guided/models/popular_guide_model.dart';
-import 'package:guided/models/user_model.dart';
+import 'package:guided/models/user_list_model.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/widget/popular_guide_features.dart';
+import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
-import 'package:guided/utils/home.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Adding Advertisement Screen
@@ -22,11 +20,11 @@ class PopularGuidesList extends StatefulWidget {
 }
 
 class _PopularGuidesListState extends State<PopularGuidesList> {
-  late Future<List<User>> _loadingData;
+  late Future<UserListModel> _loadingData;
   @override
   void initState() {
     super.initState();
-    _loadingData = APIServices().getPopularGuides();
+    _loadingData = APIServices().getUserListData();
   }
 
   @override
@@ -73,41 +71,28 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
                         fontWeight: FontWeight.w700),
                   ),
                 ),
-                FutureBuilder<List<User>>(
-                    future: _loadingData, // async work
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<User>> snapshot) {
-                      switch (snapshot.connectionState) {
-                        case ConnectionState.waiting:
-                          return const MainContentSkeleton();
-                        default:
-                          if (snapshot.hasError) {
-                            return Center(
-                                child: Text('Error: ${snapshot.error}'));
-                          } else {
-                            return GestureDetector(
-                              onTap: () {},
-                              child: SizedBox(
-                                height: 600.h,
-                                child: ListView(
-                                  shrinkWrap: true,
-                                  children: List<Widget>.generate(
-                                      snapshot.data!.length, (int i) {
-                                    return PopularGuideFeatures(
-                                        id: snapshot.data![i].id,
-                                        name: snapshot.data![i].fullName,
-                                        profileImg: snapshot
-                                            .data![i].firebaseProfilePicUrl,
-                                        starRating: '0',
-                                        isFirstAid: snapshot
-                                            .data![i].isFirstAidTrained);
-                                  }),
-                                ),
-                              ),
-                            );
-                          }
-                      }
-                    }),
+                FutureBuilder<UserListModel>(
+                  future: _loadingData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    Widget _displayWidget;
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        _displayWidget = const MainContentSkeleton();
+                        break;
+                      default:
+                        if (snapshot.hasError) {
+                          _displayWidget = Center(
+                              child: APIMessageDisplay(
+                            message: 'Result: ${snapshot.error}',
+                          ));
+                        } else {
+                          _displayWidget = buildResult(snapshot.data!);
+                        }
+                    }
+                    return _displayWidget;
+                  },
+                )
               ],
             )),
           ),
@@ -115,4 +100,31 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
       ),
     );
   }
+
+  Widget buildResult(UserListModel userListData) => SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            if (userListData.userDetails.isEmpty)
+              Padding(
+                padding: EdgeInsets.only(
+                    top: (MediaQuery.of(context).size.height / 3) - 40),
+                child: APIMessageDisplay(
+                  message: AppTextConstants.noResultFound,
+                ),
+              )
+            else
+              for (UserDetailsModel detail in userListData.userDetails)
+                if(!detail.isTraveller)
+                  buildInfo(detail)
+          ],
+        ),
+      );
+
+  Widget buildInfo(UserDetailsModel details) => PopularGuideFeatures(
+      id: details.id,
+      name: details.fullName,
+      profileImg: details.firebaseImg,
+      starRating: '0',
+      isFirstAid: details.isFirstAid,
+      isTraveller: details.isTraveller);
 }

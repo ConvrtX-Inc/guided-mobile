@@ -12,39 +12,41 @@ class MainContentSkeleton extends StatelessWidget {
     return Center(
       child: Container(
         padding: EdgeInsets.all(22.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const SkeletonText(
-              height: 200,
-              width: 900,
-              radius: 10,
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            const SkeletonText(
-              height: 200,
-              width: 900,
-              radius: 10,
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            const SkeletonText(
-              height: 200,
-              width: 900,
-              radius: 10,
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            const SkeletonText(
-              height: 200,
-              width: 900,
-              radius: 10,
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const SkeletonText(
+                height: 200,
+                width: 900,
+                radius: 10,
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              const SkeletonText(
+                height: 200,
+                width: 900,
+                radius: 10,
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              const SkeletonText(
+                height: 200,
+                width: 900,
+                radius: 10,
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              const SkeletonText(
+                height: 200,
+                width: 900,
+                radius: 10,
+              ),
+            ],
+          ),
         ),
       ),
     );

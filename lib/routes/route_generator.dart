@@ -432,6 +432,9 @@ class RouteGenerator {
       case '/notification_traveler':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const NotificationTraveler());
+      case '/popular_guide_list':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PopularGuidesList());
       default:
         return _errorRoute();
     }

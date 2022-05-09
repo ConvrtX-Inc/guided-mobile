@@ -30,6 +30,8 @@ import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/event_image_model.dart';
 import 'package:guided/models/event_model.dart';
 import 'package:guided/models/notification_model.dart';
+import 'package:guided/models/newsfeed_image_model.dart';
+import 'package:guided/models/newsfeed_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
 import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/package_destination_image_model.dart';
@@ -42,6 +44,7 @@ import 'package:guided/models/profile_data_model.dart';
 
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/profile_image.dart';
+import 'package:guided/models/user_list_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/models/user_terms_and_condition_model.dart';
@@ -417,6 +420,22 @@ class APIServices {
     final http.Response response = await http.post(
       Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.facebookLogin}'),
       body: jsonEncode({'idToken': idToken}),
+      headers: headers,
+    );
+    print(response.body);
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// API service for login
+  Future<APIStandardReturnFormat> loginWithApple(String idToken) async {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    };
+    final http.Response response = await http.post(
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.facebookLogin}'),
+      body: jsonEncode(
+          {'idToken': idToken, 'firstName': 'user', 'lastName': 'apple'}),
       headers: headers,
     );
     print(response.body);
@@ -2171,9 +2190,11 @@ class APIServices {
     final String? userId = UserSingleton.instance.user.user?.id;
 
     final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/${AppAPIPath.notificationsUrl}/traveler/$userId/$filter'), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+        .get(Uri.http(
+        apiBaseUrl, '/${AppAPIPath.notificationsUrl}/traveler/$userId/$filter'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
     final List<NotificationModel> notifications =
     <NotificationModel>[];
@@ -2186,5 +2207,77 @@ class APIServices {
     }
 
     return notifications;
+  }
+  /// API service for NewsFeed Model
+  Future<NewsFeedModel> getNewsFeedData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.newsfeedList}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final NewsFeedModel dataSummary =
+        NewsFeedModel.fromJson(json.decode(response.body));
+
+    return NewsFeedModel(newsfeedDetails: dataSummary.newsfeedDetails);
+  }
+
+  /// API service for outfitter image model
+  Future<NewsfeedImageModel> getNewsfeedImageData(String id) async {
+    final dynamic response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.newsfeedImage}?s={"activity_newsfeed_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final List<NewsfeedImageDetails> details = <NewsfeedImageDetails>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final NewsfeedImageDetails eventImageDestination =
+          NewsfeedImageDetails.fromJson(data);
+      details.add(eventImageDestination);
+    }
+
+    return NewsfeedImageModel(newsfeedImageDetails: details);
+  }
+
+  /// API service for advertisement model
+  Future<UserListModel> getUserListData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    // final dynamic jsonData = jsonDecode(response.body);
+
+    // /// seeding for data summary
+    // final UserListModel dataSummary =
+    //     UserListModel.fromJson(jsonData['data']['value']);
+
+    // return UserListModel(userDetails: dataSummary.userDetails);
+
+    // final UserListModel dataSummary =
+    //     UserListModel.fromJson(json.decode(response.body));
+
+    final List<UserDetailsModel> details = <UserDetailsModel>[];
+
+    final Map<String, dynamic> jsonData = jsonDecode(response.body);
+    final List<dynamic> res = jsonData['data'];
+
+    for (final dynamic data in res) {
+      final UserDetailsModel user = UserDetailsModel.fromJson(data);
+      details.add(user);
+    }
+
+    return UserListModel(userDetails: details);
   }
 }

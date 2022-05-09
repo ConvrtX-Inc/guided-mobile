@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
@@ -23,12 +24,14 @@ class PopularGuideFeatures extends StatefulWidget {
     String? starRating = '',
     String? profileImg = '',
     bool? isFirstAid = false,
+    bool isTraveller = false,
     Key? key,
   })  : _id = id,
         _name = name,
         _profileImg = profileImg,
         _starRating = starRating,
         _isFirstAid = isFirstAid,
+        _isTraveller = isTraveller,
         super(key: key);
 
   final String? _id;
@@ -36,6 +39,7 @@ class PopularGuideFeatures extends StatefulWidget {
   final String? _profileImg;
   final String? _starRating;
   final bool? _isFirstAid;
+  final bool _isTraveller;
 
   @override
   State<PopularGuideFeatures> createState() => _PopularGuideFeaturesState();
@@ -75,7 +79,11 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                     message: 'Result: ${snapshot.error}',
                   ));
                 } else {
-                  _displayWidget = buildPackageResult(snapshot.data!);
+                  if (snapshot.hasData) {
+                    _displayWidget = buildPackageResult(snapshot.data!);
+                  } else {
+                    return Container();
+                  }
                 }
             }
             return _displayWidget;
@@ -104,6 +112,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
             else
               // for (PackageDetailsModel detail in packageData.packageDetails)
               buildPackageInfo(packageData.packageDetails[0])
+              // buildPackageInfo(detail)
           ],
         ),
       );
@@ -111,93 +120,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
   Widget buildPackageInfo(PackageDetailsModel details) => details.isPublished
       ? Column(
           children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                navigatePackageDetails(
-                    context,
-                    details.coverImg,
-                    details.description,
-                    details.id,
-                    details.maxTraveller,
-                    details.basePrice,
-                    details.mainBadgeId,
-                    details.address,
-                    details.name,
-                    details.firebaseCoverImg);
-              },
-              child: Stack(children: <Widget>[
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 16, 16, 16),
-                  color: Colors.grey.shade100,
-                  child: SizedBox(
-                    height: 280.h,
-                    width: MediaQuery.of(context).size.width,
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10.r),
-                        child: Positioned.fill(
-                          child: ExtendedImage.network(
-                            details.firebaseCoverImg,
-                            fit: BoxFit.cover,
-                            gaplessPlayback: true,
-                          ),
-                        )),
-                  ),
-                ),
-                Positioned(
-                    top: 40,
-                    right: 40,
-                    child: Image.asset(
-                      AssetsPath.heartOutlined,
-                      width: 30.w,
-                      height: 30.h,
-                    )),
-                Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      navigatePackageDetails(
-                          context,
-                          details.coverImg,
-                          details.description,
-                          details.id,
-                          details.maxTraveller,
-                          details.basePrice,
-                          details.mainBadgeId,
-                          details.address,
-                          details.name,
-                          details.firebaseCoverImg);
-                    },
-                    child: widget._profileImg == ''
-                        ? Container(
-                            height: 100.h,
-                            width: 100.w,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: const DecorationImage(
-                                  image: NetworkImage(
-                                      'https://img.icons8.com/office/344/person-male.png'),
-                                  fit: BoxFit.fill,
-                                ),
-                                border: Border.all(
-                                    color: Colors.white, width: 4.w)),
-                          )
-                        : Container(
-                            height: 100.h,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                image: DecorationImage(
-                                    image: ExtendedImage.network(
-                                  widget._profileImg.toString(),
-                                  fit: BoxFit.cover,
-                                  gaplessPlayback: true,
-                                ).image),
-                                border: Border.all(
-                                    color: Colors.white, width: 4.w)),
-                          ),
-                  ),
-                )
-              ]),
-            ),
+            buildGestureDetector(details),
             Column(
               children: <Widget>[
                 Container(
@@ -363,6 +286,96 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
           ],
         )
       : Container();
+
+  Widget buildGestureDetector(PackageDetailsModel details) => GestureDetector(
+        onTap: () {
+          navigatePackageDetails(
+              context,
+              details.coverImg,
+              details.description,
+              details.id,
+              details.maxTraveller,
+              details.basePrice,
+              details.mainBadgeId,
+              details.address,
+              details.name,
+              details.firebaseCoverImg);
+        },
+        child: Stack(children: <Widget>[
+          if (details.firebaseCoverImg.isNotEmpty)
+            SizedBox(
+              height: 280.h,
+              width: MediaQuery.of(context).size.width,
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.r),
+                  child: ExtendedImage.network(
+                    details.firebaseCoverImg,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
+                  )),
+            )
+          else
+            SizedBox(
+              height: 280.h,
+              width: MediaQuery.of(context).size.width,
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.r),
+                  child: Image.asset('assets/images/png/activity3.png')),
+            ),
+          Positioned(
+              top: 10,
+              right: 10,
+              child: Image.asset(
+                AssetsPath.heartOutlined,
+                width: 30.w,
+                height: 30.h,
+              )),
+          Align(
+            alignment: Alignment.topCenter,
+            child: GestureDetector(
+              onTap: () {
+                navigatePackageDetails(
+                    context,
+                    details.coverImg,
+                    details.description,
+                    details.id,
+                    details.maxTraveller,
+                    details.basePrice,
+                    details.mainBadgeId,
+                    details.address,
+                    details.name,
+                    details.firebaseCoverImg);
+              },
+              child: widget._profileImg == ''
+                  ? Container(
+                      height: 100.h,
+                      width: 100.w,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: const DecorationImage(
+                            image: NetworkImage(
+                                'https://img.icons8.com/office/344/person-male.png'),
+                            fit: BoxFit.fill,
+                          ),
+                          border: Border.all(color: Colors.white, width: 4.w)),
+                    )
+                  : Container(
+                      height: 100.h,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          image: DecorationImage(
+                              image: ExtendedImage.network(
+                            widget._profileImg.toString(),
+                            fit: BoxFit.cover,
+                            gaplessPlayback: true,
+                          ).image),
+                          border: Border.all(color: Colors.white, width: 4.w)),
+                    ),
+            ),
+          )
+        ]),
+      );
 
   /// Navigate to Advertisement View
   Future<void> navigatePackageDetails(

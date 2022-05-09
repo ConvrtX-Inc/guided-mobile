@@ -174,23 +174,14 @@ class _HubEventListState extends State<HubEventList>
       );
 
   Widget buildEventInfo(EventDetailsModel details) => HubEventFeatures(
-        id: details.id,
-        name: details.title,
-        badgeId: details.badgeId,
-        description: details.description,
-        starRating: 0,
-        fee: double.parse(details.fee),
-        path: AssetsPath.paddle,
-        dateRange: '1-9',
-        country: details.country,
-        mainActivity: details.mainActivities,
-        subactivities: details.subActivities,
-        services: details.freeService,
-        address: details.address,
-        eventDate:
-            '${details.eventDate!.month.toString().padLeft(2, '0')}. ${details.eventDate!.day.toString().padLeft(2, '0')}. ${details.eventDate!.year.toString().padLeft(2, '0')}',
-        dateFormat:
-            '${details.eventDate!.year.toString().padLeft(4, '0')}-${details.eventDate!.month.toString().padLeft(2, '0')}. ${details.eventDate!.day.toString().padLeft(2, '0')}',
-        isPublished: details.isPublished,
-      );
+      id: details.id,
+      name: details.title,
+      description: details.description,
+      fee: double.parse(details.fee),
+      country: details.country,
+      subactivities: details.subActivities,
+      services: details.freeService,
+      address: details.address,
+      dateFormat:
+          '${details.eventDate!.year.toString().padLeft(4, '0')}-${details.eventDate!.month.toString().padLeft(2, '0')}. ${details.eventDate!.day.toString().padLeft(2, '0')}');
 }

@@ -4,15 +4,15 @@ class AppAPIPath {
   const AppAPIPath();
 
   /// Returns staging mode (change to false if deploying to live)
-  // static bool isStaging = false;
+  static bool isStaging = false;
 
-  static bool isStaging = true;
+//   static bool isStaging = true;
 
   /// Returns API mode
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
 
   ///Returns mode : (dev | staging | local )
-  static String mode = 'local';
+  static String mode = 'staging';
 
   /// Returns API base url
   static String apiBaseUrl = getBaseUrl(mode);
@@ -210,6 +210,11 @@ class AppAPIPath {
 
  ///Returns payment transactions url
  static String paymentTransactionUrl = 'api/v1/transaction-payment';
+  ///Returns newsfeed list url
+  static String newsfeedList = 'api/v1/activity-newsfeed/list';
+
+  ///Returns news feed image url
+  static String newsfeedImage = 'api/v1/activity-newsfeed-image';
 }
 
 ///Get Api Base Url

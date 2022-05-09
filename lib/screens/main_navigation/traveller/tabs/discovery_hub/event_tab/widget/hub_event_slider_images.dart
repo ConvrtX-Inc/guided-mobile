@@ -20,16 +20,20 @@ class HubEventSliderImages extends StatefulWidget {
     required double price,
     required String date,
     required String description,
+    required String country,
+    required String address,
     Key? key,
   })  : _id = id,
         _title = title,
         _date = date,
         _description = description,
         _price = price,
+        _country = country,
+        _address = address,
         super(key: key);
 
   final String _id;
-  final String _title, _date, _description;
+  final String _title, _date, _description, _country, _address;
   final double _price;
 
   @override
@@ -165,7 +169,9 @@ class _HubEventSliderImagesState extends State<HubEventSliderImages> {
                   if (length == 1) Container(),
                   if (length == 0)
                     GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          navigateEventDetails(context, '');
+                        },
                         child: SizedBox(
                           width: 300.w,
                           height: 300.h,
@@ -194,7 +200,7 @@ class _HubEventSliderImagesState extends State<HubEventSliderImages> {
   Widget buildImage(EventImageDestinationDetails imgData, int index) =>
       GestureDetector(
         onTap: () {
-          // navigateOutfitterDetails(context, imgData.firebaseSnapshotImg);
+          navigateEventDetails(context, imgData.firebaseSnapshotImg);
         },
         child: ExtendedImage.network(
           imgData.firebaseSnapshotImg,
@@ -212,4 +218,25 @@ class _HubEventSliderImagesState extends State<HubEventSliderImages> {
             dotHeight: 10.h,
             dotWidth: 10.w),
       );
+
+  /// Navigate to Outfitter View
+  Future<void> navigateEventDetails(
+      BuildContext context, String snapshotImg) async {
+    final Map<String, dynamic> details = {
+      'id': widget._id,
+      'title': widget._title,
+      'price': widget._price,
+      'country': widget._country,
+      'description': widget._description,
+      'date': widget._date,
+      'availability_date': widget._date,
+      'address': widget._address,
+      'snapshot_img': snapshotImg,
+      'image_count': imageCount,
+      'image_list': imageList,
+      'image_id_list': imageIdList
+    };
+
+    await Navigator.pushNamed(context, '/hub_event_view', arguments: details);
+  }
 }

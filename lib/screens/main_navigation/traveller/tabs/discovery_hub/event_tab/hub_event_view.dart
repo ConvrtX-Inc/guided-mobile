@@ -1,22 +1,22 @@
-// ignore_for_file: cast_nullable_to_non_nullable, avoid_dynamic_calls, avoid_void_async, cascade_invocations, always_specify_types
+// ignore_for_file: always_specify_types, cast_nullable_to_non_nullable,avoid_bool_literals_in_conditional_expressions, avoid_dynamic_calls, cascade_invocations, avoid_void_async
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/constants/asset_path.dart';
-import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-/// Advertisement View Screen
+/// Hub Event View Screen
 class HubEventView extends StatefulWidget {
   /// Constructor
   const HubEventView({Key? key}) : super(key: key);
@@ -27,6 +27,7 @@ class HubEventView extends StatefulWidget {
 
 class _HubEventViewState extends State<HubEventView> {
   final screenshotController = ScreenshotController();
+
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> screenArguments =
@@ -72,13 +73,15 @@ class _HubEventViewState extends State<HubEventView> {
                 Transform.scale(
                   scale: 0.8,
                   child: Padding(
-                    padding: EdgeInsets.zero,
+                    padding: const EdgeInsets.all(4),
                     child: Container(
                       width: 50.w,
                       height: 50.h,
                       padding: EdgeInsets.zero,
                       decoration: BoxDecoration(
-                          color: AppColors.harp, shape: BoxShape.circle),
+                        color: AppColors.harp,
+                        borderRadius: BorderRadius.circular(25.r),
+                      ),
                       child: IconButton(
                         icon: const Icon(
                           Icons.share,
@@ -87,7 +90,7 @@ class _HubEventViewState extends State<HubEventView> {
                         ),
                         onPressed: () {
                           _takeScreenshot(screenArguments['title'],
-                              '\$${screenArguments['price'].toString()}');
+                              screenArguments['price']);
                         },
                       ),
                     ),
@@ -95,59 +98,13 @@ class _HubEventViewState extends State<HubEventView> {
                 ),
               ],
             ),
-            flexibleSpace: Center(
-              child: Stack(
-                children: <Widget>[
-                  if (screenArguments['snapshot_img'] != '')
-                    Image.memory(
-                      base64.decode(
-                          screenArguments['snapshot_img'].split(',').last),
-                      fit: BoxFit.cover,
-                      gaplessPlayback: true,
-                    )
-                  else
-                    Container(),
-                  FutureBuilder<BadgeModelData>(
-                    future: APIServices()
-                        .getBadgesModelById(screenArguments['badge_id']),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<dynamic> snapshot) {
-                      if (snapshot.hasData) {
-                        final BadgeModelData badgeData = snapshot.data;
-                        final int length = badgeData.badgeDetails.length;
-                        return Padding(
-                          padding: EdgeInsets.only(left: 10.w),
-                          child: Column(
-                            children: <Widget>[
-                              SizedBox(
-                                height: 110.h,
-                              ),
-                              Image.memory(
-                                base64.decode(badgeData.badgeDetails[0].imgIcon
-                                    .split(',')
-                                    .last),
-                                gaplessPlayback: true,
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      if (snapshot.connectionState != ConnectionState.done) {
-                        return Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: 110.h,
-                            ),
-                            const CircularProgressIndicator(),
-                          ],
-                        );
-                      }
-                      return Container();
-                    },
+            flexibleSpace: screenArguments['snapshot_img'] != ''
+                ? ExtendedImage.network(
+                    screenArguments['snapshot_img'],
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
                   )
-                ],
-              ),
-            ),
+                : Container(),
           ),
         ),
         body: SingleChildScrollView(
@@ -155,31 +112,30 @@ class _HubEventViewState extends State<HubEventView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 25.w, top: 10.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(screenArguments['title'],
-                              style: AppTextStyle.txtStyle),
-                        ],
+              Padding(
+                padding: const EdgeInsets.all(25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        screenArguments['title'],
+                        style: TextStyle(
+                            fontSize: RegExp(r"\w+(\'\w+)?")
+                                        .allMatches(screenArguments['title'])
+                                        .length >
+                                    5
+                                ? 10.sp
+                                : 18.sp,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(right: 25.w, top: 10.h),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text('\$${screenArguments['price'].toString()}',
-                            style: AppTextStyle.txtStyle),
-                      ],
+                    Text(
+                      screenArguments['price'].toString(),
+                      style: AppTextStyle.txtStyle,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 25.w, top: 15.h, right: 25.w),
@@ -190,183 +146,15 @@ class _HubEventViewState extends State<HubEventView> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 20.h, left: 25.w),
-                child: SizedBox(
-                  height: 50.h,
-                  child: Row(
-                    children: <Widget>[
-                      Text(AppTextConstants.activities,
-                          style: AppTextStyle.semiBoldStyle),
-                      SizedBox(width: 30.w),
-                      Expanded(
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: screenArguments['sub_activity'].length,
-                            itemBuilder: (BuildContext ctx, int index) {
-                              return FutureBuilder<BadgeModelData>(
-                                future: APIServices().getBadgesModelById(
-                                    screenArguments['sub_activity'][index]),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<dynamic> snapshot) {
-                                  if (snapshot.hasData) {
-                                    final BadgeModelData badgeData =
-                                        snapshot.data;
-                                    final int length =
-                                        badgeData.badgeDetails.length;
-                                    return Row(
-                                      children: <Widget>[
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              color: AppColors.harp,
-                                              border: Border.all(
-                                                  color: AppColors.harp),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(5.r))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Text(
-                                                badgeData.badgeDetails[0].name
-                                                    .toString(),
-                                                style: TextStyle(
-                                                    color: AppColors.nobel)),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 5.w,
-                                        )
-                                      ],
-                                    );
-                                  }
-                                  if (snapshot.connectionState !=
-                                      ConnectionState.done) {
-                                    return Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Row(
-                                        children: <Widget>[
-                                          SizedBox(
-                                            width: 10.w,
-                                          ),
-                                          const CircularProgressIndicator(),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                  return Container();
-                                },
-                              );
-                            }),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 5.h, left: 25.w),
-                child: SizedBox(
-                  height: 50.h,
-                  child: Row(
-                    children: <Widget>[
-                      Text(AppTextConstants.freeServices,
-                          style: AppTextStyle.semiBoldStyle),
-                      SizedBox(width: 20.w),
-                      Expanded(
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: screenArguments['services'].length,
-                            itemBuilder: (BuildContext ctx, int index) {
-                              return Row(
-                                children: <Widget>[
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: AppColors.harp,
-                                        border:
-                                            Border.all(color: AppColors.harp),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(5.r))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Text(
-                                          screenArguments['services'][index]
-                                              .toString(),
-                                          style: TextStyle(
-                                              color: AppColors.nobel)),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 5.w,
-                                  )
-                                ],
-                              );
-                            }),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 20.h, left: 25.w),
-                child: Row(
-                  children: <Widget>[
-                    Text(AppTextConstants.location,
-                        style: AppTextStyle.semiBoldStyle),
-                    SizedBox(width: 35.w),
-                    Text(
-                      '${AppTextConstants.country} : ${screenArguments['country']}',
-                      style: AppTextStyle.greyStyle,
-                    )
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 20.h, left: 25.w),
-                child: Row(
-                  children: <Widget>[
-                    SizedBox(width: 66.w),
-                    Text(
-                      '${AppTextConstants.street} : ${screenArguments['street']}',
-                      style: AppTextStyle.greyStyle,
-                    )
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 20.h, left: 25.w),
-                child: Row(
-                  children: <Widget>[
-                    SizedBox(width: 66.w),
-                    Text(
-                      '${AppTextConstants.city} : ${screenArguments['city']}',
-                      style: AppTextStyle.greyStyle,
-                    )
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 20.h, left: 25.w),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      AppTextConstants.province,
-                      style: AppTextStyle.semiBoldStyle,
-                    ),
-                    SizedBox(width: 35.w),
-                    Text(
-                      screenArguments['province'],
-                      style: AppTextStyle.greyStyle,
-                    )
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 20.h, left: 25.w),
                 child: Row(
                   children: <Widget>[
                     Text(
                       AppTextConstants.date,
                       style: AppTextStyle.semiBoldStyle,
                     ),
-                    SizedBox(width: 48.w),
+                    SizedBox(width: 60.w),
                     Text(
-                      screenArguments['event_date'],
+                      screenArguments['date'],
                       style: AppTextStyle.greyStyle,
                     )
                   ],
@@ -380,180 +168,14 @@ class _HubEventViewState extends State<HubEventView> {
                       AppTextConstants.price,
                       style: AppTextStyle.semiBoldStyle,
                     ),
-                    SizedBox(width: 48.w),
+                    SizedBox(width: 60.w),
                     Text(
-                      'USD ${screenArguments['price'].toString()}',
+                      'USD ${screenArguments['price']}',
                       style: AppTextStyle.greyStyle,
                     )
                   ],
                 ),
               ),
-              SizedBox(
-                height: 30.h,
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 20.h, left: 25.w),
-                child: Row(
-                  children: <Widget>[
-                    const Icon(
-                      Icons.star,
-                      color: Colors.black,
-                      size: 15,
-                    ),
-                    SizedBox(
-                      width: 5.w,
-                    ),
-                    Text(
-                      screenArguments['star_rating'].toString(),
-                      style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14.sp,
-                          color: Colors.black),
-                    ),
-                    SizedBox(
-                      width: 10.w,
-                    ),
-                    Text(
-                      '(0 Reviews)',
-                      style: AppTextStyle.greyStyle,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-              // Container(
-              //   margin: EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-              //   decoration: BoxDecoration(
-              //     borderRadius: BorderRadius.circular(5.r),
-              //     border: Border.all(width: 1.w, color: AppColors.porcelain),
-              //   ),
-              //   child: Column(
-              //     children: <Widget>[
-              //       Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: <Widget>[
-              //           Padding(
-              //             padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
-              //             child: Container(
-              //               width: 55.w,
-              //               height: 55.h,
-              //               decoration: BoxDecoration(
-              //                   boxShadow: <BoxShadow>[
-              //                     BoxShadow(
-              //                       color: Colors.grey.withOpacity(0.8),
-              //                       spreadRadius: 2,
-              //                       blurRadius: 5,
-              //                     ),
-              //                   ],
-              //                   color: Colors.white,
-              //                   shape: BoxShape.circle,
-              //                   image: const DecorationImage(
-              //                       fit: BoxFit.fitHeight,
-              //                       image: AssetImage(
-              //                           'assets/images/profile-photos-2.png'))),
-              //             ),
-              //           ),
-              //           Column(
-              //             crossAxisAlignment: CrossAxisAlignment.start,
-              //             children: <Widget>[
-              //               Padding(
-              //                   padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-              //                   child: Text(
-              //                     'Ann Sasha',
-              //                     style: TextStyle(
-              //                         color: Colors.black,
-              //                         fontFamily: 'Gilroy',
-              //                         fontSize: 14.sp,
-              //                         fontWeight: FontWeight.w600),
-              //                   )),
-              //               Padding(
-              //                   padding: EdgeInsets.fromLTRB(0, 10.h, 0, 0),
-              //                   child: SizedBox(
-              //                     width: 180.w,
-              //                     child: Text(
-              //                       'Architect',
-              //                       style: TextStyle(
-              //                           color: Colors.grey,
-              //                           fontFamily: 'Gilroy',
-              //                           fontSize: 12.sp,
-              //                           fontWeight: FontWeight.w400),
-              //                     ),
-              //                   )),
-              //             ],
-              //           ),
-              //           Row(
-              //             children: <Widget>[
-              //               Padding(
-              //                 padding: EdgeInsets.fromLTRB(0, 10.h, 5.w, 0.h),
-              //                 child: Text(
-              //                   '5',
-              //                   style: TextStyle(
-              //                       color: Colors.black,
-              //                       fontSize: 12.sp,
-              //                       fontWeight: FontWeight.w600,
-              //                       fontFamily: 'Gilroy'),
-              //                 ),
-              //               ),
-              //               Padding(
-              //                 padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-              //                 child: const Icon(
-              //                   Icons.star,
-              //                   color: Colors.black,
-              //                   size: 10,
-              //                 ),
-              //               ),
-              //               Padding(
-              //                 padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-              //                 child: const Icon(
-              //                   Icons.star,
-              //                   color: Colors.black,
-              //                   size: 10,
-              //                 ),
-              //               ),
-              //               Padding(
-              //                 padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-              //                 child: const Icon(
-              //                   Icons.star,
-              //                   color: Colors.black,
-              //                   size: 10,
-              //                 ),
-              //               ),
-              //               Padding(
-              //                 padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-              //                 child: const Icon(
-              //                   Icons.star,
-              //                   color: Colors.black,
-              //                   size: 10,
-              //                 ),
-              //               ),
-              //               Padding(
-              //                 padding: EdgeInsets.fromLTRB(0, 10.h, 0.w, 0.h),
-              //                 child: const Icon(
-              //                   Icons.star,
-              //                   color: Colors.black,
-              //                   size: 10,
-              //                 ),
-              //               )
-              //             ],
-              //           )
-              //         ],
-              //       ),
-              //       Padding(
-              //         padding:
-              //             EdgeInsets.only(left: 15.w, right: 15.w, top: 20.h),
-              //         child: Text(AppTextConstants.loremIpsum,
-              //             style: TextStyle(
-              //                 fontFamily: 'Poppins',
-              //                 fontSize: 14.sp,
-              //                 color: AppColors.osloGrey,
-              //                 fontWeight: FontWeight.w400)),
-              //       )
-              //     ],
-              //   ),
-              // ),
             ],
           ),
         ),
