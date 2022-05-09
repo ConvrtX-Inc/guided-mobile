@@ -153,13 +153,13 @@ class _LoginScreenState extends State<LoginScreen> {
         if (user.user?.isTraveller != true) {
           await SecureStorage.saveValue(
               key: AppTextConstants.userType, value: 'guide');
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/main_navigation', (Route<dynamic> route) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/main_navigation', (Route<dynamic> route) => false);
         } else {
           await SecureStorage.saveValue(
               key: AppTextConstants.userType, value: 'traveller');
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/traveller_tab', (Route<dynamic> route) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/traveller_tab', (Route<dynamic> route) => false);
         }
       }
     });
@@ -597,7 +597,42 @@ class _LoginScreenState extends State<LoginScreen> {
         AppleIDAuthorizationScopes.fullName,
       ],
     );
-    print(credential);
+
+    print(credential.email);
+    print(credential.authorizationCode);
+    print(credential.givenName);
+    print(credential.familyName);
+    print(credential.identityToken);
+    print(credential.userIdentifier);
+
+    if (credential.identityToken != null) {
+      setState(() {
+        appleLoading = true;
+      });
+      APIServices()
+          .loginFacebook(credential.identityToken!)
+          .then((APIStandardReturnFormat response) async {
+        if (response.status == 'error') {
+          AdvanceSnackBar(
+                  message: ErrorMessageConstants.loginWrongEmailorPassword)
+              .show(context);
+          setState(() => appleLoading = false);
+        } else {
+          final UserModel user =
+              UserModel.fromJson(json.decode(response.successResponse));
+          UserSingleton.instance.user = user;
+          if (user.user?.isTraveller != true) {
+            await SecureStorage.saveValue(
+                key: AppTextConstants.userType, value: 'guide');
+            await Navigator.pushReplacementNamed(context, '/main_navigation');
+          } else {
+            await SecureStorage.saveValue(
+                key: AppTextConstants.userType, value: 'traveller');
+            await Navigator.pushReplacementNamed(context, '/traveller_tab');
+          }
+        }
+      });
+    }
   }
 
   Future<void> googleSignIn() async {
