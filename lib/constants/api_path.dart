@@ -6,13 +6,13 @@ class AppAPIPath {
   /// Returns staging mode (change to false if deploying to live)
   static bool isStaging = false;
 
-  // static bool isStaging = true;
+//   static bool isStaging = true;
 
   /// Returns API mode
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
 
   ///Returns mode : (dev | staging | local )
-  static String mode = 'dev';
+  static String mode = 'staging';
 
   /// Returns API base url
   static String apiBaseUrl = getBaseUrl(mode);
@@ -205,6 +205,11 @@ class AppAPIPath {
   static String eventDestinationImage =
       'api/v1/activity-event-destination-image';
 
+  ///Returns notifications url
+ static String notificationsUrl ='api/v1/notifications';
+
+ ///Returns payment transactions url
+ static String paymentTransactionUrl = 'api/v1/transaction-payment';
   ///Returns newsfeed list url
   static String newsfeedList = 'api/v1/activity-newsfeed/list';
 

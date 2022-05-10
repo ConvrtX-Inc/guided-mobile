@@ -158,7 +158,7 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
                     color: Colors.white,
                     child: Column(children: [
                       Container(
-                          margin: const EdgeInsets.all(15),
+                          margin: const EdgeInsets.all(12),
                           child: Row(
                             children: <Widget>[
                               SizedBox(
@@ -220,20 +220,21 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
                                       color: AppColors.novel, fontSize: 16.sp),
                                 ),
                               ),
-                              if (_textMessageController.text != '')
-                                GestureDetector(
-                                    onTap: sendMessageToServer,
-                                    child: Container(
-                                      height: 44,
-                                      width: 44,
-                                      margin: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                          color: AppColors.deepGreen,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(12.r))),
-                                      child: const Icon(Icons.arrow_forward,
-                                          color: Colors.white),
-                                    ))
+                              GestureDetector(
+                                  onTap: _textMessageController.text != ''
+                                      ? sendMessageToServer
+                                      : null,
+                                  child: Container(
+                                    height: 44,
+                                    width: 44,
+                                    margin: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        color: AppColors.deepGreen,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(12.r))),
+                                    child: const Icon(Icons.arrow_forward,
+                                        color: Colors.white),
+                                  ))
                             ],
                           )),
                     ])),
@@ -249,7 +250,7 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
                     onBackspacePressed: _onBackspacePressed,
                     config: Config(
                         columns: 7,
-                         emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                        emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
                         verticalSpacing: 0,
                         horizontalSpacing: 0,
                         initCategory: Category.RECENT,
@@ -399,7 +400,7 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
 
   Widget buildChatAttachment(String image) => GestureDetector(
       onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) {
+        Navigator.push(context, MaterialPageRoute(builder: (_) {
           return ImageViewerScreen(imageUrl: image);
         }));
       },
@@ -410,8 +411,6 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
             height: 150.h,
             fit: BoxFit.contain,
           )));
-
-
 
   void sendMessageToServer() {
     socket.emit('msgToServer', {

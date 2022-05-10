@@ -131,13 +131,13 @@ class SettingsUtils {
           color: Colors.black,
           imgUrl: 'assets/images/svg/settings_icon_payment.svg',
           subSettings: []),
-      // SettingsModel(
-      //     keyName: 'notification',
-      //     name: 'Notifications',
-      //     icon: 'test',
-      //     color: Colors.black,
-      //     imgUrl: 'assets/images/svg/settings_icon_notificationbell.svg',
-      //     subSettings: []),
+      SettingsModel(
+          keyName: 'notification_traveler',
+          name: 'Notifications',
+          icon: 'test',
+          color: Colors.black,
+          imgUrl: 'assets/images/svg/settings_icon_notificationbell.svg',
+          subSettings: []),
       // SettingsModel(
       //     keyName: 'review',
       //     name: 'Reviews',

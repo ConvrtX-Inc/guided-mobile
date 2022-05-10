@@ -13,6 +13,7 @@ import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/notification_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
@@ -1007,6 +1008,10 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
             await saveStripePaymentIntent(
                 'paymentIntent', result['id'], paymentMethodId);
 
+            /// notify guide
+            await sendBookingRequestNotification(
+                result['id'], activityPackage.userId!);
+
             Navigator.pop(context);
             await paymentSuccessful(
                 context: context,
@@ -1048,7 +1053,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
             isLoading = false;
           });
 
-         await _showDialog(context);
+          await _showDialog(context);
         }
       });
     }
@@ -1204,7 +1209,6 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     return endDate.difference(startDate).inHours;
   }
 
-
   Future<void> _showDialog(BuildContext context) async {
     await showDialog(
         context: context,
@@ -1215,34 +1219,46 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
             elevation: 12,
             content: SizedBox(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-
-                  children: <Widget>[
-
-                    Center(
-                      child: Container(
-                        child: Text(
-                            'Booking Request Sent!',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 14.sp)),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                    Center(
-                        child: CustomRoundedButton(
-                          title: 'Ok',
-                          onpressed: () {
-                              Navigator.of(context).pushNamed('/traveller_tab');
-                          },
-                          buttonHeight: 40.h,
-                          buttonWidth: 120.w,
-                        ))
-                  ],
-                )),
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Center(
+                  child: Container(
+                    child: Text('Booking Request Sent!',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 14.sp)),
+                  ),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Center(
+                    child: CustomRoundedButton(
+                  title: 'Ok',
+                  onpressed: () {
+                    Navigator.of(context).pushNamed('/traveller_tab');
+                  },
+                  buttonHeight: 40.h,
+                  buttonWidth: 120.w,
+                ))
+              ],
+            )),
           );
         });
+  }
+
+  Future<void> sendBookingRequestNotification(
+      String bookingRequestId, String guideId) async {
+    final NotificationModel params = NotificationModel(
+        fromUserId: UserSingleton.instance.user.user!.id,
+        title: UserSingleton.instance.user.user!.fullName,
+        notificationMsg: AppTextConstants.youHavePendingRequest,
+        toUserId: guideId,
+        type: 'booking request',
+        bookingRequestId: bookingRequestId);
+
+    final NotificationModel res = await APIServices().sendNotification(params);
+
+    debugPrint('Response: ${res.id} ${res.title}');
   }
 }

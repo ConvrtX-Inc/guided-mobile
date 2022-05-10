@@ -429,7 +429,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                       if (!hasPremiumSubscription &&
                                           PaymentConfig.isPaymentEnabled) {
                                         _showDiscoveryBottomSheet(
-                                            tourList[i].featureImage);
+                                            _filteredActivity[i].coverImg!);
                                       }
                                     },
                                     child: Container(
@@ -940,7 +940,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                       if (mode == 'Apple Pay') {
                         debugPrint('Data $data');
                         saveSubscription(
-                            data, 'Premium Subscription', price.toString());
+                            data, 'Premium Subscription', price.toString(),mode);
                         paymentSuccessful(
                             context: context,
                             paymentDetails: DiscoveryPaymentDetails(
@@ -960,7 +960,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                             onPaymentSuccessful: () {
                               Navigator.of(context).pop();
                               saveSubscription(transactionNumber,
-                                  'Premium Subscription', price.toString());
+                                  'Premium Subscription', price.toString(),mode);
                               //Save Subscription
                               paymentSuccessful(
                                   context: context,
@@ -994,7 +994,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
   }
 
   Future<void> saveSubscription(
-      String transactionNumber, String subscriptionName, String price) async {
+      String transactionNumber, String subscriptionName, String price, String paymentMethod) async {
     final DateTime startDate = DateTime.now();
 
     final DateTime endDate = GlobalMixin().getEndDate(startDate);
@@ -1007,7 +1007,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
         price: price);
 
     final APIStandardReturnFormat result =
-        await APIServices().addUserSubscription(subscriptionParams);
+        await APIServices().addUserSubscription(subscriptionParams,paymentMethod);
 
     UserSingleton.instance.user.user?.hasPremiumSubscription = true;
     setState(() {

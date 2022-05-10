@@ -1151,6 +1151,30 @@ class AppTextConstants {
 
   /// Returns not offered amenities text
   static String notOfferedAmenities = 'Not Offered Amenities';
+
+  ///returns deduction string
+  static String deduction = 'Deduction';
+
+  ///returns addition string
+  static String addition = 'Addition';
+
+  ///Returns you have youHavePendingRequest request text
+  static String youHavePendingRequest = 'You have Pending Request';
+
+  ///Returns your request has approved by
+  static String yourRequestHasApprovedBy = 'Your Request has approved by';
+
+  ///Returns your request has rejected by
+  static String yourRequestHasRejectedBy = 'Your Request has rejected by';
+
+  ///Returns All text
+  static String all = 'All';
+
+  ///Returns accepted text
+  static String accepted = 'Accepted';
+
+  ///Returns rejected text
+  static String rejected ='Rejected';
 }
 
 /// Class for error messages text

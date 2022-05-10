@@ -29,6 +29,7 @@ import 'package:guided/models/country_model.dart';
 import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/event_image_model.dart';
 import 'package:guided/models/event_model.dart';
+import 'package:guided/models/notification_model.dart';
 import 'package:guided/models/newsfeed_image_model.dart';
 import 'package:guided/models/newsfeed_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
@@ -36,6 +37,7 @@ import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/package_destination_image_model.dart';
 import 'package:guided/models/package_destination_model.dart';
 import 'package:guided/models/package_model.dart';
+import 'package:guided/models/payment_transaction.dart';
 import 'package:guided/models/popular_guide.dart';
 import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/profile_data_model.dart';
@@ -1163,7 +1165,7 @@ class APIServices {
 
   /// API service for user  adding subscription
   Future<APIStandardReturnFormat> addUserSubscription(
-      UserSubscription params) async {
+      UserSubscription params, String paymentMethod) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
@@ -1183,6 +1185,13 @@ class APIServices {
           'price': params.price
         }));
 
+    final PaymentTransactionModel transactionParams = PaymentTransactionModel(
+        serviceName: 'Premium Subscription',
+        transactionNumber: params.paymentReferenceNo,
+        amount: '${params.price}',
+        type: AppTextConstants.deduction,
+        paymentMethod: paymentMethod);
+    await savePaymentTransaction(transactionParams);
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
@@ -1960,8 +1969,8 @@ class APIServices {
     return SettingsAvailabilityModel.fromJson(jsonData);
   }
 
-  ///API Service for Retrieving Settings Availability
-  Future<BecomeAGudeModel> getBecomeAGuideRequest() async {
+  ///API Service for Retrieving BecomeAGuideRequest
+  Future<dynamic> getBecomeAGuideRequest() async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
@@ -1969,19 +1978,21 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    debugPrint(
-        'DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
+    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
     debugPrint('params R$queryParameters');
-    final http.Response response = await http.get(
-        Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters),
-        headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
-        });
+    final http.Response response = await http
+        .get(Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(response.request!.url);
     print('tata response get become a guide request: $jsonData');
-    return BecomeAGudeModel.fromJson(jsonData[0]);
+    if(jsonData.length > 0) {
+      return BecomeAGudeModel.fromJson(jsonData[0]);
+    } else {
+      return BecomeAGudeModel();
+    }
   }
 
   /// API service for event image model
@@ -2053,6 +2064,152 @@ class APIServices {
     return EventDestinationImageModel(eventDestinationImageDetails: details);
   }
 
+  ///Api service for saving payment transaction
+  Future<PaymentTransactionModel> savePaymentTransaction(
+      PaymentTransactionModel params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.paymentTransactionUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'transaction_number': params.transactionNumber,
+          'payment_method': params.paymentMethod,
+          'service_name': params.serviceName,
+          'amount': params.amount,
+          'type': params.type,
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    PaymentTransactionModel paymentTransaction = PaymentTransactionModel();
+    if (response.statusCode == 201) {
+      debugPrint('DATA payment $jsonData');
+      paymentTransaction = PaymentTransactionModel.fromJson(jsonData);
+    }
+
+    return paymentTransaction;
+  }
+
+  /// API service payment transaction lists
+  Future<List<PaymentTransactionModel>> getPaymentTransactions() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+    };
+
+    final http.Response response = await http
+        .get(Uri.http(apiBaseUrl, '/${AppAPIPath.paymentTransactionUrl}', queryParameters), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
+
+    final List<PaymentTransactionModel> paymentTransactions =
+        <PaymentTransactionModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final PaymentTransactionModel _paymentTransaction =
+          PaymentTransactionModel.fromJson(data);
+      paymentTransactions.add(_paymentTransaction);
+    }
+
+    return paymentTransactions;
+  }
+
+
+  ///Api services for notifications
+  Future<List<NotificationModel>> getNotifications() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final Map<String, String> queryParameters = {
+      'filter': 'to_user_id||eq||"$userId"',
+    };
+
+    final http.Response response = await http
+        .get(Uri.http(apiBaseUrl, '/${AppAPIPath.notificationsUrl}', queryParameters), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
+
+    final List<NotificationModel> notifications =
+    <NotificationModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final NotificationModel _notification =
+      NotificationModel.fromJson(data);
+      notifications.add(_notification);
+    }
+
+    return notifications;
+  }
+
+  /// Api service to send Notification
+  Future<NotificationModel> sendNotification(NotificationModel params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint('Params: ${params.bookingRequestId} ${params.toUserId} ${params.title} ${params.type}');
+
+    final http.Response response = await http.post(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.notificationsUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'from_user_id':userId.toString(),
+          'to_user_id': params.toUserId!,
+          'title': params.title!,
+          'type': params.type!,
+          'notification_msg':params.notificationMsg!,
+          'booking_request_id': params.bookingRequestId!,
+          'transaction_no': params.transactionNo!
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    NotificationModel _notification = NotificationModel();
+
+    debugPrint('DATA notification $jsonData ${response.statusCode}');
+    if (response.statusCode == 201) {
+
+      _notification = NotificationModel.fromJson(jsonData);
+    }
+
+    return _notification;
+  }
+
+
+  ///Api services to get traveler notifications
+  Future<List<NotificationModel>> getTravelerNotifications(String filter) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http
+        .get(Uri.http(
+        apiBaseUrl, '/${AppAPIPath.notificationsUrl}/traveler/$userId/$filter'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final List<NotificationModel> notifications =
+    <NotificationModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final NotificationModel _notification =
+      NotificationModel.fromJson(data);
+      notifications.add(_notification);
+    }
+
+    return notifications;
+  }
   /// API service for NewsFeed Model
   Future<NewsFeedModel> getNewsFeedData() async {
     final http.Response response = await http.get(
