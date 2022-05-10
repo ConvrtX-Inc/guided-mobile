@@ -2383,7 +2383,7 @@ class APIServices {
     Certificate _certificate = Certificate();
 
     debugPrint('DATA Edit certificate $jsonData ${response.statusCode}');
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       _certificate = Certificate.fromJson(jsonData);
     }
 

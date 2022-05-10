@@ -6,21 +6,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:guided/common/widgets/bordered_text_field.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/certificate_controller.dart';
 import 'package:guided/models/certificate.dart';
-import 'package:guided/screens/profile/profile_details/certificate/screen/add_certificate_modal.dart';
 import 'package:guided/screens/profile/profile_details/certificate/widget/certificate_card.dart';
-
-import 'package:guided/screens/profile/profile_widgets.dart';
 import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
 import 'package:guided/screens/widgets/reusable_widgets/image_picker_bottom_sheet.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
+///Certificate Screen
 class CertificateScreen extends StatefulWidget {
+  ///Constructor
   const CertificateScreen({Key? key}) : super(key: key);
 
   @override
@@ -35,6 +36,9 @@ class _CertificateScreenState extends State<CertificateScreen> {
   List<Certificate> certificates = <Certificate>[];
   bool isLoading = false;
 
+  final CertificateController _certificateController =
+      Get.put(CertificateController());
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +50,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
     final List<Certificate> res = await APIServices().getCertificates();
 
     debugPrint('Certificate ${res.length}');
-
+    await _certificateController.initCertificates(res);
     setState(() {
       certificates = res;
     });
@@ -60,7 +64,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
       setState(() {
         certificates.remove(certificate);
       });
-      Navigator.of(context).pop();
+       Navigator.of(context).pop();
     }
   }
 
@@ -292,32 +296,35 @@ class _CertificateScreenState extends State<CertificateScreen> {
   }
 
   Widget showCertificateList() {
-    return Container(
-      padding: EdgeInsets.only(top: 19, left: 16, right: 16),
-      child: ListView.separated(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemBuilder: (BuildContext context, int index) {
-            return CertificateCard(
-              certificate: certificates[index],
-              onDeletePressed: () {
-                _showRemoveDialog(certificates[index]);
-              },
-              onEditPressed: () {
-                Navigator.of(context).pushNamed('/edit_certificate',
-                    arguments: certificates[index]);
-              },
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) {
-            return Divider(height: 10.0.h, color: Colors.transparent);
-          },
-          itemCount: certificates.length),
-    );
+    return GetBuilder<CertificateController>(
+        builder: (CertificateController _controller) {
+          certificates = _controller.certificates;
+      return Container(
+        padding: EdgeInsets.only(top: 19, left: 16, right: 16),
+        child: ListView.separated(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: (BuildContext context, int index) {
+              return CertificateCard(
+                certificate: certificates[index],
+                onDeletePressed: () {
+                  _showRemoveDialog(certificates[index]);
+                },
+                onEditPressed: () {
+                  Navigator.of(context).pushNamed('/edit_certificate',
+                      arguments: certificates[index]);
+                },
+              );
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return Divider(height: 10.0.h, color: Colors.transparent);
+            },
+            itemCount: certificates.length),
+      );
+    });
   }
 
   void _showRemoveDialog(Certificate certificate) {
-    bool _isRemovingPayment = false;
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -411,7 +418,4 @@ class _CertificateScreenState extends State<CertificateScreen> {
           });
         });
   }
-
-
-
 }

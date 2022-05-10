@@ -5,11 +5,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:guided/common/widgets/bordered_text_field.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/certificate_controller.dart';
 import 'package:guided/models/certificate.dart';
 import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
 import 'package:guided/screens/widgets/reusable_widgets/image_picker_bottom_sheet.dart';
@@ -34,6 +36,9 @@ class _AddCertificateState extends State<AddCertificate> {
       new GlobalKey<FormState>();
   File? _photo;
   bool isLoading = false;
+
+  final CertificateController _certificateController =
+  Get.put(CertificateController());
 
   @override
   Widget build(BuildContext context) {
@@ -213,6 +218,8 @@ class _AddCertificateState extends State<AddCertificate> {
       setState(() {
         isLoading = false;
       });
+
+      _certificateController.addCertificate(res);
       Navigator.of(context).pop();
     }
   }

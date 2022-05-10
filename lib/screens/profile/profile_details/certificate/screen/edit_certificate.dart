@@ -5,11 +5,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:guided/common/widgets/bordered_text_field.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/certificate_controller.dart';
 import 'package:guided/models/certificate.dart';
 import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
 import 'package:guided/screens/widgets/reusable_widgets/image_picker_bottom_sheet.dart';
@@ -33,6 +35,8 @@ class _EditCertificateState extends State<EditCertificate> {
 
   TextEditingController _certificateNameController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
+  final CertificateController _certificateController =
+  Get.put(CertificateController());
 
   String _tempImage = '';
   bool isLoading = false;
@@ -167,8 +171,7 @@ class _EditCertificateState extends State<EditCertificate> {
     setState(() {
       isLoading = true;
     });
-    debugPrint(
-        'data ${_certificateNameController.text} ${_descriptionController.text}');
+
     String firebaseUrl = '';
     if (_photo != null) {
       firebaseUrl = await FirebaseServices()
@@ -186,10 +189,11 @@ class _EditCertificateState extends State<EditCertificate> {
 
 
     if (res.id != '') {
-      debugPrint('Response ${res.id}');
+      debugPrint('DAta -edit ${res.id}');
       setState(() {
         isLoading = false;
       });
+      _certificateController.updateCertificate(res);
       Navigator.of(context).pop();
     }
   }
