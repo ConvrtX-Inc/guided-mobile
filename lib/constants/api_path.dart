@@ -206,15 +206,19 @@ class AppAPIPath {
       'api/v1/activity-event-destination-image';
 
   ///Returns notifications url
- static String notificationsUrl ='api/v1/notifications';
+  static String notificationsUrl = 'api/v1/notifications';
 
- ///Returns payment transactions url
- static String paymentTransactionUrl = 'api/v1/transaction-payment';
+  ///Returns payment transactions url
+  static String paymentTransactionUrl = 'api/v1/transaction-payment';
+
   ///Returns newsfeed list url
   static String newsfeedList = 'api/v1/activity-newsfeed/list';
 
   ///Returns news feed image url
   static String newsfeedImage = 'api/v1/activity-newsfeed-image';
+
+  ///Returns wishlist url
+  static String wishlistUrl = 'api/v1/wishlit';
 }
 
 ///Get Api Base Url

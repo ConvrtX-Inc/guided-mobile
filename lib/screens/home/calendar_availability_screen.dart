@@ -162,7 +162,7 @@ class _CalendarAvailabilityScreenState
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16.sp)),
                                 content: Text(
-                                    'Please choose one (1) date in order to proceed',
+                                    'You are about to edit the Booking Dates. Proceed?',
                                     style: TextStyle(
                                         color: AppColors.doveGrey,
                                         fontFamily: 'Gilroy',

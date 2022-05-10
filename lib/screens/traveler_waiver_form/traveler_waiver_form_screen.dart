@@ -99,109 +99,106 @@ class _TravelerReleaseAndWaiverFormState
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-                child: SizedBox(
-                  height: 450.h,
-                  child: SingleChildScrollView(
-                    physics: const ScrollPhysics(),
-                    child: TextField(
-                      maxLines: null,
-                      enabled: _isEnabledEdit,
-                      controller: _traveler_waiver_form,
-                      focusNode: _traveler_waiver_form_focus,
-                      decoration: InputDecoration(
-                        hintText: AppTextConstants.hintTraveler,
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade800,
-                        ),
+                child: SingleChildScrollView(
+                  physics: const ScrollPhysics(),
+                  child: TextField(
+                    maxLines: null,
+                    enabled: _isEnabledEdit,
+                    controller: _traveler_waiver_form,
+                    focusNode: _traveler_waiver_form_focus,
+                    decoration: InputDecoration(
+                      hintText: AppTextConstants.hintTraveler,
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade800,
                       ),
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                          height: 2,
-                          fontSize: 16.sp,
-                          fontFamily: 'Gilroy'),
                     ),
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w400,
+                        height: 2,
+                        fontSize: 12.sp,
+                        fontFamily: 'Gilroy'),
                   ),
                 ),
               ),
-              SizedBox(
-                height: 60.h,
-              ),
-              if (_btnStatus)
-                Container()
-              else
-                Center(
-                  child: SizedBox(
-                    width: 315.w,
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                          elevation: MaterialStateProperty.all(0),
-                          padding: MaterialStateProperty.all<EdgeInsets>(
-                              const EdgeInsets.all(20)),
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
-                          shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18.r),
-                                  side: BorderSide(color: AppColors.silver)))),
-                      child: Text(
-                        _isEnabledEdit
-                            ? AppTextConstants.done
-                            : AppTextConstants.edit,
-                        style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.spruce),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          if (_isEnabledEdit) {
-                            _isEnabledEdit = false;
-                          } else {
-                            _isEnabledEdit = true;
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              SizedBox(
-                height: 20.h,
-              ),
-              if (_btnStatus)
-                Container()
-              else
-                Center(
-                  child: SizedBox(
-                    width: 315.w,
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                          padding: MaterialStateProperty.all<EdgeInsets>(
-                              const EdgeInsets.all(20)),
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              AppColors.spruce),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.r),
-                          ))),
-                      onPressed: saveTravelerForm,
-                      child: _isSubmit
-                          ? const Center(child: CircularProgressIndicator())
-                          : Text(
-                              AppTextConstants.save,
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
-              SizedBox(
-                height: 10.h,
-              )
+              // SizedBox(
+              //   height: 60.h,
+              // ),
+              // if (_btnStatus)
+              //   Container()
+              // else
+              //   Center(
+              //     child: SizedBox(
+              //       width: 315.w,
+              //       child: ElevatedButton(
+              //         style: ButtonStyle(
+              //             elevation: MaterialStateProperty.all(0),
+              //             padding: MaterialStateProperty.all<EdgeInsets>(
+              //                 const EdgeInsets.all(20)),
+              //             backgroundColor:
+              //                 MaterialStateProperty.all<Color>(Colors.white),
+              //             shape: MaterialStateProperty.all<
+              //                     RoundedRectangleBorder>(
+              //                 RoundedRectangleBorder(
+              //                     borderRadius: BorderRadius.circular(18.r),
+              //                     side: BorderSide(color: AppColors.silver)))),
+              //         child: Text(
+              //           _isEnabledEdit
+              //               ? AppTextConstants.done
+              //               : AppTextConstants.edit,
+              //           style: TextStyle(
+              //               fontSize: 16.sp,
+              //               fontWeight: FontWeight.w700,
+              //               color: AppColors.spruce),
+              //         ),
+              //         onPressed: () {
+              //           setState(() {
+              //             if (_isEnabledEdit) {
+              //               _isEnabledEdit = false;
+              //             } else {
+              //               _isEnabledEdit = true;
+              //             }
+              //           });
+              //         },
+              //       ),
+              //     ),
+              //   ),
+              // SizedBox(
+              //   height: 20.h,
+              // ),
+              // if (_btnStatus)
+              //   Container()
+              // else
+              //   Center(
+              //     child: SizedBox(
+              //       width: 315.w,
+              //       child: ElevatedButton(
+              //         style: ButtonStyle(
+              //             padding: MaterialStateProperty.all<EdgeInsets>(
+              //                 const EdgeInsets.all(20)),
+              //             backgroundColor: MaterialStateProperty.all<Color>(
+              //                 AppColors.spruce),
+              //             shape:
+              //                 MaterialStateProperty.all<RoundedRectangleBorder>(
+              //                     RoundedRectangleBorder(
+              //               borderRadius: BorderRadius.circular(18.r),
+              //             ))),
+              //         onPressed: saveTravelerForm,
+              //         child: _isSubmit
+              //             ? const Center(child: CircularProgressIndicator())
+              //             : Text(
+              //                 AppTextConstants.save,
+              //                 style: TextStyle(
+              //                   fontSize: 16.sp,
+              //                   fontWeight: FontWeight.w700,
+              //                 ),
+              //               ),
+              //       ),
+              //     ),
+              //   ),
+              // SizedBox(
+              //   height: 10.h,
+              // )
             ],
           ),
         ),

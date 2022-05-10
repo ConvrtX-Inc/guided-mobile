@@ -7,10 +7,7 @@ import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_properties.dar
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/main_navigation/content/advertisements/advertisements_list.dart';
-import 'package:guided/screens/main_navigation/content/outfitters/outfitters_list.dart';
-import 'package:guided/screens/main_navigation/content/packages/packages_list.dart';
-import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/activity_packages.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/activity_packages_wishlist.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/guide_profile.dart';
 
 /// Tab Wishlist Screen
@@ -121,7 +118,7 @@ class _TabWishlistScreenState extends State<TabWishlistScreen> {
             unselectedLabelColor: Colors.grey,
           ),
           views: const <Widget>[
-            ActivityPackages(),
+            ActivityPackagesWishlist(),
             GuideProfile(),
           ],
           onChange: setTitle,

@@ -1174,7 +1174,10 @@ class AppTextConstants {
   static String accepted = 'Accepted';
 
   ///Returns rejected text
-  static String rejected ='Rejected';
+  static String rejected = 'Rejected';
+
+  ///Returns get started text
+  static String getStarted = 'Get Started';
 }
 
 /// Class for error messages text

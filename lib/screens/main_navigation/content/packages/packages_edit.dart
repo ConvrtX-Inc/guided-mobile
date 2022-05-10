@@ -1389,6 +1389,7 @@ class _PackageEditState extends State<PackageEdit> {
                       ),
                     ),
                     style: txtStyle,
+                    maxLength: 40,
                   ),
                   SizedBox(
                     height: 5.h,
