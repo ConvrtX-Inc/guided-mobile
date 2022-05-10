@@ -24,6 +24,7 @@ import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/become_a_guide_activites_model.dart';
 import 'package:guided/models/become_a_guide_request_model.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/certificate.dart';
 import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/currencies_model.dart';
@@ -1978,17 +1979,19 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
+    debugPrint(
+        'DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
     debugPrint('params R$queryParameters');
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(response.request!.url);
     print('tata response get become a guide request: $jsonData');
-    if(jsonData.length > 0) {
+    if (jsonData.length > 0) {
       return BecomeAGudeModel.fromJson(jsonData[0]);
     } else {
       return BecomeAGudeModel();
@@ -2104,10 +2107,12 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/${AppAPIPath.paymentTransactionUrl}', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/${AppAPIPath.paymentTransactionUrl}',
+            queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
     final List<PaymentTransactionModel> paymentTransactions =
         <PaymentTransactionModel>[];
@@ -2122,7 +2127,6 @@ class APIServices {
     return paymentTransactions;
   }
 
-
   ///Api services for notifications
   Future<List<NotificationModel>> getNotifications() async {
     final String? token = UserSingleton.instance.user.token;
@@ -2131,18 +2135,18 @@ class APIServices {
       'filter': 'to_user_id||eq||"$userId"',
     };
 
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/${AppAPIPath.notificationsUrl}', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+    final http.Response response = await http.get(
+        Uri.http(
+            apiBaseUrl, '/${AppAPIPath.notificationsUrl}', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
-    final List<NotificationModel> notifications =
-    <NotificationModel>[];
+    final List<NotificationModel> notifications = <NotificationModel>[];
 
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
-      final NotificationModel _notification =
-      NotificationModel.fromJson(data);
+      final NotificationModel _notification = NotificationModel.fromJson(data);
       notifications.add(_notification);
     }
 
@@ -2154,21 +2158,21 @@ class APIServices {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-    debugPrint('Params: ${params.bookingRequestId} ${params.toUserId} ${params.title} ${params.type}');
+    debugPrint(
+        'Params: ${params.bookingRequestId} ${params.toUserId} ${params.title} ${params.type}');
 
     final http.Response response = await http.post(
-        Uri.parse(
-            '$apiBaseMode$apiBaseUrl/${AppAPIPath.notificationsUrl}'),
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.notificationsUrl}'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           HttpHeaders.contentTypeHeader: 'application/json',
         },
         body: jsonEncode(<String, String>{
-          'from_user_id':userId.toString(),
+          'from_user_id': userId.toString(),
           'to_user_id': params.toUserId!,
           'title': params.title!,
           'type': params.type!,
-          'notification_msg':params.notificationMsg!,
+          'notification_msg': params.notificationMsg!,
           'booking_request_id': params.bookingRequestId!,
           'transaction_no': params.transactionNo!
         }));
@@ -2178,38 +2182,36 @@ class APIServices {
 
     debugPrint('DATA notification $jsonData ${response.statusCode}');
     if (response.statusCode == 201) {
-
       _notification = NotificationModel.fromJson(jsonData);
     }
 
     return _notification;
   }
 
-
   ///Api services to get traveler notifications
-  Future<List<NotificationModel>> getTravelerNotifications(String filter) async {
+  Future<List<NotificationModel>> getTravelerNotifications(
+      String filter) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-    final http.Response response = await http
-        .get(Uri.http(
-        apiBaseUrl, '/${AppAPIPath.notificationsUrl}/traveler/$userId/$filter'),
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl,
+            '/${AppAPIPath.notificationsUrl}/traveler/$userId/$filter'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
         });
 
-    final List<NotificationModel> notifications =
-    <NotificationModel>[];
+    final List<NotificationModel> notifications = <NotificationModel>[];
 
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
-      final NotificationModel _notification =
-      NotificationModel.fromJson(data);
+      final NotificationModel _notification = NotificationModel.fromJson(data);
       notifications.add(_notification);
     }
 
     return notifications;
   }
+
   /// API service for NewsFeed Model
   Future<NewsFeedModel> getNewsFeedData() async {
     final http.Response response = await http.get(
@@ -2281,5 +2283,110 @@ class APIServices {
     }
 
     return UserListModel(userDetails: details);
+  }
+
+  ///Api services for certificates
+  Future<List<Certificate>> getCertificates() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+    };
+
+    debugPrint('URL: ${ Uri.http(apiBaseUrl, '/${AppAPIPath.certificatesUrl}', queryParameters)}');
+    final List<Certificate> certificates = <Certificate>[];
+
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/${AppAPIPath.certificatesUrl}', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final Certificate _certificate = Certificate.fromJson(data);
+      certificates.add(_certificate);
+    }
+
+    return certificates;
+  }
+
+  ///api service to add certificate
+  Future<Certificate> addCertificate(Certificate params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint(
+        'Params: ${params.certificateName} ');
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'certificate_name': params.certificateName!,
+          'certificate_description': params.certificateDescription!,
+          'certificate_photo_firebase_url': params.certificatePhotoFirebaseUrl!,
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    Certificate _certificate = Certificate();
+
+    debugPrint('DATA add certificate $jsonData ${response.statusCode}');
+    if (response.statusCode == 201) {
+      _certificate = Certificate.fromJson(jsonData);
+    }
+
+    return _certificate;
+  }
+
+
+  /// API service for delete Certificate
+  Future<http.Response> deleteCertificate(String id) async {
+
+    final String? token = UserSingleton.instance.user.token;
+    final http.Response response = await http.delete(
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}/$id'),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+    );
+
+    return response;
+  }
+
+  ///api service to update certificate
+  Future<Certificate> updateCertificate(Certificate params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint(
+        'Params: ${params.certificateName} ');
+
+    final http.Response response = await http.patch(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}/${params.id}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'certificate_name': params.certificateName!,
+          'certificate_description': params.certificateDescription!,
+          'certificate_photo_firebase_url': params.certificatePhotoFirebaseUrl!,
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    Certificate _certificate = Certificate();
+
+    debugPrint('DATA Edit certificate $jsonData ${response.statusCode}');
+    if (response.statusCode == 201) {
+      _certificate = Certificate.fromJson(jsonData);
+    }
+
+    return _certificate;
   }
 }

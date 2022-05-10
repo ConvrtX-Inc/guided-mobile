@@ -1175,6 +1175,30 @@ class AppTextConstants {
 
   ///Returns rejected text
   static String rejected ='Rejected';
+
+  ///Returns certificate text
+ static String certificate = 'Certificate';
+
+ ///Returns first aid certified text
+ static String firstAidCertified = 'First Aid Certified';
+
+ ///Returns add certificate text
+ static String addCertificate= 'Add Certificate';
+
+ ///Returns certificate name text
+ static String certificateName ='Certificate Name';
+
+ ///Returns upload certificate text
+ static String uploadCertificate = 'Upload Certificate';
+
+ ///Returns Add new certificate text
+ static String addNewCertificate = 'Add New Certificate';
+
+  ///Returns edit certificate text
+  static String editCertificate= 'Edit Certificate';
+
+  ///Returns update changes text
+  static String updateChanges= 'Update Changes';
 }
 
 /// Class for error messages text
