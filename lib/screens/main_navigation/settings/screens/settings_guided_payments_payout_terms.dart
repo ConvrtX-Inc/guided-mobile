@@ -100,7 +100,7 @@ class _GuidedPaymentPayoutTermsState extends State<GuidedPaymentPayoutTerms> {
                             color: Colors.black,
                             fontWeight: FontWeight.w400,
                             height: 2,
-                            fontSize: 16.sp,
+                            fontSize: 12.sp,
                             fontFamily: 'Gilroy')),
                   ),
                 ),

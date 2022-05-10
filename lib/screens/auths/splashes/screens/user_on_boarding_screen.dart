@@ -224,42 +224,9 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                SizedBox(
-                  height: 50.h,
-                  width: 150.w,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await SecureStorage.readValue(
-                              key: AppTextConstants.userType)
-                          .then((String value) async {
-                        if (value == 'traveller') {
-                          await Navigator.of(context).pushNamed('/discovery');
-                        } else {
-                          await Navigator.of(context).pushNamed('/welcome');
-                        }
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: AppColors.silver,
-                        ),
-                        borderRadius: BorderRadius.circular(14.r),
-                      ),
-                      primary: Colors.white,
-                      onPrimary: AppColors.primaryGreen,
-                    ),
-                    child: Text(
-                      AppTextConstants.skip,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                  ),
-                ),
-                SizedBox(
+            if (activeIndex == 1)
+              Center(
+                child: SizedBox(
                   height: 50.h,
                   width: 150.w,
                   child: ElevatedButton(
@@ -291,13 +258,84 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                       primary: AppColors.primaryGreen,
                       onPrimary: Colors.white, // <-- Splash color
                     ),
-                    child: activeIndex == 1
-                        ? Text(AppTextConstants.done)
-                        : Text(AppTextConstants.next),
+                    child: Text(AppTextConstants.getStarted),
                   ),
                 ),
-              ],
-            ),
+              )
+            else
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  SizedBox(
+                    height: 50.h,
+                    width: 150.w,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await SecureStorage.readValue(
+                                key: AppTextConstants.userType)
+                            .then((String value) async {
+                          if (value == 'traveller') {
+                            await Navigator.of(context).pushNamed('/discovery');
+                          } else {
+                            await Navigator.of(context).pushNamed('/welcome');
+                          }
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: AppColors.silver,
+                          ),
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        primary: Colors.white,
+                        onPrimary: AppColors.primaryGreen,
+                      ),
+                      child: Text(
+                        AppTextConstants.skip,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50.h,
+                    width: 150.w,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (activeIndex != 1) {
+                          setState(() {
+                            activeIndex = activeIndex + 1;
+                            buttonCarouselController.animateToPage(activeIndex);
+                          });
+                        } else {
+                          await SecureStorage.readValue(
+                                  key: AppTextConstants.userType)
+                              .then((String value) async {
+                            if (value == 'traveller') {
+                              await Navigator.of(context)
+                                  .pushNamed('/discovery');
+                            } else {
+                              await Navigator.of(context).pushNamed('/welcome');
+                            }
+                          });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: AppColors.silver,
+                          ),
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        primary: AppColors.primaryGreen,
+                        onPrimary: Colors.white, // <-- Splash color
+                      ),
+                      child: Text(AppTextConstants.next),
+                    ),
+                  ),
+                ],
+              ),
           ]),
         ),
       ),

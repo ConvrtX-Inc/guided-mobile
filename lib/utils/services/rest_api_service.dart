@@ -49,6 +49,7 @@ import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/models/user_terms_and_condition_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
+import 'package:guided/models/wishlist_activity_model.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 
 import 'package:guided/utils/secure_storage.dart';
@@ -1978,17 +1979,19 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    debugPrint('DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
+    debugPrint(
+        'DATA ${Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters)}');
     debugPrint('params R$queryParameters');
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/user-guide-request', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(response.request!.url);
     print('tata response get become a guide request: $jsonData');
-    if(jsonData.length > 0) {
+    if (jsonData.length > 0) {
       return BecomeAGudeModel.fromJson(jsonData[0]);
     } else {
       return BecomeAGudeModel();
@@ -2104,10 +2107,12 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/${AppAPIPath.paymentTransactionUrl}', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/${AppAPIPath.paymentTransactionUrl}',
+            queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
     final List<PaymentTransactionModel> paymentTransactions =
         <PaymentTransactionModel>[];
@@ -2122,7 +2127,6 @@ class APIServices {
     return paymentTransactions;
   }
 
-
   ///Api services for notifications
   Future<List<NotificationModel>> getNotifications() async {
     final String? token = UserSingleton.instance.user.token;
@@ -2131,18 +2135,18 @@ class APIServices {
       'filter': 'to_user_id||eq||"$userId"',
     };
 
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/${AppAPIPath.notificationsUrl}', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-    });
+    final http.Response response = await http.get(
+        Uri.http(
+            apiBaseUrl, '/${AppAPIPath.notificationsUrl}', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
 
-    final List<NotificationModel> notifications =
-    <NotificationModel>[];
+    final List<NotificationModel> notifications = <NotificationModel>[];
 
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
-      final NotificationModel _notification =
-      NotificationModel.fromJson(data);
+      final NotificationModel _notification = NotificationModel.fromJson(data);
       notifications.add(_notification);
     }
 
@@ -2154,21 +2158,21 @@ class APIServices {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-    debugPrint('Params: ${params.bookingRequestId} ${params.toUserId} ${params.title} ${params.type}');
+    debugPrint(
+        'Params: ${params.bookingRequestId} ${params.toUserId} ${params.title} ${params.type}');
 
     final http.Response response = await http.post(
-        Uri.parse(
-            '$apiBaseMode$apiBaseUrl/${AppAPIPath.notificationsUrl}'),
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.notificationsUrl}'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           HttpHeaders.contentTypeHeader: 'application/json',
         },
         body: jsonEncode(<String, String>{
-          'from_user_id':userId.toString(),
+          'from_user_id': userId.toString(),
           'to_user_id': params.toUserId!,
           'title': params.title!,
           'type': params.type!,
-          'notification_msg':params.notificationMsg!,
+          'notification_msg': params.notificationMsg!,
           'booking_request_id': params.bookingRequestId!,
           'transaction_no': params.transactionNo!
         }));
@@ -2178,38 +2182,36 @@ class APIServices {
 
     debugPrint('DATA notification $jsonData ${response.statusCode}');
     if (response.statusCode == 201) {
-
       _notification = NotificationModel.fromJson(jsonData);
     }
 
     return _notification;
   }
 
-
   ///Api services to get traveler notifications
-  Future<List<NotificationModel>> getTravelerNotifications(String filter) async {
+  Future<List<NotificationModel>> getTravelerNotifications(
+      String filter) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-    final http.Response response = await http
-        .get(Uri.http(
-        apiBaseUrl, '/${AppAPIPath.notificationsUrl}/traveler/$userId/$filter'),
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl,
+            '/${AppAPIPath.notificationsUrl}/traveler/$userId/$filter'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
         });
 
-    final List<NotificationModel> notifications =
-    <NotificationModel>[];
+    final List<NotificationModel> notifications = <NotificationModel>[];
 
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
-      final NotificationModel _notification =
-      NotificationModel.fromJson(data);
+      final NotificationModel _notification = NotificationModel.fromJson(data);
       notifications.add(_notification);
     }
 
     return notifications;
   }
+
   /// API service for NewsFeed Model
   Future<NewsFeedModel> getNewsFeedData() async {
     final http.Response response = await http.get(
@@ -2281,5 +2283,57 @@ class APIServices {
     }
 
     return UserListModel(userDetails: details);
+  }
+
+  /// API for getting the wishlist data
+  Future<WishlistActivityModel> getWishlistActivityData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.wishlistUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final WishlistActivityModel dataSummary =
+        WishlistActivityModel.fromJson(json.decode(response.body));
+
+    return WishlistActivityModel(
+        wishlistActivityDetails: dataSummary.wishlistActivityDetails);
+  }
+
+  /// API service for advertisement model
+  Future<PackageModelData> getPackageDataById(String activityPackageid) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"id":\"$activityPackageid\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final PackageModelData dataSummary =
+        PackageModelData.fromJson(json.decode(response.body));
+
+    return PackageModelData(packageDetails: dataSummary.packageDetails);
+  }
+
+  /// API for getting the wishlist data
+  Future<WishlistActivityModel> getWishlistActivityByPackageId(
+      String id) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.wishlistUrl}?s={"activity_package_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final WishlistActivityModel dataSummary =
+        WishlistActivityModel.fromJson(json.decode(response.body));
+
+    return WishlistActivityModel(
+        wishlistActivityDetails: dataSummary.wishlistActivityDetails);
   }
 }
