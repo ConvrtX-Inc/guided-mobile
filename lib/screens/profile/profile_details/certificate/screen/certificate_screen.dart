@@ -13,7 +13,11 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/certificate_controller.dart';
+import 'package:guided/controller/profile_photos_controller.dart';
+import 'package:guided/controller/user_profile_controller.dart';
+import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/certificate.dart';
+import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/screens/profile/profile_details/certificate/widget/certificate_card.dart';
 import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
 import 'package:guided/screens/widgets/reusable_widgets/image_picker_bottom_sheet.dart';
@@ -39,10 +43,16 @@ class _CertificateScreenState extends State<CertificateScreen> {
   final CertificateController _certificateController =
       Get.put(CertificateController());
 
+  final UserProfileDetailsController _profileDetailsController =
+  Get.put(UserProfileDetailsController());
+
+
   @override
   void initState() {
     super.initState();
     getCertificates();
+    isForPlanet = _profileDetailsController.userProfileDetails.isForThePlanet!;
+    isFirstAidCertified = _profileDetailsController.userProfileDetails.isFirstAidTrained!;
   }
 
   ///Get Certificates
@@ -68,6 +78,26 @@ class _CertificateScreenState extends State<CertificateScreen> {
     }
   }
 
+  Future<void> updateProfileCertificate() async {
+    final dynamic editProfileParams = {
+      'is_first_aid_trained': isFirstAidCertified,
+      'is_for_the_planet': isForPlanet
+    };
+
+    final APIStandardReturnFormat res =
+    await APIServices().updateProfile(editProfileParams);
+    debugPrint('Response:: ${res.status}');
+
+    if (res.status == 'success') {
+      final ProfileDetailsModel updatedProfile =
+      ProfileDetailsModel.fromJson(json.decode(res.successResponse));
+      _profileDetailsController.setUserProfileDetails(updatedProfile);
+
+      setState(() {
+
+      });
+    }
+  }
   Future<dynamic> showAddCertificateModal(
       {required BuildContext context, required Function onAdded}) {
     return showModalBottomSheet(
@@ -260,6 +290,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
                           setState(() {
                             isForPlanet = value;
                           });
+                          updateProfileCertificate();
                         },
                       ),
                     ),
@@ -280,6 +311,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
                           setState(() {
                             isFirstAidCertified = value;
                           });
+                          updateProfileCertificate();
                         },
                       ),
                     ),

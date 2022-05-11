@@ -42,9 +42,10 @@ class _HomeScreenState extends State<MainNavigationScreen>
   int contentIndex;
 
   _HomeScreenState(this.navIndex, this.contentIndex);
-  final CardController  _creditCardController =Get.put(CardController());
+
+  final CardController _creditCardController = Get.put(CardController());
   final UserProfileDetailsController _profileDetailsController =
-  Get.put(UserProfileDetailsController());
+      Get.put(UserProfileDetailsController());
 
   void setBottomNavigationIndexHandler(int value) {
     setState(() {
@@ -79,7 +80,8 @@ class _HomeScreenState extends State<MainNavigationScreen>
   Widget build(BuildContext context) {
     super.build(context);
     return WillPopScope(
-       /// listen on back button press -
+
+        /// listen on back button press -
         onWillPop: () {
           /// go back to home page when pressed
           if (_selectedIndex > 0) {
@@ -126,11 +128,12 @@ class _HomeScreenState extends State<MainNavigationScreen>
     final ProfileDetailsModel res = await APIServices().getProfileData();
 
     UserSingleton.instance.user.user = User(
-      id: res.id,
-      email: res.email,
-      fullName: res.fullName,
-      stripeAccountId: res.stripeAccountId
-    );
+        id: res.id,
+        email: res.email,
+        fullName: res.fullName,
+        stripeAccountId: res.stripeAccountId,
+        isForThePlanet: res.isForThePlanet,
+        isFirstAidTrained: res.isFirstAidTrained);
 
     _profileDetailsController.setUserProfileDetails(res);
   }
