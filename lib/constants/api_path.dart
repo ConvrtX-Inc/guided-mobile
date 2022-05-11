@@ -221,6 +221,9 @@ class AppAPIPath {
  static String certificatesUrl = 'api/v1/certificates';
   ///Returns wishlist url
   static String wishlistUrl = 'api/v1/wishlit';
+
+  ///Returns user type
+  static String userTypeUrl = 'api/v1/users/type';
 }
 
 ///Get Api Base Url

@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, unused_local_variable, cast_nullable_to_non_nullable, always_specify_types
+// ignore_for_file: file_names, unused_local_variable, cast_nullable_to_non_nullable, always_specify_types, public_member_api_docs
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -23,7 +23,7 @@ import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_webservice/places.dart';
 
-const kGoogleApiKey = "AIzaSyCPF7ygz63Zj5RWZ_wU4G61JTynfPRjOMg";
+const kGoogleApiKey = 'AIzaSyCxWY8eJW_V4xuVTapXfYDZeSXN41g42t4';
 
 /// Package photo screen
 class PackagePhotosScreen extends StatefulWidget {
@@ -117,8 +117,8 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
 
   // Format File Size
   static String getFileSizeString({required int bytes, int decimals = 0}) {
-    if (bytes <= 0) return "0 Bytes";
-    const suffixes = [" Bytes", "KB", "MB", "GB", "TB"];
+    if (bytes <= 0) return '0 Bytes';
+    const suffixes = [' Bytes', 'KB', 'MB', 'GB', 'TB'];
     var i = (log(bytes) / log(1024)).floor();
     return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
   }
