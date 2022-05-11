@@ -1088,15 +1088,15 @@ class APIServices {
     debugPrint('USER ID $userId');
     String id = '';
     if (type == 'terms_and_condition') {
-      id = 'terms_and_condition_$userId';
+      id = 'termsandconditions';
     } else if (type == 'traveler_waiver_form') {
-      id = 'traveler_waiver_form_$userId';
+      id = 'travelerreleaseandwaiverform';
     } else if (type == 'cancellation_policy') {
-      id = 'cancellation_policy_$userId';
+      id = 'cancellationpolicy';
     } else if (type == 'guided_payment_payout') {
-      id = 'guided_payment_payout_$userId';
+      id = 'paymentandpayoutterms';
     } else if (type == 'local_laws') {
-      id = 'local_laws_$userId';
+      id = 'locallawsandtaxes';
     }
 
     debugPrint(

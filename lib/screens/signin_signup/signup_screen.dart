@@ -331,7 +331,8 @@ class _SignupScreenState extends State<SignupScreen> {
                               'phone_no': _phonenumber,
                               'country_code': _countryCode,
                               'is_traveller': isTraveller,
-                              'user_type_id': '',
+                              // 'user_type_id': isTraveller ? '1e16e10d-ec6f-4c32-b5eb-cdfcfe0563a5' : 'c40cca07-110c-473e-a0e7-6720fc3d42ff', /// Dev
+                              'user_type_id': isTraveller ? 'fb536b69-3e54-415a-aaf0-1db1ab017bb3' : '3e3528ef-2387-4480-878e-685d44c6c2ee', /// Staging
                               'is_for_the_planet': true,
                               'is_first_aid_trained': true,
                             };
@@ -366,34 +367,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                 final UserModel user = UserModel.fromJson(
                                     json.decode(response.successResponse));
                                 UserSingleton.instance.user.token = user.token;
-
-                                await getTermsAndCondition();
-                                await getTravelerReleaseForm();
-                                await getCancellationPolicy();
-                                await getGuidEDPaymentPayout();
-                                await getLocalLaws();
-
-                                /// Terms and Condition
-                                await saveTermsAndCondition(
-                                    user.user?.id, termsAndCondition);
-
-                                /// Traveler Release & Waiver Form
-                                await saveTravelerForm(
-                                    user.user?.id, travelerWaiverForm);
-
-                                /// Cancellation Policy
-                                await saveCancellationPolicy(
-                                    user.user?.id, cancellationPolicy);
-
-                                /// GuidED Payment & Payout Terms
-                                await saveGuidedPaymentPayout(
-                                    user.user?.id, guidedPaymentPayout);
-
-                                /// Local Laws & Taxes
-                                await saveLocalLaws(user.user?.id, localLaws);
-
-                                /// Users Terms and Condition
-                                await saveUserTermsAndCondition(user.user?.id);
                               });
 
                               setState(() {

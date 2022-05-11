@@ -1,7 +1,6 @@
 // ignore_for_file: no_default_cases, always_specify_types, avoid_dynamic_calls, use_string_buffers, type_annotate_public_apis, always_declare_return_types, cascade_invocations
 
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +15,9 @@ import 'package:guided/models/home.dart';
 import 'package:guided/models/package_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_model.dart';
-import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
-import 'package:guided/screens/main_navigation/home/widgets/concat_strings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_earnings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_features.dart';
-import 'package:guided/screens/main_navigation/home/widgets/overlapping_avatars.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
-import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/utils/home.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -70,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen>
   String name2 = '';
   String name3 = '';
   bool _hasData = false;
+  int totalData = 0;
   @override
   void initState() {
     super.initState();
@@ -86,20 +82,50 @@ class _HomeScreenState extends State<HomeScreen>
     if (resData.isNotEmpty) {
       setState(() {
         _hasData = true;
+        totalData = resData.length;
       });
     }
 
     for (int index = 0; index < resData.length; index++) {
       if (resData[index].isApproved! == false) {
-        if (image1 == '') {
-          setData1(resData[index].profilePhoto!, resData[index].fromUserId!);
+        if (resData.length == 1) {
+          if (index == 0) {
+            if (image1 == '') {
+              setData1(resData[index].fromUserFirebaseProfilePic!,
+                  resData[index].fromUserId!);
+            }
+          }
+        } else if (resData.length == 2) {
+          if (index == 0) {
+            if (image1 == '') {
+              setData1(resData[index].fromUserFirebaseProfilePic!,
+                  resData[index].fromUserId!);
+            }
+          } else if (index == 1) {
+            if (image2 == '') {
+              setData2(resData[index].fromUserFirebaseProfilePic!,
+                  resData[index].fromUserId!);
+            }
+          }
+        } else if (resData.length >= 3) {
+          if (index == 0) {
+            if (image1 == '') {
+              setData1(resData[index].fromUserFirebaseProfilePic!,
+                  resData[index].fromUserId!);
+            }
+          } else if (index == 1) {
+            if (image2 == '') {
+              setData2(resData[index].fromUserFirebaseProfilePic!,
+                  resData[index].fromUserId!);
+            }
+          } else if (index == 2) {
+            if (image3 == '') {
+              setData3(resData[index].fromUserFirebaseProfilePic!,
+                  resData[index].fromUserId!);
+            }
+          }
         }
-        if (image2 == '') {
-          setData2(resData[index].profilePhoto!, resData[index].fromUserId!);
-        }
-        if (image3 == '') {
-          setData3(resData[index].profilePhoto!, resData[index].fromUserId!);
-        }
+
         setState(() {
           total = resData.length;
         });
@@ -360,218 +386,12 @@ class _HomeScreenState extends State<HomeScreen>
                         padding: const EdgeInsets.all(10),
                         child: Column(
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                if (image1 == '')
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                              blurRadius: 5,
-                                              color:
-                                                  Colors.black.withOpacity(0.3),
-                                              spreadRadius: 3)
-                                        ],
-                                      ),
-                                      child: const CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        child: CircleAvatar(
-                                          radius: 18,
-                                          backgroundColor: Colors.green,
-                                          backgroundImage: NetworkImage(
-                                              'https://img.icons8.com/office/344/person-male.png'),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                else
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                              blurRadius: 5,
-                                              color:
-                                                  Colors.black.withOpacity(0.3),
-                                              spreadRadius: 3)
-                                        ],
-                                      ),
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        child: Container(
-                                          height: 10.h,
-                                          width: 10.w,
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              image: DecorationImage(
-                                                  image: Image.memory(
-                                                base64.decode(
-                                                    image1.split(',').last),
-                                                fit: BoxFit.cover,
-                                                gaplessPlayback: true,
-                                              ).image),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(50.r)),
-                                              border: Border.all(
-                                                  color: Colors.green,
-                                                  width: 4.w)),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                if (image2 == '')
-                                  Align(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                              blurRadius: 5,
-                                              color:
-                                                  Colors.black.withOpacity(0.3),
-                                              spreadRadius: 3)
-                                        ],
-                                      ),
-                                      child: const CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        child: CircleAvatar(
-                                          radius: 18,
-                                          backgroundColor: Colors.green,
-                                          backgroundImage: NetworkImage(
-                                              'https://img.icons8.com/office/344/person-male.png'),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                else
-                                  Align(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                              blurRadius: 5,
-                                              color:
-                                                  Colors.black.withOpacity(0.3),
-                                              spreadRadius: 3)
-                                        ],
-                                      ),
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        child: Container(
-                                          height: 10.h,
-                                          width: 10.w,
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              image: DecorationImage(
-                                                  image: Image.memory(
-                                                base64.decode(
-                                                    image2.split(',').last),
-                                                fit: BoxFit.cover,
-                                                gaplessPlayback: true,
-                                              ).image),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(50.r)),
-                                              border: Border.all(
-                                                  color: Colors.green,
-                                                  width: 4.w)),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                if (image3 == '')
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                              blurRadius: 5,
-                                              color:
-                                                  Colors.black.withOpacity(0.3),
-                                              spreadRadius: 3)
-                                        ],
-                                      ),
-                                      child: const CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        child: CircleAvatar(
-                                          radius: 18,
-                                          backgroundColor: Colors.green,
-                                          backgroundImage: NetworkImage(
-                                              'https://img.icons8.com/office/344/person-male.png'),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                else
-                                  Align(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                              blurRadius: 5,
-                                              color:
-                                                  Colors.black.withOpacity(0.3),
-                                              spreadRadius: 3)
-                                        ],
-                                      ),
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        child: Container(
-                                          height: 10.h,
-                                          width: 10.w,
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              image: DecorationImage(
-                                                  image: Image.memory(
-                                                base64.decode(
-                                                    image3.split(',').last),
-                                                fit: BoxFit.cover,
-                                                gaplessPlayback: true,
-                                              ).image),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(50.r)),
-                                              border: Border.all(
-                                                  color: Colors.red,
-                                                  width: 4.w)),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                SizedBox(width: 15.w),
-                                Text(
-                                  name1,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14),
-                                ),
-                                Text(
-                                  name2,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14),
-                                ),
-                                Text(
-                                  name3,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14),
-                                ),
-                              ],
-                            ),
+                            if (totalData >= 3)
+                              manyCustomerRequest()
+                            else if (totalData == 2)
+                              twoCustomerRequest()
+                            else
+                              oneCustomerRequest(),
                             SizedBox(height: 10.h),
                             Text(
                               AppTextConstants.homeMainHeader,
@@ -621,101 +441,486 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget customerRequestImage(
-      BuildContext context, int index, BookingRequest request, int total) {
-    return FutureBuilder<User>(
-      future: APIServices().getUserDetails(request.fromUserId!),
-      builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-        String concatStrings = '';
-        if (snapshot.hasData) {
-          for (int i = 0; i < 3; i++) {
-            concatStrings = '$concatStrings${snapshot.data!.firstName}, ';
-          }
-          concatStrings = concatStrings.substring(0, concatStrings.length - 2);
-
-          if (request.profilePhoto != null) {
-            if (index < 3) {
-              return Align(
-                alignment: index == 0
-                    ? Alignment.centerRight
-                    : (index == 1 ? Alignment.center : Alignment.centerRight),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                          blurRadius: 5,
-                          color: Colors.black.withOpacity(0.3),
-                          spreadRadius: 3)
-                    ],
-                  ),
+  Widget oneCustomerRequest() => Row(
+        children: <Widget>[
+          if (image1 == '')
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: const CircleAvatar(
+                  backgroundColor: Colors.white,
                   child: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    child: Container(
-                      height: 10.h,
-                      width: 10.w,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          image: DecorationImage(
-                              image: Image.memory(
-                            base64
-                                .decode(request.profilePhoto!.split(',').last),
-                            fit: BoxFit.cover,
-                            gaplessPlayback: true,
-                          ).image),
-                          borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                          border: Border.all(color: Colors.red, width: 4.w)),
-                    ),
+                    radius: 18,
+                    backgroundColor: Colors.green,
+                    backgroundImage: NetworkImage(
+                        'https://img.icons8.com/office/344/person-male.png'),
                   ),
                 ),
-              );
-            }
-          } else {
-            return Container();
-          }
-        }
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Align(
-              alignment: Alignment.topLeft, child: CircularProgressIndicator());
-        }
-        return Container();
-      },
-    );
-  }
+              ),
+            )
+          else
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Container(
+                    height: 10.h,
+                    width: 10.w,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: Image.memory(
+                          base64.decode(image1.split(',').last),
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.green, width: 4.w)),
+                  ),
+                ),
+              ),
+            ),
+          SizedBox(width: 15.w),
+          Text(
+            name1,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+        ],
+      );
 
-  Widget customerRequestName(
-      BuildContext context, int index, BookingRequest request, int total) {
-    return FutureBuilder<User>(
-      future: APIServices().getUserDetails(request.fromUserId!),
-      builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-        String? concatStrings = '';
-        if (snapshot.hasData) {
-          concatStrings = '${snapshot.data!.firstName}';
-          if (index < 3) {
-            if (index == 2) {
-              return Text(
-                concatStrings,
-                style:
-                    const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-              );
-            } else {
-              return Text(
-                '$concatStrings, ',
-                style:
-                    const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-              );
-            }
-          }
-        }
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Align(
-              alignment: Alignment.topLeft, child: CircularProgressIndicator());
-        }
-        return Container();
-      },
-    );
-  }
+  Widget twoCustomerRequest() => Row(
+        children: <Widget>[
+          if (image1 == '')
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.green,
+                    backgroundImage: NetworkImage(
+                        'https://img.icons8.com/office/344/person-male.png'),
+                  ),
+                ),
+              ),
+            )
+          else
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Container(
+                    height: 10.h,
+                    width: 10.w,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: Image.memory(
+                          base64.decode(image1.split(',').last),
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.green, width: 4.w)),
+                  ),
+                ),
+              ),
+            ),
+          if (image2 == '')
+            Align(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.green,
+                    backgroundImage: NetworkImage(
+                        'https://img.icons8.com/office/344/person-male.png'),
+                  ),
+                ),
+              ),
+            )
+          else
+            Align(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Container(
+                    height: 10.h,
+                    width: 10.w,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: Image.memory(
+                          base64.decode(image2.split(',').last),
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.green, width: 4.w)),
+                  ),
+                ),
+              ),
+            ),
+          SizedBox(width: 15.w),
+          Text(
+            name1,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          Text(
+            name2,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+        ],
+      );
+
+  Widget manyCustomerRequest() => Row(
+        children: <Widget>[
+          if (image1 == '')
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.green,
+                    backgroundImage: NetworkImage(
+                        'https://img.icons8.com/office/344/person-male.png'),
+                  ),
+                ),
+              ),
+            )
+          else
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Container(
+                    height: 10.h,
+                    width: 10.w,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: Image.memory(
+                          base64.decode(image1.split(',').last),
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.green, width: 4.w)),
+                  ),
+                ),
+              ),
+            ),
+          if (image2 == '')
+            Align(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.green,
+                    backgroundImage: NetworkImage(
+                        'https://img.icons8.com/office/344/person-male.png'),
+                  ),
+                ),
+              ),
+            )
+          else
+            Align(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Container(
+                    height: 10.h,
+                    width: 10.w,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: Image.memory(
+                          base64.decode(image2.split(',').last),
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.green, width: 4.w)),
+                  ),
+                ),
+              ),
+            ),
+          if (image3 == '')
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.green,
+                    backgroundImage: NetworkImage(
+                        'https://img.icons8.com/office/344/person-male.png'),
+                  ),
+                ),
+              ),
+            )
+          else
+            Align(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 3)
+                  ],
+                ),
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Container(
+                    height: 10.h,
+                    width: 10.w,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: Image.memory(
+                          base64.decode(image3.split(',').last),
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.red, width: 4.w)),
+                  ),
+                ),
+              ),
+            ),
+          SizedBox(width: 15.w),
+          Text(
+            name1,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          Text(
+            name2,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          Text(
+            name3,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+        ],
+      );
+
+  // Widget customerRequestImage(
+  //     BuildContext context, int index, BookingRequest request, int total) {
+  //   return FutureBuilder<User>(
+  //     future: APIServices().getUserDetails(request.fromUserId!),
+  //     builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+  //       String concatStrings = '';
+  //       if (snapshot.hasData) {
+  //         for (int i = 0; i < 1; i++) {
+  //           concatStrings = '$concatStrings${snapshot.data!.firstName}, ';
+  //         }
+  //         concatStrings = concatStrings.substring(0, concatStrings.length - 2);
+
+  //         if (request.profilePhoto != null) {
+  //           if (index < 1) {
+  //             return Align(
+  //               alignment: index == 0
+  //                   ? Alignment.centerRight
+  //                   : (index == 1 ? Alignment.center : Alignment.centerRight),
+  //               child: Container(
+  //                 decoration: BoxDecoration(
+  //                   color: Colors.white,
+  //                   shape: BoxShape.circle,
+  //                   boxShadow: <BoxShadow>[
+  //                     BoxShadow(
+  //                         blurRadius: 5,
+  //                         color: Colors.black.withOpacity(0.3),
+  //                         spreadRadius: 3)
+  //                   ],
+  //                 ),
+  //                 child: CircleAvatar(
+  //                   backgroundColor: Colors.white,
+  //                   child: Container(
+  //                     height: 10.h,
+  //                     width: 10.w,
+  //                     decoration: BoxDecoration(
+  //                         color: Colors.white,
+  //                         image: DecorationImage(
+  //                             image: Image.memory(
+  //                           base64
+  //                               .decode(request.profilePhoto!.split(',').last),
+  //                           fit: BoxFit.cover,
+  //                           gaplessPlayback: true,
+  //                         ).image),
+  //                         borderRadius: BorderRadius.all(Radius.circular(50.r)),
+  //                         border: Border.all(color: Colors.red, width: 4.w)),
+  //                   ),
+  //                 ),
+  //               ),
+  //             );
+  //           }
+  //         } else {
+  //           return Container();
+  //         }
+  //       }
+  //       if (snapshot.connectionState != ConnectionState.done) {
+  //         return const Align(
+  //             alignment: Alignment.topLeft, child: CircularProgressIndicator());
+  //       }
+  //       return Container();
+  //     },
+  //   );
+  // }
+
+  // Widget customerRequestName(
+  //     BuildContext context, int index, BookingRequest request, int total) {
+  //   return FutureBuilder<User>(
+  //     future: APIServices().getUserDetails(request.fromUserId!),
+  //     builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+  //       String? concatStrings = '';
+  //       if (snapshot.hasData) {
+  //         concatStrings = '${snapshot.data!.firstName}';
+  //         if (index < 3) {
+  //           if (index == 2) {
+  //             return Text(
+  //               concatStrings,
+  //               style:
+  //                   const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+  //             );
+  //           } else {
+  //             return Text(
+  //               '$concatStrings, ',
+  //               style:
+  //                   const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+  //             );
+  //           }
+  //         }
+  //       }
+  //       if (snapshot.connectionState != ConnectionState.done) {
+  //         return const Align(
+  //             alignment: Alignment.topLeft, child: CircularProgressIndicator());
+  //       }
+  //       return Container();
+  //     },
+  //   );
+  // }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
