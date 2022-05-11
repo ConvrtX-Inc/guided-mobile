@@ -50,6 +50,7 @@ import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/models/user_terms_and_condition_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
+import 'package:guided/models/wishlist_activity_model.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 
 import 'package:guided/utils/secure_storage.dart';
@@ -2293,7 +2294,8 @@ class APIServices {
       'filter': 'user_id||eq||"$userId"',
     };
 
-    debugPrint('URL: ${ Uri.http(apiBaseUrl, '/${AppAPIPath.certificatesUrl}', queryParameters)}');
+    debugPrint(
+        'URL: ${Uri.http(apiBaseUrl, '/${AppAPIPath.certificatesUrl}', queryParameters)}');
     final List<Certificate> certificates = <Certificate>[];
 
     final http.Response response = await http.get(
@@ -2316,8 +2318,7 @@ class APIServices {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-    debugPrint(
-        'Params: ${params.certificateName} ');
+    debugPrint('Params: ${params.certificateName} ');
 
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}'),
@@ -2343,10 +2344,8 @@ class APIServices {
     return _certificate;
   }
 
-
   /// API service for delete Certificate
   Future<http.Response> deleteCertificate(String id) async {
-
     final String? token = UserSingleton.instance.user.token;
     final http.Response response = await http.delete(
       Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}/$id'),
@@ -2364,11 +2363,11 @@ class APIServices {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-    debugPrint(
-        'Params: ${params.certificateName} ');
+    debugPrint('Params: ${params.certificateName} ');
 
     final http.Response response = await http.patch(
-        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}/${params.id}'),
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}/${params.id}'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           HttpHeaders.contentTypeHeader: 'application/json',
@@ -2388,5 +2387,57 @@ class APIServices {
     }
 
     return _certificate;
+  }
+
+  /// API for getting the wishlist data
+  Future<WishlistActivityModel> getWishlistActivityData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.wishlistUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final WishlistActivityModel dataSummary =
+        WishlistActivityModel.fromJson(json.decode(response.body));
+
+    return WishlistActivityModel(
+        wishlistActivityDetails: dataSummary.wishlistActivityDetails);
+  }
+
+  /// API service for advertisement model
+  Future<PackageModelData> getPackageDataById(String activityPackageid) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"id":\"$activityPackageid\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final PackageModelData dataSummary =
+        PackageModelData.fromJson(json.decode(response.body));
+
+    return PackageModelData(packageDetails: dataSummary.packageDetails);
+  }
+
+  /// API for getting the wishlist data
+  Future<WishlistActivityModel> getWishlistActivityByPackageId(
+      String id) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.wishlistUrl}?s={"activity_package_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final WishlistActivityModel dataSummary =
+        WishlistActivityModel.fromJson(json.decode(response.body));
+
+    return WishlistActivityModel(
+        wishlistActivityDetails: dataSummary.wishlistActivityDetails);
   }
 }

@@ -1219,7 +1219,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                     height: 112.h,
                                     width: 220.w,
                                     decoration: BoxDecoration(
-                                      color: Colors.transparent,
+                                      color: Colors.grey.shade300,
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(15.r),
                                       ),
@@ -1227,14 +1227,21 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         image: snapshot.data![i]
                                                     .firebaseProfilePicUrl ==
                                                 ''
-                                            ? const NetworkImage(
-                                                'https://img.icons8.com/office/344/person-male.png')
+                                            ? Image.network(
+                                                'https://img.icons8.com/external-coco-line-kalash/344/external-person-human-body-anatomy-coco-line-kalash-4.png',
+                                                width: 50,
+                                                height: 50,
+                                              ).image
                                             : ExtendedImage.network(
                                                 snapshot.data![i]
                                                     .firebaseProfilePicUrl
                                                     .toString(),
                                               ).image,
-                                        fit: BoxFit.cover,
+                                        fit: snapshot.data![i]
+                                                    .firebaseProfilePicUrl ==
+                                                ''
+                                            ? BoxFit.fitHeight
+                                            : BoxFit.cover,
                                       ),
                                     ),
                                     // child: Stack(

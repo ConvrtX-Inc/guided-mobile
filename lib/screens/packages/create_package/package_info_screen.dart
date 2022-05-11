@@ -100,6 +100,7 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
                             BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
+                    maxLength: 40,
                   ),
                   SizedBox(
                     height: 20.h,

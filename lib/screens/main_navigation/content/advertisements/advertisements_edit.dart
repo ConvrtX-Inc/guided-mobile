@@ -993,6 +993,7 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
                         ),
                       ),
                       style: txtStyle,
+                      maxLength: 40,
                     )
                   ],
                 ),

@@ -1199,6 +1199,9 @@ class AppTextConstants {
 
   ///Returns update changes text
   static String updateChanges= 'Update Changes';
+
+  ///Returns get started text
+  static String getStarted = 'Get Started';
 }
 
 /// Class for error messages text

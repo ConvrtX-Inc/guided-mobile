@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -477,9 +478,19 @@ class _PopularGuidesTabDescriptionState
                           shape: BoxShape.circle,
                         ),
                         child: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          radius: 30.r,
-                          backgroundImage: AssetImage(widget.profileImg),
+                          backgroundColor: Colors.transparent,
+                          radius: 40.r,
+                          backgroundImage: widget.profileImg != ''
+                              ? Image.network(
+                                  'https://img.icons8.com/external-coco-line-kalash/344/external-person-human-body-anatomy-coco-line-kalash-4.png',
+                                ).image
+                              : ExtendedImage.network(
+                                  widget.profileImg,
+                                  fit: BoxFit.cover,
+                                  gaplessPlayback: true,
+                                  width: 100,
+                                  height: 100,
+                                ).image,
                         ),
                       ),
                       Expanded(
@@ -981,7 +992,17 @@ class _PopularGuidesTabDescriptionState
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
                 radius: 40.r,
-                backgroundImage: AssetImage(profileImg),
+                backgroundImage: profileImg != ''
+                    ? Image.network(
+                        'https://img.icons8.com/external-coco-line-kalash/344/external-person-human-body-anatomy-coco-line-kalash-4.png',
+                      ).image
+                    : ExtendedImage.network(
+                        profileImg,
+                        fit: BoxFit.cover,
+                        gaplessPlayback: true,
+                        width: 100,
+                        height: 100,
+                      ).image,
               ),
             ),
             Positioned(

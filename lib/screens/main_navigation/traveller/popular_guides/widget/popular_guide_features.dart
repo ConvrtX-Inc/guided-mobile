@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable, unrelated_type_equality_checks, no_default_cases, always_specify_types, type_annotate_public_apis
+// ignore_for_file: unused_local_variable, unrelated_type_equality_checks, no_default_cases, always_specify_types, type_annotate_public_apis, avoid_dynamic_calls, unnecessary_null_comparison
 
 import 'dart:convert';
 
@@ -6,11 +6,15 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/package_model.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:guided/models/wishlist_activity_model.dart';
+import 'package:guided/models/wishlist_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -47,7 +51,8 @@ class PopularGuideFeatures extends StatefulWidget {
 
 class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
   late Future<PackageModelData> _loadingData;
-
+  String wishlistId = '';
+  bool hasData = false;
   @override
   void initState() {
     super.initState();
@@ -112,7 +117,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
             else
               // for (PackageDetailsModel detail in packageData.packageDetails)
               buildPackageInfo(packageData.packageDetails[0])
-              // buildPackageInfo(detail)
+            // buildPackageInfo(detail)
           ],
         ),
       );
@@ -287,94 +292,174 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
         )
       : Container();
 
-  Widget buildGestureDetector(PackageDetailsModel details) => GestureDetector(
-        onTap: () {
-          navigatePackageDetails(
-              context,
-              details.coverImg,
-              details.description,
-              details.id,
-              details.maxTraveller,
-              details.basePrice,
-              details.mainBadgeId,
-              details.address,
-              details.name,
-              details.firebaseCoverImg);
+  Widget buildGestureDetector(PackageDetailsModel details) => Column(
+        children: <Widget>[
+          GestureDetector(
+            onTap: () {
+              navigatePackageDetails(
+                  context,
+                  details.coverImg,
+                  details.description,
+                  details.id,
+                  details.maxTraveller,
+                  details.basePrice,
+                  details.mainBadgeId,
+                  details.address,
+                  details.name,
+                  details.firebaseCoverImg);
+            },
+            child: Stack(children: <Widget>[
+              if (details.firebaseCoverImg.isNotEmpty)
+                SizedBox(
+                  height: 280.h,
+                  width: MediaQuery.of(context).size.width,
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10.r),
+                      child: ExtendedImage.network(
+                        details.firebaseCoverImg,
+                        fit: BoxFit.cover,
+                        gaplessPlayback: true,
+                      )),
+                )
+              else
+                SizedBox(
+                  height: 280.h,
+                  width: MediaQuery.of(context).size.width,
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10.r),
+                      child: Image.asset(
+                        'assets/images/png/activity3.png',
+                      )),
+                ),
+              checkData(details.id),
+              Align(
+                alignment: Alignment.topCenter,
+                child: GestureDetector(
+                  onTap: () {
+                    navigatePackageDetails(
+                        context,
+                        details.coverImg,
+                        details.description,
+                        details.id,
+                        details.maxTraveller,
+                        details.basePrice,
+                        details.mainBadgeId,
+                        details.address,
+                        details.name,
+                        details.firebaseCoverImg);
+                  },
+                  child: widget._profileImg == ''
+                      ? Container(
+                          height: 100.h,
+                          width: 100.w,
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              shape: BoxShape.circle,
+                              image: const DecorationImage(
+                                image: NetworkImage(
+                                    'https://img.icons8.com/external-coco-line-kalash/344/external-person-human-body-anatomy-coco-line-kalash-4.png'),
+                                fit: BoxFit.cover,
+                              ),
+                              border:
+                                  Border.all(color: Colors.white, width: 4.w)),
+                        )
+                      : Container(
+                          height: 100.h,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              image: DecorationImage(
+                                  image: ExtendedImage.network(
+                                widget._profileImg.toString(),
+                                fit: BoxFit.cover,
+                                gaplessPlayback: true,
+                              ).image),
+                              border:
+                                  Border.all(color: Colors.white, width: 4.w)),
+                        ),
+                ),
+              )
+            ]),
+          ),
+        ],
+      );
+
+  Widget checkData(String id) => FutureBuilder<WishlistActivityModel>(
+        future: APIServices().getWishlistActivityByPackageId(id),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          Widget _displayWidget;
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              _displayWidget = Container();
+              break;
+            default:
+              WishlistActivityModel data = snapshot.data!;
+              if (data.wishlistActivityDetails.isNotEmpty) {
+                hasData = true;
+                _displayWidget = Positioned(
+                    top: 10,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (hasData) {
+                          setState(() {
+                            hasData = false;
+                            removeWishlist(data.wishlistActivityDetails[0].id);
+                          });
+                        } else {
+                          setState(() {
+                            hasData = true;
+                            addWishlist(id);
+                          });
+                        }
+                      },
+                      child: hasData
+                          ? Image.asset(
+                              AssetsPath.heart,
+                              width: 30.w,
+                              height: 30.h,
+                            )
+                          : Image.asset(
+                              AssetsPath.heartOutlined,
+                              width: 30.w,
+                              height: 30.h,
+                            ),
+                    ));
+              } else {
+                hasData = false;
+                _displayWidget = Positioned(
+                    top: 10,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (hasData) {
+                          setState(() {
+                            hasData = false;
+                            removeWishlist(data.wishlistActivityDetails[0].id);
+                          });
+                        } else {
+                          setState(() {
+                            hasData = true;
+                            addWishlist(id);
+                          });
+                        }
+                      },
+                      child: hasData
+                          ? Image.asset(
+                              AssetsPath.heart,
+                              width: 30.w,
+                              height: 30.h,
+                            )
+                          : Image.asset(
+                              AssetsPath.heartOutlined,
+                              width: 30.w,
+                              height: 30.h,
+                            ),
+                    ));
+              }
+          }
+          return _displayWidget;
         },
-        child: Stack(children: <Widget>[
-          if (details.firebaseCoverImg.isNotEmpty)
-            SizedBox(
-              height: 280.h,
-              width: MediaQuery.of(context).size.width,
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.r),
-                  child: ExtendedImage.network(
-                    details.firebaseCoverImg,
-                    fit: BoxFit.cover,
-                    gaplessPlayback: true,
-                  )),
-            )
-          else
-            SizedBox(
-              height: 280.h,
-              width: MediaQuery.of(context).size.width,
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.r),
-                  child: Image.asset('assets/images/png/activity3.png')),
-            ),
-          Positioned(
-              top: 10,
-              right: 10,
-              child: Image.asset(
-                AssetsPath.heartOutlined,
-                width: 30.w,
-                height: 30.h,
-              )),
-          Align(
-            alignment: Alignment.topCenter,
-            child: GestureDetector(
-              onTap: () {
-                navigatePackageDetails(
-                    context,
-                    details.coverImg,
-                    details.description,
-                    details.id,
-                    details.maxTraveller,
-                    details.basePrice,
-                    details.mainBadgeId,
-                    details.address,
-                    details.name,
-                    details.firebaseCoverImg);
-              },
-              child: widget._profileImg == ''
-                  ? Container(
-                      height: 100.h,
-                      width: 100.w,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: const DecorationImage(
-                            image: NetworkImage(
-                                'https://img.icons8.com/office/344/person-male.png'),
-                            fit: BoxFit.fill,
-                          ),
-                          border: Border.all(color: Colors.white, width: 4.w)),
-                    )
-                  : Container(
-                      height: 100.h,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          image: DecorationImage(
-                              image: ExtendedImage.network(
-                            widget._profileImg.toString(),
-                            fit: BoxFit.cover,
-                            gaplessPlayback: true,
-                          ).image),
-                          border: Border.all(color: Colors.white, width: 4.w)),
-                    ),
-            ),
-          )
-        ]),
       );
 
   /// Navigate to Advertisement View
@@ -401,7 +486,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
       'fee': price,
       'address': address,
       'package_id': packageId,
-      'profile_img': AssetsPath.pmessage3,
+      'profile_img': widget._profileImg,
       'package_name': packageName,
       'is_first_aid': widget._isFirstAid,
       'firebase_cover_img': firebaseCoverImg
@@ -409,5 +494,33 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
 
     await Navigator.pushNamed(context, '/popular_guides_view',
         arguments: details);
+  }
+
+  /// Removed wishlist
+  Future<void> removeWishlist(String id) async {
+    final dynamic response = await APIServices().request(
+        '${AppAPIPath.wishlistUrl}/$id', RequestType.DELETE,
+        needAccessToken: true);
+    setState(() {
+      hasData = false;
+    });
+  }
+
+  /// Returns add wishlist
+  Future<void> addWishlist(String packageId) async {
+    final String? userId = UserSingleton.instance.user.user!.id;
+
+    final Map<String, dynamic> advertisementDetails = {
+      'user_id': userId,
+      'activity_package_id': packageId
+    };
+
+    final dynamic response = await APIServices().request(
+        AppAPIPath.wishlistUrl, RequestType.POST,
+        needAccessToken: true, data: advertisementDetails);
+
+    setState(() {
+      wishlistId = response['id'];
+    });
   }
 }
