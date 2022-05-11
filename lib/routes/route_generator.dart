@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/certificate.dart';
 import 'package:guided/screens/activities/activities.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/bank_accounts/add_bank_account.dart';
@@ -87,7 +88,9 @@ import 'package:guided/screens/payments/payment_add_card.dart';
 
 import 'package:guided/screens/profile/main_profile.dart';
 import 'package:guided/screens/profile/profile_details/about_me/screen/edit_profile.dart';
+import 'package:guided/screens/profile/profile_details/certificate/screen/add_certificate_modal.dart';
 import 'package:guided/screens/profile/profile_details/certificate/screen/certificate_screen.dart';
+import 'package:guided/screens/profile/profile_details/certificate/screen/edit_certificate.dart';
 import 'package:guided/screens/profile/reviews_profile.dart';
 
 import 'package:guided/screens/payments/payment_edit_card.dart';
@@ -435,6 +438,12 @@ class RouteGenerator {
       case '/popular_guide_list':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PopularGuidesList());
+      case '/add_certificate':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AddCertificate());
+      case '/edit_certificate':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => EditCertificate(certificate: args! as Certificate));
       default:
         return _errorRoute();
     }

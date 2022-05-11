@@ -6,7 +6,7 @@ class AppAPIPath {
   /// Returns staging mode (change to false if deploying to live)
   static bool isStaging = false;
 
-//   static bool isStaging = true;
+  // static bool isStaging = true;
 
   /// Returns API mode
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
@@ -217,6 +217,8 @@ class AppAPIPath {
   ///Returns news feed image url
   static String newsfeedImage = 'api/v1/activity-newsfeed-image';
 
+  ///Returns certificates url
+ static String certificatesUrl = 'api/v1/certificates';
   ///Returns wishlist url
   static String wishlistUrl = 'api/v1/wishlit';
 

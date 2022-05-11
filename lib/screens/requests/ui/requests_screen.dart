@@ -9,6 +9,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/requests.dart';
 import 'package:guided/screens/widgets/reusable_widgets/date_time_ago.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
+import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/requests.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
@@ -28,7 +29,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
   final List<RequestsScreenModel> requestsItems =
       RequestsScreenUtils.getMockedDataRequestsScreen();
 
-  List<BookingRequest> bookingRequests  =[];
+  List<BookingRequest> bookingRequests = [];
 
   @override
   void initState() {
@@ -126,121 +127,141 @@ class _RequestsScreenState extends State<RequestsScreen> {
 
   Widget _requestsListItem(
       BuildContext context, int index, BookingRequest request) {
-    return
-            InkWell(
-            onTap: () {
-              final User traveller = User(
-                id: request.fromUserId,
-                fullName: request.fromUserFullName
-              );
-              requestView(context, request, traveller);
-            },
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
-                        child: Container(
-                          width: 55.w,
-                          height: 55.h,
-                          decoration: BoxDecoration(
-                              boxShadow: <BoxShadow>[
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.8),
-                                  spreadRadius: 2,
-                                  blurRadius: 5,
-                                ),
-                              ],
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                  fit: BoxFit.fitHeight,
-                                  image: NetworkImage(request.fromUserFirebaseProfilePic!))),
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                              padding:
-                                  EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
-                              child: Text(
-                                request.fromUserFullName ?? '',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: 'Gilroy',
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w600),
-                              )),
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(12.w, 10.h, 0, 0),
-                              child: SizedBox(
-                                width: 220.w,
-                                child: Text(
-                                  '${request.fromUserFullName} has requested a new booking for package ${request.numberOfPerson}',
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontFamily: 'Gilroy',
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              )),
-                          SizedBox(
-                            height: 20.w,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 10.w),
-                            child: Container(
-                              width: 60.w,
-                              height: 30.h,
-                              decoration: BoxDecoration(
-                                  color: AppColors.lightningYellow,
-                                  borderRadius: BorderRadius.circular(7.r)),
-                              child: Center(
-                                child: Text(
-                                  request.status!.statusName!,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: 'Gilroy',
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ),
+    return InkWell(
+      onTap: () {
+        final User traveller =
+            User(id: request.fromUserId, fullName: request.fromUserFullName);
+        requestView(context, request, traveller);
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+        child: Column(
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
+                  child: Container(
+                    width: 55.w,
+                    height: 55.h,
+                    decoration: BoxDecoration(
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.8),
+                            spreadRadius: 2,
+                            blurRadius: 5,
                           ),
                         ],
-                      ),
-
-                      DateTimeAgo(
-                        dateString: request.createdDate!,
-                        color: Colors.grey,
-                        size: 10.sp,
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-          );
-
-
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            fit: BoxFit.fitHeight,
+                            image: NetworkImage(
+                                request.fromUserFirebaseProfilePic!))),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(10.w, 10.h, 0.w, 0.h),
+                        child: Text(
+                          request.fromUserFullName ?? '',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'Gilroy',
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600),
+                        )),
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(12.w, 10.h, 0, 0),
+                        child: SizedBox(
+                          width: 220.w,
+                          child: Text(
+                            '${request.fromUserFullName} has requested a new booking for package ${request.numberOfPerson}',
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontFamily: 'Gilroy',
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        )),
+                    SizedBox(
+                      height: 20.w,
+                    ),
+                    // Padding(
+                    //   padding: EdgeInsets.only(left: 10.w),
+                    //   child: Container(
+                    //     width: 60.w,
+                    //     height: 30.h,
+                    //     decoration: BoxDecoration(
+                    //         color: AppColors.lightningYellow,
+                    //         borderRadius: BorderRadius.circular(7.r)),
+                    //     child: Center(
+                    //       child: Text(
+                    //         request.status!.statusName!,
+                    //         style: const TextStyle(
+                    //             color: Colors.white,
+                    //             fontFamily: 'Gilroy',
+                    //             fontSize: 12,
+                    //             fontWeight: FontWeight.w600),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    buildStatus(request.status!.statusName!)
+                  ],
+                ),
+                DateTimeAgo(
+                  dateString: request.createdDate!,
+                  color: Colors.grey,
+                  size: 10.sp,
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> getBookingRequestList() async {
     final List<BookingRequest> res = await APIServices().getBookingRequest();
     debugPrint('Response:: $res');
 
-    if(res.isNotEmpty){
+    if (res.isNotEmpty) {
       setState(() {
         bookingRequests = res;
       });
     }
 
     debugPrint('Total booking request ${bookingRequests.length}');
+  }
+
+  Widget buildStatus(String statusName) {
+
+    return Padding(
+      padding: EdgeInsets.all( 4.w),
+      child: Container(
+        width: 70.w,
+        height: 30.h,
+        padding: EdgeInsets.all(4.w),
+        decoration: BoxDecoration(
+            color:   GlobalMixin().getStatusColor(statusName),
+            borderRadius: BorderRadius.circular(7.r)),
+        child: Center(
+          child: Text(
+            statusName,
+            style:   const TextStyle(
+               color: Colors.white,
+                fontFamily: 'Gilroy',
+                fontSize: 12,
+                fontWeight: FontWeight.w600),
+          ),
+        ),
+      ),
+    );
   }
 
   @override

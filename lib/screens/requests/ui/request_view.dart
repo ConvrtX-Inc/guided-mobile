@@ -391,7 +391,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                           ),
                           Center(
                             child: SizedBox(
-                              width: 315.w,
+                              width: MediaQuery.of(context).size.width,
                               child: ElevatedButton(
                                 style: ButtonStyle(
                                     padding:
@@ -825,7 +825,8 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                               .rejectBookingRequest(bookingRequestId);
 
                           await getBookingTransaction(
-                              bookingRequest.activityPackageId!, travellerDetails.id!);
+                              bookingRequest.activityPackageId!,
+                              travellerDetails.id!);
 
                           if (res.statusCode == 200) {
                             await sendBookingRequestNotification(
