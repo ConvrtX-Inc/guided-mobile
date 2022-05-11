@@ -27,6 +27,7 @@ import 'package:guided/screens/payments/payment_method.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_payment_details.dart';
+import 'package:guided/screens/widgets/reusable_widgets/golden_badge.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/event.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
@@ -80,14 +81,14 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(1.r))),
-                      child: buildSlider(context, screenArguments['id'],
-                          screenArguments['main_badge_id'])),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.r),
+                    child: buildSlider(
+                        context,
+                        screenArguments['id'],
+                        screenArguments['main_badge_id'],
+                        screenArguments['is_premium']),
+                  ),
                 ),
                 SizedBox(height: 20.h),
                 Padding(
@@ -125,14 +126,55 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    screenArguments['description'],
-                    style: AppTextStyle.descrStyle,
-                    textAlign: TextAlign.left,
-                  ),
-                ),
+                if (hasPremiumSubscription)
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(
+                      screenArguments['description'],
+                      style: AppTextStyle.descrStyle,
+                      textAlign: TextAlign.left,
+                    ),
+                  )
+                else if (hasPremiumSubscription == false &&
+                    screenArguments['is_premium'])
+                  SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      children: <Widget>[
+                        const SkeletonText(
+                          width: 700,
+                          height: 30,
+                          radius: 10,
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        const SkeletonText(
+                          width: 700,
+                          height: 30,
+                          radius: 10,
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        const SkeletonText(
+                          width: 700,
+                          height: 30,
+                          radius: 10,
+                        ),
+                      ],
+                    ),
+                  )
+                else if (hasPremiumSubscription == false &&
+                    screenArguments['is_premium'] == false)
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(
+                      screenArguments['description'],
+                      style: AppTextStyle.descrStyle,
+                      textAlign: TextAlign.left,
+                    ),
+                  )
               ],
             ),
           ),
@@ -146,14 +188,14 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                     left: 20.w, right: 20.w, top: 10.h, bottom: 12.h),
                 child: CustomRoundedButton(
                     title: 'Know More About This Event',
-                    onpressed: () => _showDiscoveryBottomSheet(
-                        imageList[0])))
+                    onpressed: () => _showDiscoveryBottomSheet(imageList[0])))
         ],
       ),
     );
   }
 
-  Widget buildSlider(BuildContext context, String id, String mainBadgeId) =>
+  Widget buildSlider(BuildContext context, String id, String mainBadgeId,
+          bool isPremium) =>
       FutureBuilder<NewsfeedImageModel>(
         future: APIServices().getNewsfeedImageData(id),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -215,12 +257,18 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                         return Positioned(
                           left: 20,
                           bottom: 20,
-                          child: Image.memory(
-                            base64.decode(badgeData.badgeDetails[0].imgIcon
-                                .split(',')
-                                .last),
-                            gaplessPlayback: true,
-                          ),
+                          child: isPremium
+                              ? GoldenBadge(
+                                  base64Image:
+                                      badgeData.badgeDetails[0].imgIcon,
+                                )
+                              : Image.memory(
+                                  base64.decode(badgeData
+                                      .badgeDetails[0].imgIcon
+                                      .split(',')
+                                      .last),
+                                  gaplessPlayback: true,
+                                ),
                         );
                       }
                       if (snapshot.connectionState != ConnectionState.done) {
@@ -303,7 +351,7 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                           onPaymentSuccessful: () {
                             Navigator.of(context).pop();
                             saveSubscription(transactionNumber,
-                                'Premium Subscription', price.toString(),mode);
+                                'Premium Subscription', price.toString(), mode);
 
                             paymentSuccessful(
                                 context: context,
@@ -335,8 +383,8 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
             ));
   }
 
-  Future<void> saveSubscription(
-      String transactionNumber, String subscriptionName, String price, String paymentMethod) async {
+  Future<void> saveSubscription(String transactionNumber,
+      String subscriptionName, String price, String paymentMethod) async {
     final DateTime startDate = DateTime.now();
 
     final DateTime endDate = GlobalMixin().getEndDate(startDate);
@@ -348,8 +396,8 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
         endDate: endDate.toString(),
         price: price);
 
-    final APIStandardReturnFormat result =
-        await APIServices().addUserSubscription(subscriptionParams,paymentMethod);
+    final APIStandardReturnFormat result = await APIServices()
+        .addUserSubscription(subscriptionParams, paymentMethod);
 
     UserSingleton.instance.user.user?.hasPremiumSubscription = true;
     setState(() {

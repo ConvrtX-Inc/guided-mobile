@@ -219,6 +219,9 @@ class AppAPIPath {
 
   ///Returns wishlist url
   static String wishlistUrl = 'api/v1/wishlit';
+
+  ///Returns user type
+  static String userTypeUrl = 'api/v1/users/type';
 }
 
 ///Get Api Base Url

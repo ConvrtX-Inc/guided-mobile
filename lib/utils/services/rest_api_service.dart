@@ -807,19 +807,21 @@ class APIServices {
         });
     final dynamic jsonData = jsonDecode(response.body);
 
-    final List<User> popularGuides = <User>[];
-    final List<User> activityPackage =
-        (jsonData['data'] as List).map((i) => User.fromJson(i)).toList();
+    // final List<User> popularGuides = <User>[];
+    // final List<User> activityPackage =
+    //     (jsonData['data'] as List).map((i) => User.fromJson(i)).toList();
 
-    final List<User> guides = activityPackage.where(
-      (User element) {
-        return element.isTraveller == false;
-      },
-    ).toList();
-    print(guides.length);
-    popularGuides.addAll(guides);
+    // final List<User> guides = activityPackage.where(
+    //   (User element) {
+    //     return element.isTraveller == false;
+    //   },
+    // ).toList();
+    // print(guides.length);
+    // popularGuides.addAll(guides);
 
-    return guides;
+    final List<User> guides = jsonData;
+
+    return jsonData;
   }
 
   /// API service for outfitter image model
@@ -2251,11 +2253,11 @@ class APIServices {
     return NewsfeedImageModel(newsfeedImageDetails: details);
   }
 
-  /// API service for advertisement model
+  /// API service for user list model
   Future<UserListModel> getUserListData() async {
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.userTypeUrl}/tourist%20guide'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
@@ -2272,17 +2274,20 @@ class APIServices {
     // final UserListModel dataSummary =
     //     UserListModel.fromJson(json.decode(response.body));
 
-    final List<UserDetailsModel> details = <UserDetailsModel>[];
+    // final List<UserDetailsModel> details = <UserDetailsModel>[];
 
-    final Map<String, dynamic> jsonData = jsonDecode(response.body);
-    final List<dynamic> res = jsonData['data'];
+    // final Map<String, dynamic> jsonData = jsonDecode(response.body);
+    // final List<dynamic> res = jsonData['data'];
 
-    for (final dynamic data in res) {
-      final UserDetailsModel user = UserDetailsModel.fromJson(data);
-      details.add(user);
-    }
+    // for (final dynamic data in res) {
+    //   final UserDetailsModel user = UserDetailsModel.fromJson(data);
+    //   details.add(user);
+    // }
 
-    return UserListModel(userDetails: details);
+    final UserListModel dataSummary =
+        UserListModel.fromJson(json.decode(response.body));
+
+    return UserListModel(userDetails: dataSummary.userDetails);
   }
 
   /// API for getting the wishlist data

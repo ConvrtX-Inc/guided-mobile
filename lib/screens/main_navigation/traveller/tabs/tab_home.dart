@@ -4,12 +4,11 @@ import 'dart:convert';
 
 import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -21,19 +20,17 @@ import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/guide.dart';
-import 'package:guided/models/popular_guide.dart';
-import 'package:guided/models/user_model.dart';
+import 'package:guided/models/user_list_model.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
+import 'package:guided/screens/main_navigation/traveller/popular_guides/widget/popular_guide_home_features.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
-import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 /// TabHomeScreen
 class TabHomeScreen extends StatefulWidget {
@@ -59,6 +56,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   bool _hasLocationPermission = false;
   var result;
   List<String> userIds = [];
+  late Future<UserListModel> _loadingData;
   @override
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
@@ -77,6 +75,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
       );
     });
     getCurrentLocation();
+    _loadingData = APIServices().getUserListData();
     super.initState();
   }
 
@@ -1186,129 +1185,162 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.25,
-          child: FutureBuilder<List<User>>(
-              future: APIServices().getPopularGuides(), // async work
-              builder:
-                  (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return const MainContentSkeletonHorizontal();
-                  default:
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else {
-                      return GestureDetector(
-                        onTap: _settingModalBottomSheet,
-                        child: ListView(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          children: List<Widget>.generate(snapshot.data!.length,
-                              (int i) {
-                            return Container(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 5.w, vertical: 20.h),
-                              height: 180.h,
-                              width: 220.w,
-                              decoration: const BoxDecoration(
-                                color: Colors.transparent,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Container(
-                                    height: 112.h,
-                                    width: 220.w,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade300,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(15.r),
-                                      ),
-                                      image: DecorationImage(
-                                        image: snapshot.data![i]
-                                                    .firebaseProfilePicUrl ==
-                                                ''
-                                            ? Image.network(
-                                                'https://img.icons8.com/external-coco-line-kalash/344/external-person-human-body-anatomy-coco-line-kalash-4.png',
-                                                width: 50,
-                                                height: 50,
-                                              ).image
-                                            : ExtendedImage.network(
-                                                snapshot.data![i]
-                                                    .firebaseProfilePicUrl
-                                                    .toString(),
-                                              ).image,
-                                        fit: snapshot.data![i]
-                                                    .firebaseProfilePicUrl ==
-                                                ''
-                                            ? BoxFit.fitHeight
-                                            : BoxFit.cover,
-                                      ),
-                                    ),
-                                    // child: Stack(
-                                    //   children: <Widget>[
-                                    //     Positioned(
-                                    //       bottom: 0,
-                                    //       child: CircleAvatar(
-                                    //         backgroundColor: Colors.transparent,
-                                    //         radius: 30,
-                                    //         backgroundImage:
-                                    //             AssetImage(guides[1].path),
-                                    //       ),
-                                    //     ),
-                                    //   ],
-                                    // ),
-                                  ),
-                                  SizedBox(
-                                    height: 5.h,
-                                  ),
-                                  Text(
-                                    snapshot.data![i].fullName ?? '',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16.sp,
-                                        fontFamily: 'Gilroy',
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  Row(
-                                    children: <Widget>[
-                                      Container(
-                                        height: 10.h,
-                                        width: 10.w,
-                                        decoration: BoxDecoration(
-                                          color: Colors.transparent,
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(15.r),
-                                          ),
-                                          image: const DecorationImage(
-                                            image: AssetImage(
-                                                'assets/images/png/marker.png'),
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 2.w,
-                                      ),
-                                      Text(
-                                        '1 KM',
-                                        style: TextStyle(
-                                            color: HexColor('#696D6D'),
-                                            fontSize: 11.sp,
-                                            fontFamily: 'Gilroy',
-                                            fontWeight: FontWeight.normal),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
-                        ),
-                      );
-                    }
+          child: FutureBuilder<UserListModel>(
+            future: _loadingData,
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasData) {
+                final UserListModel userListData = snapshot.data;
+                final int length = userListData.userDetails.length;
+                if (userListData.userDetails.isEmpty) {
+                  return const Center(
+                    child: Text('Nothing to show here'),
+                  );
+                } else {
+                  return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: length,
+                      itemBuilder: (BuildContext ctx, int index) {
+                        return PopularGuideHomeFeatures(
+                          id: userListData.userDetails[index].id,
+                          fullName: userListData.userDetails[index].fullName,
+                          firebaseProfImg:
+                              userListData.userDetails[index].firebaseImg,
+                        );
+                      });
                 }
-              }),
+              }
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const MainContentSkeletonHorizontal();
+              }
+              return Container();
+            },
+          ),
         ),
+        // SizedBox(
+        //   height: MediaQuery.of(context).size.height * 0.25,
+        //   child: FutureBuilder<List<User>>(
+        //       future: APIServices().getPopularGuides(), // async work
+        //       builder:
+        //           (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
+        //         switch (snapshot.connectionState) {
+        //           case ConnectionState.waiting:
+        //             return const MainContentSkeletonHorizontal();
+        //           default:
+        //             if (snapshot.hasError) {
+        //               return Center(child: Text('Error: ${snapshot.error}'));
+        //             } else {
+        //               return GestureDetector(
+        //                 onTap: _settingModalBottomSheet,
+        //                 child: ListView(
+        //                   shrinkWrap: true,
+        //                   scrollDirection: Axis.horizontal,
+        //                   children: List<Widget>.generate(snapshot.data!.length,
+        //                       (int i) {
+        //                     return Container(
+        //                       margin: EdgeInsets.symmetric(
+        //                           horizontal: 5.w, vertical: 20.h),
+        //                       height: 180.h,
+        //                       width: 220.w,
+        //                       decoration: const BoxDecoration(
+        //                         color: Colors.transparent,
+        //                       ),
+        //                       child: Column(
+        //                         crossAxisAlignment: CrossAxisAlignment.start,
+        //                         children: <Widget>[
+        //                           Container(
+        //                             height: 112.h,
+        //                             width: 220.w,
+        //                             decoration: BoxDecoration(
+        //                               color: Colors.grey.shade300,
+        //                               borderRadius: BorderRadius.all(
+        //                                 Radius.circular(15.r),
+        //                               ),
+        //                               image: DecorationImage(
+        //                                 image: snapshot.data![i]
+        //                                             .firebaseProfilePicUrl ==
+        //                                         ''
+        //                                     ? Image.network(
+        //                                         'https://img.icons8.com/external-coco-line-kalash/344/external-person-human-body-anatomy-coco-line-kalash-4.png',
+        //                                         width: 50,
+        //                                         height: 50,
+        //                                       ).image
+        //                                     : ExtendedImage.network(
+        //                                         snapshot.data![i]
+        //                                             .firebaseProfilePicUrl
+        //                                             .toString(),
+        //                                       ).image,
+        //                                 fit: snapshot.data![i]
+        //                                             .firebaseProfilePicUrl ==
+        //                                         ''
+        //                                     ? BoxFit.fitHeight
+        //                                     : BoxFit.cover,
+        //                               ),
+        //                             ),
+        //                             // child: Stack(
+        //                             //   children: <Widget>[
+        //                             //     Positioned(
+        //                             //       bottom: 0,
+        //                             //       child: CircleAvatar(
+        //                             //         backgroundColor: Colors.transparent,
+        //                             //         radius: 30,
+        //                             //         backgroundImage:
+        //                             //             AssetImage(guides[1].path),
+        //                             //       ),
+        //                             //     ),
+        //                             //   ],
+        //                             // ),
+        //                           ),
+        //                           SizedBox(
+        //                             height: 5.h,
+        //                           ),
+        //                           Text(
+        //                             snapshot.data![i].fullName ?? '',
+        //                             style: TextStyle(
+        //                                 color: Colors.black,
+        //                                 fontSize: 16.sp,
+        //                                 fontFamily: 'Gilroy',
+        //                                 fontWeight: FontWeight.w600),
+        //                           ),
+        //                           Row(
+        //                             children: <Widget>[
+        //                               Container(
+        //                                 height: 10.h,
+        //                                 width: 10.w,
+        //                                 decoration: BoxDecoration(
+        //                                   color: Colors.transparent,
+        //                                   borderRadius: BorderRadius.all(
+        //                                     Radius.circular(15.r),
+        //                                   ),
+        //                                   image: const DecorationImage(
+        //                                     image: AssetImage(
+        //                                         'assets/images/png/marker.png'),
+        //                                     fit: BoxFit.contain,
+        //                                   ),
+        //                                 ),
+        //                               ),
+        //                               SizedBox(
+        //                                 width: 2.w,
+        //                               ),
+        //                               Text(
+        //                                 '1 KM',
+        //                                 style: TextStyle(
+        //                                     color: HexColor('#696D6D'),
+        //                                     fontSize: 11.sp,
+        //                                     fontFamily: 'Gilroy',
+        //                                     fontWeight: FontWeight.normal),
+        //                               ),
+        //                             ],
+        //                           ),
+        //                         ],
+        //                       ),
+        //                     );
+        //                   }),
+        //                 ),
+        //               );
+        //             }
+        //         }
+        //       }),
+        // ),
       ],
     );
   }

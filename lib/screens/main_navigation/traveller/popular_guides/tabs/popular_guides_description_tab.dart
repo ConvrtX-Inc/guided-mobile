@@ -263,6 +263,7 @@ class _PopularGuidesTabDescriptionState
                 ),
               ),
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.only(left: 10.w),
@@ -284,16 +285,18 @@ class _PopularGuidesTabDescriptionState
                   SizedBox(
                     width: 2.w,
                   ),
-                  FittedBox(
-                    fit: BoxFit.fitWidth,
-                    child: SizedBox(
-                      child: Text(
-                        widget.address,
-                        style: TextStyle(
-                            fontFamily: 'Gilroy',
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12.sp,
-                            color: AppColors.doveGrey),
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.fitWidth,
+                      child: SizedBox(
+                        child: Text(
+                          widget.address,
+                          style: TextStyle(
+                              fontFamily: 'Gilroy',
+                              fontWeight: FontWeight.w400,
+                              fontSize: 12.sp,
+                              color: AppColors.doveGrey),
+                        ),
                       ),
                     ),
                   ),
