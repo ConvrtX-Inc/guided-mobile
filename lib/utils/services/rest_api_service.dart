@@ -24,6 +24,7 @@ import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/become_a_guide_activites_model.dart';
 import 'package:guided/models/become_a_guide_request_model.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/certificate.dart';
 import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/currencies_model.dart';
@@ -2283,6 +2284,109 @@ class APIServices {
     }
 
     return UserListModel(userDetails: details);
+  }
+
+  ///Api services for certificates
+  Future<List<Certificate>> getCertificates() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+    };
+
+    debugPrint(
+        'URL: ${Uri.http(apiBaseUrl, '/${AppAPIPath.certificatesUrl}', queryParameters)}');
+    final List<Certificate> certificates = <Certificate>[];
+
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/${AppAPIPath.certificatesUrl}', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final Certificate _certificate = Certificate.fromJson(data);
+      certificates.add(_certificate);
+    }
+
+    return certificates;
+  }
+
+  ///api service to add certificate
+  Future<Certificate> addCertificate(Certificate params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint('Params: ${params.certificateName} ');
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'certificate_name': params.certificateName!,
+          'certificate_description': params.certificateDescription!,
+          'certificate_photo_firebase_url': params.certificatePhotoFirebaseUrl!,
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    Certificate _certificate = Certificate();
+
+    debugPrint('DATA add certificate $jsonData ${response.statusCode}');
+    if (response.statusCode == 201) {
+      _certificate = Certificate.fromJson(jsonData);
+    }
+
+    return _certificate;
+  }
+
+  /// API service for delete Certificate
+  Future<http.Response> deleteCertificate(String id) async {
+    final String? token = UserSingleton.instance.user.token;
+    final http.Response response = await http.delete(
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}/$id'),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+    );
+
+    return response;
+  }
+
+  ///api service to update certificate
+  Future<Certificate> updateCertificate(Certificate params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint('Params: ${params.certificateName} ');
+
+    final http.Response response = await http.patch(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}/${params.id}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'certificate_name': params.certificateName!,
+          'certificate_description': params.certificateDescription!,
+          'certificate_photo_firebase_url': params.certificatePhotoFirebaseUrl!,
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    Certificate _certificate = Certificate();
+
+    debugPrint('DATA Edit certificate $jsonData ${response.statusCode}');
+    if (response.statusCode == 200) {
+      _certificate = Certificate.fromJson(jsonData);
+    }
+
+    return _certificate;
   }
 
   /// API for getting the wishlist data

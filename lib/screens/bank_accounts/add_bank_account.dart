@@ -149,6 +149,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                       _accountName = val.trim();
                     },
                   ),
+
                   SizedBox(height: 20.h),
                   BorderlessTextField(
                     title: AppTextConstants.bankName,

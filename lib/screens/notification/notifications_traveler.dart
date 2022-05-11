@@ -249,12 +249,20 @@ class _NotificationTravelerState extends State<NotificationTraveler> {
     setState(() {
       isLoading = true;
     });
-    final List<NotificationModel> res =
-        await APIServices().getTravelerNotifications(selectedFilter);
+    try{
+      final List<NotificationModel> res =
+      await APIServices().getTravelerNotifications(selectedFilter);
 
-    setState(() {
-      notifications = res;
-      isLoading = false;
-    });
+      setState(() {
+        notifications = res;
+        isLoading = false;
+      });
+    }on Exception catch(e){
+      debugPrint('Error $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+
   }
 }
