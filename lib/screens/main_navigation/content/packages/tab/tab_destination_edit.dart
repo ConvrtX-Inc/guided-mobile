@@ -9,6 +9,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_api_headers/google_api_headers.dart';
@@ -24,8 +25,6 @@ import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-
-const kGoogleApiKey = 'AIzaSyCxWY8eJW_V4xuVTapXfYDZeSXN41g42t4';
 
 /// Package photo screen
 class TabDestinationEditScreen extends StatefulWidget {
@@ -1329,7 +1328,7 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
 
     Prediction? p = await PlacesAutocomplete.show(
       context: context,
-      apiKey: kGoogleApiKey,
+      apiKey: dotenv.env['GOOGLE_MAPS_API_KEY'].toString(),
       radius: 10000000,
       types: [],
       strictbounds: false,
@@ -1354,7 +1353,7 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
     if (p != null) {
       // get detail (lat/lng)
       GoogleMapsPlaces _places = GoogleMapsPlaces(
-        apiKey: kGoogleApiKey,
+        apiKey: dotenv.env['GOOGLE_MAPS_API_KEY'].toString(),
         apiHeaders: await const GoogleApiHeaders().getHeaders(),
       );
       final PlacesDetailsResponse detail =
