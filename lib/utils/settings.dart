@@ -132,6 +132,13 @@ class SettingsUtils {
           imgUrl: 'assets/images/svg/settings_icon_payment.svg',
           subSettings: []),
       SettingsModel(
+          keyName: 'premium_subscription',
+          name: 'Premium Subscription',
+          icon: 'test',
+          color: Colors.black,
+          imgUrl: 'assets/images/png/discoveryTree.png',
+          subSettings: []),
+      SettingsModel(
           keyName: 'notification_traveler',
           name: 'Notifications',
           icon: 'test',
