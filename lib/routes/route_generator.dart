@@ -103,6 +103,7 @@ import 'package:guided/screens/requests/ui/request_view.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
 import 'package:guided/screens/settings/edit_profile.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
+import 'package:guided/screens/settings/subscription_details.dart';
 import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
@@ -444,6 +445,9 @@ class RouteGenerator {
       case '/edit_certificate':
         return MaterialPageRoute<dynamic>(
             builder: (_) => EditCertificate(certificate: args! as Certificate));
+      case '/subscription_details':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => SubscriptionDetails());
       default:
         return _errorRoute();
     }

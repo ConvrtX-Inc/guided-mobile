@@ -451,8 +451,8 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-              // 'Bearer ${UserSingleton.instance.user.token}',
-              'Bearer $staticToken',
+              'Bearer ${UserSingleton.instance.user.token}',
+              // 'Bearer $staticToken',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -471,8 +471,8 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),
         headers: {
           HttpHeaders.authorizationHeader:
-              // 'Bearer ${UserSingleton.instance.user.token}',
-              'Bearer $staticToken',
+              'Bearer ${UserSingleton.instance.user.token}',
+              // 'Bearer $staticToken',
         });
 
     final dynamic jsonData = jsonDecode(response.body);

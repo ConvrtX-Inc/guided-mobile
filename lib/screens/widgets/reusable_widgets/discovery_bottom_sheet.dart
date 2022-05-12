@@ -8,13 +8,16 @@ import 'package:guided/helpers/hexColor.dart';
 ///Discovery Bottom Sheet
 class DiscoveryBottomSheet extends StatelessWidget {
   ///Constructor
-  const DiscoveryBottomSheet(
-      {required this.backgroundImage,
-      required this.onBackBtnPressed,
-      required this.onSubscribeBtnPressed,
-      required this.onSkipBtnPressed,
-      required this.onCloseBtnPressed,
-      Key? key})
+  const DiscoveryBottomSheet({required this.backgroundImage,
+    required this.onBackBtnPressed,
+    required this.onSubscribeBtnPressed,
+    required this.onSkipBtnPressed,
+    required this.onCloseBtnPressed,
+    this.title = 'Know more about \n this event ',
+    this.showSkipButton = true,
+    this.showDiscoveryText = true,
+    this.useDefaultBackground = false,
+    Key? key})
       : super(key: key);
 
   ///Background of bottom sheet
@@ -32,10 +35,28 @@ class DiscoveryBottomSheet extends StatelessWidget {
   ///Callback for back button pressed
   final VoidCallback onBackBtnPressed;
 
+  ///Title
+  final String title;
+
+  ///Show skip button
+  final bool showSkipButton;
+
+  ///show discovery text
+  final bool showDiscoveryText;
+
+  ///use default background
+  final bool useDefaultBackground;
+
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery
+        .of(context)
+        .size
+        .height;
+    final double width = MediaQuery
+        .of(context)
+        .size
+        .width;
     return Material(
         child: SizedBox(
             height: height * 0.7,
@@ -50,7 +71,10 @@ class DiscoveryBottomSheet extends StatelessWidget {
                           topLeft: Radius.circular(40.r),
                           topRight: Radius.circular(40.r),
                         ),
-                        image: DecorationImage(
+                        image: useDefaultBackground
+                            ? DecorationImage(
+                            image: AssetImage(AssetsPath.discoverytopImage), fit: BoxFit.cover,)
+                            : DecorationImage(
                           image: NetworkImage(backgroundImage),
                           fit: BoxFit.cover,
                         ),
@@ -87,21 +111,22 @@ class DiscoveryBottomSheet extends StatelessWidget {
                             backgroundColor: Colors.transparent,
                             radius: 50,
                             backgroundImage:
-                                AssetImage(AssetsPath.discoveryTree),
+                            AssetImage(AssetsPath.discoveryTree),
                           ),
-                          Text(
-                            AppTextConstants.discovery,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16.sp,
-                              color: Colors.white,
+                          if(showDiscoveryText)
+                            Text(
+                              AppTextConstants.discovery,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.sp,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
                           SizedBox(
                             height: 10.h,
                           ),
                           Text(
-                            'Know more about \n this event ',
+                            title,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
@@ -161,17 +186,18 @@ class DiscoveryBottomSheet extends StatelessWidget {
                           SizedBox(
                             height: 20.h,
                           ),
-                          GestureDetector(
-                            onTap: onSkipBtnPressed,
-                            child: Text(
-                              'Skip',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14.sp,
-                                  color: Colors.white),
+                          if(showSkipButton)
+                            GestureDetector(
+                              onTap: onSkipBtnPressed,
+                              child: Text(
+                                'Skip',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.sp,
+                                    color: Colors.white),
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),
