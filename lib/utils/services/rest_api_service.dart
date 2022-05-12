@@ -2445,4 +2445,21 @@ class APIServices {
     return WishlistActivityModel(
         wishlistActivityDetails: dataSummary.wishlistActivityDetails);
   }
+
+  /// API service for advertisement model
+  Future<PackageModelData> getPackageDataByUserId(String userId) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"user_id": \"$userId\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final PackageModelData dataSummary =
+        PackageModelData.fromJson(json.decode(response.body));
+
+    return PackageModelData(packageDetails: dataSummary.packageDetails);
+  }
 }

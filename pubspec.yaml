@@ -106,6 +106,7 @@ dependencies:
   cached_network_image: ^3.2.0
   extended_image: ^4.0.0
   in_app_purchase: ^3.0.2
+  flutter_animarker: ^3.2.0
 
 
   # flutter_expanded_tile: ^0.3.6
