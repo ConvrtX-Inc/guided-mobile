@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,6 +16,7 @@ import 'package:guided/common/widgets/country_dropdown.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_properties.dart';
+import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_view_properties.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
@@ -22,10 +24,14 @@ import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/profile_data_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
 import 'package:guided/screens/widgets/reusable_widgets/image_picker_bottom_sheet.dart';
+import 'package:guided/utils/mixins/validator_mixin.dart';
 import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:intl/intl.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 
 ///Edit Profile Traveler Screen
 class EditProfileTraveler extends StatefulWidget {
@@ -39,15 +45,10 @@ class EditProfileTraveler extends StatefulWidget {
 class _EditProfileTravelerState extends State<EditProfileTraveler> {
   bool isSaving = false;
   String profilePicPreview = '';
-  File? _photo;
   final String _storagePath = 'profilePictures';
   final UserProfileDetailsController _profileDetailsController =
       Get.put(UserProfileDetailsController());
-  PageController _pageController = PageController(initialPage: 0);
 
-  int currentPage = 0;
-
-  List<String> images = List.filled(6, '');
   int selectedTabIndex = 0;
 
   late List<CountryModel> listCountry = [];
@@ -66,7 +67,13 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
   TextEditingController _fullNameController = TextEditingController();
   String profilePicture = '';
 
-  DateTime _selectedDate = DateTime.now();
+  DateTime? _selectedDate;
+
+  String phoneNumber = '';
+  final GlobalKey<FormState> _updateAccountFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _updateAboutMeFormKey = GlobalKey<FormState>();
+
+  final List<String> tabs = <String>['Account', 'About Me'];
 
   @override
   void initState() {
@@ -92,8 +99,9 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
         text: _profileDetailsController.userProfileDetails.addressLine1);
     _addressLine2Controller = TextEditingController(
         text: _profileDetailsController.userProfileDetails.addressLine2);
-    if(_profileDetailsController.userProfileDetails.birthDate.isNotEmpty){
-      _selectedDate = DateTime.parse(_profileDetailsController.userProfileDetails.birthDate);
+    if (_profileDetailsController.userProfileDetails.birthDate.isNotEmpty) {
+      _selectedDate = DateTime.parse(
+          _profileDetailsController.userProfileDetails.birthDate);
     }
   }
 
@@ -125,55 +133,42 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
         elevation: 0,
         backgroundColor: Colors.white,
       ),
+      resizeToAvoidBottomInset: true,
       body: buildEditProfileUI(),
       backgroundColor: Colors.white,
-      // bottomNavigationBar: Padding(
-      //   padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 28.h),
-      //   child: CustomRoundedButton(
-      //     title: AppTextConstants.save,
-      //     isLoading: isSaving,
-      //     onpressed: () {},
-      //   ),
-      // ),
     );
   }
 
-  Widget buildEditProfileUI() => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget buildEditProfileUI() => ListView(
         children: <Widget>[
           Center(
             child: buildProfilePicture(),
           ),
-          Expanded(
-              child: ContainedTabBarView(
-            showBorder: false /**/,
-            tabs: <Widget>[
-              Text('Account',
-                  style: selectedTabIndex == 0
-                      ? const TextStyle(fontWeight: FontWeight.w700)
-                      : null),
-              Text(
-                AppTextConstants.aboutMe,
-                style: selectedTabIndex == 1
-                    ? TextStyle(
-                        color: AppColors.mediumGreen,
-                        fontWeight: FontWeight.w700)
-                    : null,
-              ),
-            ],
-            tabBarProperties: TabBarProperties(
-              height: 42,
-              indicatorColor: AppColors.deepGreen,
-              indicator: UnderlineTabIndicator(
-                  borderSide:
-                      BorderSide(width: 2.w, color: AppColors.deepGreen),
-                  insets: EdgeInsets.symmetric(horizontal: 18.w)),
-              indicatorWeight: 1,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-            ),
-            views: <Widget>[buildEditAccount(), buildAboutMe()],
-          ))
+          buildTabs(),
+          if (selectedTabIndex == 0)
+            GestureDetector(
+                onPanUpdate: (details) {
+
+
+                  // Swiping in left direction.
+                  if (details.delta.dx < 0) {
+
+                    setState(() {
+                      selectedTabIndex = 1;
+                    });
+                  }
+                },
+                child: buildEditAccount())
+          else
+            GestureDetector(
+                onPanUpdate: (details) {
+                  if (details.delta.dx > 0) {
+                    setState(() {
+                      selectedTabIndex = 0;
+                    });
+                  }
+                },
+                child: buildAboutMe())
         ],
       );
 
@@ -244,27 +239,58 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
 
   Widget buildEditAccount() => Container(
         padding: EdgeInsets.symmetric(horizontal: 22.w),
-        child: SingleChildScrollView(
+        child: Form(
+          key: _updateAccountFormKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               SizedBox(height: 16.h),
               BorderedTextField(
                   controller: _emailController,
+                  onValidate: (String val) {
+                    if (!GlobalValidator().validEmail(val.trim())) {
+                      return ErrorMessageConstants.emailInvalidorEmpty;
+                    }
+                    return null;
+                  },
                   labelText: AppTextConstants.email,
                   hintText: AppTextConstants.email),
               SizedBox(height: 16.h),
               BorderedTextField(
+                  isPassword: true,
+                  maxLines: 1,
+                  controller: _passwordController,
+                  onValidate: (String val) {
+                    if (val.trim().length < 6 && val.trim().isNotEmpty) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    if (val.trim().isNotEmpty &&
+                        _retypePasswordController.text.trim() != val.trim()) {
+                      return ErrorMessageConstants.passwordDoesNotMatch;
+                    }
+
+                    return null;
+                  },
                   labelText: AppTextConstants.password,
                   hintText: AppTextConstants.password),
               SizedBox(height: 16.h),
               BorderedTextField(
-                  labelText: 'Re-Type Password', hintText: 'Re-Type Password'),
+                  isPassword: true,
+                  maxLines: 1,
+                  controller: _retypePasswordController,
+                  labelText: 'Re-Type Password',
+                  hintText: 'Re-Type Password'),
               SizedBox(height: 26.h),
               CustomRoundedButton(
                 title: AppTextConstants.save,
                 isLoading: isSaving,
-                onpressed: () {},
+                onpressed: () {
+                  final FormState? form = _updateAccountFormKey.currentState;
+                  if (form!.validate()) {
+                    form.save();
+                    updateEmailOrPassword();
+                  }
+                },
               ),
             ],
           ),
@@ -273,15 +299,23 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
 
   Widget buildAboutMe() => Container(
         padding: EdgeInsets.symmetric(horizontal: 22.w),
-        child: SingleChildScrollView(
+        child: Form(
+          key: _updateAboutMeFormKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               SizedBox(height: 16.h),
               BorderedTextField(
-                  controller: _fullNameController,
-                  labelText: AppTextConstants.fullName,
-                  hintText: AppTextConstants.fullName),
+                controller: _fullNameController,
+                labelText: AppTextConstants.fullName,
+                hintText: AppTextConstants.fullName,
+                onValidate: (String val) {
+                  if (val.trim().isEmpty) {
+                    return '${AppTextConstants.fullName} is required';
+                  }
+                  return null;
+                },
+              ),
               SizedBox(height: 16.h),
               BorderedTextField(
                   controller: _aboutMeController,
@@ -300,6 +334,7 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
                   hintText: AppTextConstants.addressLine2),
               SizedBox(height: 16.h),
               DropDownCountry(
+                borderWidth: 0.2.w,
                 fontSize: 16.sp,
                 value: _country,
                 setCountry: setCountry,
@@ -315,13 +350,14 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
                     height: 60.h,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                            width: 1.w, color: Colors.grey.withOpacity(0.7))),
+                        border: Border.all(width: 0.2.w, color: Colors.grey)),
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20.w),
                       child: Row(
                         children: <Widget>[
-                          Text(DateFormat("MM-dd-yyy").format(_selectedDate)),
+                          if (_selectedDate != null)
+                            Text(
+                                DateFormat('MM-dd-yyy').format(_selectedDate!)),
                           const Spacer(),
                           const Icon(
                             Icons.date_range,
@@ -332,20 +368,18 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
                     ),
                   )),
               SizedBox(height: 16.h),
-              Text('Phone Number'),
+              const Text('Phone Number'),
               SizedBox(height: 10.h),
-              TextField(
+              IntlPhoneField(
+                initialValue:
+                    '+$_dialCode${_profileDetailsController.userProfileDetails.phoneNumber}',
                 controller: phoneController,
-                keyboardType: TextInputType.number,
+                dropdownIcon: const Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.white,
+                ),
                 decoration: InputDecoration(
-                  hintText: AppTextConstants.phoneNumberHint,
-                  prefixIcon: SizedBox(
-                    child: CountryCodePicker(
-                      onChanged: _onCountryChange,
-                      initialSelection: AppTextConstants.defaultCountry,
-                      favorite: ['+1', 'US'],
-                    ),
-                  ),
+                  hintText: 'Phone number',
                   hintStyle: TextStyle(
                     color: AppColors.grey,
                   ),
@@ -354,6 +388,14 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
                     borderSide: BorderSide(color: Colors.grey, width: 0.2.w),
                   ),
                 ),
+                // initialCountryCode: '+$_dialCode',
+                onChanged: (PhoneNumber phone) {
+                  setState(() {
+                    phoneNumber = phone.number;
+                    debugPrint('country code ${phone.countryCode}');
+                    _dialCode = phone.countryCode;
+                  });
+                },
               ),
               SizedBox(
                 height: 26.h,
@@ -361,22 +403,56 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
               CustomRoundedButton(
                 title: AppTextConstants.save,
                 isLoading: isSaving,
-                onpressed: updateProfile,
+                onpressed: () {
+                  final FormState? form = _updateAboutMeFormKey.currentState;
+                  if (form!.validate()) {
+                    form.save();
+                    updateProfile();
+                  }
+                },
+              ),
+              SizedBox(
+                height: 26.h,
               ),
             ],
           ),
         ),
       );
 
+  Widget buildTabs() {
+    return Row(
+      children: <Widget>[
+        for (int i = 0; i < tabs.length; i++)
+          Expanded(
+              child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      selectedTabIndex = i;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                        border: Border(
+                      bottom: selectedTabIndex == i
+                          ? BorderSide(width: 4, color: AppColors.deepGreen)
+                          : BorderSide(color: AppColors.gallery),
+                    )),
+                    child: Text(tabs[i],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: selectedTabIndex == i
+                                ? AppColors.deepGreen
+                                : Colors.grey.withOpacity(0.5),
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w700)),
+                  )))
+      ],
+    );
+  }
+
   Future<void> handleImagePicked(image) async {
     final Future<Uint8List> imageBytes = File(image.path).readAsBytes();
-    debugPrint('Image Path: $image');
-
-    final String base64String = base64Encode(await imageBytes);
-    // setState(() {
-    //   _photo = image;
-    //   profilePicPreview = base64String;
-    // });
 
     String profileUrl = '';
     if (image != null) {
@@ -390,7 +466,6 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
 
     final APIStandardReturnFormat res =
         await APIServices().updateProfile(editProfileParams);
-    debugPrint('Response:: ${res.status}');
 
     if (res.status == 'success') {
       final ProfileDetailsModel updatedProfile =
@@ -413,13 +488,18 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
       'address_line2': _addressLine2Controller.text,
       'country': _country.name,
       'full_name': _fullNameController.text,
-      'phone_no': phoneController.text,
-      'birth_date': _selectedDate.toString()
+      'birth_date': _selectedDate.toString(),
+      'country_code': _dialCode
     };
+
+    if (_dialCode != _profileDetailsController.userProfileDetails.countryCode &&
+        phoneNumber !=
+            _profileDetailsController.userProfileDetails.phoneNumber) {
+      editProfileParams['phone_no'] = phoneController.text;
+    }
 
     final APIStandardReturnFormat res =
         await APIServices().updateProfile(editProfileParams);
-    debugPrint('Response:: update about me ${_aboutMeController.text}');
 
     if (res.status == 'success') {
       final ProfileDetailsModel updatedProfile =
@@ -443,7 +523,7 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
 
     setState(() {
       _country = _profileDetailsController.userProfileDetails.country != ''
-          ? listCountry.firstWhere((element) =>
+          ? listCountry.firstWhere((CountryModel element) =>
               element.name ==
               _profileDetailsController.userProfileDetails.country)
           : listCountry[0];
@@ -451,7 +531,6 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
   }
 
   void setCountry(dynamic value) {
-    debugPrint('Value $value');
     setState(() {
       _country = value;
     });
@@ -460,8 +539,8 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
   Future<void> _showDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now().subtract(Duration(days: 0)),
+      initialDate: _selectedDate != null ? _selectedDate! : DateTime.now(),
+      firstDate: DateTime(1930),
       lastDate: DateTime(2100),
       builder: (BuildContext context, Widget? child) {
         return Theme(
@@ -483,7 +562,68 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
     }
   }
 
-  /// Country code
-  void _onCountryChange(CountryCode countryCode) =>
-      _dialCode = countryCode.dialCode.toString();
+  Future<void> updateEmailOrPassword() async {
+    /// Update email
+    if (_profileDetailsController.userProfileDetails.email !=
+        _emailController.text) {
+      setState(() {
+        isSaving = true;
+      });
+      final dynamic editProfileParams = {
+        'email': _emailController.text,
+      };
+
+      final APIStandardReturnFormat res =
+          await APIServices().updateProfile(editProfileParams);
+
+      if (res.status == 'success') {
+        final ProfileDetailsModel updatedProfile =
+            ProfileDetailsModel.fromJson(json.decode(res.successResponse));
+        _profileDetailsController.setUserProfileDetails(updatedProfile);
+        setState(() {
+          isSaving = false;
+        });
+      } else {
+        dynamic error = jsonDecode(res.errorResponse);
+        debugPrint('error ${error['errors']['email']}');
+        final String message = error['errors']['email'] == 'emailAlreadyExists'
+            ? ErrorMessageConstants.emailAlreadyInUse
+            : 'An Error Occurred';
+        ErrorDialog().showErrorDialog(
+            context: context,
+            title: 'Unable to Update Email',
+            message: message);
+      }
+    }
+
+    if (_passwordController.text != '') {
+      final dynamic updatePasswordParams = {
+        'password': _passwordController.text,
+      };
+
+      final APIStandardReturnFormat res =
+          await APIServices().updatePassword(updatePasswordParams);
+      debugPrint(
+          'Response:: update password ${res.statusCode} ${res.status} ${res.errorResponse}${_passwordController.text}');
+
+      if (res.status == 'success') {
+        setState(() {
+          isSaving = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty<bool>('isSaving', isSaving))
+      ..add(StringProperty('profilePicPreview', profilePicPreview))
+      ..add(IntProperty('selectedTabIndex', selectedTabIndex))
+      ..add(IterableProperty<CountryModel>('listCountry', listCountry))
+      ..add(DiagnosticsProperty<bool>('isPhoneValid', isPhoneValid))
+      ..add(DiagnosticsProperty<TextEditingController>(
+          'phoneController', phoneController));
+  }
 }

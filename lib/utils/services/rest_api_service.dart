@@ -2445,4 +2445,21 @@ class APIServices {
     return WishlistActivityModel(
         wishlistActivityDetails: dataSummary.wishlistActivityDetails);
   }
+
+  ///Api Service for update password
+  Future<APIStandardReturnFormat> updatePassword(dynamic parameters) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.patch(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.getProfileDetails}/newpassword/$userId'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          'content-type': 'application/json'
+        },
+        body: jsonEncode(parameters));
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
 }
