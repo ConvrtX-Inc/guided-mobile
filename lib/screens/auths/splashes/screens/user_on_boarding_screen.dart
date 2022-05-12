@@ -41,9 +41,15 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <
               Widget>[
             if (screenArguments['user_type'] == 'traveller')
-              buildTraveller()
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: buildTraveller(),
+              )
             else
-              buildGuide(),
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: buildGuide(),
+              ),
             SizedBox(
               height: 10.h,
             ),
@@ -213,14 +219,17 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Text(
-              AppTextConstants.footerDescr1,
-              style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontFamily: 'Gilroy',
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                AppTextConstants.footerDescr1,
+                style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontFamily: 'Gilroy',
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500),
+                textAlign: TextAlign.center,
+              ),
             )
           ]),
           Column(children: <Widget>[
@@ -250,14 +259,17 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Text(
-              AppTextConstants.footerDescr3,
-              style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontFamily: 'Gilroy',
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                AppTextConstants.footerDescr3,
+                style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontFamily: 'Gilroy',
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500),
+                textAlign: TextAlign.center,
+              ),
             ),
           ]),
         ],
@@ -301,14 +313,17 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Text(
-              AppTextConstants.footerDescr2,
-              style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontFamily: 'Gilroy',
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                AppTextConstants.footerDescr2,
+                style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontFamily: 'Gilroy',
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500),
+                textAlign: TextAlign.center,
+              ),
             )
           ]),
           Column(children: <Widget>[
@@ -338,14 +353,17 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Text(
-              AppTextConstants.footerDescr3,
-              style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontFamily: 'Gilroy',
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                AppTextConstants.footerDescr3,
+                style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontFamily: 'Gilroy',
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500),
+                textAlign: TextAlign.center,
+              ),
             )
           ]),
         ],
