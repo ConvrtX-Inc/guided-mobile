@@ -231,7 +231,7 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
             iconSize: 36,
             color: Colors.black,
             onPressed: () {
-              Navigator.pushNamed(context, '/profile');
+              Navigator.pushNamed(context, '/main_profile');
             },
           ),
         ],
