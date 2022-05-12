@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/foundation.dart';
@@ -18,12 +19,14 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/become_a_guide_activites_model.dart';
 import 'package:guided/models/become_a_guide_request_model.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:path_provider/path_provider.dart';
 
-import '../../../../models/badge.dart';
-import '../../../../models/badge_model.dart';
 import '../../../../models/user_model.dart';
+import '../../../../utils/secure_storage.dart';
+import '../../../../utils/services/firebase_service.dart';
 import '../../../../utils/services/rest_api_service.dart';
 
 /// Screen for settings contact us
@@ -40,10 +43,6 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
   String dropdownValue = 'Indeed';
   bool _isActive = false;
   bool _firstAid = false;
-  final String? firstName = UserSingleton.instance.user.user?.firstName;
-  final String? lastName = UserSingleton.instance.user.user?.lastName;
-  final String? email = UserSingleton.instance.user.user?.email;
-  final String? phoneNo = UserSingleton.instance.user.user?.phoneNo;
   final FocusNode _firstNameFocus = FocusNode();
   final FocusNode _lastNameFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
@@ -74,7 +73,9 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
   final TextEditingController _certDescController = TextEditingController();
   final TextEditingController _otherController = TextEditingController();
   late List<ActivityModel> activities;
+  bool _isAlreadyGuided = false;
   bool _isLoading = true;
+  bool _isGuideRequestLoading = false;
   bool hasBecomeGuideRequestDat = false;
   bool _isApproved = false;
   File? image1;
@@ -82,18 +83,13 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
   File? image3;
   int count = 0;
   int _uploadCount = 0;
+  String requestID = '';
 
   @override
   void initState() {
-    _firstNameController.text = firstName!;
-    _lastNameController.text = lastName!;
-    _emailController.text = email!;
-    _phoneNoController.text = phoneNo!;
+    getUserDetails();
     getBecomeAGuideRequest();
     super.initState();
-    setState(() {
-      _isLoading = true;
-    });
   }
 
   Future<void> getAllBadges() async {
@@ -101,28 +97,96 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
     final List<ActivityModel> badgeData = await APIServices().getAllBadgesInBecomeAguide();
     setState((){
       activities = badgeData;
-      _isLoading = false;
     });
+  }
+
+  Future<void> getUserDetails() async {
+    final String? userId = UserSingleton.instance.user.user!.id;
+    final User user = await APIServices().getUserDetails(userId!);
+
+    if (user.isTraveller == false) {
+      await SecureStorage.saveValue(
+          key: AppTextConstants.userType, value: 'guide');
+      await Navigator.pushReplacementNamed(context, '/main_navigation');
+    } else {
+      _firstNameController .text = user.firstName ?? '';
+      _lastNameController.text = user.lastName ?? '';
+      _emailController.text = user.email ?? '';
+      _phoneNoController.text = user.phoneNo ?? '';
+    }
   }
 
   Future<void> getBecomeAGuideRequest() async {
     setState(() => _isLoading = true);
+    await getAllBadges();
     final BecomeAGudeModel res = await APIServices().getBecomeAGuideRequest();
-    print('become a guide response $res');
 
-    if (res.userId != '' || res.userId != null) {
+    if (res.userId != '' && res.userId != null) {
+
+      if (res.isApproved == true) {
+        await SecureStorage.saveValue(
+            key: AppTextConstants.userType, value : 'guide');
+        await Navigator.pushReplacementNamed(context, '/main_navigation');
+        return;
+      }
+
+      final String? imgUrls = res.imageFirebaseUrl;
+      final List<String>? split = imgUrls?.split(',');
+      final Map<dynamic, String> values = {
+        for (dynamic i = 0; i < split?.length; i++)
+          i: split![i]
+      };
+      await urlToFile(values[0].toString()).then((value) => {
+        setState(() => image1 = value)
+      });
+      await urlToFile(values[1]!.replaceAll(' ', '').toString()).then((value) => {
+        setState(() => image2 = value)
+      });
+      await urlToFile(values[2]!.replaceAll(' ', '').toString()).then((value) => {
+        setState(() => image3 = value)
+      });
+
+      List<ActivityModel> badges = <ActivityModel>[];
+      badges = activities;
+      final String? acts = res.activities;
+      final List<String>? splitActs = acts?.split(',');
+      final Map<dynamic, String> actValues = {
+        for (dynamic p = 0; p < splitActs?.length; p++)
+          p: splitActs![p].replaceAll(' ', '')
+      };
+      for (int o = 0; o < actValues.length; o++) {
+        for (int q = 0; q < badges.length; q++) {
+          if (badges[q].id == actValues[o]) {
+            badges[q].isChecked = true;
+          }
+        }
+      }
+      setState(() {
+        activities = badges;
+      });
+      //Find index of specific object using findIndex method.
+      // List<ActivityModel> filteredBadges = badges.indexWhere((badge) => badge.id == '123') as List<ActivityModel>;
       setState(() {
         hasBecomeGuideRequestDat = true;
-        _isApproved = res.isApproved! as bool;
+        _isApproved = res.isApproved!;
+        requestID = res.id!;
+        _provinceController.text = res.province!;
+        _cityController.text = res.city!;
+        _whyDoYouThinkController.text = res.goodGuideReason!;
+        _describeAdventureYouWantController.text = res.adventuresToHost!;
+        _runningLocationsController.text = res.adventureLocation!;
+        _adventuresStandOutController.text = res.standoutReason!;
+        _whyDoYouWantToWorkController.text = res.guidedReason!;
+        _otherController.text = res.whereDidYouHearUsReason!;
+        dropdownValue = res.whereDidYouHearUs!;
+        _firstAid = res.isFirstAid!;
+        _certificateNameController.text = res.certificateName!;
+        _certDescController.text = res.certDesc!;
       });
     } else {
       setState(() {
         hasBecomeGuideRequestDat = false;
       });
-    }
-
-    if(hasBecomeGuideRequestDat == false || _isApproved == false) {
-      await getAllBadges();
     }
 
     setState(() => _isLoading = false);
@@ -189,9 +253,10 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
     'Facebook',
     'LinkedIn',
     'Google',
-    'Ads',
+    'ads',
     'Youtube',
     'Indeed',
+    'Individual',
     'Other'
   ];
 
@@ -215,7 +280,7 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
               child: Column(
-                children: (hasBecomeGuideRequestDat == false && _isLoading == false) ? <Widget> [
+                children: <Widget> [
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -226,760 +291,786 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
                       ),
                     ),
                   ),
-                  subTitleWidget(AppTextConstants.basicInfo),
-                  textInputWidget('fname', 'First name', _firstNameController, false, _firstNameFocus),
-                  textInputWidget('lname', 'Last name', _lastNameController, false, _lastNameFocus),
-                  textInputWidget('email', 'Email', _emailController, false, _emailFocus),
-                  textInputWidget('number', 'Number', _phoneNoController, false, _phoneNoFocus),
-                  textInputWidget('province', 'Province', _provinceController, true, _provinceFocus),
-                  textInputWidget('city', 'City', _cityController, true, _cityFocus),
-                  subTitleWidget('Activities'),
-                  Padding(
-                    padding: EdgeInsets.all(0),
-                    child: _isLoading == false ? ListView.builder(
-                        itemCount: activities.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (BuildContext ctx, int index) {
-                          if (index == 7) {
-                            return Column(
-                              children: <Widget> [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: SizedBox(
-                                    width: double.maxFinite,
-                                    child: Padding(
-                                      padding: EdgeInsets.fromLTRB(0, 7.h, 0, 7.h),
-                                      child: DecoratedBox(
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xffCCFFD5),
-                                          borderRadius: BorderRadius.circular(15),
-                                        ),
+                  if (_isLoading == false) Column(
+                    children: <Widget> [
+                      subTitleWidget(AppTextConstants.basicInfo),
+                      textInputWidget('fname', 'First name', _firstNameController, false, _firstNameFocus),
+                      textInputWidget('lname', 'Last name', _lastNameController, false, _lastNameFocus),
+                      textInputWidget('email', 'Email', _emailController, false, _emailFocus),
+                      textInputWidget('number', 'Number', _phoneNoController, false, _phoneNoFocus),
+                      textInputWidget('province', 'Province', _provinceController, true, _provinceFocus),
+                      textInputWidget('city', 'City', _cityController, true, _cityFocus),
+                      subTitleWidget('Activities'),
+                      Padding(
+                        padding: EdgeInsets.all(0),
+                        child: _isLoading == false ? ListView.builder(
+                            itemCount: activities.length,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (BuildContext ctx, int index) {
+                              if (index == 7) {
+                                return Column(
+                                  children: <Widget> [
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: SizedBox(
+                                        width: double.maxFinite,
                                         child: Padding(
-                                          padding: EdgeInsets.all(15.h),
-                                          child: const Text(
-                                            'Discovery Badge will let you host unique activities, tours, or adventures. The possibilities are endless!',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 16,
-                                              color: Color(0xff066028),
-                                              height: 1.5,
+                                          padding: EdgeInsets.fromLTRB(0, 7.h, 0, 7.h),
+                                          child: DecoratedBox(
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xffCCFFD5),
+                                              borderRadius: BorderRadius.circular(15),
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(15.h),
+                                              child: const Text(
+                                                'Discovery Badge will let you host unique activities, tours, or adventures. The possibilities are endless!',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 16,
+                                                  color: Color(0xff066028),
+                                                  height: 1.5,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Padding(
+                                        padding: EdgeInsets.fromLTRB(0, 10.h, 0, 10.h),
+                                        child: OutlinedButton(
+                                          style: ButtonStyle(
+                                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                                  EdgeInsets.fromLTRB(13.h, 16.h, 16.h, 16.h)),
+                                              backgroundColor: MaterialStateProperty.all<Color>(
+                                                  AppColors.white),
+                                              shape: MaterialStateProperty.all<
+                                                  RoundedRectangleBorder>(RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(30),
+                                              )),
+                                              side: MaterialStateProperty.all(BorderSide(color: activities[index].isChecked == true ? AppColors.deepGreen : AppColors.grey, width: activities[index].isChecked == true ? 1.0 : 0.4.w, style: BorderStyle.solid))
+                                          ),
+                                          child: Row(
+                                            children: <Widget> [
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Visibility(
+                                                  visible: true,
+                                                  // child: Image.asset(activities[index].imageUrl,
+                                                  //         height: 55.h,
+                                                  //         width: 55.w,
+                                                  //     ),
+                                                  child: Image.memory(
+                                                    base64.decode(activities[index].imageUrl.split(',').last),
+                                                    gaplessPlayback: true,
+                                                    width: 60,
+                                                    height: 60,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(width: 25.w),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(activities[index].name,
+                                                    style: const TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight: FontWeight.w700,
+                                                        color: Colors.black
+                                                    ),
+                                                    textAlign: TextAlign.left
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                              Align(
+                                                alignment: Alignment.centerRight,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                                  child: Visibility(
+                                                    visible: activities[index].isChecked == true ? true : false,
+                                                    child: SvgPicture.asset('assets/images/svg/check_green_circle.svg',
+                                                        height: 60.h, width: 60.w),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          onPressed: (){
+                                            setState(() {
+                                              activities[index].isChecked = !activities[index].isChecked;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                              return Padding(
+                                padding: EdgeInsets.fromLTRB(0, 10.h, 0, 10.h),
+                                child: OutlinedButton(
+                                  style: ButtonStyle(
+                                      padding: MaterialStateProperty.all<EdgeInsets>(
+                                          EdgeInsets.fromLTRB(13.h, 16.h, 16.h, 16.h)),
+                                      backgroundColor: MaterialStateProperty.all<Color>(
+                                          AppColors.white),
+                                      shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      )),
+                                      side: MaterialStateProperty.all(BorderSide(color: activities[index].isChecked == true ? AppColors.deepGreen : AppColors.grey, width: activities[index].isChecked == true ? 1.0 : 0.4.w, style: BorderStyle.solid))
+                                  ),
+                                  child: Row(
+                                    children: <Widget> [
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Visibility(
+                                          visible: true,
+                                          // child: Image.asset(activities[index].imageUrl,
+                                          //         height: 55.h,
+                                          //         width: 55.w,
+                                          //     ),
+                                          child: activities[index].name == 'Discovery' ? Image.asset('assets/images/badge-Discovery.png',
+                                            height: 55.h,
+                                            width: 55.w,
+                                          ) : Image.memory(
+                                            base64.decode(activities[index].imageUrl.split(',').last),
+                                            gaplessPlayback: true,
+                                            width: 60,
+                                            height: 60,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 25.w),
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(activities[index].name,
+                                            style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.black
+                                            ),
+                                            textAlign: TextAlign.left
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                          child: Visibility(
+                                            visible: activities[index].isChecked == true ? true : false,
+                                            child: SvgPicture.asset('assets/images/svg/check_green_circle.svg',
+                                                height: 60.h, width: 60.w),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  onPressed: (){
+                                    setState(() {
+                                      activities[index].isChecked = !activities[index].isChecked;
+                                    });
+                                  },
+                                ),
+                              );
+                            }) : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                              child: CircularProgressIndicator(),
+                            )
+                          ],
+                        ),
+                      ),
+                      subTitleWidget('Tell us a bit about yourself'),
+                      descriptionWidget('Why do you think you will be a good Guide ?'),
+                      textInputWidget('normal', '', _whyDoYouThinkController, true, _whyDoYouThinkFocus),
+                      descriptionWidget('Briefly describe the Adventures you want to host.'),
+                      textInputWidget('message', '', _describeAdventureYouWantController, true, _describeAdventureYouWantFocus),
+                      descriptionWidget('What locations will you be running your Adventures?'),
+                      textInputWidget('normal', '', _runningLocationsController, true, _runningLocationsFocus),
+                      descriptionWidget('What will make your Adventures stand-out?'),
+                      textInputWidget('normal', '', _adventuresStandOutController, true, _adventuresStandOutFocus),
+                      descriptionWidget('Why do you want to work with Guided?'),
+                      textInputWidget('message', '', _whyDoYouWantToWorkController, true, _whyDoYouWantToWorkFocus),
+                      descriptionWidget('How did you hear about us?'),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: SizedBox(
+                          width: double.maxFinite,
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(0, 7.h, 0, 7.h),
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.grey,
+                                  width: 0.4.w,
+                                ),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(25.h, 10.h, 10.h, 10.h),
+                                child: DropdownButton(
+                                  underline: SizedBox(),
+                                  isExpanded: true,
+                                  value: dropdownValue,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 16,
+                                    color: Color(0xff000000),
+                                  ),
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+                                  items: items.map((String item) {
+                                    return DropdownMenuItem(
+                                      value: item,
+                                      child: Text(item),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      dropdownValue = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (dropdownValue == 'Individual' || dropdownValue == 'Other') descriptionWidget("If you selected 'Individual' or 'Other' please let us know who referred you:") else const SizedBox(),
+                      if (dropdownValue == 'Individual' || dropdownValue == 'Other') textInputWidget('normal', '', _otherController, true, _otherFocus) else const SizedBox(),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: SizedBox(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(0, 20.h, 0, 20.h),
+                            child: Row(
+                              children: <Widget> [
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Switch(
+                                      value: _firstAid,
+                                      activeColor: const Color(0xff4CD964),
+                                      onChanged: (bool value) {
+                                        setState(() {
+                                          _firstAid = value;
+                                        });
+                                      }
                                   ),
                                 ),
-                                Align(
+                                SizedBox(width: 25.w),
+                                const Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 10.h, 0, 10.h),
-                                    child: OutlinedButton(
-                                      style: ButtonStyle(
-                                          padding: MaterialStateProperty.all<EdgeInsets>(
-                                              EdgeInsets.fromLTRB(13.h, 16.h, 16.h, 16.h)),
-                                          backgroundColor: MaterialStateProperty.all<Color>(
-                                              AppColors.white),
-                                          shape: MaterialStateProperty.all<
-                                              RoundedRectangleBorder>(RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
-                                          )),
-                                          side: MaterialStateProperty.all(BorderSide(color: activities[index].isChecked == true ? AppColors.deepGreen : AppColors.grey, width: activities[index].isChecked == true ? 1.0 : 0.4.w, style: BorderStyle.solid))
+                                  child: Text('First Aid',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xff979B9B)
                                       ),
-                                      child: Row(
-                                        children: <Widget> [
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Visibility(
-                                              visible: true,
-                                              // child: Image.asset(activities[index].imageUrl,
-                                              //         height: 55.h,
-                                              //         width: 55.w,
-                                              //     ),
-                                              child: Image.memory(
-                                                base64.decode(activities[index].imageUrl.split(',').last),
-                                                gaplessPlayback: true,
-                                                width: 60,
-                                                height: 60,
+                                      textAlign: TextAlign.left
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      textInputWidget('normal', 'Certificate Name', _certificateNameController, true, _certificateNameFocus),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: SizedBox(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(0, 20.h, 0, 20.h),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget> [
+                                InkWell(
+                                  onTap: () {
+                                    showMaterialModalBottomSheet(
+                                        expand: false,
+                                        context: context,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (BuildContext context) => SafeArea(
+                                            top: false,
+                                            child: Container(
+                                              color: Colors.white,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  ListTile(
+                                                      leading: const Icon(Icons.photo_camera),
+                                                      title: const Text('Camera'),
+                                                      onTap: () async {
+                                                        try {
+                                                          final XFile? image1 = await ImagePicker()
+                                                              .pickImage(
+                                                              source: ImageSource.camera,
+                                                              imageQuality: 25);
+
+                                                          if (image1 == null) {
+                                                            return;
+                                                          }
+                                                          final File imageTemporary = File(image1.path);
+                                                          String file;
+                                                          int fileSize;
+                                                          file = getFileSizeString(
+                                                              bytes: imageTemporary.lengthSync());
+                                                          fileSize = int.parse(
+                                                              file.substring(0, file.indexOf('K')));
+                                                          if (fileSize >= 100) {
+                                                            AdvanceSnackBar(
+                                                                message: ErrorMessageConstants
+                                                                    .imageFileToSize)
+                                                                .show(context);
+                                                            Navigator.pop(context);
+                                                            return;
+                                                          }
+                                                          setState(() {
+                                                            this.image1 = imageTemporary;
+                                                            _uploadCount += 1;
+                                                          });
+                                                        } on PlatformException catch (e) {
+                                                          print('Failed to pick image: $e');
+                                                        }
+                                                        Navigator.of(context).pop();
+                                                      }),
+                                                  ListTile(
+                                                      leading: const Icon(Icons.photo_album),
+                                                      title: const Text('Photo Gallery'),
+                                                      onTap: () async {
+                                                        try {
+                                                          final XFile? image1 = await ImagePicker()
+                                                              .pickImage(
+                                                              source: ImageSource.gallery,
+                                                              imageQuality: 10);
+
+                                                          if (image1 == null) {
+                                                            return;
+                                                          }
+
+                                                          final File imageTemporary = File(image1.path);
+                                                          String file;
+                                                          int fileSize;
+                                                          file = getFileSizeString(
+                                                              bytes: imageTemporary.lengthSync());
+                                                          fileSize = int.parse(
+                                                              file.substring(0, file.indexOf('K')));
+                                                          if (fileSize >= 100) {
+                                                            AdvanceSnackBar(
+                                                                message: ErrorMessageConstants
+                                                                    .imageFileToSize)
+                                                                .show(context);
+                                                            Navigator.pop(context);
+                                                            return;
+                                                          }
+                                                          setState(() {
+                                                            this.image1 = imageTemporary;
+                                                            _uploadCount += 1;
+                                                          });
+                                                        } on PlatformException catch (e) {
+                                                          print('Failed to pick image: $e');
+                                                        }
+                                                        Navigator.of(context).pop();
+                                                      }),
+                                                ],
                                               ),
-                                            ),
-                                          ),
-                                          SizedBox(width: 25.w),
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(activities[index].name,
-                                                style: const TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.black
-                                                ),
-                                                textAlign: TextAlign.left
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Align(
-                                            alignment: Alignment.centerRight,
-                                            child: Padding(
-                                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                              child: Visibility(
-                                                visible: activities[index].isChecked == true ? true : false,
-                                                child: SvgPicture.asset('assets/images/svg/check_green_circle.svg',
-                                                    height: 60.h, width: 60.w),
+                                            )));
+                                  },
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: image1 != null ? Image.file(
+                                        image1!,
+                                        width: 100.w,
+                                        height: 100.h
+                                    ) : Image.asset('assets/images/uploadPhoto.png',
+                                      height: 100.h,
+                                      width: 100.w,
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    showMaterialModalBottomSheet(
+                                        expand: false,
+                                        context: context,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (BuildContext context) => SafeArea(
+                                            top: false,
+                                            child: Container(
+                                              color: Colors.white,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  ListTile(
+                                                      leading: const Icon(Icons.photo_camera),
+                                                      title: const Text('Camera'),
+                                                      onTap: () async {
+                                                        try {
+                                                          final XFile? image2 = await ImagePicker()
+                                                              .pickImage(
+                                                              source: ImageSource.camera,
+                                                              imageQuality: 25);
+
+                                                          if (image2 == null) {
+                                                            return;
+                                                          }
+                                                          final File imageTemporary = File(image2.path);
+                                                          String file;
+                                                          int fileSize;
+                                                          file = getFileSizeString(
+                                                              bytes: imageTemporary.lengthSync());
+                                                          fileSize = int.parse(
+                                                              file.substring(0, file.indexOf('K')));
+                                                          if (fileSize >= 100) {
+                                                            AdvanceSnackBar(
+                                                                message: ErrorMessageConstants
+                                                                    .imageFileToSize)
+                                                                .show(context);
+                                                            Navigator.pop(context);
+                                                            return;
+                                                          }
+                                                          setState(() {
+                                                            this.image2 = imageTemporary;
+                                                            _uploadCount += 1;
+                                                          });
+                                                        } on PlatformException catch (e) {
+                                                          print('Failed to pick image: $e');
+                                                        }
+                                                        Navigator.of(context).pop();
+                                                      }),
+                                                  ListTile(
+                                                      leading: const Icon(Icons.photo_album),
+                                                      title: const Text('Photo Gallery'),
+                                                      onTap: () async {
+                                                        try {
+                                                          final XFile? image2 = await ImagePicker()
+                                                              .pickImage(
+                                                              source: ImageSource.gallery,
+                                                              imageQuality: 10);
+
+                                                          if (image2 == null) {
+                                                            return;
+                                                          }
+
+                                                          final File imageTemporary = File(image2.path);
+                                                          String file;
+                                                          int fileSize;
+                                                          file = getFileSizeString(
+                                                              bytes: imageTemporary.lengthSync());
+                                                          fileSize = int.parse(
+                                                              file.substring(0, file.indexOf('K')));
+                                                          if (fileSize >= 100) {
+                                                            AdvanceSnackBar(
+                                                                message: ErrorMessageConstants
+                                                                    .imageFileToSize)
+                                                                .show(context);
+                                                            Navigator.pop(context);
+                                                            return;
+                                                          }
+                                                          setState(() {
+                                                            this.image2 = imageTemporary;
+                                                            _uploadCount += 1;
+                                                          });
+                                                        } on PlatformException catch (e) {
+                                                          print('Failed to pick image: $e');
+                                                        }
+                                                        Navigator.of(context).pop();
+                                                      }),
+                                                ],
                                               ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      onPressed: (){
-                                        setState(() {
-                                          activities[index].isChecked = !activities[index].isChecked;
-                                        });
-                                      },
+                                            )));
+                                  },
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: image2 != null ? Image.file(
+                                        image2!,
+                                        width: 100.w,
+                                        height: 100.h
+                                    ) : Image.asset('assets/images/uploadPhoto.png',
+                                      height: 100.h,
+                                      width: 100.w,
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    showMaterialModalBottomSheet(
+                                        expand: false,
+                                        context: context,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (BuildContext context) => SafeArea(
+                                            top: false,
+                                            child: Container(
+                                              color: Colors.white,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  ListTile(
+                                                      leading: const Icon(Icons.photo_camera),
+                                                      title: const Text('Camera'),
+                                                      onTap: () async {
+                                                        try {
+                                                          final XFile? image3 = await ImagePicker()
+                                                              .pickImage(
+                                                              source: ImageSource.camera,
+                                                              imageQuality: 25);
+
+                                                          if (image3 == null) {
+                                                            return;
+                                                          }
+                                                          final File imageTemporary = File(image3.path);
+                                                          String file;
+                                                          int fileSize;
+                                                          file = getFileSizeString(
+                                                              bytes: imageTemporary.lengthSync());
+                                                          fileSize = int.parse(
+                                                              file.substring(0, file.indexOf('K')));
+                                                          if (fileSize >= 100) {
+                                                            AdvanceSnackBar(
+                                                                message: ErrorMessageConstants
+                                                                    .imageFileToSize)
+                                                                .show(context);
+                                                            Navigator.pop(context);
+                                                            return;
+                                                          }
+                                                          setState(() {
+                                                            this.image3 = imageTemporary;
+                                                            _uploadCount += 1;
+                                                          });
+                                                        } on PlatformException catch (e) {
+                                                          print('Failed to pick image: $e');
+                                                        }
+                                                        Navigator.of(context).pop();
+                                                      }),
+                                                  ListTile(
+                                                      leading: const Icon(Icons.photo_album),
+                                                      title: const Text('Photo Gallery'),
+                                                      onTap: () async {
+                                                        try {
+                                                          final XFile? image3 = await ImagePicker()
+                                                              .pickImage(
+                                                              source: ImageSource.gallery,
+                                                              imageQuality: 10);
+
+                                                          if (image3 == null) {
+                                                            return;
+                                                          }
+
+                                                          final File imageTemporary = File(image3.path);
+                                                          String file;
+                                                          int fileSize;
+                                                          file = getFileSizeString(
+                                                              bytes: imageTemporary.lengthSync());
+                                                          fileSize = int.parse(
+                                                              file.substring(0, file.indexOf('K')));
+                                                          if (fileSize >= 100) {
+                                                            AdvanceSnackBar(
+                                                                message: ErrorMessageConstants
+                                                                    .imageFileToSize)
+                                                                .show(context);
+                                                            Navigator.pop(context);
+                                                            return;
+                                                          }
+                                                          setState(() {
+                                                            this.image3 = imageTemporary;
+                                                            _uploadCount += 1;
+                                                          });
+                                                        } on PlatformException catch (e) {
+                                                          print('Failed to pick image: $e');
+                                                        }
+                                                        Navigator.of(context).pop();
+                                                      }),
+                                                ],
+                                              ),
+                                            )));
+                                  },
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: image3 != null ? Image.file(
+                                        image3!,
+                                        width: 100.w,
+                                        height: 100.h
+                                    ) : Image.asset('assets/images/uploadPhoto.png',
+                                      height: 100.h,
+                                      width: 100.w,
                                     ),
                                   ),
                                 ),
                               ],
-                            );
-                          }
-                          return Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10.h, 0, 10.h),
-                            child: OutlinedButton(
-                              style: ButtonStyle(
-                                  padding: MaterialStateProperty.all<EdgeInsets>(
-                                      EdgeInsets.fromLTRB(13.h, 16.h, 16.h, 16.h)),
-                                  backgroundColor: MaterialStateProperty.all<Color>(
-                                      AppColors.white),
-                                  shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  )),
-                                  side: MaterialStateProperty.all(BorderSide(color: activities[index].isChecked == true ? AppColors.deepGreen : AppColors.grey, width: activities[index].isChecked == true ? 1.0 : 0.4.w, style: BorderStyle.solid))
-                              ),
-                              child: Row(
-                                children: <Widget> [
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Visibility(
-                                      visible: true,
-                                      // child: Image.asset(activities[index].imageUrl,
-                                      //         height: 55.h,
-                                      //         width: 55.w,
-                                      //     ),
-                                      child: activities[index].name == 'Discovery' ? Image.asset('assets/images/badge-Discovery.png',
-                                        height: 55.h,
-                                        width: 55.w,
-                                      ) : Image.memory(
-                                        base64.decode(activities[index].imageUrl.split(',').last),
-                                        gaplessPlayback: true,
-                                        width: 60,
-                                        height: 60,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 25.w),
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(activities[index].name,
-                                        style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.black
-                                        ),
-                                        textAlign: TextAlign.left
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                      child: Visibility(
-                                        visible: activities[index].isChecked == true ? true : false,
-                                        child: SvgPicture.asset('assets/images/svg/check_green_circle.svg',
-                                            height: 60.h, width: 60.w),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              onPressed: (){
-                                setState(() {
-                                  activities[index].isChecked = !activities[index].isChecked;
-                                });
-                              },
-                            ),
-                          );
-                        }) : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                          child: CircularProgressIndicator(),
-                        )
-                      ],
-                    ),
-                  ),
-                  subTitleWidget('Tell us a bit about yourself'),
-                  descriptionWidget('Why do you think you will be a good Guide ?'),
-                  textInputWidget('normal', '', _whyDoYouThinkController, true, _whyDoYouThinkFocus),
-                  descriptionWidget('Briefly describe the Adventures you want to host.'),
-                  textInputWidget('message', '', _describeAdventureYouWantController, true, _describeAdventureYouWantFocus),
-                  descriptionWidget('What locations will you be running your Adventures?'),
-                  textInputWidget('normal', '', _runningLocationsController, true, _runningLocationsFocus),
-                  descriptionWidget('What will make your Adventures stand-out?'),
-                  textInputWidget('normal', '', _adventuresStandOutController, true, _adventuresStandOutFocus),
-                  descriptionWidget('Why do you want to work with Guided?'),
-                  textInputWidget('message', '', _whyDoYouWantToWorkController, true, _whyDoYouWantToWorkFocus),
-                  descriptionWidget('How did you hear about us?'),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: SizedBox(
-                      width: double.maxFinite,
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(0, 7.h, 0, 7.h),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 0.4.w,
                             ),
                           ),
+                        ),
+                      ),
+                      Center(
+                        child: SizedBox(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(25.h, 10.h, 10.h, 10.h),
-                            child: DropdownButton(
-                              underline: SizedBox(),
-                              isExpanded: true,
-                              value: dropdownValue,
-                              style: const TextStyle(
+                            padding: EdgeInsets.fromLTRB(0, 15.h, 0, 0),
+                            child: const Text(
+                              'Minimum 3 images should be uploaded',
+                              style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 16,
-                                color: Color(0xff000000),
+                                color: Color(0xffADB1B1),
                               ),
-                              icon: const Icon(Icons.keyboard_arrow_down),
-                              items: items.map((String item) {
-                                return DropdownMenuItem(
-                                  value: item,
-                                  child: Text(item),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  dropdownValue = newValue!;
-                                });
-                              },
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  descriptionWidget("If you selected 'Individual' or 'Other' please let us know who referred you:"),
-                  textInputWidget('normal', '', _otherController, true, _otherFocus),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: SizedBox(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(0, 20.h, 0, 20.h),
-                        child: Row(
-                          children: <Widget> [
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Switch(
-                                  value: _firstAid,
-                                  activeColor: const Color(0xff4CD964),
-                                  onChanged: (bool value) {
-                                    setState(() {
-                                      _firstAid = value;
-                                    });
+                      descriptionWidget('Description'),
+                      textInputWidget('message', '', _certDescController, true, _certDescFocus),
+                      SizedBox(
+                        width: double.maxFinite, // set width to maxFinite
+                        child: _isGuideRequestLoading == false ? Padding(
+                          padding: EdgeInsets.fromLTRB(0, 60.h, 0, 25.h),
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                                padding: MaterialStateProperty.all<EdgeInsets>(
+                                    const EdgeInsets.all(20)),
+                                backgroundColor: MaterialStateProperty.all<Color>(
+                                    AppColors.spruce),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                ))),
+                            child: Text(requestID != '' ? 'Update' : 'Apply',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            onPressed: () async {
+                              setState(() => _isGuideRequestLoading = true);
+                              if (_isLoading == true) {
+                                return;
+                              } else {
+                                List<ActivityModel> badges = <ActivityModel>[];
+                                badges = activities;
+                                final List<ActivityModel> checkedActivites = badges.where((ActivityModel i) => i.isChecked == true).toList();
+                                final List<dynamic> acts = [];
+                                if (_firstNameController.text.isNotEmpty &&
+                                    _lastNameController.text.isNotEmpty &&
+                                    _emailController.text.isNotEmpty &&
+                                    _phoneNoController.text.isNotEmpty &&
+                                    _provinceController.text.isNotEmpty &&
+                                    _cityController.text.isNotEmpty &&
+                                    _whyDoYouThinkController.text.isNotEmpty &&
+                                    _describeAdventureYouWantController.text.isNotEmpty &&
+                                    _runningLocationsController.text.isNotEmpty &&
+                                    _adventuresStandOutController.text.isNotEmpty &&
+                                    _whyDoYouWantToWorkController.text.isNotEmpty &&
+                                    _certificateNameController.text.isNotEmpty &&
+                                    _certDescController.text.isNotEmpty &&
+                                    image1 != null && image2 != null && image3 != null &&
+                                    checkedActivites.isNotEmpty
+                                ) {
+
+                                  for (int l = 0; l < checkedActivites.length; l++) {
+                                    acts.add(checkedActivites[l].id);
                                   }
+
+                                  final List<File?> localImgs = [image1, image2, image3];
+                                  final List<String> firebaseImgs = [];
+                                  for (int i = 0; i < 3; i++) {
+                                    final String imgResult = await FirebaseServices()
+                                        .uploadImageToFirebase(localImgs[i]!, 'becomeAGuideRequestCertificates');
+                                    firebaseImgs.add(imgResult);
+                                  }
+
+                                  final String? userId = UserSingleton.instance.user.user?.id;
+                                  final Map<String, dynamic> data = {
+                                    'user_id': userId,
+                                    'first_name': _firstNameController.text,
+                                    'last_name': _lastNameController.text,
+                                    'email': _emailController.text,
+                                    'phone_no': _phoneNoController.text,
+                                    'activities': acts.toString().replaceAll('[', '').replaceAll(']',''),
+                                    'province': _provinceController.text,
+                                    'city': _cityController.text,
+                                    'good_guide_reason': _whyDoYouThinkController.text,
+                                    'adventures_to_host': _describeAdventureYouWantController.text,
+                                    'adventure_location': _runningLocationsController.text,
+                                    'standout_reason': _adventuresStandOutController.text,
+                                    'guided_reason': _whyDoYouWantToWorkController.text,
+                                    'where_did_you_hear_us': dropdownValue != 'Other' || dropdownValue != 'Individual' ? dropdownValue.toString() : '',
+                                    'where_did_you_hear_us_reason': dropdownValue == 'Other' || dropdownValue == 'Individual' ? _otherController.text : '',
+                                    'is_first_aid': _firstAid,
+                                    'certificate_name': _certificateNameController.text,
+                                    'image_firebase_url': '${firebaseImgs[0]}, ${firebaseImgs[1]}, ${firebaseImgs[2]}',
+                                    'description': _certDescController.text
+                                  };
+                                  dynamic response;
+                                  if (requestID == '') {
+                                    response = await APIServices().request('api/v1/user-guide-request/', RequestType.POST,
+                                        needAccessToken: true, data: data);
+                                    final BecomeAGudeModel res = BecomeAGudeModel.fromJson(response);
+                                    if (res.id != '' || res.userId != '') {
+                                      const AdvanceSnackBar(
+                                          message: 'Successfully created a new request.', bgColor: Colors.green,
+                                        textColor: Colors.white,)
+                                          .show(context);
+                                      setState(() {
+                                        requestID = res.id!;
+                                      });
+                                    }
+                                  } else {
+                                    response = await APIServices().request('api/v1/user-guide-request/$requestID', RequestType.PATCH,
+                                        needAccessToken: true, data: data);
+                                    final BecomeAGudeModel res = BecomeAGudeModel.fromJson(response);
+                                    if (res.id != '' || res.userId != '') {
+                                      const AdvanceSnackBar(
+                                          message: 'Successfully updated request.', bgColor: Colors.green,
+                                        textColor: Colors.white,)
+                                          .show(context);
+                                    }
+                                  }
+                                } else {
+                                  const AdvanceSnackBar(message: 'Please check some fields that are needed to be filled.', bgColor: Colors.red,
+                                    textColor: Colors.white,)
+                                      .show(context);
+                                }
+                              }
+                              setState(() => _isGuideRequestLoading = false);
+                            },
+                          ),
+                        ) : Padding(
+                          padding: EdgeInsets.fromLTRB(0, 60.h, 0, 25.h),
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                                padding: MaterialStateProperty.all<EdgeInsets>(
+                                    const EdgeInsets.all(20)),
+                                backgroundColor: MaterialStateProperty.all<Color>(
+                                    AppColors.grey),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                ))),
+                            child: const Text(
+                              'Loading....',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                            SizedBox(width: 25.w),
-                            const Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text('First Aid',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xff979B9B)
-                                  ),
-                                  textAlign: TextAlign.left
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  textInputWidget('normal', 'Certificate Name', _certificateNameController, true, _certificateNameFocus),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: SizedBox(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(0, 20.h, 0, 20.h),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget> [
-                            InkWell(
-                              onTap: () {
-                                showMaterialModalBottomSheet(
-                                    expand: false,
-                                    context: context,
-                                    backgroundColor: Colors.transparent,
-                                    builder: (BuildContext context) => SafeArea(
-                                        top: false,
-                                        child: Container(
-                                          color: Colors.white,
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              ListTile(
-                                                  leading: const Icon(Icons.photo_camera),
-                                                  title: const Text('Camera'),
-                                                  onTap: () async {
-                                                    try {
-                                                      final XFile? image1 = await ImagePicker()
-                                                          .pickImage(
-                                                          source: ImageSource.camera,
-                                                          imageQuality: 25);
-
-                                                      if (image1 == null) {
-                                                        return;
-                                                      }
-                                                      final File imageTemporary = File(image1.path);
-                                                      String file;
-                                                      int fileSize;
-                                                      file = getFileSizeString(
-                                                          bytes: imageTemporary.lengthSync());
-                                                      fileSize = int.parse(
-                                                          file.substring(0, file.indexOf('K')));
-                                                      if (fileSize >= 100) {
-                                                        AdvanceSnackBar(
-                                                            message: ErrorMessageConstants
-                                                                .imageFileToSize)
-                                                            .show(context);
-                                                        Navigator.pop(context);
-                                                        return;
-                                                      }
-                                                      setState(() {
-                                                        this.image1 = imageTemporary;
-                                                        _uploadCount += 1;
-                                                      });
-                                                    } on PlatformException catch (e) {
-                                                      print('Failed to pick image: $e');
-                                                    }
-                                                    Navigator.of(context).pop();
-                                                  }),
-                                              ListTile(
-                                                  leading: const Icon(Icons.photo_album),
-                                                  title: const Text('Photo Gallery'),
-                                                  onTap: () async {
-                                                    try {
-                                                      final XFile? image1 = await ImagePicker()
-                                                          .pickImage(
-                                                          source: ImageSource.gallery,
-                                                          imageQuality: 10);
-
-                                                      if (image1 == null) {
-                                                        return;
-                                                      }
-
-                                                      final File imageTemporary = File(image1.path);
-                                                      String file;
-                                                      int fileSize;
-                                                      file = getFileSizeString(
-                                                          bytes: imageTemporary.lengthSync());
-                                                      fileSize = int.parse(
-                                                          file.substring(0, file.indexOf('K')));
-                                                      if (fileSize >= 100) {
-                                                        AdvanceSnackBar(
-                                                            message: ErrorMessageConstants
-                                                                .imageFileToSize)
-                                                            .show(context);
-                                                        Navigator.pop(context);
-                                                        return;
-                                                      }
-                                                      setState(() {
-                                                        this.image1 = imageTemporary;
-                                                        _uploadCount += 1;
-                                                      });
-                                                    } on PlatformException catch (e) {
-                                                      print('Failed to pick image: $e');
-                                                    }
-                                                    Navigator.of(context).pop();
-                                                  }),
-                                            ],
-                                          ),
-                                        )));
-                              },
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: image1 != null ? Image.file(
-                                    image1!,
-                                    width: 100.w,
-                                    height: 100.h
-                                ) : Image.asset('assets/images/uploadPhoto.png',
-                                  height: 100.h,
-                                  width: 100.w,
-                                ),
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                showMaterialModalBottomSheet(
-                                    expand: false,
-                                    context: context,
-                                    backgroundColor: Colors.transparent,
-                                    builder: (BuildContext context) => SafeArea(
-                                        top: false,
-                                        child: Container(
-                                          color: Colors.white,
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              ListTile(
-                                                  leading: const Icon(Icons.photo_camera),
-                                                  title: const Text('Camera'),
-                                                  onTap: () async {
-                                                    try {
-                                                      final XFile? image2 = await ImagePicker()
-                                                          .pickImage(
-                                                          source: ImageSource.camera,
-                                                          imageQuality: 25);
-
-                                                      if (image2 == null) {
-                                                        return;
-                                                      }
-                                                      final File imageTemporary = File(image2.path);
-                                                      String file;
-                                                      int fileSize;
-                                                      file = getFileSizeString(
-                                                          bytes: imageTemporary.lengthSync());
-                                                      fileSize = int.parse(
-                                                          file.substring(0, file.indexOf('K')));
-                                                      if (fileSize >= 100) {
-                                                        AdvanceSnackBar(
-                                                            message: ErrorMessageConstants
-                                                                .imageFileToSize)
-                                                            .show(context);
-                                                        Navigator.pop(context);
-                                                        return;
-                                                      }
-                                                      setState(() {
-                                                        this.image2 = imageTemporary;
-                                                        _uploadCount += 1;
-                                                      });
-                                                    } on PlatformException catch (e) {
-                                                      print('Failed to pick image: $e');
-                                                    }
-                                                    Navigator.of(context).pop();
-                                                  }),
-                                              ListTile(
-                                                  leading: const Icon(Icons.photo_album),
-                                                  title: const Text('Photo Gallery'),
-                                                  onTap: () async {
-                                                    try {
-                                                      final XFile? image2 = await ImagePicker()
-                                                          .pickImage(
-                                                          source: ImageSource.gallery,
-                                                          imageQuality: 10);
-
-                                                      if (image2 == null) {
-                                                        return;
-                                                      }
-
-                                                      final File imageTemporary = File(image2.path);
-                                                      String file;
-                                                      int fileSize;
-                                                      file = getFileSizeString(
-                                                          bytes: imageTemporary.lengthSync());
-                                                      fileSize = int.parse(
-                                                          file.substring(0, file.indexOf('K')));
-                                                      if (fileSize >= 100) {
-                                                        AdvanceSnackBar(
-                                                            message: ErrorMessageConstants
-                                                                .imageFileToSize)
-                                                            .show(context);
-                                                        Navigator.pop(context);
-                                                        return;
-                                                      }
-                                                      setState(() {
-                                                        this.image2 = imageTemporary;
-                                                        _uploadCount += 1;
-                                                      });
-                                                    } on PlatformException catch (e) {
-                                                      print('Failed to pick image: $e');
-                                                    }
-                                                    Navigator.of(context).pop();
-                                                  }),
-                                            ],
-                                          ),
-                                        )));
-                              },
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: image2 != null ? Image.file(
-                                    image2!,
-                                    width: 100.w,
-                                    height: 100.h
-                                ) : Image.asset('assets/images/uploadPhoto.png',
-                                  height: 100.h,
-                                  width: 100.w,
-                                ),
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                showMaterialModalBottomSheet(
-                                    expand: false,
-                                    context: context,
-                                    backgroundColor: Colors.transparent,
-                                    builder: (BuildContext context) => SafeArea(
-                                        top: false,
-                                        child: Container(
-                                          color: Colors.white,
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              ListTile(
-                                                  leading: const Icon(Icons.photo_camera),
-                                                  title: const Text('Camera'),
-                                                  onTap: () async {
-                                                    try {
-                                                      final XFile? image3 = await ImagePicker()
-                                                          .pickImage(
-                                                          source: ImageSource.camera,
-                                                          imageQuality: 25);
-
-                                                      if (image3 == null) {
-                                                        return;
-                                                      }
-                                                      final File imageTemporary = File(image3.path);
-                                                      String file;
-                                                      int fileSize;
-                                                      file = getFileSizeString(
-                                                          bytes: imageTemporary.lengthSync());
-                                                      fileSize = int.parse(
-                                                          file.substring(0, file.indexOf('K')));
-                                                      if (fileSize >= 100) {
-                                                        AdvanceSnackBar(
-                                                            message: ErrorMessageConstants
-                                                                .imageFileToSize)
-                                                            .show(context);
-                                                        Navigator.pop(context);
-                                                        return;
-                                                      }
-                                                      setState(() {
-                                                        this.image3 = imageTemporary;
-                                                        _uploadCount += 1;
-                                                      });
-                                                    } on PlatformException catch (e) {
-                                                      print('Failed to pick image: $e');
-                                                    }
-                                                    Navigator.of(context).pop();
-                                                  }),
-                                              ListTile(
-                                                  leading: const Icon(Icons.photo_album),
-                                                  title: const Text('Photo Gallery'),
-                                                  onTap: () async {
-                                                    try {
-                                                      final XFile? image3 = await ImagePicker()
-                                                          .pickImage(
-                                                          source: ImageSource.gallery,
-                                                          imageQuality: 10);
-
-                                                      if (image3 == null) {
-                                                        return;
-                                                      }
-
-                                                      final File imageTemporary = File(image3.path);
-                                                      String file;
-                                                      int fileSize;
-                                                      file = getFileSizeString(
-                                                          bytes: imageTemporary.lengthSync());
-                                                      fileSize = int.parse(
-                                                          file.substring(0, file.indexOf('K')));
-                                                      if (fileSize >= 100) {
-                                                        AdvanceSnackBar(
-                                                            message: ErrorMessageConstants
-                                                                .imageFileToSize)
-                                                            .show(context);
-                                                        Navigator.pop(context);
-                                                        return;
-                                                      }
-                                                      setState(() {
-                                                        this.image3 = imageTemporary;
-                                                        _uploadCount += 1;
-                                                      });
-                                                    } on PlatformException catch (e) {
-                                                      print('Failed to pick image: $e');
-                                                    }
-                                                    Navigator.of(context).pop();
-                                                  }),
-                                            ],
-                                          ),
-                                        )));
-                              },
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: image3 != null ? Image.file(
-                                    image3!,
-                                    width: 100.w,
-                                    height: 100.h
-                                ) : Image.asset('assets/images/uploadPhoto.png',
-                                  height: 100.h,
-                                  width: 100.w,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: SizedBox(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(0, 15.h, 0, 0),
-                        child: const Text(
-                          'Minimum 3 images should be uploaded',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                            color: Color(0xffADB1B1),
+                            onPressed: () async {},
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                  descriptionWidget('Description'),
-                  textInputWidget('message', '', _certDescController, true, _certDescFocus),
-                  SizedBox(
-                    width: double.maxFinite, // set width to maxFinite
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(0, 60.h, 0, 25.h),
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                            padding: MaterialStateProperty.all<EdgeInsets>(
-                                const EdgeInsets.all(20)),
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                AppColors.spruce),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18),
-                            ))),
-                        child: const Text('Apply',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        onPressed: () async {
-                          print('_firstNameController $_firstNameController');
-                          print('_lastNameController $_lastNameController');
-                          print('_emailController $_emailController');
-                          print('_phoneNoController $_phoneNoController');
-                          print('_provinceController $_provinceController');
-                          print('_cityController $_cityController');
-                          print('_whyDoYouThinkController $_whyDoYouThinkController');
-                          print('_describeAdventureYouWantController $_describeAdventureYouWantController');
-                          print('_runningLocationsController $_runningLocationsController');
-                          print('_adventuresStandOutController $_adventuresStandOutController');
-                          print('_whyDoYouWantToWorkController $_whyDoYouWantToWorkController');
-                          print('_certificateNameController $_certificateNameController');
-                          print('_certDescController $_certDescController');
-                          print('_otherController $_otherController');
-                          print('is first aid $_firstAid');
-                          print('image1: $image1--- image2 $image2 ----- image3: $image3}');
-                          print('BASE64 image 1 ${saveImage(image1!)}');
-                          saveImage(image1!).then((String value) => print('base64image $value'));
-                          if (_firstNameController.text.isNotEmpty &&
-                              _lastNameController.text.isNotEmpty &&
-                              _emailController.text.isNotEmpty &&
-                              _phoneNoController.text.isNotEmpty &&
-                              _provinceController.text.isNotEmpty &&
-                              _cityController.text.isNotEmpty &&
-                              _whyDoYouThinkController.text.isNotEmpty &&
-                              _describeAdventureYouWantController.text.isNotEmpty &&
-                              _runningLocationsController.text.isNotEmpty &&
-                              _adventuresStandOutController.text.isNotEmpty &&
-                              _whyDoYouWantToWorkController.text.isNotEmpty &&
-                              _certificateNameController.text.isNotEmpty &&
-                              _certDescController.text.isNotEmpty &&
-                              (_otherController.text.isNotEmpty || dropdownValue.isNotEmpty) &&
-                              image1 != null && image2 != null && image3 != null
-                          ) {
-                            print('PWEDE NA CREATE SA BECOME A GUIDE');
-                            final String? userId = UserSingleton.instance.user.user?.id;
-                            final Map<String, dynamic> data = {
-                              'user_id': userId,
-                              'first_name': _firstNameController.text,
-                              'last_name': _lastNameController.text,
-                              'email': _emailController.text,
-                              'phone_no': _phoneNoController.text,
-                              'activities': 'badge1, badge,2 ,badge3',
-                              'province': _provinceController.text,
-                              'city': _cityController.text,
-                              'good_guide_reason': _whyDoYouThinkController.text,
-                              'adventures_to_host': _describeAdventureYouWantController.text,
-                              'adventure_location': _runningLocationsController.text,
-                              'standout_reason': _adventuresStandOutController.text,
-                              'guided_reason': _whyDoYouWantToWorkController.text,
-                              'where_did_you_hear_us': dropdownValue == 'other' ? _otherController.text : dropdownValue.toString(),
-                              'where_did_you_hear_us_reason': dropdownValue == 'other' ? _otherController.text : dropdownValue.toString(),
-                              'is_first_aid': _firstAid,
-                              'certificate_name': _certificateNameController.text,
-                              // 'image_firebase_url': '${saveImage(image1!).then((String value) => value).toString()}, ${saveImage(image2!).then((String value) => value).toString()}, ${saveImage(image3!).then((String value) => value).toString()}',
-                              'image_firebase_url': 'image_firebase_url'
-                            };
-                            final dynamic response  = await APIServices().request('api/v1/user-guide-request/', RequestType.POST,
-                                needAccessToken: true, data: data);
-                            print('tata response $response');
-                          } else {
-                            print('NAAY KUWANG NGA FIELD');
-                          }
-                        },
-                      ),
-                    ),
-                  )
-                ] : <Widget> [
-                  if (_isApproved == false) Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          AppTextConstants.becomeAGuide,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 24,
-                          ),
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
-                        child: Text('Pending request')
                       )
                     ],
-                  )
-                  else
-                    Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            AppTextConstants.becomeAGuide,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 24,
-                            ),
-                          ),
-                        ),
-                        const Text('Request approved')
-                      ],
-                    )
+                  ) else Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                        child: CircularProgressIndicator(),
+                      )
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -998,12 +1089,33 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
     properties.add(DiagnosticsProperty<File?>('image2', image2));
     properties.add(DiagnosticsProperty<File?>('image3', image3));
     properties.add(DiagnosticsProperty<bool>('hasBecomeGuideRequestDat', hasBecomeGuideRequestDat));
+    properties.add(StringProperty('requestID', requestID));
+    properties.add(DiagnosticsProperty<bool>('_isGuideRequestLoading', _isGuideRequestLoading));
   }
 
   Future<String> saveImage(File image) async {
     final Future<Uint8List> image1Bytes = File(image.path).readAsBytes();
     final String base64Image = base64Encode(await image1Bytes);
     return base64Image;
+  }
+
+  Future<File> urlToFile(String imageUrl) async {
+// generate random number.
+    final Random rng = Random();
+// get temporary directory of device.
+    final Directory tempDir = await getTemporaryDirectory();
+// get temporary path from temporary directory.
+    final String tempPath = tempDir.path;
+// create a new file in temporary path with random file name.
+    final File file = File('$tempPath${rng.nextInt(100)}.png');
+    final Uri url = Uri.parse(imageUrl);
+// call http.get method and pass imageUrl into it to get response.
+    final http.Response response = await http.get(url);
+// write bodyBytes received in response to file.
+    await file.writeAsBytes(response.bodyBytes);
+// now return the file which is created with random name in
+// temporary directory and image bytes from response is written to // that file.
+    return file;
   }
 }
 

@@ -51,7 +51,7 @@ Future<void> uploadFromCamera(
         source: ImageSource.camera,
         maxHeight: 800.h,
         maxWidth: 800.w,
-        imageQuality: 25);
+        imageQuality: 50);
 
     if (image == null) {
       return;
@@ -97,7 +97,7 @@ Future<void> uploadFromGallery(
         source: ImageSource.gallery,
         maxHeight: 800.h,
         maxWidth: 800.w,
-        imageQuality: 25);
+        imageQuality: 50);
 
     if (image == null) {
       return;

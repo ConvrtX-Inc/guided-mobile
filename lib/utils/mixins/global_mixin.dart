@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_texts.dart';
 import 'dart:math';
 
 import 'package:guided/constants/asset_path.dart';
@@ -61,5 +63,23 @@ class GlobalMixin {
   ///Get Formatted Card Number
   String getFormattedCardNumber({required String cardNumber, int startingNumber = 5}){
     return cardNumber.replaceRange(startingNumber, cardNumber.length - 4, '*' * (cardNumber.length - 4 - startingNumber));
+  }
+
+  ///Get status Color
+  Color getStatusColor(String status){
+    Color _statusColor = AppColors.lightningYellow;
+    switch(status.toLowerCase()){
+      case 'pending':
+        _statusColor =  AppColors.lightningYellow;
+        break;
+      case 'completed':
+        _statusColor = AppColors.mediumGreen;
+        break;
+      case 'rejected':
+        _statusColor = AppColors.lightRed;
+        break;
+    }
+
+    return _statusColor;
   }
 }

@@ -4,6 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/notification_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/date_time_ago.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Notification Screen
 class NotificationScreen extends StatefulWidget {
@@ -15,6 +18,15 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
+  List<NotificationModel> notifications = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    getNotifications();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,25 +62,90 @@ class _NotificationScreenState extends State<NotificationScreen> {
               SizedBox(
                 height: 15.h,
               ),
-              Expanded(
-                  child: Column(
-                children: List<Widget>.generate(3, (int index) {
-                  return Padding(
-                    padding: EdgeInsets.fromLTRB(4.w, 15.h, 0, 15.h),
-                    child: (index == 0)
-                        ? _requestPending()
-                        : (index == 1)
-                            ? _requestAccepted()
-                            : _newMessage(),
-                  );
-                }),
-              ))
+              Expanded(child: buildNotificationList())
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget buildNotificationList() => ListView.builder(
+      itemCount: notifications.length,
+      itemBuilder: (BuildContext ctx, int index) {
+        final NotificationModel _notification = notifications[index];
+
+        return Padding(
+          padding: EdgeInsets.fromLTRB(4.w, 15.h, 0, 15.h),
+          child: _notification.bookingRequestId != null
+              ? bookingRequestNotif(_notification)
+              : buildNotificationItem(_notification),
+        );
+      });
+
+  Widget bookingRequestNotif(NotificationModel notification) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          buildProfilePic(notification.fromUser!.profilePhotoFirebaseUrl!),
+          SizedBox(
+            width: 10.w,
+          ),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      notification.title!,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14.sp,
+                        color: Colors.black,
+                      ),
+                    ),
+                    DateTimeAgo(
+                      dateString: notification.createdDate!,
+                      size: 14.sp,
+                      color: AppColors.cloud,
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 6.h,
+                ),
+                Text(
+                  notification.notificationMsg!,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: AppColors.dustyGrey,
+                  ),
+                ),
+                SizedBox(
+                  height: 6.h,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: AppColors.lightningYellow,
+                      border: Border.all(
+                        color: AppColors.lightningYellow,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(10.r))),
+                  child: Text(
+                    notification.bookingRequestStatus!,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      );
 
   Widget _requestPending() {
     return Row(
@@ -127,7 +204,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 height: 6.h,
               ),
               Text(
-                'Your booking request in pending status', // dont add this on the app text constant since this will be coming from the api
+                'Your booking request in pending status',
+                // dont add this on the app text constant since this will be coming from the api
                 style: TextStyle(
                   fontSize: 12.sp,
                   color: AppColors.dustyGrey,
@@ -226,7 +304,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 ),
               ),
               Text(
-                'James Brown accepted your custom offer. Please contact with him for mre info', // dont add this on the app text constant since this will be coming from the api
+                'James Brown accepted your custom offer. Please contact with him for mre info',
+                // dont add this on the app text constant since this will be coming from the api
                 style: TextStyle(
                   fontSize: 12.sp,
                   color: AppColors.dustyGrey,
@@ -242,32 +321,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  Widget _newMessage() {
+  Widget buildNotificationItem(NotificationModel notification) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Container(
-          height: 58.h,
-          width: 58.w,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.white, width: 3),
-            shape: BoxShape.circle,
-            image: const DecorationImage(
-              image:
-                  AssetImage('${AssetsPath.assetsPNGPath}/student_profile.png'),
-              fit: BoxFit.contain,
-            ),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: Colors.black.withOpacity(0.5),
-                spreadRadius: 1,
-                blurRadius: 5,
-                // offset: const Offset(
-                //     0, 0), // changes position of shadow
-              ),
-            ],
-          ),
-        ),
+        buildProfilePic(notification.fromUser!.profilePhotoFirebaseUrl!),
         SizedBox(
           width: 10.w,
         ),
@@ -281,17 +339,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(
+                        /* TextSpan(
                           text: AppTextConstants.newMessage,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14.sp,
                             color: AppColors.mediumGreen,
                           ),
-                        ),
+                        ),*/
                         TextSpan(
-                          text:
-                              'from Ethan Hunt', // dont add this on the app text constant since this will be coming from the api
+                          text: notification.title,
+                          // dont add this on the app text constant since this will be coming from the api
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14.sp,
@@ -301,13 +359,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ],
                     ),
                   ),
-                  Text(
+                  /*Text(
                     AppTextConstants.messageTime,
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: AppColors.cloud,
                     ),
-                  ),
+                  ),*/
+                  DateTimeAgo(
+                    dateString: notification.createdDate!,
+                    size: 14.sp,
+                    color: AppColors.cloud,
+                  )
                 ],
               ),
               SizedBox(
@@ -318,14 +381,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.6,
                     child: Text(
-                      'Sample tourist text message goes here to receive tourist guide ', // dont add this on the app text constant since this will be coming from the api
+                      notification.notificationMsg!,
+                      // dont add this on the app text constant since this will be coming from the api
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: AppColors.dustyGrey,
                       ),
                     ),
                   ),
-                  Expanded(
+                 /* Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -343,7 +407,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         ),
                       ),
                     ),
-                  )
+                  )*/
                 ],
               ),
               SizedBox(
@@ -354,5 +418,41 @@ class _NotificationScreenState extends State<NotificationScreen> {
         )
       ],
     );
+  }
+
+  Widget buildProfilePic(String image) => Container(
+        height: 58.h,
+        width: 58.w,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white, width: 3),
+          shape: BoxShape.circle,
+          image: image.isNotEmpty
+              ? DecorationImage(
+                  image: NetworkImage(image),
+                  fit: BoxFit.contain,
+                )
+              : DecorationImage(
+                  image: AssetImage(AssetsPath.defaultProfilePic),
+                  fit: BoxFit.contain,
+                ),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 5,
+              // offset: const Offset(
+              //     0, 0), // changes position of shadow
+            ),
+          ],
+        ),
+      );
+
+  Future<void> getNotifications() async {
+    final List<NotificationModel> res = await APIServices().getNotifications();
+    setState(() {
+      notifications = res;
+    });
+
+    debugPrint('Notifications ${res.length}');
   }
 }

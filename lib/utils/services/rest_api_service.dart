@@ -24,11 +24,13 @@ import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/become_a_guide_activites_model.dart';
 import 'package:guided/models/become_a_guide_request_model.dart';
 import 'package:guided/models/card_model.dart';
+import 'package:guided/models/certificate.dart';
 import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/currencies_model.dart';
 import 'package:guided/models/event_image_model.dart';
 import 'package:guided/models/event_model.dart';
+import 'package:guided/models/notification_model.dart';
 import 'package:guided/models/newsfeed_image_model.dart';
 import 'package:guided/models/newsfeed_model.dart';
 import 'package:guided/models/outfitter_image_model.dart';
@@ -36,6 +38,7 @@ import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/package_destination_image_model.dart';
 import 'package:guided/models/package_destination_model.dart';
 import 'package:guided/models/package_model.dart';
+import 'package:guided/models/payment_transaction.dart';
 import 'package:guided/models/popular_guide.dart';
 import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/profile_data_model.dart';
@@ -47,6 +50,7 @@ import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/models/user_terms_and_condition_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
+import 'package:guided/models/wishlist_activity_model.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 
 import 'package:guided/utils/secure_storage.dart';
@@ -821,19 +825,21 @@ class APIServices {
         });
     final dynamic jsonData = jsonDecode(response.body);
 
-    final List<User> popularGuides = <User>[];
-    final List<User> activityPackage =
-        (jsonData['data'] as List).map((i) => User.fromJson(i)).toList();
+    // final List<User> popularGuides = <User>[];
+    // final List<User> activityPackage =
+    //     (jsonData['data'] as List).map((i) => User.fromJson(i)).toList();
 
-    final List<User> guides = activityPackage.where(
-      (User element) {
-        return element.isTraveller == false;
-      },
-    ).toList();
-    print(guides.length);
-    popularGuides.addAll(guides);
+    // final List<User> guides = activityPackage.where(
+    //   (User element) {
+    //     return element.isTraveller == false;
+    //   },
+    // ).toList();
+    // print(guides.length);
+    // popularGuides.addAll(guides);
 
-    return guides;
+    final List<User> guides = jsonData;
+
+    return jsonData;
   }
 
   /// API service for outfitter image model
@@ -1101,15 +1107,15 @@ class APIServices {
     debugPrint('USER ID $userId');
     String id = '';
     if (type == 'terms_and_condition') {
-      id = 'terms_and_condition_$userId';
+      id = 'termsandconditions';
     } else if (type == 'traveler_waiver_form') {
-      id = 'traveler_waiver_form_$userId';
+      id = 'travelerreleaseandwaiverform';
     } else if (type == 'cancellation_policy') {
-      id = 'cancellation_policy_$userId';
+      id = 'cancellationpolicy';
     } else if (type == 'guided_payment_payout') {
-      id = 'guided_payment_payout_$userId';
+      id = 'paymentandpayoutterms';
     } else if (type == 'local_laws') {
-      id = 'local_laws_$userId';
+      id = 'locallawsandtaxes';
     }
 
     debugPrint(
@@ -1180,7 +1186,7 @@ class APIServices {
 
   /// API service for user  adding subscription
   Future<APIStandardReturnFormat> addUserSubscription(
-      UserSubscription params) async {
+      UserSubscription params, String paymentMethod) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
@@ -1200,6 +1206,13 @@ class APIServices {
           'price': params.price
         }));
 
+    final PaymentTransactionModel transactionParams = PaymentTransactionModel(
+        serviceName: 'Premium Subscription',
+        transactionNumber: params.paymentReferenceNo,
+        amount: '${params.price}',
+        type: AppTextConstants.deduction,
+        paymentMethod: paymentMethod);
+    await savePaymentTransaction(transactionParams);
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
@@ -1977,8 +1990,8 @@ class APIServices {
     return SettingsAvailabilityModel.fromJson(jsonData);
   }
 
-  ///API Service for Retrieving Settings Availability
-  Future<BecomeAGudeModel> getBecomeAGuideRequest() async {
+  ///API Service for Retrieving BecomeAGuideRequest
+  Future<dynamic> getBecomeAGuideRequest() async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
@@ -1998,7 +2011,11 @@ class APIServices {
     final dynamic jsonData = jsonDecode(response.body);
     print(response.request!.url);
     print('tata response get become a guide request: $jsonData');
-    return BecomeAGudeModel.fromJson(jsonData[0]);
+    if (jsonData.length > 0) {
+      return BecomeAGudeModel.fromJson(jsonData[0]);
+    } else {
+      return BecomeAGudeModel();
+    }
   }
 
   /// API service for event image model
@@ -2070,6 +2087,151 @@ class APIServices {
     return EventDestinationImageModel(eventDestinationImageDetails: details);
   }
 
+  ///Api service for saving payment transaction
+  Future<PaymentTransactionModel> savePaymentTransaction(
+      PaymentTransactionModel params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.post(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.paymentTransactionUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'transaction_number': params.transactionNumber,
+          'payment_method': params.paymentMethod,
+          'service_name': params.serviceName,
+          'amount': params.amount,
+          'type': params.type,
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    PaymentTransactionModel paymentTransaction = PaymentTransactionModel();
+    if (response.statusCode == 201) {
+      debugPrint('DATA payment $jsonData');
+      paymentTransaction = PaymentTransactionModel.fromJson(jsonData);
+    }
+
+    return paymentTransaction;
+  }
+
+  /// API service payment transaction lists
+  Future<List<PaymentTransactionModel>> getPaymentTransactions() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+    };
+
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/${AppAPIPath.paymentTransactionUrl}',
+            queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final List<PaymentTransactionModel> paymentTransactions =
+        <PaymentTransactionModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final PaymentTransactionModel _paymentTransaction =
+          PaymentTransactionModel.fromJson(data);
+      paymentTransactions.add(_paymentTransaction);
+    }
+
+    return paymentTransactions;
+  }
+
+  ///Api services for notifications
+  Future<List<NotificationModel>> getNotifications() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final Map<String, String> queryParameters = {
+      'filter': 'to_user_id||eq||"$userId"',
+    };
+
+    final http.Response response = await http.get(
+        Uri.http(
+            apiBaseUrl, '/${AppAPIPath.notificationsUrl}', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final List<NotificationModel> notifications = <NotificationModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final NotificationModel _notification = NotificationModel.fromJson(data);
+      notifications.add(_notification);
+    }
+
+    return notifications;
+  }
+
+  /// Api service to send Notification
+  Future<NotificationModel> sendNotification(NotificationModel params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint(
+        'Params: ${params.bookingRequestId} ${params.toUserId} ${params.title} ${params.type}');
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.notificationsUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'from_user_id': userId.toString(),
+          'to_user_id': params.toUserId!,
+          'title': params.title!,
+          'type': params.type!,
+          'notification_msg': params.notificationMsg!,
+          'booking_request_id': params.bookingRequestId!,
+          'transaction_no': params.transactionNo!
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    NotificationModel _notification = NotificationModel();
+
+    debugPrint('DATA notification $jsonData ${response.statusCode}');
+    if (response.statusCode == 201) {
+      _notification = NotificationModel.fromJson(jsonData);
+    }
+
+    return _notification;
+  }
+
+  ///Api services to get traveler notifications
+  Future<List<NotificationModel>> getTravelerNotifications(
+      String filter) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl,
+            '/${AppAPIPath.notificationsUrl}/traveler/$userId/$filter'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final List<NotificationModel> notifications = <NotificationModel>[];
+
+    final List<dynamic> res = jsonDecode(response.body);
+    for (final dynamic data in res) {
+      final NotificationModel _notification = NotificationModel.fromJson(data);
+      notifications.add(_notification);
+    }
+
+    return notifications;
+  }
+
   /// API service for NewsFeed Model
   Future<NewsFeedModel> getNewsFeedData() async {
     final http.Response response = await http.get(
@@ -2109,11 +2271,11 @@ class APIServices {
     return NewsfeedImageModel(newsfeedImageDetails: details);
   }
 
-  /// API service for advertisement model
+  /// API service for user list model
   Future<UserListModel> getUserListData() async {
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.userTypeUrl}/tourist%20guide'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
@@ -2130,16 +2292,174 @@ class APIServices {
     // final UserListModel dataSummary =
     //     UserListModel.fromJson(json.decode(response.body));
 
-    final List<UserDetailsModel> details = <UserDetailsModel>[];
+    // final List<UserDetailsModel> details = <UserDetailsModel>[];
 
-    final Map<String, dynamic> jsonData = jsonDecode(response.body);
-    final List<dynamic> res = jsonData['data'];
+    // final Map<String, dynamic> jsonData = jsonDecode(response.body);
+    // final List<dynamic> res = jsonData['data'];
 
+    // for (final dynamic data in res) {
+    //   final UserDetailsModel user = UserDetailsModel.fromJson(data);
+    //   details.add(user);
+    // }
+
+    final UserListModel dataSummary =
+        UserListModel.fromJson(json.decode(response.body));
+
+    return UserListModel(userDetails: dataSummary.userDetails);
+  }
+
+  ///Api services for certificates
+  Future<List<Certificate>> getCertificates() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+    };
+
+    debugPrint(
+        'URL: ${Uri.http(apiBaseUrl, '/${AppAPIPath.certificatesUrl}', queryParameters)}');
+    final List<Certificate> certificates = <Certificate>[];
+
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/${AppAPIPath.certificatesUrl}', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        });
+
+    final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
-      final UserDetailsModel user = UserDetailsModel.fromJson(data);
-      details.add(user);
+      final Certificate _certificate = Certificate.fromJson(data);
+      certificates.add(_certificate);
     }
 
-    return UserListModel(userDetails: details);
+    return certificates;
+  }
+
+  ///api service to add certificate
+  Future<Certificate> addCertificate(Certificate params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint('Params: ${params.certificateName} ');
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId.toString(),
+          'certificate_name': params.certificateName!,
+          'certificate_description': params.certificateDescription!,
+          'certificate_photo_firebase_url': params.certificatePhotoFirebaseUrl!,
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    Certificate _certificate = Certificate();
+
+    debugPrint('DATA add certificate $jsonData ${response.statusCode}');
+    if (response.statusCode == 201) {
+      _certificate = Certificate.fromJson(jsonData);
+    }
+
+    return _certificate;
+  }
+
+  /// API service for delete Certificate
+  Future<http.Response> deleteCertificate(String id) async {
+    final String? token = UserSingleton.instance.user.token;
+    final http.Response response = await http.delete(
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}/$id'),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+    );
+
+    return response;
+  }
+
+  ///api service to update certificate
+  Future<Certificate> updateCertificate(Certificate params) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint('Params: ${params.certificateName} ');
+
+    final http.Response response = await http.patch(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.certificatesUrl}/${params.id}'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'certificate_name': params.certificateName!,
+          'certificate_description': params.certificateDescription!,
+          'certificate_photo_firebase_url': params.certificatePhotoFirebaseUrl!,
+        }));
+
+    final jsonData = jsonDecode(response.body);
+    Certificate _certificate = Certificate();
+
+    debugPrint('DATA Edit certificate $jsonData ${response.statusCode}');
+    if (response.statusCode == 200) {
+      _certificate = Certificate.fromJson(jsonData);
+    }
+
+    return _certificate;
+  }
+
+  /// API for getting the wishlist data
+  Future<WishlistActivityModel> getWishlistActivityData() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.wishlistUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final WishlistActivityModel dataSummary =
+        WishlistActivityModel.fromJson(json.decode(response.body));
+
+    return WishlistActivityModel(
+        wishlistActivityDetails: dataSummary.wishlistActivityDetails);
+  }
+
+  /// API service for advertisement model
+  Future<PackageModelData> getPackageDataById(String activityPackageid) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"id":\"$activityPackageid\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final PackageModelData dataSummary =
+        PackageModelData.fromJson(json.decode(response.body));
+
+    return PackageModelData(packageDetails: dataSummary.packageDetails);
+  }
+
+  /// API for getting the wishlist data
+  Future<WishlistActivityModel> getWishlistActivityByPackageId(
+      String id) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.wishlistUrl}?s={"activity_package_id": \"$id\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    final WishlistActivityModel dataSummary =
+        WishlistActivityModel.fromJson(json.decode(response.body));
+
+    return WishlistActivityModel(
+        wishlistActivityDetails: dataSummary.wishlistActivityDetails);
   }
 }

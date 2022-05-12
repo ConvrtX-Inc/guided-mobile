@@ -15,9 +15,11 @@ import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/country_model.dart';
+import 'package:guided/models/payment_transaction.dart';
 import 'package:guided/screens/payments/payment_add_card.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
 import 'package:guided/screens/widgets/reusable_widgets/credit_card.dart';
+import 'package:guided/screens/widgets/reusable_widgets/date_time_ago.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:intl/intl.dart';
@@ -25,7 +27,8 @@ import 'package:intl/intl.dart';
 /// screen for payment manage card
 class PaymentManageCard extends StatefulWidget {
   /// constructor
-  const PaymentManageCard({Key? key, this.price = '', this.selectedCard, this.onPaymentClicked})
+  const PaymentManageCard(
+      {Key? key, this.price = '', this.selectedCard, this.onPaymentClicked})
       : super(key: key);
 
   final String? price;
@@ -53,6 +56,9 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
 
   late List<CountryModel> listCountry = [];
 
+  List<PaymentTransactionModel> paymentTransactions =
+      <PaymentTransactionModel>[];
+
   @override
   void initState() {
     super.initState();
@@ -62,6 +68,8 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
     }
 
     fetchCards();
+
+    getPaymentTransactions();
 
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final List<CountryModel> resCountries =
@@ -76,65 +84,67 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.chevron_left,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        title: Text(
-          AppTextConstants.manageCards,
-          style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w700,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(
+              Icons.chevron_left,
               color: Colors.black,
-              fontFamily: 'Gilroy'),
-        ),
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 20, 10),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute<dynamic>(
-                      builder: (BuildContext context) =>
-                          const PaymentAddCard()),
-                );
-              },
-              child: Container(
-                height: 2.h,
-                width: 40.w,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.r),
-                    color: Colors.green),
-                child: const Icon(Icons.add),
-              ),
             ),
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-          child: isLoading
-              ? Center(
-                  child: CircularProgressIndicator(color: AppColors.deepGreen))
-              : buildBody()),
-           bottomNavigationBar: widget.price != '' ?  Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-          child: CustomRoundedButton(
-              title: 'Pay ${widget.price} USD',
-              onpressed: ()  {
-                Navigator.pop(context,true);
-              }),
-        ) : null
-    );
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          elevation: 0,
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          title: Text(
+            AppTextConstants.manageCards,
+            style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.w700,
+                color: Colors.black,
+                fontFamily: 'Gilroy'),
+          ),
+          actions: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 10, 20, 10),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<dynamic>(
+                        builder: (BuildContext context) =>
+                            const PaymentAddCard()),
+                  );
+                },
+                child: Container(
+                  height: 2.h,
+                  width: 40.w,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.r),
+                      color: Colors.green),
+                  child: const Icon(Icons.add),
+                ),
+              ),
+            )
+          ],
+        ),
+        body: SingleChildScrollView(
+            child: isLoading
+                ? Center(
+                    child:
+                        CircularProgressIndicator(color: AppColors.deepGreen))
+                : buildBody()),
+        bottomNavigationBar: widget.price != ''
+            ? Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                child: CustomRoundedButton(
+                    title: 'Pay ${widget.price} USD',
+                    onpressed: () {
+                      Navigator.pop(context, true);
+                    }),
+              )
+            : null);
   }
 
   Widget buildBody() =>
@@ -329,11 +339,58 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
               ),
             ],
           ),
-        /*  _getList('Fianna Wu', '2 hr ago', r'+$600.00', () {}),
+          buildPaymentTransactions(),
+
+          /*  _getList('Fianna Wu', '2 hr ago', r'+$600.00', () {}),
           _getList('Jolina Jones', '4 hr ago', r'-$200.00', () {}),
           _getList('Wills Smith', '4 hr ago', r'+$240.00', () {}),*/
         ],
       ));
+
+  Widget buildPaymentTransactions() => ListView.builder(
+      itemCount: paymentTransactions.length,
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemBuilder: (BuildContext ctx, int index) {
+        return buildTransactionItem(paymentTransactions[index]);
+      });
+
+  Widget buildTransactionItem(PaymentTransactionModel transaction) => Container(
+        padding: const EdgeInsets.all(6),
+        margin: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16), color: Colors.white),
+        child: ListTile(
+          leading: Container(
+              height: 50,
+              width: 50,
+              margin: const EdgeInsets.fromLTRB(0, 0, 18, 0),
+              child: Image.asset(AssetsPath.defaultProfilePic)),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(transaction.serviceName,
+                  style:
+                      TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp)),
+              SizedBox(height: 8.h),
+              if (transaction.createdDate != '')
+                DateTimeAgo(
+                    dateString: transaction.createdDate, color: Colors.grey)
+              else
+                Text('2h ago',
+                    style: TextStyle(color: Colors.grey, fontSize: 13.sp)),
+            ],
+          ),
+          trailing: Text(
+              '\$ ${transaction.type == AppTextConstants.deduction ? '-' : '+'}${transaction.amount}',
+              style: TextStyle(
+                  color: transaction.type == AppTextConstants.deduction
+                      ? Colors.red
+                      : Colors.green,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16.sp)),
+        ),
+      );
 
   Widget _getList(
       String title, String subtitle, String trailing, dynamic ontap) {
@@ -580,6 +637,14 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
         orElse: () => CountryModel());
 
     return country.name;
+  }
+
+  Future<void> getPaymentTransactions() async {
+    final List<PaymentTransactionModel> result =
+        await APIServices().getPaymentTransactions();
+    setState(() {
+      paymentTransactions = result;
+    });
   }
 
   @override

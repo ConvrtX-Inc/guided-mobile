@@ -99,7 +99,6 @@ class _LocalLawsTaxesFormState extends State<LocalLawsTaxesForm> {
                       controller: _local_laws,
                       focusNode: _local_laws_focus,
                       decoration: InputDecoration(
-                        hintText: AppTextConstants.longLoremIpsum,
                         hintStyle: TextStyle(
                           color: Colors.grey.shade800,
                         ),
@@ -108,7 +107,7 @@ class _LocalLawsTaxesFormState extends State<LocalLawsTaxesForm> {
                           color: Colors.black,
                           fontWeight: FontWeight.w400,
                           height: 2,
-                          fontSize: 16.sp,
+                          fontSize: 12.sp,
                           fontFamily: 'Gilroy'),
                     ),
                   ),

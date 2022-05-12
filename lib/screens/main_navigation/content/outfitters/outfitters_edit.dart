@@ -1002,6 +1002,7 @@ class _OutfitterEditState extends State<OutfitterEdit>
                         ),
                       ),
                       style: txtStyle,
+                      maxLength: 40,
                     )
                   ],
                 ),

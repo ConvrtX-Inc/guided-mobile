@@ -85,19 +85,16 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-                child: SizedBox(
-                  height: 450.h,
-                  child: SingleChildScrollView(
-                    physics: const ScrollPhysics(),
-                    child: Text(
-                      screenArguments['terms_and_condition'],
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                          height: 2,
-                          fontSize: 16.sp,
-                          fontFamily: 'Gilroy'),
-                    ),
+                child: SingleChildScrollView(
+                  physics: const ScrollPhysics(),
+                  child: Text(
+                    screenArguments['terms_and_condition'],
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w400,
+                        height: 2,
+                        fontSize: 12.sp,
+                        fontFamily: 'Gilroy'),
                   ),
                 ),
               ),

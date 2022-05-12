@@ -421,12 +421,10 @@ class _SubActivitiesScreenState extends State<SubActivitiesScreen> {
                           child: SizedBox(
                             height: 30.h,
                             child: Align(
-                              child: Expanded(
-                                child: Text(
-                                  badges.name,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 12.sp),
-                                ),
+                              child: Text(
+                                badges.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 12.sp),
                               ),
                             ),
                           ),

@@ -104,7 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return buildProfileData(context, _controller.userProfileDetails);
             }),
             getAboutMe(context),
-            // getProfileSetting(context)
+            getProfileSetting(context)
           ],
         ),
       ),
@@ -257,6 +257,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
       ListTile(
+          onTap: (){
+            Navigator.of(context).pushNamed('/profile-certificate');
+          },
           leading: Container(
               width: 38.w,
               height: 38.h,

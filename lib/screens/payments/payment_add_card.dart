@@ -177,7 +177,7 @@ class _PaymentAddCardState extends State<PaymentAddCard> {
               width: MediaQuery.of(context).size.width / 2.8,
               child: BorderlessTextField(
                 title: AppTextConstants.city,
-                hint: 'Canada',
+                hint: 'Ottawa',
                 onValidate: (String val) {
                   if (val.trim().isEmpty) {
                     return '${AppTextConstants.city} is required';

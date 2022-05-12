@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/newsfeed_image_model.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/golden_badge.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -47,12 +50,14 @@ class _DiscoveryHubFeaturesState extends State<DiscoveryHubFeatures> {
   late List<String> imageIdList;
   int activeIndex = 0;
   int imageCount = 0;
-
+  bool hasPremiumSubscription = false;
   @override
   void initState() {
     super.initState();
     imageList = [];
     imageIdList = [];
+    hasPremiumSubscription =
+        UserSingleton.instance.user.user!.hasPremiumSubscription!;
   }
 
   @override
@@ -64,12 +69,8 @@ class _DiscoveryHubFeaturesState extends State<DiscoveryHubFeatures> {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(1.r))),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.r),
                 child: buildSlider(context)),
           ),
           SizedBox(height: 20.h),
@@ -108,14 +109,54 @@ class _DiscoveryHubFeaturesState extends State<DiscoveryHubFeatures> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              widget._description,
-              style: AppTextStyle.descrStyle,
-              textAlign: TextAlign.left,
-            ),
-          ),
+          if (hasPremiumSubscription)
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                widget._description,
+                style: AppTextStyle.descrStyle,
+                textAlign: TextAlign.left,
+              ),
+            )
+          else if (hasPremiumSubscription == false && widget._isPremium)
+            SizedBox(
+              width: double.infinity,
+              child: Column(
+                children: <Widget>[
+                  const SkeletonText(
+                    width: 700,
+                    height: 30,
+                    radius: 10,
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  const SkeletonText(
+                    width: 700,
+                    height: 30,
+                    radius: 10,
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  const SkeletonText(
+                    width: 700,
+                    height: 30,
+                    radius: 10,
+                  ),
+                ],
+              ),
+            )
+          else if (hasPremiumSubscription == false &&
+              widget._isPremium == false)
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                widget._description,
+                style: AppTextStyle.descrStyle,
+                textAlign: TextAlign.left,
+              ),
+            )
         ],
       ),
     );
@@ -183,12 +224,18 @@ class _DiscoveryHubFeaturesState extends State<DiscoveryHubFeatures> {
                         return Positioned(
                           left: 20,
                           bottom: 20,
-                          child: Image.memory(
-                            base64.decode(badgeData.badgeDetails[0].imgIcon
-                                .split(',')
-                                .last),
-                            gaplessPlayback: true,
-                          ),
+                          child: widget._isPremium
+                              ? GoldenBadge(
+                                  base64Image:
+                                      badgeData.badgeDetails[0].imgIcon,
+                                )
+                              : Image.memory(
+                                  base64.decode(badgeData
+                                      .badgeDetails[0].imgIcon
+                                      .split(',')
+                                      .last),
+                                  gaplessPlayback: true,
+                                ),
                         );
                       }
                       if (snapshot.connectionState != ConnectionState.done) {

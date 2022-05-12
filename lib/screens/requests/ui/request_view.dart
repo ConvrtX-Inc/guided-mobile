@@ -14,9 +14,12 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/bank_account_model.dart';
+import 'package:guided/models/notification_model.dart';
 import 'package:guided/models/profile_data_model.dart';
+import 'package:guided/models/stripe_bank_account_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/services/stripe_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../models/activity_package.dart';
@@ -55,8 +58,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
 
   String stripeAcctId = '';
 
-  List<BankAccountModel> bankAccounts = [];
-
+  List<StripeBankAccountModel> bankAccounts = [];
 
   String requestStatus = '';
 
@@ -81,8 +83,8 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
 
     //
     // getBookingPaymentIntentId(bookingRequest.id!);
-    // getBookingTransaction(bookingRequest.activityPackageId!,
-    //     travellerDetails.id!);
+    //  getBookingTransaction(bookingRequest.activityPackageId!,
+    //    travellerDetails.id!);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -373,8 +375,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                         ),
                       ),
                     ),*/
-                    if (requestStatus.toLowerCase() ==
-                        'pending')
+                    if (requestStatus.toLowerCase() == 'pending')
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -390,7 +391,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                           ),
                           Center(
                             child: SizedBox(
-                              width: 315.w,
+                              width: MediaQuery.of(context).size.width,
                               child: ElevatedButton(
                                 style: ButtonStyle(
                                     padding:
@@ -414,7 +415,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  showRejectDialog(context,bookingRequest.id!);
+                                  showRejectDialog(context, bookingRequest.id!);
                                 },
                               ),
                             ),
@@ -450,8 +451,11 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
     debugPrint('Booking request id ${bookingRequest.id!}');
 
     if (stripeAcctId.isNotEmpty) {
-      final List<BankAccountModel> bankAccountsResult =
-          await APIServices().getUserBankAccounts();
+      // final List<BankAccountModel> bankAccountsResult =
+      //     await APIServices().getUserBankAccounts();
+
+      final List<StripeBankAccountModel> bankAccountsResult =
+          await StripeServices().getBankAccounts();
 
       if (bankAccountsResult.isEmpty) {
         await _showAddBankAccountDialog(context);
@@ -471,14 +475,18 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
           if (paymentRes != '') {
             await APIServices().approveBookingRequest(bookingRequest.id!);
 
-
+            await sendBookingRequestNotification(
+                bookingRequest.id!,
+                'Request Accepted',
+                '${AppTextConstants.yourRequestHasApprovedBy} ${UserSingleton.instance.user.user!.fullName!}',
+                bookingRequest.fromUserId!);
 
             setState(() {
               isLoading = false;
               isAccepted = true;
               requestStatus = 'Completed';
             });
-            await _showDialog(context,'Booking Request Accepted!');
+            await _showDialog(context, 'Booking Request Accepted!');
           }
         } else {
           debugPrint('Payment Unsuccessful!');
@@ -526,7 +534,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
     return res;
   }
 
-  Future<void> _showDialog(BuildContext context,String message) async {
+  Future<void> _showDialog(BuildContext context, String message) async {
     await showDialog(
         context: context,
         builder: (BuildContext ctx) {
@@ -740,16 +748,17 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
   }
 
   Future<void> getBankAccounts() async {
-    final List<BankAccountModel> bankAccountsResult =
-        await APIServices().getUserBankAccounts();
+    final List<StripeBankAccountModel> bankAccountsResult =
+        await StripeServices().getBankAccounts();
+
+    debugPrint('Bank account res ${bankAccounts.length}');
 
     setState(() {
       bankAccounts = bankAccountsResult;
     });
   }
 
-  void showRejectDialog(
-      BuildContext context,String bookingRequestId) {
+  void showRejectDialog(BuildContext context, String bookingRequestId) {
     bool _isRejectingRequest = false;
     showDialog(
         context: context,
@@ -798,13 +807,13 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                 borderRadius: BorderRadius.circular(16)),
                             child: Center(
                                 child: Text(
-                                  AppTextConstants.cancel,
-                                  style: TextStyle(
-                                      color: AppColors.deepGreen,
-                                      fontSize: 12.sp,
-                                      fontFamily: 'Gilroy',
-                                      fontWeight: FontWeight.w700),
-                                ))),
+                              AppTextConstants.cancel,
+                              style: TextStyle(
+                                  color: AppColors.deepGreen,
+                                  fontSize: 12.sp,
+                                  fontFamily: 'Gilroy',
+                                  fontWeight: FontWeight.w700),
+                            ))),
                       ),
                       InkWell(
                         onTap: () async {
@@ -812,15 +821,24 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                             _isRejectingRequest = true;
                           });
 
-                          final res = await APIServices().rejectBookingRequest(bookingRequestId);
+                          final res = await APIServices()
+                              .rejectBookingRequest(bookingRequestId);
 
-                          if(res.statusCode == 200){
+                          await getBookingTransaction(
+                              bookingRequest.activityPackageId!,
+                              travellerDetails.id!);
 
-                            setState((){
+                          if (res.statusCode == 200) {
+                            await sendBookingRequestNotification(
+                                bookingRequest.id!,
+                                'Request Rejected',
+                                '${AppTextConstants.yourRequestHasRejectedBy} ${UserSingleton.instance.user.user!.fullName!}',
+                                bookingRequest.fromUserId!);
+                            setState(() {
                               requestStatus = 'Rejected';
                             });
-                            await _showDialog(context,'Booking Request Rejected!');
-
+                            await _showDialog(
+                                context, 'Booking Request Rejected!');
                           }
                         },
                         child: Container(
@@ -832,19 +850,19 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                             child: Center(
                                 child: !_isRejectingRequest
                                     ? Text(
-                                  AppTextConstants.confirm,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12.sp,
-                                      fontFamily: 'Gilroy',
-                                      fontWeight: FontWeight.w700),
-                                )
+                                        AppTextConstants.confirm,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12.sp,
+                                            fontFamily: 'Gilroy',
+                                            fontWeight: FontWeight.w700),
+                                      )
                                     : const SizedBox(
-                                    height: 12,
-                                    width: 12,
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                    )))),
+                                        height: 12,
+                                        width: 12,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                        )))),
                       ),
                     ]),
                 SizedBox(
@@ -854,5 +872,20 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
             );
           });
         });
+  }
+
+  Future<void> sendBookingRequestNotification(String bookingRequestId,
+      String title, String message, String travelerId) async {
+    final NotificationModel params = NotificationModel(
+        notificationMsg: message,
+        toUserId: travelerId,
+        type: 'booking request',
+        title: title,
+        transactionNo: transactionDetails.transactionNumber,
+        bookingRequestId: bookingRequestId);
+
+    final NotificationModel res = await APIServices().sendNotification(params);
+
+    debugPrint('Response: ${res.id} ${res.title}');
   }
 }
