@@ -451,8 +451,8 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-              // 'Bearer ${UserSingleton.instance.user.token}',
-              'Bearer $staticToken',
+              'Bearer ${UserSingleton.instance.user.token}',
+              // 'Bearer $staticToken',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -471,8 +471,8 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),
         headers: {
           HttpHeaders.authorizationHeader:
-              // 'Bearer ${UserSingleton.instance.user.token}',
-              'Bearer $staticToken',
+              'Bearer ${UserSingleton.instance.user.token}',
+              // 'Bearer $staticToken',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -808,19 +808,21 @@ class APIServices {
         });
     final dynamic jsonData = jsonDecode(response.body);
 
-    final List<User> popularGuides = <User>[];
-    final List<User> activityPackage =
-        (jsonData['data'] as List).map((i) => User.fromJson(i)).toList();
+    // final List<User> popularGuides = <User>[];
+    // final List<User> activityPackage =
+    //     (jsonData['data'] as List).map((i) => User.fromJson(i)).toList();
 
-    final List<User> guides = activityPackage.where(
-      (User element) {
-        return element.isTraveller == false;
-      },
-    ).toList();
-    print(guides.length);
-    popularGuides.addAll(guides);
+    // final List<User> guides = activityPackage.where(
+    //   (User element) {
+    //     return element.isTraveller == false;
+    //   },
+    // ).toList();
+    // print(guides.length);
+    // popularGuides.addAll(guides);
 
-    return guides;
+    final List<User> guides = jsonData;
+
+    return jsonData;
   }
 
   /// API service for outfitter image model
@@ -1088,15 +1090,15 @@ class APIServices {
     debugPrint('USER ID $userId');
     String id = '';
     if (type == 'terms_and_condition') {
-      id = 'terms_and_condition_$userId';
+      id = 'termsandconditions';
     } else if (type == 'traveler_waiver_form') {
-      id = 'traveler_waiver_form_$userId';
+      id = 'travelerreleaseandwaiverform';
     } else if (type == 'cancellation_policy') {
-      id = 'cancellation_policy_$userId';
+      id = 'cancellationpolicy';
     } else if (type == 'guided_payment_payout') {
-      id = 'guided_payment_payout_$userId';
+      id = 'paymentandpayoutterms';
     } else if (type == 'local_laws') {
-      id = 'local_laws_$userId';
+      id = 'locallawsandtaxes';
     }
 
     debugPrint(
@@ -2252,11 +2254,11 @@ class APIServices {
     return NewsfeedImageModel(newsfeedImageDetails: details);
   }
 
-  /// API service for advertisement model
+  /// API service for user list model
   Future<UserListModel> getUserListData() async {
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.userTypeUrl}/tourist%20guide'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
@@ -2273,17 +2275,20 @@ class APIServices {
     // final UserListModel dataSummary =
     //     UserListModel.fromJson(json.decode(response.body));
 
-    final List<UserDetailsModel> details = <UserDetailsModel>[];
+    // final List<UserDetailsModel> details = <UserDetailsModel>[];
 
-    final Map<String, dynamic> jsonData = jsonDecode(response.body);
-    final List<dynamic> res = jsonData['data'];
+    // final Map<String, dynamic> jsonData = jsonDecode(response.body);
+    // final List<dynamic> res = jsonData['data'];
 
-    for (final dynamic data in res) {
-      final UserDetailsModel user = UserDetailsModel.fromJson(data);
-      details.add(user);
-    }
+    // for (final dynamic data in res) {
+    //   final UserDetailsModel user = UserDetailsModel.fromJson(data);
+    //   details.add(user);
+    // }
 
-    return UserListModel(userDetails: details);
+    final UserListModel dataSummary =
+        UserListModel.fromJson(json.decode(response.body));
+
+    return UserListModel(userDetails: dataSummary.userDetails);
   }
 
   ///Api services for certificates

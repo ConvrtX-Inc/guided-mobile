@@ -9,26 +9,22 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
-import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/activity_destination_model.dart';
-import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:google_api_headers/google_api_headers.dart';
-import 'package:google_maps_webservice/places.dart';
-
-const kGoogleApiKey = "AIzaSyCPF7ygz63Zj5RWZ_wU4G61JTynfPRjOMg";
 
 /// Package photo screen
 class TabDestinationEditScreen extends StatefulWidget {
@@ -1332,7 +1328,7 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
 
     Prediction? p = await PlacesAutocomplete.show(
       context: context,
-      apiKey: kGoogleApiKey,
+      apiKey: dotenv.env['GOOGLE_MAPS_API_KEY'].toString(),
       radius: 10000000,
       types: [],
       strictbounds: false,
@@ -1357,7 +1353,7 @@ class _TabDestinationEditScreenState extends State<TabDestinationEditScreen> {
     if (p != null) {
       // get detail (lat/lng)
       GoogleMapsPlaces _places = GoogleMapsPlaces(
-        apiKey: kGoogleApiKey,
+        apiKey: dotenv.env['GOOGLE_MAPS_API_KEY'].toString(),
         apiHeaders: await const GoogleApiHeaders().getHeaders(),
       );
       final PlacesDetailsResponse detail =
