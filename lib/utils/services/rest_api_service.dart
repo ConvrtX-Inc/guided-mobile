@@ -2453,7 +2453,8 @@ class APIServices {
 
     final http.Response response = await http.patch(
         Uri.parse(
-            '$apiBaseMode$apiBaseUrl/${AppAPIPath.getProfileDetails}/newpassword/$userId'),
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath
+                .getProfileDetails}/newpassword/$userId'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           'content-type': 'application/json'
@@ -2461,5 +2462,21 @@ class APIServices {
         body: jsonEncode(parameters));
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+  /// API service for advertisement model
+  Future<PackageModelData> getPackageDataByUserId(String userId) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"user_id": \"$userId\"}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
+
+    /// seeding for data summary
+    final PackageModelData dataSummary =
+        PackageModelData.fromJson(json.decode(response.body));
+
+    return PackageModelData(packageDetails: dataSummary.packageDetails);
   }
 }
