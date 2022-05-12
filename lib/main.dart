@@ -19,7 +19,7 @@ import 'package:guided/screens/message/message_inbox.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'firebase/firebase_options.dart';
 
-String _defaultHome = '/';
+String _defaultHome = '/edit_profile_traveler';
 
 void main() async {
   await dotenv.load(fileName: '.env');
