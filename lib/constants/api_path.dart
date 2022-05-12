@@ -12,7 +12,7 @@ class AppAPIPath {
   static String apiBaseMode = isStaging ? 'http://' : 'https://';
 
   ///Returns mode : (dev | staging | local )
-  static String mode = 'dev';
+  static String mode = 'staging';
 
   /// Returns API base url
   static String apiBaseUrl = getBaseUrl(mode);
@@ -100,6 +100,9 @@ class AppAPIPath {
   /// Returns activity packages url
   static String activityPackagesUrlDescOrder =
       'api/v1/activity-packages?sort=created_date%2CDESC';
+
+  /// Returns activity packages url
+  static String activityPackagesUrlSearch = 'api/v1/activity-packages/search';
 
   /// Returns closest-activity url
   static String closestActivity = 'api/v1/activity-packages/closest-activity';

@@ -59,6 +59,7 @@ class TabMapScreen extends StatefulWidget {
 }
 
 class _TabMapScreenState extends State<TabMapScreen> {
+  final FocusNode _searchFocusNode = FocusNode();
   Completer<GoogleMapController> _controller = Completer();
   GoogleMapController? mapController;
   final List<Marker> _markers = <Marker>[];
@@ -103,34 +104,47 @@ class _TabMapScreenState extends State<TabMapScreen> {
       getUserCards();
     }*/
 
-  hasPremiumSubscription = UserSingleton.instance.user.user!.hasPremiumSubscription!;
+    hasPremiumSubscription =
+        UserSingleton.instance.user.user!.hasPremiumSubscription!;
+  }
+
+  @override
+  void dispose() {
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 
   Future<void> addMarker(List<ActivityPackage> activityPackages) async {
     final List<Marker> marks = <Marker>[];
     for (ActivityPackage element in activityPackages) {
-      final Activity? activity = activities
-          .firstWhereOrNull((Activity a) => a.id == element.mainBadge!.id);
+      if (element.mainBadge != null) {
+        final Activity? activity = activities
+            .firstWhereOrNull((Activity a) => a.id == element.mainBadge!.id);
 
-      double lat = double.parse(element
-          .activityPackageDestination!.activitypackagedestinationLatitude!);
-      double long = double.parse(element
-          .activityPackageDestination!.activitypackagedestinationLongitude!);
-      if (activity != null) {
-        marks.add(
-          Marker(
-            markerId: MarkerId(element.id!),
-            icon: await MarkerIcon.pictureAsset(
-                assetPath: activity.path, width: 80, height: 80),
-            position: LatLng(lat, long),
-          ),
-        );
+        if (activity != null) {
+          double lat = double.parse(element
+              .activityPackageDestination!.activitypackagedestinationLatitude!);
+          double long = double.parse(element.activityPackageDestination!
+              .activitypackagedestinationLongitude!);
+          marks.add(
+            Marker(
+              markerId: MarkerId(element.id!),
+              icon: await MarkerIcon.pictureAsset(
+                  assetPath: activity.path, width: 80, height: 80),
+              position: LatLng(lat, long),
+            ),
+          );
+        }
       }
     }
     double lat = double.parse(activityPackages
         .first.activityPackageDestination!.activitypackagedestinationLatitude!);
     double long = double.parse(activityPackages.first
         .activityPackageDestination!.activitypackagedestinationLongitude!);
+    print(activityPackages
+        .first.activityPackageDestination!.activitypackagedestinationLatitude!);
+    print(activityPackages.first.activityPackageDestination!
+        .activitypackagedestinationLongitude!);
     // mapController?.animateCamera(CameraUpdate.newCameraPosition(
     //     CameraPosition(target: LatLng(lat, long), zoom: 17)
     //     //17 is new zoom level
@@ -228,8 +242,18 @@ class _TabMapScreenState extends State<TabMapScreen> {
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
                           child: TextField(
+                            textInputAction: TextInputAction.search,
+                            onSubmitted: (String search) {
+                              if (search.isNotEmpty) {
+                                APIServices()
+                                    .searchActivity(search)
+                                    .then((List<ActivityPackage> value) {
+                                  print(value.length);
+                                  addMarker(value);
+                                });
+                              }
+                            },
                             controller: _placeName,
-                            onTap: _handlePressButton,
                             textAlign: TextAlign.left,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
@@ -520,56 +544,6 @@ class _TabMapScreenState extends State<TabMapScreen> {
     );
   }
 
-  Future<void> _handlePressButton() async {
-    final Map<String, dynamic> screenArguments =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
-    Prediction? p = await PlacesAutocomplete.show(
-      context: context,
-      apiKey: 'AIzaSyCPF7ygz63Zj5RWZ_wU4G61JTynfPRjOMg',
-      radius: 10000000,
-      types: [],
-      strictbounds: false,
-      mode: Mode.overlay,
-      language: 'en',
-      decoration: InputDecoration(
-        hintText: 'Search',
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: Colors.white,
-          ),
-        ),
-      ),
-      components: [
-        Component(Component.country, screenArguments['country_code'])
-      ],
-    );
-
-    await displayPrediction(p, context);
-  }
-
-  Future<void> displayPrediction(Prediction? p, BuildContext context) async {
-    if (p != null) {
-      // get detail (lat/lng)
-      GoogleMapsPlaces _places = GoogleMapsPlaces(
-        apiKey: 'AIzaSyCPF7ygz63Zj5RWZ_wU4G61JTynfPRjOMg',
-        apiHeaders: await const GoogleApiHeaders().getHeaders(),
-      );
-      final PlacesDetailsResponse detail =
-          await _places.getDetailsByPlaceId(p.placeId!);
-      final lat = detail.result.geometry!.location.lat;
-      final lng = detail.result.geometry!.location.lng;
-      await mapController?.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(lat, lng), zoom: 17)
-          //17 is new zoom level
-          ));
-      setState(() {
-        _placeName = TextEditingController(text: p.description);
-      });
-    }
-  }
-
   Future<Position> _userCurrentPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -686,6 +660,19 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   }
                 });
               }
+
+              final ActivityPackage? activity = _filteredActivity.firstOrNull;
+
+              if (activity != null) {
+                double lat = double.parse(activity.activityPackageDestination!
+                    .activitypackagedestinationLatitude!);
+                double long = double.parse(activity.activityPackageDestination!
+                    .activitypackagedestinationLongitude!);
+                mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(target: LatLng(lat, long), zoom: 17)
+                    //17 is new zoom level
+                    ));
+              }
             },
             child: Container(
               decoration: BoxDecoration(
@@ -773,35 +760,32 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   }
                 });
               }
-              // final ActivityPackage? activity = _loadingData.firstWhereOrNull(
-              //     (ActivityPackage a) => a.mainBadge!.id == activities[i].id);
+              final ActivityPackage? activity = _filteredActivity.firstOrNull;
 
-              // if (activity != null) {
-              //   double lat = double.parse(activity.activityPackageDestination!
-              //       .activitypackagedestinationLatitude!);
-              //   double long = double.parse(activity.activityPackageDestination!
-              //       .activitypackagedestinationLongitude!);
-              //   mapController?.animateCamera(CameraUpdate.newCameraPosition(
-              //       CameraPosition(target: LatLng(lat, long), zoom: 17)
-              //       //17 is new zoom level
-              //       ));
-              //   setState(() {
-              //     currentMapLatLong = LatLng(lat, long);
-              //     if (_selectedActivity.contains(i)) {
-              //       _selectedActivity.remove(i);
-              //     } else {
-              //       _selectedActivity.add(i);
-              //     }
-              //   });
-              // } else {
-              //   setState(() {
-              //     if (_selectedActivity.contains(i)) {
-              //       _selectedActivity.remove(i);
-              //     } else {
-              //       _selectedActivity.add(i);
-              //     }
-              //   });
-              // }
+              if (activity != null) {
+                double lat = double.parse(activity.activityPackageDestination!
+                    .activitypackagedestinationLatitude!);
+                double long = double.parse(activity.activityPackageDestination!
+                    .activitypackagedestinationLongitude!);
+                mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(target: LatLng(lat, long), zoom: 17)
+                    //17 is new zoom level
+                    ));
+              }
+              // mapController?.animateCamera(CameraUpdate.newCameraPosition(
+              //     CameraPosition(
+              //         target: LatLng(
+              //             double.parse(_filteredActivity
+              //                 .first
+              //                 .activityPackageDestination!
+              //                 .activitypackagedestinationLatitude!),
+              //             double.parse(_filteredActivity
+              //                 .first
+              //                 .activityPackageDestination!
+              //                 .activitypackagedestinationLongitude!)),
+              //         zoom: 17)
+              //     //17 is new zoom level
+              //     ));
             },
             child: Container(
               decoration: BoxDecoration(
@@ -1013,6 +997,5 @@ class _TabMapScreenState extends State<TabMapScreen> {
     setState(() {
       hasPremiumSubscription = true;
     });
-
-   }
+  }
 }
