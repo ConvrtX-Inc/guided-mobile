@@ -101,12 +101,8 @@ class _OutfitterFeatureState extends State<OutfitterFeature> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(1.r))),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.r),
                     child: buildSlider(context)),
               ),
               SizedBox(height: 20.h),

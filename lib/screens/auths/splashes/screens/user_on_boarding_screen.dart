@@ -34,65 +34,60 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <
-              Widget>[
-            if (screenArguments['user_type'] == 'traveller')
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: buildTraveller(),
-              )
-            else
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: buildGuide(),
-              ),
-            SizedBox(
-              height: 10.h,
-            ),
-            if (activeIndex == 1)
-              Center(
-                child: SizedBox(
-                  height: 50.h,
-                  width: 150.w,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (activeIndex != 1) {
-                        setState(() {
-                          activeIndex = activeIndex + 1;
-                          buttonCarouselController.animateToPage(activeIndex);
-                        });
-                      } else {
-                        await SecureStorage.readValue(
-                                key: AppTextConstants.userType)
-                            .then((String value) async {
-                          if (value == 'traveller') {
-                            await Navigator.of(context).pushNamed('/discovery');
-                          } else {
-                            await Navigator.of(context).pushNamed('/welcome');
-                          }
-                        });
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: AppColors.silver,
-                        ),
-                        borderRadius: BorderRadius.circular(14.r),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                if (screenArguments['user_type'] == 'traveller')
+                  buildTraveller()
+                else
+                  buildGuide(),
+              ]),
+        ),
+      ),
+      bottomNavigationBar: activeIndex == 1
+          ? Padding(
+              padding: const EdgeInsets.all(30),
+              child: SizedBox(
+                height: 50.h,
+                width: 80.w,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (activeIndex != 1) {
+                      setState(() {
+                        activeIndex = activeIndex + 1;
+                        buttonCarouselController.animateToPage(activeIndex);
+                      });
+                    } else {
+                      await SecureStorage.readValue(
+                              key: AppTextConstants.userType)
+                          .then((String value) async {
+                        if (value == 'traveller') {
+                          await Navigator.of(context).pushNamed('/discovery');
+                        } else {
+                          await Navigator.of(context).pushNamed('/welcome');
+                        }
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: AppColors.silver,
                       ),
-                      primary: AppColors.primaryGreen,
-                      onPrimary: Colors.white, // <-- Splash color
+                      borderRadius: BorderRadius.circular(14.r),
                     ),
-                    child: Text(AppTextConstants.getStarted),
+                    primary: AppColors.primaryGreen,
+                    onPrimary: Colors.white, // <-- Splash color
                   ),
+                  child: Text(AppTextConstants.getStarted),
                 ),
-              )
-            else
-              Row(
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(30),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   SizedBox(
@@ -165,9 +160,7 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
                   ),
                 ],
               ),
-          ]),
-        ),
-      ),
+            ),
     );
   }
 
@@ -211,7 +204,8 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Image.asset('assets/images/userOnBoarding1.png', width: 250, height: 250),
+            Image.asset('assets/images/userOnBoarding1.png',
+                width: 250, height: 250),
             SizedBox(
               height: 10.h,
             ),
@@ -219,17 +213,14 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                AppTextConstants.footerDescr1,
-                style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500),
-                textAlign: TextAlign.center,
-              ),
+            Text(
+              AppTextConstants.footerDescr1,
+              style: TextStyle(
+                  color: Colors.grey.shade700,
+                  fontFamily: 'Gilroy',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
             )
           ]),
           Column(children: <Widget>[
@@ -251,7 +242,8 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Image.asset('assets/images/userOnBoarding3.png', width: 250, height: 250),
+            Image.asset('assets/images/userOnBoarding3.png',
+                width: 250, height: 250),
             SizedBox(
               height: 10.h,
             ),
@@ -259,17 +251,14 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                AppTextConstants.footerDescr3,
-                style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500),
-                textAlign: TextAlign.center,
-              ),
+            Text(
+              AppTextConstants.footerDescr3,
+              style: TextStyle(
+                  color: Colors.grey.shade700,
+                  fontFamily: 'Gilroy',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
             ),
           ]),
         ],
@@ -305,7 +294,8 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Image.asset('assets/images/userOnBoarding2.png', width: 250, height: 250),
+            Image.asset('assets/images/userOnBoarding2.png',
+                width: 250, height: 250),
             SizedBox(
               height: 10.h,
             ),
@@ -313,17 +303,14 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                AppTextConstants.footerDescr2,
-                style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500),
-                textAlign: TextAlign.center,
-              ),
+            Text(
+              AppTextConstants.footerDescr2,
+              style: TextStyle(
+                  color: Colors.grey.shade700,
+                  fontFamily: 'Gilroy',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
             )
           ]),
           Column(children: <Widget>[
@@ -345,7 +332,8 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Image.asset('assets/images/userOnBoarding3.png', width: 250, height: 250),
+            Image.asset('assets/images/userOnBoarding3.png',
+                width: 250, height: 250),
             SizedBox(
               height: 10.h,
             ),
@@ -353,17 +341,14 @@ class _UserOnboardingScreenState extends State<UserOnboardingScreen> {
             SizedBox(
               height: 10.h,
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                AppTextConstants.footerDescr3,
-                style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500),
-                textAlign: TextAlign.center,
-              ),
+            Text(
+              AppTextConstants.footerDescr3,
+              style: TextStyle(
+                  color: Colors.grey.shade700,
+                  fontFamily: 'Gilroy',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
             )
           ]),
         ],

@@ -30,9 +30,7 @@ class _TabWishlistScreenState extends State<TabWishlistScreen> {
 
   @override
   void initState() {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-    ));
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     setTitle(initIndex);
     super.initState();
   }
@@ -58,72 +56,76 @@ class _TabWishlistScreenState extends State<TabWishlistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          children: [
-            Text(
-              'Wish List',
-              style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 24.sp,
-                  color: Colors.black,
-                  fontFamily: AppTextConstants.fontGilroy),
-            ),
-            if (title == AppTextConstants.guideProfile)
-              SizedBox(
-                height: 15.h,
-              ),
-            if (title == AppTextConstants.guideProfile)
-              Text(
-                'Adventure, Discover, Explore',
-                style: TextStyle(
-                    color: AppColors.lightningYellow,
-                    fontSize: 11.sp,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600),
-              )
-            else
-              const Text(''),
-          ],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(50.h),
+        child: AppBar(
+          automaticallyImplyLeading: false,
+          flexibleSpace: title == AppTextConstants.guideProfile
+              ? Column(
+                  children: <Widget>[
+                    Text(
+                      'Wish List',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24.sp,
+                          color: Colors.black,
+                          fontFamily: AppTextConstants.fontGilroy),
+                    ),
+                    Text(
+                      'Adventure, Discover, Explore',
+                      style: TextStyle(
+                          color: AppColors.lightningYellow,
+                          fontSize: 12.sp,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                )
+              : Column(
+                  children: <Widget>[
+                    Text(
+                      'Wish List',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24.sp,
+                          color: Colors.black,
+                          fontFamily: AppTextConstants.fontGilroy),
+                    ),
+                  ],
+                ),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
       ),
-      body: Container(
-        padding: const EdgeInsets.all(15),
-        color: Colors.white,
-        // width: 370,
-        // height: 300,
-        child: ContainedTabBarView(
-          tabs: <Widget>[
-            Text(AppTextConstants.activityPackages,
-                style: title == AppTextConstants.activityPackages
-                    ? AppTextStyle.activeStyle
-                    : AppTextStyle.inactive),
-            Text(AppTextConstants.guideProfile,
-                style: title == AppTextConstants.guideProfile
-                    ? AppTextStyle.activeStyle
-                    : AppTextStyle.inactive),
-          ],
-          tabBarProperties: TabBarProperties(
-            height: 42,
-            margin: const EdgeInsets.all(8),
-            indicatorColor: AppColors.deepGreen,
-            indicator: UnderlineTabIndicator(
-                borderSide: BorderSide(width: 2.w, color: AppColors.deepGreen),
-                insets: EdgeInsets.symmetric(horizontal: 18.w)),
-            indicatorWeight: 1,
-            labelColor: Colors.black,
-            unselectedLabelColor: Colors.grey,
-          ),
-          views: const <Widget>[
-            ActivityPackagesWishlist(),
-            GuideProfile(),
-          ],
-          onChange: setTitle,
-          initialIndex: initIndex,
+      body: ContainedTabBarView(
+        tabs: <Widget>[
+          Text(AppTextConstants.activityPackages,
+              style: title == AppTextConstants.activityPackages
+                  ? AppTextStyle.activeStyle
+                  : AppTextStyle.inactive),
+          Text(AppTextConstants.guideProfile,
+              style: title == AppTextConstants.guideProfile
+                  ? AppTextStyle.activeStyle
+                  : AppTextStyle.inactive),
+        ],
+        tabBarProperties: TabBarProperties(
+          height: 42,
+          margin: const EdgeInsets.all(8),
+          indicatorColor: AppColors.deepGreen,
+          indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(width: 2.w, color: AppColors.deepGreen),
+              insets: EdgeInsets.symmetric(horizontal: 18.w)),
+          indicatorWeight: 1,
+          labelColor: Colors.black,
+          unselectedLabelColor: Colors.grey,
         ),
+        views: const <Widget>[
+          ActivityPackagesWishlist(),
+          GuideProfile(),
+        ],
+        onChange: setTitle,
+        initialIndex: initIndex,
       ),
     );
   }

@@ -136,7 +136,6 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                       ),
                     ),
                   ),
-
                 ],
               ),
               flexibleSpace: ExtendedImage.network(
@@ -184,8 +183,7 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                       SizedBox(
                         width: 2.w,
                       ),
-                      FittedBox(
-                        fit: BoxFit.fitWidth,
+                      Expanded(
                         child: SizedBox(
                           child: Text(
                             screenArguments['address'],
@@ -242,7 +240,9 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                               packageId: screenArguments['package_id'],
                               profileImg: screenArguments['profile_img'],
                               packageName: screenArguments['package_name'],
-                              isFirstAid: screenArguments['is_first_aid']),
+                              isFirstAid: screenArguments['is_first_aid'],
+                              latitude: screenArguments['latitude'],
+                              longitude: screenArguments['longitude']),
                           PopularGuidesTravelerLimitSchedules(
                               packageId: screenArguments['package_id'],
                               price: screenArguments['fee']),
