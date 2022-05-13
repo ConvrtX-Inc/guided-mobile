@@ -25,6 +25,7 @@ import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
+import '../../../../common/widgets/avatar_bottom_sheet.dart';
 
 /// Widgets for displaying list of user settings
 class SettingsItems extends StatefulWidget {
