@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -41,15 +42,6 @@ class _HomeScreenState extends State<HomeScreen>
   final Color _bulletColor = AppColors.tropicalRainForest;
   int total = 0;
 
-  /// Get features items mocked data
-  List<HomeModel> features = HomeUtils.getMockFeatures();
-
-  /// Get customer requests mocked data
-  List<HomeModel> customerRequests = HomeUtils.getMockCustomerRequests();
-
-  /// Get customer requests mocked data
-  List<HomeModel> earnings = HomeUtils.getMockEarnings();
-
   void setMenuIndexHandler(int value) {
     setState(() {
       _selectedMenuIndex = value;
@@ -70,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     _loadingData = APIServices().getPackageData();
-    _loadingBooking = APIServices().getBookingRequest();
 
     getData();
   }
@@ -484,19 +475,10 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Container(
-                    height: 10.h,
-                    width: 10.w,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image1.split(',').last),
-                          fit: BoxFit.cover,
-                          gaplessPlayback: true,
-                        ).image),
-                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.green, width: 4.w)),
+                  child: ExtendedImage.network(
+                    image1,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
                   ),
                 ),
               ),
@@ -552,19 +534,10 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Container(
-                    height: 10.h,
-                    width: 10.w,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image1.split(',').last),
-                          fit: BoxFit.cover,
-                          gaplessPlayback: true,
-                        ).image),
-                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.green, width: 4.w)),
+                  child: ExtendedImage.network(
+                    image1,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
                   ),
                 ),
               ),
@@ -608,19 +581,10 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Container(
-                    height: 10.h,
-                    width: 10.w,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image2.split(',').last),
-                          fit: BoxFit.cover,
-                          gaplessPlayback: true,
-                        ).image),
-                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.green, width: 4.w)),
+                  child: ExtendedImage.network(
+                    image2,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
                   ),
                 ),
               ),
@@ -680,19 +644,10 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Container(
-                    height: 10.h,
-                    width: 10.w,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image1.split(',').last),
-                          fit: BoxFit.cover,
-                          gaplessPlayback: true,
-                        ).image),
-                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.green, width: 4.w)),
+                  child: ExtendedImage.network(
+                    image1,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
                   ),
                 ),
               ),
@@ -736,19 +691,10 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Container(
-                    height: 10.h,
-                    width: 10.w,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image2.split(',').last),
-                          fit: BoxFit.cover,
-                          gaplessPlayback: true,
-                        ).image),
-                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.green, width: 4.w)),
+                  child: ExtendedImage.network(
+                    image2,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
                   ),
                 ),
               ),
@@ -793,19 +739,10 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Container(
-                    height: 10.h,
-                    width: 10.w,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image3.split(',').last),
-                          fit: BoxFit.cover,
-                          gaplessPlayback: true,
-                        ).image),
-                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.red, width: 4.w)),
+                  child: ExtendedImage.network(
+                    image3,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
                   ),
                 ),
               ),
@@ -825,109 +762,4 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       );
-
-  // Widget customerRequestImage(
-  //     BuildContext context, int index, BookingRequest request, int total) {
-  //   return FutureBuilder<User>(
-  //     future: APIServices().getUserDetails(request.fromUserId!),
-  //     builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-  //       String concatStrings = '';
-  //       if (snapshot.hasData) {
-  //         for (int i = 0; i < 1; i++) {
-  //           concatStrings = '$concatStrings${snapshot.data!.firstName}, ';
-  //         }
-  //         concatStrings = concatStrings.substring(0, concatStrings.length - 2);
-
-  //         if (request.profilePhoto != null) {
-  //           if (index < 1) {
-  //             return Align(
-  //               alignment: index == 0
-  //                   ? Alignment.centerRight
-  //                   : (index == 1 ? Alignment.center : Alignment.centerRight),
-  //               child: Container(
-  //                 decoration: BoxDecoration(
-  //                   color: Colors.white,
-  //                   shape: BoxShape.circle,
-  //                   boxShadow: <BoxShadow>[
-  //                     BoxShadow(
-  //                         blurRadius: 5,
-  //                         color: Colors.black.withOpacity(0.3),
-  //                         spreadRadius: 3)
-  //                   ],
-  //                 ),
-  //                 child: CircleAvatar(
-  //                   backgroundColor: Colors.white,
-  //                   child: Container(
-  //                     height: 10.h,
-  //                     width: 10.w,
-  //                     decoration: BoxDecoration(
-  //                         color: Colors.white,
-  //                         image: DecorationImage(
-  //                             image: Image.memory(
-  //                           base64
-  //                               .decode(request.profilePhoto!.split(',').last),
-  //                           fit: BoxFit.cover,
-  //                           gaplessPlayback: true,
-  //                         ).image),
-  //                         borderRadius: BorderRadius.all(Radius.circular(50.r)),
-  //                         border: Border.all(color: Colors.red, width: 4.w)),
-  //                   ),
-  //                 ),
-  //               ),
-  //             );
-  //           }
-  //         } else {
-  //           return Container();
-  //         }
-  //       }
-  //       if (snapshot.connectionState != ConnectionState.done) {
-  //         return const Align(
-  //             alignment: Alignment.topLeft, child: CircularProgressIndicator());
-  //       }
-  //       return Container();
-  //     },
-  //   );
-  // }
-
-  // Widget customerRequestName(
-  //     BuildContext context, int index, BookingRequest request, int total) {
-  //   return FutureBuilder<User>(
-  //     future: APIServices().getUserDetails(request.fromUserId!),
-  //     builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-  //       String? concatStrings = '';
-  //       if (snapshot.hasData) {
-  //         concatStrings = '${snapshot.data!.firstName}';
-  //         if (index < 3) {
-  //           if (index == 2) {
-  //             return Text(
-  //               concatStrings,
-  //               style:
-  //                   const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-  //             );
-  //           } else {
-  //             return Text(
-  //               '$concatStrings, ',
-  //               style:
-  //                   const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-  //             );
-  //           }
-  //         }
-  //       }
-  //       if (snapshot.connectionState != ConnectionState.done) {
-  //         return const Align(
-  //             alignment: Alignment.topLeft, child: CircularProgressIndicator());
-  //       }
-  //       return Container();
-  //     },
-  //   );
-  // }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(IterableProperty<HomeModel>('features', features));
-    properties
-        .add(IterableProperty<HomeModel>('customerRequests', customerRequests));
-    properties.add(IterableProperty<HomeModel>('earnings', earnings));
-  }
 }
