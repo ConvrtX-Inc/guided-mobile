@@ -1207,11 +1207,12 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                       itemCount: length,
                       itemBuilder: (BuildContext ctx, int index) {
                         return PopularGuideHomeFeatures(
-                          id: userListData.userDetails[index].id,
-                          fullName: userListData.userDetails[index].fullName,
-                          firebaseProfImg:
-                              userListData.userDetails[index].firebaseImg,
-                        );
+                            id: userListData.userDetails[index].id,
+                            fullName: userListData.userDetails[index].fullName,
+                            firebaseProfImg:
+                                userListData.userDetails[index].firebaseImg,
+                            latitude: latitude,
+                            longitude: longitude);
                       });
                 }
               }

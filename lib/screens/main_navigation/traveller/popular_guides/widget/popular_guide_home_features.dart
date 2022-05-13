@@ -17,14 +17,20 @@ class PopularGuideHomeFeatures extends StatefulWidget {
     String id = '',
     String fullName = '',
     String firebaseProfImg = '',
+    double latitude = 0,
+    double longitude = 0,
     Key? key,
   })  : _id = id,
         _fullName = fullName,
         _firebaseProfImg = firebaseProfImg,
+        _latitude = latitude,
+        _longitude = longitude,
         super(key: key);
   final String _id;
   final String _fullName;
   final String _firebaseProfImg;
+  final double _latitude;
+  final double _longitude;
 
   @override
   State<PopularGuideHomeFeatures> createState() =>
@@ -183,8 +189,8 @@ class _PopularGuideHomeFeaturesState extends State<PopularGuideHomeFeatures>
                   return 12742 * asin(sqrt(a));
                 }
 
-                totalDistance =
-                    calculateDistance(41.46, -81.51, latitude, longitude);
+                totalDistance = calculateDistance(
+                    widget._latitude, widget._longitude, latitude, longitude);
 
                 _displayWidget = Text(
                   '${totalDistance.toString().substring(0, totalDistance.toString().indexOf('.'))} KM',

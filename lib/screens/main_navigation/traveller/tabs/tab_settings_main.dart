@@ -104,7 +104,6 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                             return _displayWidget;
                           }),
                     ),
-
                   ],
                 ),
               ),
@@ -168,8 +167,7 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
     );
   }
 
-  Widget buildProfileData(ProfileDetailsModel profileData) =>
-      Row(
+  Widget buildProfileData(ProfileDetailsModel profileData) => Row(
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
@@ -180,52 +178,51 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
               color: Colors.white,
               shape: BoxShape.circle,
               boxShadow: const <BoxShadow>[
-                BoxShadow(
-                    blurRadius: 5,
-                    color: Colors.grey,
-                    spreadRadius: 2)
+                BoxShadow(blurRadius: 5, color: Colors.grey, spreadRadius: 2)
               ],
             ),
-            child: profileData.firebaseProfilePicUrl.isEmpty ?  CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 35.r,
-              backgroundImage: const AssetImage(
-                  '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
-            ) :CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 35.r,
-              backgroundImage: NetworkImage(profileData.firebaseProfilePicUrl),
-            ),
+            child: profileData.firebaseProfilePicUrl.isEmpty
+                ? CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 35.r,
+                    backgroundImage: const AssetImage(
+                        '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
+                  )
+                : CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 35.r,
+                    backgroundImage:
+                        NetworkImage(profileData.firebaseProfilePicUrl),
+                  ),
           ),
           const SizedBox(
             width: 24,
           ),
           Expanded(
-              child:
-              Column(
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    if (profileData.fullName.isEmpty)
-                      const Text('Unknown User')
-                    else
-                      Column(
-                        children: <Widget>[
-                          Text(
-                            profileData.fullName,
-                            style: TextStyle(
-                                letterSpacing: 1,
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          Text(profileData.email,
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors.grey))
-                        ],
-                      )
-                  ])),
+                if (profileData.fullName.isEmpty)
+                  const Text('Unknown User')
+                else
+                  Column(
+                    children: <Widget>[
+                      Text(
+                        profileData.fullName,
+                        style: TextStyle(
+                            letterSpacing: 1,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      Text(profileData.email,
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.grey))
+                    ],
+                  )
+              ])),
           IconButton(
             icon: const Icon(Icons.navigate_next),
             iconSize: 36,
