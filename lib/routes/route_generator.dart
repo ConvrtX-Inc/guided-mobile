@@ -84,6 +84,7 @@ import 'package:guided/screens/packages/create_package/package_photos_screen.dar
 import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
+import 'package:guided/screens/passwords/change_password.dart';
 import 'package:guided/screens/payments/payment_add_card.dart';
 
 import 'package:guided/screens/profile/main_profile.dart';
@@ -452,6 +453,9 @@ class RouteGenerator {
       case '/edit_profile_traveler':
         return MaterialPageRoute<dynamic>(
             builder: (_) => EditProfileTraveler());
+      case '/change_password':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => ChangePasswordScreen());
       default:
         return _errorRoute();
     }

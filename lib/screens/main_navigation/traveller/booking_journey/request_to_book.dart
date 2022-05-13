@@ -137,10 +137,11 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                                 //   fit: BoxFit.cover,
                                 // ),
                                 image: DecorationImage(
-                                    image: Image.memory(
-                                  base64.decode(activityPackage.coverImg!
-                                      .split(',')
-                                      .last),
+                                    image: Image.network(
+                                  // base64.decode(activityPackage.coverImg!
+                                  //     .split(',')
+                                  //     .last),
+                                  activityPackage.firebaseCoverImg!,
                                   fit: BoxFit.fill,
                                   gaplessPlayback: true,
                                 ).image),
