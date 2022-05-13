@@ -792,39 +792,39 @@ class _PopularGuidesTabDescriptionState
                           fontWeight: FontWeight.w400),
                     ),
                   ),
-                  Divider(
-                    color: Colors.grey.shade300,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
-                        child: Text(
-                          AppTextConstants.travelerReleaseAndWaiverForm,
-                          style: TextStyle(
-                            fontFamily: 'Gilroy',
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      // Padding(
-                      //   padding: EdgeInsets.only(right: 10.w),
-                      //   child: const Icon(Icons.arrow_forward_ios),
-                      // )
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 10.h),
-                    child: Text(
-                      AppTextConstants.loremIpsum,
-                      style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ),
+                  // Divider(
+                  //   color: Colors.grey.shade300,
+                  // ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: <Widget>[
+                  //     Padding(
+                  //       padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
+                  //       child: Text(
+                  //         AppTextConstants.travelerReleaseAndWaiverForm,
+                  //         style: TextStyle(
+                  //           fontFamily: 'Gilroy',
+                  //           fontSize: 20.sp,
+                  //           fontWeight: FontWeight.w700,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     // Padding(
+                  //     //   padding: EdgeInsets.only(right: 10.w),
+                  //     //   child: const Icon(Icons.arrow_forward_ios),
+                  //     // )
+                  //   ],
+                  // ),
+                  // Padding(
+                  //   padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 10.h),
+                  //   child: Text(
+                  //     AppTextConstants.loremIpsum,
+                  //     style: TextStyle(
+                  //         fontFamily: 'Gilroy',
+                  //         fontSize: 14.sp,
+                  //         fontWeight: FontWeight.w400),
+                  //   ),
+                  // ),
                   Divider(
                     color: Colors.grey.shade300,
                   ),
