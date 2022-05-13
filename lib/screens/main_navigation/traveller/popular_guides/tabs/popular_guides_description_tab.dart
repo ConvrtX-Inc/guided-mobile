@@ -1,12 +1,15 @@
-// ignore_for_file: use_raw_strings, always_put_required_named_parameters_first, diagnostic_describe_all_properties, public_member_api_docs
+// ignore_for_file: use_raw_strings, always_put_required_named_parameters_first, diagnostic_describe_all_properties, public_member_api_docs, avoid_dynamic_calls, always_specify_types
 
 import 'dart:convert';
 
+import 'package:custom_marker/marker_icon.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animarker/flutter_map_marker_animation.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'dart:async';
@@ -34,7 +37,10 @@ class PopularGuidesTabDescription extends StatefulWidget {
       required this.packageId,
       required this.profileImg,
       required this.packageName,
-      required this.isFirstAid})
+      required this.isFirstAid,
+      required this.latitude,
+      required this.longitude,
+      required this.createdDate})
       : super(key: key);
 
   final String name,
@@ -46,11 +52,15 @@ class PopularGuidesTabDescription extends StatefulWidget {
       packageId,
       profileImg,
       packageName,
-      starRating;
+      starRating,
+      latitude,
+      longitude;
 
   final int numberOfTourist;
 
   final bool isFirstAid;
+
+  final DateTime? createdDate;
 
   @override
   State<PopularGuidesTabDescription> createState() =>
@@ -68,20 +78,68 @@ class _PopularGuidesTabDescriptionState
     _controller.complete(controller);
   }
 
+  double latitude = 41;
+  double longitude = -18;
+  List<Marker> _markers = <Marker>[];
+  late Marker mark;
+  late Set<Circle> circle;
+  String month = '';
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      latitude = double.parse(widget.latitude);
+      longitude = double.parse(widget.longitude);
+      month = AppListConstants.calendarMonths[widget.createdDate!.month - 1];
+    });
+    WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker(context));
+  }
+
+  Future<void> addMarker(BuildContext context) async {
+    setState(() {
+      circle = {
+        Circle(
+          circleId: const CircleId('id1'),
+          center: LatLng(
+              double.parse(widget.latitude), double.parse(widget.longitude)),
+          radius: 500,
+        ),
+        Circle(
+          circleId: const CircleId('id2'),
+          center: LatLng(
+              double.parse(widget.latitude), double.parse(widget.longitude)),
+          radius: 500,
+        )
+      };
+    });
+
+    Marker set = RippleMarker(
+      markerId: const MarkerId('LocationId'),
+      icon: await MarkerIcon.pictureAsset(
+          assetPath: 'assets/images/png/ellipse.png',
+          width: 90.w,
+          height: 90.h),
+      position: LatLng(latitude, longitude),
+    );
+
+    setState(() {
+      mark = set;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              SizedBox(
-                height: 30.h,
-              ),
               guideProfile1(widget.name, widget.profileImg),
               SizedBox(
-                height: 20.h,
+                height: 10.h,
               ),
               Padding(
                 padding: const EdgeInsets.all(8),
@@ -115,6 +173,8 @@ class _PopularGuidesTabDescriptionState
                                         .split(',')
                                         .last),
                                     gaplessPlayback: true,
+                                    width: 30,
+                                    height: 30,
                                   ),
                                   SizedBox(
                                     width: 5.w,
@@ -225,29 +285,6 @@ class _PopularGuidesTabDescriptionState
                   ),
                 ),
               ),
-              // GestureDetector(
-              //   onTap: () {},
-              //   child: Padding(
-              //     padding: EdgeInsets.only(top: 10.h, left: 10.w, bottom: 10.h),
-              //     child: Row(
-              //       children: <Widget>[
-              //         Text(
-              //           'Read More',
-              //           style: TextStyle(
-              //             fontFamily: 'Gilroy',
-              //             fontWeight: FontWeight.w700,
-              //             fontSize: 14.sp,
-              //             decoration: TextDecoration.underline,
-              //           ),
-              //         ),
-              //         const Icon(
-              //           Icons.arrow_forward_ios,
-              //           size: 15,
-              //         )
-              //       ],
-              //     ),
-              //   ),
-              // ),
               Divider(
                 color: Colors.grey.shade300,
               ),
@@ -286,38 +323,48 @@ class _PopularGuidesTabDescriptionState
                     width: 2.w,
                   ),
                   Expanded(
-                    child: FittedBox(
-                      fit: BoxFit.fitWidth,
-                      child: SizedBox(
-                        child: Text(
-                          widget.address,
-                          style: TextStyle(
-                              fontFamily: 'Gilroy',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 12.sp,
-                              color: AppColors.doveGrey),
-                        ),
+                    child: SizedBox(
+                      child: Text(
+                        widget.address,
+                        style: TextStyle(
+                            fontFamily: 'Gilroy',
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12.sp,
+                            color: AppColors.doveGrey),
                       ),
                     ),
                   ),
                 ],
               ),
-              // Padding(
-              //   padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 10.h),
-              //   child: Center(
-              //     child: SizedBox(
-              //       height: 200.h,
-              //       width: double.infinity,
-              //       child: GoogleMap(
-              //         initialCameraPosition: const CameraPosition(
-              //           target: LatLng(57.818582, -101.760181),
-              //           zoom: 10,
-              //         ),
-              //         onMapCreated: _onMapCreated,
-              //       ),
-              //     ),
-              //   ),
-              // ),
+              Padding(
+                padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 10.h),
+                child: Center(
+                  child: SizedBox(
+                    height: 200.h,
+                    width: double.infinity,
+                    child: AbsorbPointer(
+                      child: Animarker(
+                        curve: Curves.bounceInOut,
+                        duration: const Duration(milliseconds: 2000),
+                        rippleRadius: 0.1,
+                        rippleColor: const Color.fromARGB(255, 6, 134, 49),
+                        markers: <Marker>{mark},
+                        mapId: _controller.future.then<int>(
+                            (GoogleMapController value) => value.mapId),
+                        child: GoogleMap(
+                          initialCameraPosition: CameraPosition(
+                            target: LatLng(latitude, longitude),
+                            zoom: 15,
+                          ),
+                          onMapCreated: _onMapCreated,
+                          myLocationButtonEnabled: false,
+                          zoomControlsEnabled: false,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               // Padding(
               //     padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 10.h),
               //     child: Text(
@@ -520,7 +567,7 @@ class _PopularGuidesTabDescriptionState
                               Padding(
                                 padding: EdgeInsets.only(left: 20.w),
                                 child: Text(
-                                  'Joined in July 2015',
+                                  'Joined in $month ${widget.createdDate?.year}',
                                   style: TextStyle(
                                       fontSize: 12.sp,
                                       fontFamily: 'Gilroy',

@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -41,14 +42,7 @@ class _HomeScreenState extends State<HomeScreen>
   final Color _bulletColor = AppColors.tropicalRainForest;
   int total = 0;
 
-  /// Get features items mocked data
-  List<HomeModel> features = HomeUtils.getMockFeatures();
-
-  /// Get customer requests mocked data
-  List<HomeModel> customerRequests = HomeUtils.getMockCustomerRequests();
-
-  /// Get customer requests mocked data
-  List<HomeModel> earnings = HomeUtils.getMockEarnings();
+  List<BookingRequest> pendingRequests = [];
 
   void setMenuIndexHandler(int value) {
     setState(() {
@@ -66,11 +60,11 @@ class _HomeScreenState extends State<HomeScreen>
   String name3 = '';
   bool _hasData = false;
   int totalData = 0;
+
   @override
   void initState() {
     super.initState();
     _loadingData = APIServices().getPackageData();
-    _loadingBooking = APIServices().getBookingRequest();
 
     getData();
   }
@@ -84,9 +78,14 @@ class _HomeScreenState extends State<HomeScreen>
         _hasData = true;
         totalData = resData.length;
       });
+
+      pendingRequests = resData
+          .where((BookingRequest request) =>
+              request.status?.statusName!.toLowerCase() == 'pending')
+          .toList();
     }
 
-    for (int index = 0; index < resData.length; index++) {
+    /* for (int index = 0; index < resData.length; index++) {
       if (resData[index].isApproved! == false) {
         if (resData.length == 1) {
           if (index == 0) {
@@ -130,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen>
           total = resData.length;
         });
       }
-    }
+    }*/
   }
 
   setData1(String img, String id) async {
@@ -360,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen>
             height: _bulletHeight,
             color: _bulletColor,
           ),
-          if (_hasData)
+          if (pendingRequests.isNotEmpty)
             GestureDetector(
               onTap: () {
                 Navigator.pushReplacement(
@@ -386,15 +385,33 @@ class _HomeScreenState extends State<HomeScreen>
                         padding: const EdgeInsets.all(10),
                         child: Column(
                           children: <Widget>[
-                            if (totalData >= 3)
-                              manyCustomerRequest()
-                            else if (totalData == 2)
-                              twoCustomerRequest()
-                            else
-                              oneCustomerRequest(),
+                            Row(
+                              children: [
+                                for (int i = 0; i < pendingRequests.length; i++)
+                                  oneCustomerRequest(pendingRequests[i]),
+                                SizedBox(width: 15.w),
+                                for (int r = 0; r < pendingRequests.length; r++)
+                                  Text(
+                                    r != pendingRequests.length - 1
+                                        ? '${pendingRequests[r].fromUserFullName!.split(' ')[0]}, '
+                                        : pendingRequests[r]
+                                            .fromUserFullName!
+                                            .split(' ')[0],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14),
+                                  ),
+                              ],
+                            ),
+                            // if (pendingRequests.length == 2)
+                            //   manyCustomerRequest()
+                            // else if (pendingRequests.length == 2)
+                            //   twoCustomerRequest()
+                            // else
+                            //   oneCustomerRequest(pendingRequests[0]),
                             SizedBox(height: 10.h),
                             Text(
-                              AppTextConstants.homeMainHeader,
+                              'Great news! You have got ${pendingRequests.length} requests from your clients. Please check these out',
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: AppColors.grey),
@@ -413,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen>
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(6.r),
                           color: AppColors.lightningYellow),
-                      child: Text('$total Pending request',
+                      child: Text('${pendingRequests.length} Pending request',
                           style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               color: Colors.white)),
@@ -441,9 +458,9 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget oneCustomerRequest() => Row(
+  Widget oneCustomerRequest(BookingRequest request) => Row(
         children: <Widget>[
-          if (image1 == '')
+          if (request.fromUserFirebaseProfilePic == '')
             Align(
               alignment: Alignment.centerLeft,
               child: Container(
@@ -485,27 +502,25 @@ class _HomeScreenState extends State<HomeScreen>
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Container(
-                    height: 10.h,
-                    width: 10.w,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image1.split(',').last),
+                            image: ExtendedImage.network(
+                          request.fromUserFirebaseProfilePic!,
                           fit: BoxFit.cover,
                           gaplessPlayback: true,
                         ).image),
                         borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.green, width: 4.w)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
             ),
-          SizedBox(width: 15.w),
-          Text(
-            name1,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          ),
+          // SizedBox(width: 15.w),
+          // Text(
+          //   request.fromUserFullName!,
+          //   style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          // ),
         ],
       );
 
@@ -553,18 +568,16 @@ class _HomeScreenState extends State<HomeScreen>
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Container(
-                    height: 10.h,
-                    width: 10.w,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image1.split(',').last),
+                            image: ExtendedImage.network(
+                          image1,
                           fit: BoxFit.cover,
                           gaplessPlayback: true,
                         ).image),
                         borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.green, width: 4.w)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
@@ -609,18 +622,16 @@ class _HomeScreenState extends State<HomeScreen>
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Container(
-                    height: 10.h,
-                    width: 10.w,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image2.split(',').last),
+                            image: ExtendedImage.network(
+                          image2,
                           fit: BoxFit.cover,
                           gaplessPlayback: true,
                         ).image),
                         borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.green, width: 4.w)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
@@ -681,18 +692,16 @@ class _HomeScreenState extends State<HomeScreen>
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Container(
-                    height: 10.h,
-                    width: 10.w,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image1.split(',').last),
+                            image: ExtendedImage.network(
+                          image1,
                           fit: BoxFit.cover,
                           gaplessPlayback: true,
                         ).image),
                         borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.green, width: 4.w)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
@@ -737,18 +746,16 @@ class _HomeScreenState extends State<HomeScreen>
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Container(
-                    height: 10.h,
-                    width: 10.w,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image2.split(',').last),
+                            image: ExtendedImage.network(
+                          image2,
                           fit: BoxFit.cover,
                           gaplessPlayback: true,
                         ).image),
                         borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.green, width: 4.w)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
@@ -794,18 +801,16 @@ class _HomeScreenState extends State<HomeScreen>
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Container(
-                    height: 10.h,
-                    width: 10.w,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         image: DecorationImage(
-                            image: Image.memory(
-                          base64.decode(image3.split(',').last),
+                            image: ExtendedImage.network(
+                          image3,
                           fit: BoxFit.cover,
                           gaplessPlayback: true,
                         ).image),
                         borderRadius: BorderRadius.all(Radius.circular(50.r)),
-                        border: Border.all(color: Colors.red, width: 4.w)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
@@ -825,109 +830,4 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       );
-
-  // Widget customerRequestImage(
-  //     BuildContext context, int index, BookingRequest request, int total) {
-  //   return FutureBuilder<User>(
-  //     future: APIServices().getUserDetails(request.fromUserId!),
-  //     builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-  //       String concatStrings = '';
-  //       if (snapshot.hasData) {
-  //         for (int i = 0; i < 1; i++) {
-  //           concatStrings = '$concatStrings${snapshot.data!.firstName}, ';
-  //         }
-  //         concatStrings = concatStrings.substring(0, concatStrings.length - 2);
-
-  //         if (request.profilePhoto != null) {
-  //           if (index < 1) {
-  //             return Align(
-  //               alignment: index == 0
-  //                   ? Alignment.centerRight
-  //                   : (index == 1 ? Alignment.center : Alignment.centerRight),
-  //               child: Container(
-  //                 decoration: BoxDecoration(
-  //                   color: Colors.white,
-  //                   shape: BoxShape.circle,
-  //                   boxShadow: <BoxShadow>[
-  //                     BoxShadow(
-  //                         blurRadius: 5,
-  //                         color: Colors.black.withOpacity(0.3),
-  //                         spreadRadius: 3)
-  //                   ],
-  //                 ),
-  //                 child: CircleAvatar(
-  //                   backgroundColor: Colors.white,
-  //                   child: Container(
-  //                     height: 10.h,
-  //                     width: 10.w,
-  //                     decoration: BoxDecoration(
-  //                         color: Colors.white,
-  //                         image: DecorationImage(
-  //                             image: Image.memory(
-  //                           base64
-  //                               .decode(request.profilePhoto!.split(',').last),
-  //                           fit: BoxFit.cover,
-  //                           gaplessPlayback: true,
-  //                         ).image),
-  //                         borderRadius: BorderRadius.all(Radius.circular(50.r)),
-  //                         border: Border.all(color: Colors.red, width: 4.w)),
-  //                   ),
-  //                 ),
-  //               ),
-  //             );
-  //           }
-  //         } else {
-  //           return Container();
-  //         }
-  //       }
-  //       if (snapshot.connectionState != ConnectionState.done) {
-  //         return const Align(
-  //             alignment: Alignment.topLeft, child: CircularProgressIndicator());
-  //       }
-  //       return Container();
-  //     },
-  //   );
-  // }
-
-  // Widget customerRequestName(
-  //     BuildContext context, int index, BookingRequest request, int total) {
-  //   return FutureBuilder<User>(
-  //     future: APIServices().getUserDetails(request.fromUserId!),
-  //     builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-  //       String? concatStrings = '';
-  //       if (snapshot.hasData) {
-  //         concatStrings = '${snapshot.data!.firstName}';
-  //         if (index < 3) {
-  //           if (index == 2) {
-  //             return Text(
-  //               concatStrings,
-  //               style:
-  //                   const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-  //             );
-  //           } else {
-  //             return Text(
-  //               '$concatStrings, ',
-  //               style:
-  //                   const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-  //             );
-  //           }
-  //         }
-  //       }
-  //       if (snapshot.connectionState != ConnectionState.done) {
-  //         return const Align(
-  //             alignment: Alignment.topLeft, child: CircularProgressIndicator());
-  //       }
-  //       return Container();
-  //     },
-  //   );
-  // }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(IterableProperty<HomeModel>('features', features));
-    properties
-        .add(IterableProperty<HomeModel>('customerRequests', customerRequests));
-    properties.add(IterableProperty<HomeModel>('earnings', earnings));
-  }
 }

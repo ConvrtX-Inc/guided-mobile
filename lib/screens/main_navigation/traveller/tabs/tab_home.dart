@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -57,8 +58,10 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   var result;
   List<String> userIds = [];
   late Future<UserListModel> _loadingData;
+
   @override
   void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
       final DateTime dt = DateTime.parse(travellerMonthController.currentDate);
       final int mon = dt.month;
@@ -266,13 +269,14 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                         .width *
                                                     0.7,
                                                 child: EasyScrollToIndex(
-                                                  controller:
-                                                      _scrollController, // ScrollToIndexController
-                                                  scrollDirection: Axis
-                                                      .horizontal, // default Axis.vertical
+                                                  controller: _scrollController,
+                                                  // ScrollToIndexController
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  // default Axis.vertical
                                                   itemCount: AppListConstants
-                                                      .calendarMonths
-                                                      .length, // itemCount
+                                                      .calendarMonths.length,
+                                                  // itemCount
                                                   itemWidth: 95,
                                                   itemHeight: 70,
                                                   itemBuilder:
@@ -775,11 +779,13 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         //   fit: BoxFit.cover,
                                         // ),
                                         image: DecorationImage(
-                                            image: Image.memory(
-                                          base64.decode(snapshot
-                                              .data![index].coverImg!
-                                              .split(',')
-                                              .last),
+                                            image: Image.network(
+                                          // base64.decode(snapshot
+                                          //     .data![index].coverImg!
+                                          //     .split(',')
+                                          //     .last),
+                                          snapshot
+                                              .data![index].firebaseCoverImg!,
                                           fit: BoxFit.cover,
                                           gaplessPlayback: true,
                                         ).image),

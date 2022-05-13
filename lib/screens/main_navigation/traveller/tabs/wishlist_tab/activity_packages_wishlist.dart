@@ -1,21 +1,15 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, no_default_cases
+// ignore_for_file: prefer_const_literals_to_create_immutables, no_default_cases, prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/constants/app_colors.dart';
+import 'package:flutter/services.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/package_destination_model.dart';
 import 'package:guided/models/package_model.dart';
 import 'package:guided/models/wishlist_activity_model.dart';
-import 'package:guided/models/wishlist_model.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/widget/activity_package_wishlist_features.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
-import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
-import 'package:guided/utils/services/static_data_services.dart';
 
 /// Package List Screen
 class ActivityPackagesWishlist extends StatefulWidget {
@@ -32,8 +26,12 @@ class _ActivityPackagesWishlistState extends State<ActivityPackagesWishlist>
   @override
   bool get wantKeepAlive => true;
 
-  /// Get features items mocked data
-  List<Wishlist> features = StaticDataService.getWishListData();
+  @override
+  void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    super.initState();
+  }
+
   int activeIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -96,21 +94,7 @@ class _ActivityPackagesWishlistState extends State<ActivityPackagesWishlist>
           Widget _displayWidget;
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
-              _displayWidget = SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: SkeletonText(
-                        width: 300,
-                        height: 30,
-                        radius: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              );
+              _displayWidget = const MainContentSkeleton();
               break;
             default:
               if (snapshot.hasError) {
@@ -170,319 +154,19 @@ class _ActivityPackagesWishlistState extends State<ActivityPackagesWishlist>
                     coverImg: data.packageDetails[0].firebaseCoverImg,
                     packageName: data.packageDetails[0].name,
                     price: data.packageDetails[0].basePrice,
-                    mainBadgeId: data.packageDetails[0].mainBadgeId);
+                    mainBadgeId: data.packageDetails[0].mainBadgeId,
+                    description: data.packageDetails[0].description,
+                    numberOfTourist:
+                        data.packageDetails[0].maxTraveller,
+                    starRating: '0',
+                    fee: data.packageDetails[0].basePrice,
+                    address: details.name,
+                    packageId: data.packageDetails[0].id,
+                    latitude: details.latitude,
+                    longitude: details.longitude);
               }
           }
           return _displayWidget;
         },
-      );
-
-  // ActivityPackageWishlistFeature(
-  //   id: details.id,
-  //   activityPackageId: activityPackageId,
-  // );
-
-  Widget _slideshow1() => Column(
-        children: <Widget>[
-          ImageSlideshow(
-            width: 375,
-            height: 200,
-            initialPage: 0,
-            indicatorColor: Colors.white,
-            indicatorBackgroundColor: Colors.grey[100],
-            autoPlayInterval: 3000,
-            isLoop: true,
-            children: <Widget>[
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15.r),
-                  ),
-                  image: const DecorationImage(
-                      image: AssetImage('assets/images/png/activity1.png'),
-                      fit: BoxFit.cover),
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                        bottom: 0,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          radius: 30,
-                          backgroundImage: AssetImage(AssetsPath.hunt),
-                        )),
-                    Positioned(
-                        top: 9,
-                        right: 14,
-                        child: Image(
-                          image: AssetImage(AssetsPath.heart),
-                          width: 30,
-                          height: 30,
-                        ))
-                  ],
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15.r),
-                  ),
-                  image: const DecorationImage(
-                      image: AssetImage('assets/images/png/activity2.png'),
-                      fit: BoxFit.cover),
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                        bottom: 0,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          radius: 30,
-                          backgroundImage: AssetImage(AssetsPath.paddle),
-                        )),
-                    Positioned(
-                        top: 9,
-                        right: 14,
-                        child: Image(
-                          image: AssetImage(AssetsPath.heart),
-                          width: 30,
-                          height: 30,
-                        ))
-                  ],
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15.r),
-                  ),
-                  image: const DecorationImage(
-                      image: AssetImage('assets/images/png/activity3.png'),
-                      fit: BoxFit.cover),
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                        bottom: 0,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          radius: 30,
-                          backgroundImage: AssetImage(AssetsPath.hiking),
-                        )),
-                    Positioned(
-                        top: 9,
-                        right: 14,
-                        child: Image(
-                          image: AssetImage(AssetsPath.heart),
-                          width: 30,
-                          height: 30,
-                        ))
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20.h),
-          Padding(
-            padding: EdgeInsets.only(left: 5.w),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Icons.star_rounded,
-                  color: Colors.green[900],
-                  size: 15,
-                ),
-                Text(
-                  '0 review',
-                  style: TextStyle(color: AppColors.osloGrey),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 20.h,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 5.w),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Wilderness Adventure Co.',
-                style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 5.w),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '\$50/Person',
-                style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w400),
-              ),
-            ),
-          )
-        ],
-      );
-
-  Widget _slideshow2() => Column(
-        children: <Widget>[
-          ImageSlideshow(
-            width: 375,
-            height: 200,
-            initialPage: 0,
-            indicatorColor: Colors.white,
-            indicatorBackgroundColor: Colors.grey[100],
-            autoPlayInterval: 3000,
-            isLoop: true,
-            children: <Widget>[
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15.r),
-                  ),
-                  image: const DecorationImage(
-                      image: AssetImage('assets/images/png/activity2.png'),
-                      fit: BoxFit.cover),
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                        bottom: 0,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          radius: 30,
-                          backgroundImage: AssetImage(AssetsPath.paddle),
-                        )),
-                    Positioned(
-                        top: 9,
-                        right: 14,
-                        child: Image(
-                          image: AssetImage(AssetsPath.heart),
-                          width: 30,
-                          height: 30,
-                        ))
-                  ],
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15.r),
-                  ),
-                  image: const DecorationImage(
-                      image: AssetImage('assets/images/png/activity1.png'),
-                      fit: BoxFit.cover),
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                        bottom: 0,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          radius: 30,
-                          backgroundImage: AssetImage(AssetsPath.hunt),
-                        )),
-                    Positioned(
-                        top: 9,
-                        right: 14,
-                        child: Image(
-                          image: AssetImage(AssetsPath.heart),
-                          width: 30,
-                          height: 30,
-                        ))
-                  ],
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15.r),
-                  ),
-                  image: const DecorationImage(
-                      image: AssetImage('assets/images/png/activity3.png'),
-                      fit: BoxFit.cover),
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                        bottom: 0,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          radius: 30,
-                          backgroundImage: AssetImage(AssetsPath.hiking),
-                        )),
-                    Positioned(
-                        top: 9,
-                        right: 14,
-                        child: Image(
-                          image: AssetImage(AssetsPath.heart),
-                          width: 30,
-                          height: 30,
-                        ))
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20.h),
-          Padding(
-            padding: EdgeInsets.only(left: 5.w),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Icons.star_rounded,
-                  color: Colors.green[900],
-                  size: 15,
-                ),
-                Text(
-                  '13 review',
-                  style: TextStyle(color: AppColors.osloGrey),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 20.h,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 5.w),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Blue Lake Paddle Co.',
-                style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 5.w),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '\$25/Person',
-                style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w400),
-              ),
-            ),
-          )
-        ],
       );
 }

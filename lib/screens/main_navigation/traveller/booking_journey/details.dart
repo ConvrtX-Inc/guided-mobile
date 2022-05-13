@@ -52,6 +52,7 @@ class _TravellerBookingDetailsScreenState
       final String hour2 = outputFormat.format(addHour);
       return '$date1 $hour1-$hour2';
     }
+
     User tourGuideDetails = User();
     return Scaffold(
       backgroundColor: Colors.white,
@@ -81,9 +82,8 @@ class _TravellerBookingDetailsScreenState
                               //   fit: BoxFit.cover,
                               // ),
                               image: DecorationImage(
-                                  image: Image.memory(
-                                base64.decode(
-                                    activityPackage.coverImg!.split(',').last),
+                                  image: Image.network(
+                                activityPackage.firebaseCoverImg!,
                                 fit: BoxFit.cover,
                                 gaplessPlayback: true,
                               ).image),
@@ -451,7 +451,6 @@ class _TravellerBookingDetailsScreenState
                   height: 53.h,
                   child: ElevatedButton(
                     onPressed: () {
-
                       requestToBookScreen(context, activityPackage, bookingDate,
                           numberOfTraveller, tourGuideDetails.fullName!);
                     },
@@ -478,7 +477,6 @@ class _TravellerBookingDetailsScreenState
       String? selectedDate,
       int numberOfTraveller,
       String tourGuide) async {
-
     final Map<String, dynamic> details = {
       'package': package,
       'selectedDate': selectedDate,

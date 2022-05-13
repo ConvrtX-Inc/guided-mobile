@@ -86,7 +86,7 @@ class FromUser {
     id = json['id'];
     fullName = json['full_name'];
     email = json['email'];
-    profilePhotoFirebaseUrl = json['profile_photo_firebase_url'];
+    profilePhotoFirebaseUrl = json['profile_photo_firebase_url'] ?? '';
   }
 
   Map<String, dynamic> toJson() {

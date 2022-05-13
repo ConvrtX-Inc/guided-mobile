@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/package_destination_model.dart';
+import 'package:guided/models/package_model.dart';
 import 'package:guided/models/user_list_model.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/widget/popular_guide_features.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
@@ -21,6 +23,9 @@ class PopularGuidesList extends StatefulWidget {
 
 class _PopularGuidesListState extends State<PopularGuidesList> {
   late Future<UserListModel> _loadingData;
+  double latitude = 0;
+  double longitude = 0;
+  String address = '';
   @override
   void initState() {
     super.initState();
@@ -114,17 +119,82 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
               )
             else
               for (UserDetailsModel detail in userListData.userDetails)
-                if(!detail.isTraveller)
-                  buildInfo(detail)
+                if (!detail.isTraveller) getPackage(detail)
           ],
         ),
       );
 
-  Widget buildInfo(UserDetailsModel details) => PopularGuideFeatures(
-      id: details.id,
-      name: details.fullName,
-      profileImg: details.firebaseImg,
-      starRating: '0',
-      isFirstAid: details.isFirstAid,
-      isTraveller: details.isTraveller);
+  Widget getPackage(UserDetailsModel details) =>
+      FutureBuilder<PackageModelData>(
+        future: APIServices().getPackageDataByUserId(details.id),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          Widget _displayWidget;
+
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              _displayWidget = const MainContentSkeleton();
+              break;
+            // ignore: no_default_cases
+            default:
+              if (snapshot.hasError) {
+                _displayWidget = Container();
+              } else {
+                final PackageModelData packageData = snapshot.data;
+                if (packageData.packageDetails.isEmpty) {
+                  return Container();
+                } else {
+                  return buildPackageDestination(
+                      packageData.packageDetails[0].id, details);
+                }
+              }
+          }
+          return Container();
+        },
+      );
+
+  Widget buildPackageDestination(String id, UserDetailsModel details) =>
+      FutureBuilder<PackageDestinationModelData>(
+        future: APIServices().getPackageDestinationData(id),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          Widget _displayWidget;
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              _displayWidget = const MainContentSkeleton();
+              break;
+            // ignore: no_default_cases
+            default:
+              if (snapshot.hasError) {
+                _displayWidget = Container();
+              } else {
+                PackageDestinationModelData packageDestinationData =
+                    snapshot.data!;
+
+                latitude = double.parse(packageDestinationData
+                    .packageDestinationDetails[0].latitude);
+                longitude = double.parse(packageDestinationData
+                    .packageDestinationDetails[0].longitude);
+                address =
+                    packageDestinationData.packageDestinationDetails[0].name;
+
+                _displayWidget =
+                    buildInfo(details, address, latitude, longitude);
+              }
+          }
+          return _displayWidget;
+        },
+      );
+
+  Widget buildInfo(UserDetailsModel details, String address, double latitude,
+          double longitude) =>
+      PopularGuideFeatures(
+          id: details.id,
+          name: details.fullName,
+          profileImg: details.firebaseImg,
+          starRating: '0',
+          isFirstAid: details.isFirstAid,
+          isTraveller: details.isTraveller,
+          createdDate: details.createdDate,
+          address: address,
+          latitude: latitude,
+          longitude: longitude);
 }

@@ -1,12 +1,20 @@
-// ignore_for_file: public_member_api_docs, use_named_constants, diagnostic_describe_all_properties
+// ignore_for_file: public_member_api_docs, use_named_constants, diagnostic_describe_all_properties, no_default_cases, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/package_model.dart';
+import 'package:guided/models/profile_data_model.dart';
+import 'package:guided/models/wishlist_activity_model.dart';
+import 'package:guided/screens/main_navigation/home/widgets/home_features.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/widget/guide_profile_feature.dart';
+import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/widget/post_features.dart';
+import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
+import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 
 /// Guide Profile
@@ -17,33 +25,48 @@ class GuideProfile extends StatefulWidget {
   State<GuideProfile> createState() => _GuideProfileState();
 }
 
-class _GuideProfileState extends State<GuideProfile> {
+class _GuideProfileState extends State<GuideProfile>
+    with AutomaticKeepAliveClientMixin<GuideProfile> {
+  @override
+  bool get wantKeepAlive => true;
   final List<Activity> activities = StaticDataService.getActivityList();
 
   @override
+  void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const ScrollPhysics(),
           child: Column(
             children: <Widget>[
-              SizedBox(
-                height: 30.h,
-              ),
-              guideProfile1(),
-              Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
-                child: nearbyActivities(context, activities),
-              ),
-              guideProfile2(),
-              Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
-                child: nearbyActivities(context, activities),
-              ),
-              guideProfile3(),
-              Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
-                child: nearbyActivities(context, activities),
+              FutureBuilder<WishlistActivityModel>(
+                future: APIServices().getWishlistActivityData(),
+                builder:
+                    (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                  Widget _displayWidget;
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      _displayWidget = const MainContentSkeleton();
+                      break;
+                    default:
+                      if (snapshot.hasError) {
+                        _displayWidget = Center(
+                            child: APIMessageDisplay(
+                          message: 'Result: ${snapshot.error}',
+                        ));
+                      } else {
+                        _displayWidget = buildResult(snapshot.data!);
+                      }
+                  }
+                  return _displayWidget;
+                },
               )
             ],
           ),
@@ -52,397 +75,102 @@ class _GuideProfileState extends State<GuideProfile> {
     );
   }
 
-  Widget guideProfile1() => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+  Widget buildResult(WishlistActivityModel wishlistData) => Column(
         children: <Widget>[
-          SizedBox(
-            width: 50.w,
-          ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.white,
-                width: 1.w,
+          if (wishlistData.wishlistActivityDetails.isEmpty)
+            Padding(
+              padding: EdgeInsets.only(
+                  top: (MediaQuery.of(context).size.height / 3) - 40),
+              child: APIMessageDisplay(
+                message: AppTextConstants.noResultFound,
               ),
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: const <BoxShadow>[
-                BoxShadow(blurRadius: 2, color: Colors.grey, spreadRadius: 2)
-              ],
-            ),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 60.r,
-              backgroundImage: const AssetImage(
-                  '${AssetsPath.assetsPNGPath}/student_profile.png'),
-            ),
-          ),
-          SizedBox(
-            width: 20.w,
-          ),
-          Expanded(
-            child: Card(
-              elevation: 0,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 20.w),
-                    child: Text(
-                      'Ethan Hunt',
-                      style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                  Row(
-                    children: [
-                      Image(
-                        image: AssetImage(AssetsPath.hunt),
-                        width: 40,
-                        height: 40,
-                      ),
-                      SizedBox(
-                        height: 35.h,
-                        child: Text(
-                          'Hunt',
-                          style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Gilroy'),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 30.w,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 17),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: AppColors.mintGreen,
-                              border: Border.all(color: AppColors.mintGreen),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8.r))),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5),
-                            child: Text(AppTextConstants.firstaid,
-                                style: TextStyle(
-                                    color: AppColors.deepGreen,
-                                    fontFamily: 'Gilroy',
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w400)),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.w),
-                        child: Image(
-                          image: AssetImage(AssetsPath.forThePlanet),
-                          width: 60,
-                          height: 60,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 30.w,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.star,
-                              color: AppColors.deepGreen,
-                              size: 10,
-                            ),
-                            Text(
-                              '16 reviews',
-                              style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontFamily: 'Gilroy',
-                                  color: AppColors.osloGrey,
-                                  fontWeight: FontWeight.w400),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          )
+            )
+          else
+            for (WishlistActivityDetailsModel detail
+                in wishlistData.wishlistActivityDetails)
+              buildInfo(detail)
         ],
       );
 
-  Widget guideProfile2() => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+  Widget buildInfo(WishlistActivityDetailsModel details) =>
+      FutureBuilder<PackageModelData>(
+        future: APIServices().getPackageDataById(details.activityPackageId),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          Widget _displayWidget;
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              _displayWidget = const MainContentSkeleton();
+              break;
+            default:
+              if (snapshot.hasError) {
+                _displayWidget = Center(
+                    child: APIMessageDisplay(
+                  message: 'Result: ${snapshot.error}',
+                ));
+              } else {
+                _displayWidget = buildPackageResult(
+                    snapshot.data!, details.activityPackageId);
+              }
+          }
+          return _displayWidget;
+        },
+      );
+
+  Widget buildPackageResult(
+          PackageModelData packageData, String activityPackageId) =>
+      Column(
         children: <Widget>[
-          SizedBox(
-            width: 50.w,
-          ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.white,
-                width: 1.w,
+          if (packageData.packageDetails.isEmpty)
+            Padding(
+              padding: EdgeInsets.only(
+                  top: (MediaQuery.of(context).size.height / 3) - 40),
+              child: APIMessageDisplay(
+                message: AppTextConstants.noResultFound,
               ),
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: const <BoxShadow>[
-                BoxShadow(blurRadius: 2, color: Colors.grey, spreadRadius: 2)
-              ],
-            ),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 60.r,
-              backgroundImage: const AssetImage(
-                  '${AssetsPath.assetsPNGPath}/john_kristen.png'),
-            ),
-          ),
-          SizedBox(
-            width: 20.w,
-          ),
-          Expanded(
-            child: Card(
-              elevation: 0,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 20.w),
-                    child: Text(
-                      'John Kristen',
-                      style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                  Row(
-                    children: [
-                      Image(
-                        image: AssetImage(AssetsPath.hunt),
-                        width: 40,
-                        height: 40,
-                      ),
-                      SizedBox(
-                        height: 35.h,
-                        child: Text(
-                          'Hunt',
-                          style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Gilroy'),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 30.w,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 17),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: AppColors.mintGreen,
-                              border: Border.all(color: AppColors.mintGreen),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8.r))),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5),
-                            child: Text(AppTextConstants.firstaid,
-                                style: TextStyle(
-                                    color: AppColors.deepGreen,
-                                    fontFamily: 'Gilroy',
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w400)),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.w),
-                        child: Image(
-                          image: AssetImage(AssetsPath.forThePlanet),
-                          width: 60,
-                          height: 60,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 30.w,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.star,
-                              color: AppColors.deepGreen,
-                              size: 10,
-                            ),
-                            Text(
-                              '16 reviews',
-                              style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontFamily: 'Gilroy',
-                                  color: AppColors.osloGrey,
-                                  fontWeight: FontWeight.w400),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          )
+            )
+          else
+            for (PackageDetailsModel detail in packageData.packageDetails)
+              buildGuideProfile(detail, activityPackageId),
         ],
       );
 
-  Widget guideProfile3() => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          SizedBox(
-            width: 50.w,
-          ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.white,
-                width: 1.w,
-              ),
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: const <BoxShadow>[
-                BoxShadow(blurRadius: 2, color: Colors.grey, spreadRadius: 2)
-              ],
-            ),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 60.r,
-              backgroundImage:
-                  const AssetImage('${AssetsPath.assetsPNGPath}/mark_chen.png'),
-            ),
-          ),
-          SizedBox(
-            width: 20.w,
-          ),
-          Expanded(
-            child: Card(
-              elevation: 0,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 20.w),
-                    child: Text(
-                      'Mark Chen',
-                      style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                  Row(
-                    children: [
-                      Image(
-                        image: AssetImage(AssetsPath.hunt),
-                        width: 40,
-                        height: 40,
-                      ),
-                      SizedBox(
-                        height: 35.h,
-                        child: Text(
-                          'Hunt',
-                          style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Gilroy'),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 30.w,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 17),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: AppColors.mintGreen,
-                              border: Border.all(color: AppColors.mintGreen),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8.r))),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5),
-                            child: Text(AppTextConstants.firstaid,
-                                style: TextStyle(
-                                    color: AppColors.deepGreen,
-                                    fontFamily: 'Gilroy',
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w400)),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.w),
-                        child: Image(
-                          image: AssetImage(AssetsPath.forThePlanet),
-                          width: 60,
-                          height: 60,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 30.w,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.star,
-                              color: AppColors.deepGreen,
-                              size: 10,
-                            ),
-                            Text(
-                              '16 reviews',
-                              style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontFamily: 'Gilroy',
-                                  color: AppColors.osloGrey,
-                                  fontWeight: FontWeight.w400),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          )
-        ],
+  Widget buildGuideProfile(
+          PackageDetailsModel details, String activityPackageId) =>
+      FutureBuilder<ProfileDetailsModel>(
+        future: APIServices().getProfileDataById(details.userId),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          Widget _displayWidget;
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              _displayWidget = const MainContentSkeleton();
+              break;
+            default:
+              if (snapshot.hasError) {
+                _displayWidget = Center(
+                    child: APIMessageDisplay(
+                  message: 'Result: ${snapshot.error}',
+                ));
+              } else {
+                _displayWidget = buildGuideResult(snapshot.data!,
+                    activityPackageId, details.mainBadgeId, details.userId);
+              }
+          }
+          return _displayWidget;
+        },
+      );
+
+  Widget buildGuideResult(ProfileDetailsModel details, String activityPackageId,
+          String mainBadgeId, String userId) =>
+      Center(
+        child: GuideProfileFeature(
+            id: details.id,
+            activityPackageId: activityPackageId,
+            firebaseProfImg: details.firebaseProfilePicUrl,
+            name: details.fullName,
+            isFirstAid: details.isFirstAidTrained,
+            mainBadgeId: mainBadgeId,
+            userId: userId,
+            createdDate: details.createdDate),
       );
 
   Widget nearbyActivities(BuildContext context, List<Activity> activities) {

@@ -127,8 +127,7 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                             onPressed: () async {
                               await SecureStorage.clearAll();
                               await Navigator.of(context)
-                                  .pushNamedAndRemoveUntil(
-                                      '/', (Route<dynamic> route) => false);
+                                  .pushNamedAndRemoveUntil('/user_type', (Route<dynamic> route) => false);
                             },
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
@@ -229,7 +228,7 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
             iconSize: 36,
             color: Colors.black,
             onPressed: () {
-              Navigator.pushNamed(context, '/profile');
+              Navigator.pushNamed(context, '/edit_profile_traveler');
             },
           ),
         ],

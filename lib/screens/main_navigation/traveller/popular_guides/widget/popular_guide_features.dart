@@ -29,6 +29,10 @@ class PopularGuideFeatures extends StatefulWidget {
     String? profileImg = '',
     bool? isFirstAid = false,
     bool isTraveller = false,
+    DateTime? createdDate,
+    String address = '',
+    double latitude = 0,
+    double longitude = 0,
     Key? key,
   })  : _id = id,
         _name = name,
@@ -36,6 +40,10 @@ class PopularGuideFeatures extends StatefulWidget {
         _starRating = starRating,
         _isFirstAid = isFirstAid,
         _isTraveller = isTraveller,
+        _createdDate = createdDate,
+        _address = address,
+        _latitude = latitude,
+        _longitude = longitude,
         super(key: key);
 
   final String? _id;
@@ -44,6 +52,10 @@ class PopularGuideFeatures extends StatefulWidget {
   final String? _starRating;
   final bool? _isFirstAid;
   final bool _isTraveller;
+  final DateTime? _createdDate;
+  final String _address;
+  final double _latitude;
+  final double _longitude;
 
   @override
   State<PopularGuideFeatures> createState() => _PopularGuideFeaturesState();
@@ -155,7 +167,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                         ),
                         Expanded(
                           child: Text(
-                            details.address,
+                            widget._address,
                             style: TextStyle(
                                 fontFamily: 'Gilroy',
                                 fontWeight: FontWeight.w400,
@@ -484,12 +496,15 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
       'number_of_tourist': maxTraveller,
       'star_rating': '0',
       'fee': price,
-      'address': address,
+      'address': widget._address,
       'package_id': packageId,
       'profile_img': widget._profileImg,
       'package_name': packageName,
       'is_first_aid': widget._isFirstAid,
-      'firebase_cover_img': firebaseCoverImg
+      'firebase_cover_img': firebaseCoverImg,
+      'latitude': widget._latitude.toString(),
+      'longitude': widget._longitude.toString(),
+      'created_date': widget._createdDate
     };
 
     await Navigator.pushNamed(context, '/popular_guides_view',

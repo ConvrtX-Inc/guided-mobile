@@ -76,6 +76,7 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
       child: Screenshot(
         controller: screenshotController,
         child: Scaffold(
+          backgroundColor: Colors.white,
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(180),
             child: AppBar(
@@ -136,7 +137,6 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                       ),
                     ),
                   ),
-
                 ],
               ),
               flexibleSpace: ExtendedImage.network(
@@ -184,8 +184,7 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                       SizedBox(
                         width: 2.w,
                       ),
-                      FittedBox(
-                        fit: BoxFit.fitWidth,
+                      Expanded(
                         child: SizedBox(
                           child: Text(
                             screenArguments['address'],
@@ -199,57 +198,57 @@ class _PopularGuidesViewState extends State<PopularGuidesView>
                       ),
                     ],
                   ),
-                  SafeArea(
-                    child: Container(
-                      height: 600.h,
-                      padding: const EdgeInsets.all(15),
-                      color: Colors.white,
-                      child: ContainedTabBarView(
-                        tabs: <Widget>[
-                          Text(AppTextConstants.description,
-                              style: title == AppTextConstants.description
-                                  ? AppTextStyle.blackStyle
-                                  : AppTextStyle.inactive),
-                          Text(AppTextConstants.travelerLimitAndSchedule,
-                              style: title ==
-                                      AppTextConstants.travelerLimitAndSchedule
-                                  ? AppTextStyle.blackStyle
-                                  : AppTextStyle.inactive),
-                        ],
-                        tabBarProperties: TabBarProperties(
-                          height: 42,
-                          margin: const EdgeInsets.all(8),
-                          indicatorColor: AppColors.rangooGreen,
-                          indicator: UnderlineTabIndicator(
-                              borderSide: BorderSide(
-                                  width: 2.w, color: AppColors.rangooGreen),
-                              insets: EdgeInsets.symmetric(horizontal: 18.w)),
-                          indicatorWeight: 1,
-                          labelColor: Colors.black,
-                          unselectedLabelColor: Colors.grey,
-                        ),
-                        views: <Widget>[
-                          PopularGuidesTabDescription(
-                              name: screenArguments['name'],
-                              mainBadgeId: screenArguments['main_badge_id'],
-                              description: screenArguments['description'],
-                              imageUrl: screenArguments['image_url'],
-                              numberOfTourist:
-                                  screenArguments['number_of_tourist'],
-                              starRating: screenArguments['star_rating'],
-                              fee: screenArguments['fee'],
-                              address: screenArguments['address'],
-                              packageId: screenArguments['package_id'],
-                              profileImg: screenArguments['profile_img'],
-                              packageName: screenArguments['package_name'],
-                              isFirstAid: screenArguments['is_first_aid']),
-                          PopularGuidesTravelerLimitSchedules(
-                              packageId: screenArguments['package_id'],
-                              price: screenArguments['fee']),
-                        ],
-                        onChange: setTitle,
-                        initialIndex: initIndex,
+                  Container(
+                    height: 500,
+                    color: Colors.white,
+                    child: ContainedTabBarView(
+                      tabs: <Widget>[
+                        Text(AppTextConstants.description,
+                            style: title == AppTextConstants.description
+                                ? AppTextStyle.blackStyle
+                                : AppTextStyle.inactive),
+                        Text(AppTextConstants.travelerLimitAndSchedule,
+                            style: title ==
+                                    AppTextConstants.travelerLimitAndSchedule
+                                ? AppTextStyle.blackStyle
+                                : AppTextStyle.inactive),
+                      ],
+                      tabBarProperties: TabBarProperties(
+                        height: 42,
+                        margin: const EdgeInsets.all(8),
+                        indicatorColor: AppColors.rangooGreen,
+                        indicator: UnderlineTabIndicator(
+                            borderSide: BorderSide(
+                                width: 2.w, color: AppColors.rangooGreen),
+                            insets: EdgeInsets.symmetric(horizontal: 18.w)),
+                        indicatorWeight: 1,
+                        labelColor: Colors.black,
+                        unselectedLabelColor: Colors.grey,
                       ),
+                      views: <Widget>[
+                        PopularGuidesTabDescription(
+                            name: screenArguments['name'],
+                            mainBadgeId: screenArguments['main_badge_id'],
+                            description: screenArguments['description'],
+                            imageUrl: screenArguments['image_url'],
+                            numberOfTourist:
+                                screenArguments['number_of_tourist'],
+                            starRating: screenArguments['star_rating'],
+                            fee: screenArguments['fee'],
+                            address: screenArguments['address'],
+                            packageId: screenArguments['package_id'],
+                            profileImg: screenArguments['profile_img'],
+                            packageName: screenArguments['package_name'],
+                            isFirstAid: screenArguments['is_first_aid'],
+                            latitude: screenArguments['latitude'],
+                            longitude: screenArguments['longitude'],
+                            createdDate: screenArguments['created_date']),
+                        PopularGuidesTravelerLimitSchedules(
+                            packageId: screenArguments['package_id'],
+                            price: screenArguments['fee']),
+                      ],
+                      onChange: setTitle,
+                      initialIndex: initIndex,
                     ),
                   ),
                 ],

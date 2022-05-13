@@ -25,13 +25,16 @@ class UserDetailsModel {
       this.phoneNumber = '',
       this.firebaseImg = '',
       this.isTraveller = false,
-      this.isFirstAid = false});
+      this.isFirstAid = false,
+      this.createdDate});
 
   /// String property initialization
   final String id, fullName, email, phoneNumber, firebaseImg;
 
   /// boolean initialization
   final bool isTraveller, isFirstAid;
+
+  final DateTime? createdDate;
 
   /// mapping
   UserDetailsModel.fromJson(Map<String, dynamic> parseJson)
@@ -41,5 +44,6 @@ class UserDetailsModel {
         phoneNumber = parseJson['phone_no'] ?? '',
         firebaseImg = parseJson['profile_photo_firebase_url'] ?? '',
         isTraveller = parseJson['is_traveller'] ?? false,
-        isFirstAid = parseJson['is_first_aid_trained'] ?? false;
+        isFirstAid = parseJson['is_first_aid_trained'] ?? false,
+        createdDate = DateTime.parse(parseJson['created_date']);
 }

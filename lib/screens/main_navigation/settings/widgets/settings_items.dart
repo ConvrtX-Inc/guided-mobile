@@ -1,13 +1,30 @@
 // ignore_for_file: implementation_imports, unnecessary_statements
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart';
+import 'package:guided/controller/user_subscription_controller.dart';
+import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/card_model.dart';
 import 'package:guided/models/preset_form_model.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:guided/models/user_subscription.dart';
 import 'package:guided/routes/route_generator.dart';
 import 'package:guided/screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
+import 'package:guided/screens/payments/confirm_payment.dart';
+import 'package:guided/screens/payments/payment_failed.dart';
+import 'package:guided/screens/payments/payment_method.dart';
+import 'package:guided/screens/payments/payment_successful.dart';
+import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
+import 'package:guided/screens/widgets/reusable_widgets/discovery_payment_details.dart';
+import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Widgets for displaying list of user settings
 class SettingsItems extends StatefulWidget {
@@ -31,6 +48,18 @@ class _SettingsItemsState extends State<SettingsItems> {
   bool isEnableTile = true;
   String description = '';
   String id = '';
+  bool hasPremiumSubscription = false;
+
+  final UserSubscriptionController _userSubscriptionController =
+      Get.put(UserSubscriptionController());
+
+  UserSubscription userSubscriptionDetails = UserSubscription();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -96,9 +125,26 @@ class _SettingsItemsState extends State<SettingsItems> {
           case 'notification_traveler':
             Navigator.pushNamed(context, '/notification_traveler');
             break;
+          case 'premium_subscription':
+            ///For traveler role only
+             hasPremiumSubscription =
+            UserSingleton.instance.user.user!.hasPremiumSubscription!;
+            if (hasPremiumSubscription) {
+              Navigator.pushNamed(context, '/subscription_details');
+            } else {
+              /// show payment screens
+              _showDiscoveryBottomSheet('');
+            }
+            break;
         }
       },
-      leading: SvgPicture.asset(widget._imgUrl),
+      leading: widget._imgUrl.contains('.png')
+          ? Image.asset(
+              widget._imgUrl,
+              height: 45,
+              width: 45,
+            )
+          : SvgPicture.asset(widget._imgUrl),
       title: Text(
         widget._name,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
@@ -211,5 +257,120 @@ class _SettingsItemsState extends State<SettingsItems> {
 
     await Navigator.pushNamed(context, '/local_laws_taxes_form',
         arguments: details);
+  }
+
+  void _showDiscoveryBottomSheet(String backgroundImage) {
+    showCupertinoModalBottomSheet(
+        context: context,
+        isDismissible: true,
+        barrierColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        enableDrag: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext ctx) => DiscoveryBottomSheet(
+          title: 'Premium Discovery',
+              backgroundImage: backgroundImage,
+              showSkipButton: false,
+              showDiscoveryText: false,
+              useDefaultBackground: true,
+              onSubscribeBtnPressed: () {
+                const double price = 5.99;
+                Navigator.of(ctx).pop();
+
+                paymentMethod(
+                    context: context,
+                    onCreditCardSelected: (CardModel card) {
+                      debugPrint('Payment Method:: ${card.cardNo}');
+                    },
+                    onContinueBtnPressed: (dynamic data) {
+                      String mode = '';
+                      if (data is CardModel) {
+                        mode = 'Credit Card';
+                      } else {
+                        mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
+                      }
+
+                      if (mode == 'Apple Pay') {
+                        debugPrint('Data $data');
+                        saveSubscription(data, 'Premium Subscription',
+                            price.toString(), mode);
+                        paymentSuccessful(
+                            context: context,
+                            paymentDetails: DiscoveryPaymentDetails(
+                                transactionNumber: data),
+                            paymentMethod: mode);
+
+                        /// Add Saving of Subscription here
+                      } else {
+                        final String transactionNumber =
+                            GlobalMixin().generateTransactionNumber();
+                        confirmPaymentModal(
+                            context: context,
+                            serviceName: 'Premium Subscription',
+                            paymentMethod: data,
+                            paymentMode: mode,
+                            price: price,
+                            onPaymentSuccessful: () {
+                              Navigator.of(context).pop();
+                              saveSubscription(
+                                  transactionNumber,
+                                  'Premium Subscription',
+                                  price.toString(),
+                                  mode);
+                              //Save Subscription
+                              paymentSuccessful(
+                                  context: context,
+                                  paymentDetails: DiscoveryPaymentDetails(
+                                      transactionNumber: transactionNumber),
+                                  paymentMethod: mode);
+                            },
+                            onPaymentFailed: () {
+                              paymentFailed(
+                                  context: context,
+                                  paymentDetails: DiscoveryPaymentDetails(
+                                      transactionNumber: transactionNumber),
+                                  paymentMethod: mode);
+                            },
+                            paymentDetails: DiscoveryPaymentDetails(
+                                transactionNumber: transactionNumber));
+                      }
+                    },
+                    price: price);
+              },
+              onSkipBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+              onCloseBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+              onBackBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+            ));
+  }
+
+  Future<void> saveSubscription(String transactionNumber,
+      String subscriptionName, String price, String paymentMethod) async {
+    final DateTime startDate = DateTime.now();
+
+    final DateTime endDate = GlobalMixin().getEndDate(startDate);
+
+    final UserSubscription subscriptionParams = UserSubscription(
+        paymentReferenceNo: transactionNumber,
+        name: subscriptionName,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
+        price: price);
+
+    final APIStandardReturnFormat result = await APIServices()
+        .addUserSubscription(subscriptionParams, paymentMethod);
+
+    final jsonData = jsonDecode(result.successResponse);
+    _userSubscriptionController.setSubscription(UserSubscription.fromJson(jsonData));
+
+    UserSingleton.instance.user.user?.hasPremiumSubscription = true;
+    setState(() {
+      hasPremiumSubscription = true;
+    });
   }
 }
