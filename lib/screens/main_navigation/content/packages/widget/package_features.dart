@@ -90,11 +90,16 @@ class _PackageFeaturesState extends State<PackageFeatures> {
   String dateStart = '';
   String dateEnd = '';
   DateTime now = DateTime.now();
+  dynamic subActivities1;
+  dynamic subActivities2;
+  dynamic subActivities3;
+  int count = 0;
   @override
   void initState() {
     super.initState();
     splitSubActivitiesId = widget._subBadgeId.split(',');
     splitAddress = widget._address.split(',');
+    count = splitSubActivitiesId.length;
     getActivityAvailability(widget._id);
   }
 
@@ -416,6 +421,32 @@ class _PackageFeaturesState extends State<PackageFeatures> {
                   )
                 else
                   Container(),
+                for (int i = 0; i < splitSubActivitiesId.length; i++)
+                  FutureBuilder<BadgeModelData>(
+                    future: APIServices()
+                        .getBadgesModelById(splitSubActivitiesId[i]),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasData) {
+                        final BadgeModelData badgeData = snapshot.data;
+                        final int length = badgeData.badgeDetails.length;
+                        final BadgeDetailsModel badgeDetails =
+                            badgeData.badgeDetails[0];
+                        switch (i) {
+                          case 0:
+                            subActivities1 = badgeDetails;
+                            break;
+                          case 1:
+                            subActivities2 = badgeDetails;
+                            break;
+                          case 2:
+                            subActivities3 = badgeDetails;
+                            break;
+                        }
+                      }
+                      return Container();
+                    },
+                  )
               ],
             ))
         : Container();
@@ -439,7 +470,11 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'address': splitAddress,
       'country': widget._country,
       'extra_cost': widget._extraCost,
-      'not_included': widget._notIncluded
+      'not_included': widget._notIncluded,
+      'sub_activity_1': subActivities1,
+      'sub_activity_2': subActivities2,
+      'sub_activity_3': subActivities3,
+      'count': count
     };
 
     await Navigator.pushNamed(context, '/package_view', arguments: details);
@@ -463,7 +498,11 @@ class _PackageFeaturesState extends State<PackageFeatures> {
       'address': splitAddress,
       'country': widget._country,
       'extra_cost': widget._extraCost,
-      'not_included': widget._notIncluded
+      'not_included': widget._notIncluded,
+      'sub_activity_1': subActivities1,
+      'sub_activity_2': subActivities2,
+      'sub_activity_3': subActivities3,
+      'count': count
     };
 
     await Navigator.pushNamed(context, '/package_edit', arguments: details);
