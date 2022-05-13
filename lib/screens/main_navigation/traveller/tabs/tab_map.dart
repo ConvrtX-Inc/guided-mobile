@@ -45,6 +45,7 @@ import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../../../models/activity_package.dart';
@@ -59,6 +60,7 @@ class TabMapScreen extends StatefulWidget {
 }
 
 class _TabMapScreenState extends State<TabMapScreen> {
+  final FocusNode _searchFocusNode = FocusNode();
   Completer<GoogleMapController> _controller = Completer();
   GoogleMapController? mapController;
   final List<Marker> _markers = <Marker>[];
@@ -93,6 +95,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
   @override
   void initState() {
     APIServices().getActivityPackages().then((List<ActivityPackage> value) {
+      print(value.length);
       addMarker(value);
     });
 
@@ -103,34 +106,47 @@ class _TabMapScreenState extends State<TabMapScreen> {
       getUserCards();
     }*/
 
-  hasPremiumSubscription = UserSingleton.instance.user.user!.hasPremiumSubscription!;
+    hasPremiumSubscription =
+        UserSingleton.instance.user.user!.hasPremiumSubscription!;
+  }
+
+  @override
+  void dispose() {
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 
   Future<void> addMarker(List<ActivityPackage> activityPackages) async {
     final List<Marker> marks = <Marker>[];
     for (ActivityPackage element in activityPackages) {
-      final Activity? activity = activities
-          .firstWhereOrNull((Activity a) => a.id == element.mainBadge!.id);
+      if (element.mainBadge != null) {
+        final Activity? activity = activities
+            .firstWhereOrNull((Activity a) => a.id == element.mainBadge!.id);
 
-      double lat = double.parse(element
-          .activityPackageDestination!.activitypackagedestinationLatitude!);
-      double long = double.parse(element
-          .activityPackageDestination!.activitypackagedestinationLongitude!);
-      if (activity != null) {
-        marks.add(
-          Marker(
-            markerId: MarkerId(element.id!),
-            icon: await MarkerIcon.pictureAsset(
-                assetPath: activity.path, width: 80, height: 80),
-            position: LatLng(lat, long),
-          ),
-        );
+        if (activity != null) {
+          double lat = double.parse(element
+              .activityPackageDestination!.activityPackageDestinationLatitude!);
+          double long = double.parse(element.activityPackageDestination!
+              .activityPackageDestinationLongitude!);
+          marks.add(
+            Marker(
+              markerId: MarkerId(element.id!),
+              icon: await MarkerIcon.pictureAsset(
+                  assetPath: activity.path, width: 80, height: 80),
+              position: LatLng(lat, long),
+            ),
+          );
+        }
       }
     }
     double lat = double.parse(activityPackages
-        .first.activityPackageDestination!.activitypackagedestinationLatitude!);
+        .first.activityPackageDestination!.activityPackageDestinationLatitude!);
     double long = double.parse(activityPackages.first
-        .activityPackageDestination!.activitypackagedestinationLongitude!);
+        .activityPackageDestination!.activityPackageDestinationLongitude!);
+    print(activityPackages
+        .first.activityPackageDestination!.activityPackageDestinationLatitude!);
+    print(activityPackages.first.activityPackageDestination!
+        .activityPackageDestinationLongitude!);
     // mapController?.animateCamera(CameraUpdate.newCameraPosition(
     //     CameraPosition(target: LatLng(lat, long), zoom: 17)
     //     //17 is new zoom level
@@ -228,8 +244,35 @@ class _TabMapScreenState extends State<TabMapScreen> {
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
                           child: TextField(
+                            textInputAction: TextInputAction.search,
+                            onSubmitted: (String search) {
+                              if (search.isNotEmpty) {
+                                APIServices()
+                                    .searchActivity(search)
+                                    .then((List<ActivityPackage> value) {
+                                  final ActivityPackage? activity =
+                                      value.firstOrNull;
+
+                                  if (activity != null) {
+                                    addMarker(value);
+                                    double lat = double.parse(activity
+                                        .activityPackageDestination!
+                                        .activityPackageDestinationLatitude!);
+                                    double long = double.parse(activity
+                                        .activityPackageDestination!
+                                        .activityPackageDestinationLongitude!);
+                                    mapController?.animateCamera(
+                                        CameraUpdate.newCameraPosition(
+                                            CameraPosition(
+                                                target: LatLng(lat, long),
+                                                zoom: 17)
+                                            //17 is new zoom level
+                                            ));
+                                  }
+                                });
+                              }
+                            },
                             controller: _placeName,
-                            onTap: _handlePressButton,
                             textAlign: TextAlign.left,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
@@ -260,7 +303,311 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                   height: 20.h,
                                 ),
                                 // onPressed: null,
-                                onPressed: () async {},
+                                onPressed: () {
+                                  showMaterialModalBottomSheet(
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20),
+                                      ),
+                                    ),
+                                    expand: false,
+                                    context: context,
+                                    backgroundColor: Colors.white,
+                                    builder: (BuildContext context) => SafeArea(
+                                      top: false,
+                                      child: Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.72,
+                                        decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(20),
+                                                topRight: Radius.circular(20))),
+                                        child: Column(
+                                          children: <Widget>[
+                                            SizedBox(
+                                              height: 15.h,
+                                            ),
+                                            Align(
+                                              child: Image.asset(
+                                                AssetsPath.horizontalLine,
+                                                width: 60.w,
+                                                height: 5.h,
+                                              ),
+                                            ),
+                                            // SizedBox(
+                                            //   height: 15.h,
+                                            // ),
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  20.w, 20.h, 20.w, 20.h),
+                                              child: Align(
+                                                alignment: Alignment.topLeft,
+                                                child: Text(
+                                                  'Select date',
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 24.sp,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: <Widget>[
+                                                Icon(
+                                                  Icons.chevron_left,
+                                                  color: HexColor('#898A8D'),
+                                                ),
+                                                Container(
+                                                    color: Colors.transparent,
+                                                    height: 80.h,
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.7,
+                                                    child: EasyScrollToIndex(
+                                                      controller:
+                                                          _scrollController, // ScrollToIndexController
+                                                      scrollDirection: Axis
+                                                          .horizontal, // default Axis.vertical
+                                                      itemCount: AppListConstants
+                                                          .calendarMonths
+                                                          .length, // itemCount
+                                                      itemWidth: 95,
+                                                      itemHeight: 70,
+                                                      itemBuilder:
+                                                          (BuildContext context,
+                                                              int index) {
+                                                        return InkWell(
+                                                          onTap: () {
+                                                            _scrollController
+                                                                .easyScrollToIndex(
+                                                                    index:
+                                                                        index);
+                                                            travellerMonthController
+                                                                .setSelectedDate(
+                                                                    index + 1);
+                                                            DateTime dt =
+                                                                DateTime.parse(
+                                                                    travellerMonthController
+                                                                        .currentDate);
+
+                                                            final DateTime
+                                                                plustMonth =
+                                                                DateTime(
+                                                                    dt.year,
+                                                                    index + 1,
+                                                                    dt.day,
+                                                                    dt.hour,
+                                                                    dt.minute);
+
+                                                            final DateTime
+                                                                setLastday =
+                                                                DateTime(
+                                                                    plustMonth
+                                                                        .year,
+                                                                    plustMonth
+                                                                        .month,
+                                                                    1,
+                                                                    plustMonth
+                                                                        .hour,
+                                                                    plustMonth
+                                                                        .minute);
+
+                                                            travellerMonthController
+                                                                .setCurrentMonth(
+                                                              setLastday
+                                                                  .toString(),
+                                                            );
+                                                          },
+                                                          child: Obx(
+                                                            () => Stack(
+                                                              children: <
+                                                                  Widget>[
+                                                                Align(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child:
+                                                                      Container(
+                                                                    margin: EdgeInsets.fromLTRB(
+                                                                        index ==
+                                                                                0
+                                                                            ? 0.w
+                                                                            : 0.w,
+                                                                        0.h,
+                                                                        10.w,
+                                                                        0.h),
+                                                                    width: 89,
+                                                                    height: 45,
+                                                                    decoration: BoxDecoration(
+                                                                        borderRadius: const BorderRadius.all(
+                                                                          Radius.circular(
+                                                                              10),
+                                                                        ),
+                                                                        border: Border.all(color: index == travellerMonthController.selectedDate - 1 ? HexColor('#FFC74A') : HexColor('#C4C4C4'), width: 1),
+                                                                        color: index == travellerMonthController.selectedDate - 1 ? HexColor('#FFC74A') : Colors.white),
+                                                                    child: Center(
+                                                                        child: Text(
+                                                                            AppListConstants.calendarMonths[index])),
+                                                                  ),
+                                                                ),
+                                                                // Positioned(
+                                                                //     right: 2,
+                                                                //     top: 2,
+                                                                //     child: index
+                                                                //             .isOdd
+                                                                //         ? Badge(
+                                                                //             padding:
+                                                                //                 const EdgeInsets.all(8),
+                                                                //             badgeColor:
+                                                                //                 AppColors.deepGreen,
+                                                                //             badgeContent:
+                                                                //                 Text(
+                                                                //               '2',
+                                                                //               style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.w800, fontFamily: AppTextConstants.fontPoppins),
+                                                                //             ),
+                                                                //           )
+                                                                //         : Container()),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                    )),
+                                                Icon(
+                                                  Icons.chevron_right,
+                                                  color: HexColor('#898A8D'),
+                                                ),
+                                              ],
+                                            ),
+                                            GetBuilder<
+                                                    TravellerMonthController>(
+                                                id: 'calendar',
+                                                builder:
+                                                    (TravellerMonthController
+                                                        controller) {
+                                                  print(
+                                                      controller.selectedDates);
+                                                  return Container(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              20.w,
+                                                              0.h,
+                                                              20.w,
+                                                              0.h),
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.4,
+                                                      child: Sfcalendar(
+                                                        context,
+                                                        travellerMonthController
+                                                            .currentDate,
+                                                        (List<DateTime> value) {
+                                                          travellerMonthController
+                                                              .selectedDates
+                                                              .clear();
+                                                          travellerMonthController
+                                                              .setSelectedDates(
+                                                                  value);
+                                                        },
+                                                      ));
+                                                }),
+                                            // SizedBox(
+                                            //   height: 20.h,
+                                            // ),
+                                            SizedBox(
+                                              width: 153.w,
+                                              height: 54.h,
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  if (travellerMonthController
+                                                      .selectedDates
+                                                      .isNotEmpty) {
+                                                    Navigator.of(context).pop();
+                                                    travellerMonthController
+                                                        .selectedDates
+                                                        .sort((DateTime a,
+                                                                DateTime b) =>
+                                                            a.compareTo(b));
+
+                                                    APIServices()
+                                                        .getActivityByDateRange(
+                                                            formatDate(
+                                                                travellerMonthController
+                                                                    .selectedDates
+                                                                    .first),
+                                                            formatDate(
+                                                                travellerMonthController
+                                                                    .selectedDates
+                                                                    .last))
+                                                        .then((value) {
+                                                      if (value.isNotEmpty) {
+                                                        final ActivityPackage?
+                                                            activity =
+                                                            value.firstOrNull;
+                                                        if (activity != null) {
+                                                          addMarker(value);
+                                                          double lat = double
+                                                              .parse(activity
+                                                                  .activityPackageDestination!
+                                                                  .activityPackageDestinationLatitude!);
+                                                          double long = double
+                                                              .parse(activity
+                                                                  .activityPackageDestination!
+                                                                  .activityPackageDestinationLongitude!);
+                                                          mapController?.animateCamera(
+                                                              CameraUpdate.newCameraPosition(
+                                                                  CameraPosition(
+                                                                      target: LatLng(
+                                                                          lat,
+                                                                          long),
+                                                                      zoom: 17)
+                                                                  //17 is new zoom level
+                                                                  ));
+                                                        }
+                                                      }
+                                                    });
+                                                  }
+                                                },
+                                                style: AppTextStyle.activeGreen,
+                                                child: const Text(
+                                                  'Set Filter Date',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 12),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ).whenComplete(() {
+                                    _scrollController.easyScrollToIndex(
+                                        index: 0);
+                                  });
+                                  Future.delayed(const Duration(seconds: 1),
+                                      () {
+                                    _scrollController.easyScrollToIndex(
+                                        index: travellerMonthController
+                                                .selectedDate -
+                                            1);
+
+                                    // setState(() {
+                                    //   selectedmonth = 7;
+                                    // });
+                                  });
+                                },
                               ),
                             ),
                           ),
@@ -410,7 +757,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                       if (showBottomScroll)
                         Expanded(
                           child: ListView(
-                            shrinkWrap: true,
+                            // shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
                             children: List<Widget>.generate(
                                 _filteredActivity.length, (int i) {
@@ -434,7 +781,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                     },
                                     child: Container(
                                       margin: EdgeInsets.symmetric(
-                                          horizontal: 5.w, vertical: 20.h),
+                                          horizontal: 15.w, vertical: 20.h),
                                       height: 180.h,
                                       width: 135.w,
                                       decoration: const BoxDecoration(
@@ -520,54 +867,11 @@ class _TabMapScreenState extends State<TabMapScreen> {
     );
   }
 
-  Future<void> _handlePressButton() async {
-    final Map<String, dynamic> screenArguments =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+  String formatDate(DateTime date) {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final String formatted = formatter.format(date);
 
-    Prediction? p = await PlacesAutocomplete.show(
-      context: context,
-      apiKey: 'AIzaSyCPF7ygz63Zj5RWZ_wU4G61JTynfPRjOMg',
-      radius: 10000000,
-      types: [],
-      strictbounds: false,
-      mode: Mode.overlay,
-      language: 'en',
-      decoration: InputDecoration(
-        hintText: 'Search',
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: Colors.white,
-          ),
-        ),
-      ),
-      components: [
-        Component(Component.country, screenArguments['country_code'])
-      ],
-    );
-
-    await displayPrediction(p, context);
-  }
-
-  Future<void> displayPrediction(Prediction? p, BuildContext context) async {
-    if (p != null) {
-      // get detail (lat/lng)
-      GoogleMapsPlaces _places = GoogleMapsPlaces(
-        apiKey: 'AIzaSyCPF7ygz63Zj5RWZ_wU4G61JTynfPRjOMg',
-        apiHeaders: await const GoogleApiHeaders().getHeaders(),
-      );
-      final PlacesDetailsResponse detail =
-          await _places.getDetailsByPlaceId(p.placeId!);
-      final lat = detail.result.geometry!.location.lat;
-      final lng = detail.result.geometry!.location.lng;
-      await mapController?.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(lat, lng), zoom: 17)
-          //17 is new zoom level
-          ));
-      setState(() {
-        _placeName = TextEditingController(text: p.description);
-      });
-    }
+    return formatted;
   }
 
   Future<Position> _userCurrentPosition() async {
@@ -686,6 +990,19 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   }
                 });
               }
+
+              final ActivityPackage? activity = _filteredActivity.firstOrNull;
+
+              if (activity != null) {
+                double lat = double.parse(activity.activityPackageDestination!
+                    .activityPackageDestinationLatitude!);
+                double long = double.parse(activity.activityPackageDestination!
+                    .activityPackageDestinationLongitude!);
+                mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(target: LatLng(lat, long), zoom: 17)
+                    //17 is new zoom level
+                    ));
+              }
             },
             child: Container(
               decoration: BoxDecoration(
@@ -773,35 +1090,32 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   }
                 });
               }
-              // final ActivityPackage? activity = _loadingData.firstWhereOrNull(
-              //     (ActivityPackage a) => a.mainBadge!.id == activities[i].id);
+              final ActivityPackage? activity = _filteredActivity.firstOrNull;
 
-              // if (activity != null) {
-              //   double lat = double.parse(activity.activityPackageDestination!
-              //       .activitypackagedestinationLatitude!);
-              //   double long = double.parse(activity.activityPackageDestination!
-              //       .activitypackagedestinationLongitude!);
-              //   mapController?.animateCamera(CameraUpdate.newCameraPosition(
-              //       CameraPosition(target: LatLng(lat, long), zoom: 17)
-              //       //17 is new zoom level
-              //       ));
-              //   setState(() {
-              //     currentMapLatLong = LatLng(lat, long);
-              //     if (_selectedActivity.contains(i)) {
-              //       _selectedActivity.remove(i);
-              //     } else {
-              //       _selectedActivity.add(i);
-              //     }
-              //   });
-              // } else {
-              //   setState(() {
-              //     if (_selectedActivity.contains(i)) {
-              //       _selectedActivity.remove(i);
-              //     } else {
-              //       _selectedActivity.add(i);
-              //     }
-              //   });
-              // }
+              if (activity != null) {
+                double lat = double.parse(activity.activityPackageDestination!
+                    .activityPackageDestinationLatitude!);
+                double long = double.parse(activity.activityPackageDestination!
+                    .activityPackageDestinationLongitude!);
+                mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(target: LatLng(lat, long), zoom: 17)
+                    //17 is new zoom level
+                    ));
+              }
+              // mapController?.animateCamera(CameraUpdate.newCameraPosition(
+              //     CameraPosition(
+              //         target: LatLng(
+              //             double.parse(_filteredActivity
+              //                 .first
+              //                 .activityPackageDestination!
+              //                 .activitypackagedestinationLatitude!),
+              //             double.parse(_filteredActivity
+              //                 .first
+              //                 .activityPackageDestination!
+              //                 .activitypackagedestinationLongitude!)),
+              //         zoom: 17)
+              //     //17 is new zoom level
+              //     ));
             },
             child: Container(
               decoration: BoxDecoration(
@@ -939,8 +1253,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
 
                       if (mode == 'Apple Pay') {
                         debugPrint('Data $data');
-                        saveSubscription(
-                            data, 'Premium Subscription', price.toString(),mode);
+                        saveSubscription(data, 'Premium Subscription',
+                            price.toString(), mode);
                         paymentSuccessful(
                             context: context,
                             paymentDetails: DiscoveryPaymentDetails(
@@ -959,8 +1273,11 @@ class _TabMapScreenState extends State<TabMapScreen> {
                             price: price,
                             onPaymentSuccessful: () {
                               Navigator.of(context).pop();
-                              saveSubscription(transactionNumber,
-                                  'Premium Subscription', price.toString(),mode);
+                              saveSubscription(
+                                  transactionNumber,
+                                  'Premium Subscription',
+                                  price.toString(),
+                                  mode);
                               //Save Subscription
                               paymentSuccessful(
                                   context: context,
@@ -993,8 +1310,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
             ));
   }
 
-  Future<void> saveSubscription(
-      String transactionNumber, String subscriptionName, String price, String paymentMethod) async {
+  Future<void> saveSubscription(String transactionNumber,
+      String subscriptionName, String price, String paymentMethod) async {
     final DateTime startDate = DateTime.now();
 
     final DateTime endDate = GlobalMixin().getEndDate(startDate);
@@ -1006,13 +1323,12 @@ class _TabMapScreenState extends State<TabMapScreen> {
         endDate: endDate.toString(),
         price: price);
 
-    final APIStandardReturnFormat result =
-        await APIServices().addUserSubscription(subscriptionParams,paymentMethod);
+    final APIStandardReturnFormat result = await APIServices()
+        .addUserSubscription(subscriptionParams, paymentMethod);
 
     UserSingleton.instance.user.user?.hasPremiumSubscription = true;
     setState(() {
       hasPremiumSubscription = true;
     });
-
-   }
+  }
 }

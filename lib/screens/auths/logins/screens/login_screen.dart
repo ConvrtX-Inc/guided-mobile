@@ -1,6 +1,7 @@
 // ignore_for_file: unawaited_futures
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:advance_notification/advance_notification.dart';
 import 'package:email_validator/email_validator.dart';
@@ -423,53 +424,54 @@ class _LoginScreenState extends State<LoginScreen> {
                   // SizedBox(
                   //   height: 15.h,
                   // ),
-                  LoadingElevatedButton(
-                    isLoading: appleLoading,
-                    onPressed: appleLogin,
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      primary: Colors.transparent,
-                      padding: EdgeInsets.zero,
+                  if (Platform.isIOS)
+                    LoadingElevatedButton(
+                      isLoading: appleLoading,
+                      onPressed: appleLogin,
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        primary: Colors.transparent,
+                        padding: EdgeInsets.zero,
+                      ),
+                      loadingChild: ListTile(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: AppColors.mercury,
+                          ),
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        leading: Icon(
+                          Icons.apple,
+                          size: 30.h,
+                        ),
+                        title: const Text(
+                          'Loading',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: AppColors.mercury,
+                          ),
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        leading: Icon(
+                          Icons.apple,
+                          size: 30.h,
+                        ),
+                        title: Text(
+                          'Login with Apple',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
-                    loadingChild: ListTile(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: AppColors.mercury,
-                        ),
-                        borderRadius: BorderRadius.circular(14.r),
-                      ),
-                      leading: Icon(
-                        Icons.apple,
-                        size: 30.h,
-                      ),
-                      title: const Text(
-                        'Loading',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    child: ListTile(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: AppColors.mercury,
-                        ),
-                        borderRadius: BorderRadius.circular(14.r),
-                      ),
-                      leading: Icon(
-                        Icons.apple,
-                        size: 30.h,
-                      ),
-                      title: Text(
-                        'Login with Apple',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
                   SizedBox(
                     height: 20.h,
                   ),
