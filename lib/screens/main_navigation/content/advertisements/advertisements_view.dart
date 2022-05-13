@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/delete_dialog.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -148,7 +149,9 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                           size: 25,
                         ),
                         onPressed: () {
-                          removeAdvertisementItem(screenArguments['id']);
+                          // removeAdvertisementItem(screenArguments['id']);
+                          DeleteDialog().show(context: context, onDeletePressed: () =>  removeAdvertisementItem(screenArguments['id']), itemName: screenArguments['title']);
+
                         },
                       ),
                     ),

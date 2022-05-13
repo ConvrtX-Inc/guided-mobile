@@ -42,6 +42,8 @@ class _HomeScreenState extends State<HomeScreen>
   final Color _bulletColor = AppColors.tropicalRainForest;
   int total = 0;
 
+  List<BookingRequest> pendingRequests = [];
+
   void setMenuIndexHandler(int value) {
     setState(() {
       _selectedMenuIndex = value;
@@ -58,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen>
   String name3 = '';
   bool _hasData = false;
   int totalData = 0;
+
   @override
   void initState() {
     super.initState();
@@ -75,9 +78,14 @@ class _HomeScreenState extends State<HomeScreen>
         _hasData = true;
         totalData = resData.length;
       });
+
+      pendingRequests = resData
+          .where((BookingRequest request) =>
+              request.status?.statusName!.toLowerCase() == 'pending')
+          .toList();
     }
 
-    for (int index = 0; index < resData.length; index++) {
+    /* for (int index = 0; index < resData.length; index++) {
       if (resData[index].isApproved! == false) {
         if (resData.length == 1) {
           if (index == 0) {
@@ -121,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen>
           total = resData.length;
         });
       }
-    }
+    }*/
   }
 
   setData1(String img, String id) async {
@@ -351,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen>
             height: _bulletHeight,
             color: _bulletColor,
           ),
-          if (_hasData)
+          if (pendingRequests.isNotEmpty)
             GestureDetector(
               onTap: () {
                 Navigator.pushReplacement(
@@ -377,15 +385,33 @@ class _HomeScreenState extends State<HomeScreen>
                         padding: const EdgeInsets.all(10),
                         child: Column(
                           children: <Widget>[
-                            if (totalData >= 3)
-                              manyCustomerRequest()
-                            else if (totalData == 2)
-                              twoCustomerRequest()
-                            else
-                              oneCustomerRequest(),
+                            Row(
+                              children: [
+                                for (int i = 0; i < pendingRequests.length; i++)
+                                  oneCustomerRequest(pendingRequests[i]),
+                                SizedBox(width: 15.w),
+                                for (int r = 0; r < pendingRequests.length; r++)
+                                  Text(
+                                    r != pendingRequests.length - 1
+                                        ? '${pendingRequests[r].fromUserFullName!.split(' ')[0]}, '
+                                        : pendingRequests[r]
+                                            .fromUserFullName!
+                                            .split(' ')[0],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14),
+                                  ),
+                              ],
+                            ),
+                            // if (pendingRequests.length == 2)
+                            //   manyCustomerRequest()
+                            // else if (pendingRequests.length == 2)
+                            //   twoCustomerRequest()
+                            // else
+                            //   oneCustomerRequest(pendingRequests[0]),
                             SizedBox(height: 10.h),
                             Text(
-                              AppTextConstants.homeMainHeader,
+                              'Great news! You have got ${pendingRequests.length} requests from your clients. Please check these out',
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: AppColors.grey),
@@ -404,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen>
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(6.r),
                           color: AppColors.lightningYellow),
-                      child: Text('$total Pending request',
+                      child: Text('${pendingRequests.length} Pending request',
                           style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               color: Colors.white)),
@@ -432,9 +458,9 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget oneCustomerRequest() => Row(
+  Widget oneCustomerRequest(BookingRequest request) => Row(
         children: <Widget>[
-          if (image1 == '')
+          if (request.fromUserFirebaseProfilePic == '')
             Align(
               alignment: Alignment.centerLeft,
               child: Container(
@@ -480,7 +506,7 @@ class _HomeScreenState extends State<HomeScreen>
                         color: Colors.white,
                         image: DecorationImage(
                             image: ExtendedImage.network(
-                          image1,
+                          request.fromUserFirebaseProfilePic!,
                           fit: BoxFit.cover,
                           gaplessPlayback: true,
                         ).image),
@@ -490,11 +516,11 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
             ),
-          SizedBox(width: 15.w),
-          Text(
-            name1,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          ),
+          // SizedBox(width: 15.w),
+          // Text(
+          //   request.fromUserFullName!,
+          //   style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          // ),
         ],
       );
 

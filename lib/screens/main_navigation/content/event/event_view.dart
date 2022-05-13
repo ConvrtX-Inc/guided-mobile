@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/delete_dialog.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -140,7 +141,7 @@ class _EventViewState extends State<EventView> {
                           size: 25,
                         ),
                         onPressed: () {
-                          removeEventItem(screenArguments['id']);
+                           DeleteDialog().show(context: context, onDeletePressed: () =>  removeEventItem(screenArguments['id']), itemName: screenArguments['title']);
                         },
                       ),
                     ),
