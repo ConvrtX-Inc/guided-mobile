@@ -37,6 +37,7 @@ class PostFeatures extends StatefulWidget {
     String fullName = '',
     String firebaseProfImg = '',
     bool? isFirstAid = false,
+    DateTime? createdDate,
     Key? key,
   })  : _id = id,
         _mainBadgeId = mainBadgeId,
@@ -59,6 +60,7 @@ class PostFeatures extends StatefulWidget {
         _fullName = fullName,
         _firebaseProfImg = firebaseProfImg,
         _isFirstAid = isFirstAid,
+        _createdDate = createdDate,
         super(key: key);
   final String _id;
   final String _mainBadgeId;
@@ -81,6 +83,7 @@ class PostFeatures extends StatefulWidget {
   final String _fullName;
   final String _firebaseProfImg;
   final bool? _isFirstAid;
+  final DateTime? _createdDate;
 
   @override
   State<PostFeatures> createState() => _PostFeaturesState();
@@ -274,7 +277,8 @@ class _PostFeaturesState extends State<PostFeatures>
       'is_first_aid': widget._isFirstAid,
       'firebase_cover_img': widget._firebaseCoverImg,
       'latitude': latitude,
-      'longitude': longitude
+      'longitude': longitude,
+      'created_date': widget._createdDate
     };
 
     await Navigator.pushNamed(context, '/popular_guides_view',

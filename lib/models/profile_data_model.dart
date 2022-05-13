@@ -16,9 +16,11 @@ class ProfileDetailsModel {
       this.stripeAccountId = '',
       this.isFirstAidTrained,
       this.isForThePlanet,
+      this.createdDate,
       this.birthDate = '',
       this.addressLine1 = '',
-      this.addressLine2 = '',this.country  =''});
+      this.addressLine2 = '',
+      this.country  =''});
 
   /// String initialization
   String id,
@@ -38,6 +40,8 @@ class ProfileDetailsModel {
   ///bool initialization
   bool? isForThePlanet, isFirstAidTrained;
 
+  DateTime? createdDate;
+
   /// mapping
   ProfileDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
@@ -52,6 +56,7 @@ class ProfileDetailsModel {
         firebaseProfilePicUrl = parseJson['profile_photo_firebase_url'] ?? '',
         isForThePlanet = parseJson['is_for_the_planet'] ?? '',
         isFirstAidTrained = parseJson['is_first_aid_trained'] ?? '',
+        createdDate = DateTime.parse(parseJson['created_date']),
         addressLine1 = parseJson['address_line1'] ?? '',
         addressLine2 = parseJson['address_line2'] ?? '',
         birthDate = parseJson['birth_date'] ?? '',
