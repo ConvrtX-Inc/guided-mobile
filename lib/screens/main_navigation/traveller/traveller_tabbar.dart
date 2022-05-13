@@ -123,29 +123,28 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     final ProfileDetailsModel res = await APIServices().getProfileData();
 
     final UserSubscription subscription =
-    await APIServices().getUserSubscription();
+        await APIServices().getUserSubscription();
     bool hasPremiumSubscription = false;
-    if(subscription.id.isNotEmpty){
+    if (subscription.id.isNotEmpty) {
       final DateTime currentDate = DateTime.now();
       final DateTime endDate = DateTime.parse(subscription.endDate);
 
       final bool isExpired = endDate.isBefore(currentDate);
 
       if (!isExpired) {
-
         hasPremiumSubscription = true;
         _userSubscriptionController.setSubscription(subscription);
       }
     }
 
     UserSingleton.instance.user.user = User(
-      id: res.id,
-      email: res.email,
-      fullName: res.fullName,
-      hasPremiumSubscription: hasPremiumSubscription
-    );
+        id: res.id,
+        email: res.email,
+        fullName: res.fullName,
+        hasPremiumSubscription: hasPremiumSubscription);
 
-    debugPrint('Has Subscription ${UserSingleton.instance.user.user?.hasPremiumSubscription}');
+    debugPrint(
+        'Has Subscription ${UserSingleton.instance.user.user?.hasPremiumSubscription}');
     _profileDetailsController.setUserProfileDetails(res);
   }
 

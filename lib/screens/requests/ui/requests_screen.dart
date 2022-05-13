@@ -155,10 +155,13 @@ class _RequestsScreenState extends State<RequestsScreen> {
                         ],
                         color: Colors.white,
                         shape: BoxShape.circle,
-                        image: DecorationImage(
+                        image: request.fromUserFirebaseProfilePic != '' ?  DecorationImage(
                             fit: BoxFit.fitHeight,
                             image: NetworkImage(
-                                request.fromUserFirebaseProfilePic!))),
+                                request.fromUserFirebaseProfilePic!)) :DecorationImage(
+                            fit: BoxFit.fitHeight,
+                            image: AssetImage(AssetsPath.defaultProfilePic))
+                    ),
                   ),
                 ),
                 Column(
@@ -187,37 +190,17 @@ class _RequestsScreenState extends State<RequestsScreen> {
                                 fontWeight: FontWeight.w400),
                           ),
                         )),
-                    SizedBox(
-                      height: 20.w,
-                    ),
-                    // Padding(
-                    //   padding: EdgeInsets.only(left: 10.w),
-                    //   child: Container(
-                    //     width: 60.w,
-                    //     height: 30.h,
-                    //     decoration: BoxDecoration(
-                    //         color: AppColors.lightningYellow,
-                    //         borderRadius: BorderRadius.circular(7.r)),
-                    //     child: Center(
-                    //       child: Text(
-                    //         request.status!.statusName!,
-                    //         style: const TextStyle(
-                    //             color: Colors.white,
-                    //             fontFamily: 'Gilroy',
-                    //             fontSize: 12,
-                    //             fontWeight: FontWeight.w600),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
+
                     buildStatus(request.status!.statusName!)
                   ],
                 ),
-                DateTimeAgo(
+                Expanded(
+
+              child:  DateTimeAgo(
                   dateString: request.createdDate!,
                   color: Colors.grey,
                   size: 10.sp,
-                )
+                ))
               ],
             )
           ],

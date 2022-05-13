@@ -335,6 +335,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               'user_type_id': isTraveller ? 'fb536b69-3e54-415a-aaf0-1db1ab017bb3' : '3e3528ef-2387-4480-878e-685d44c6c2ee', /// Staging
                               'is_for_the_planet': true,
                               'is_first_aid_trained': true,
+                              'is_guide': !isTraveller
                             };
                             print(details);
                             // final dynamic response = await APIServices()

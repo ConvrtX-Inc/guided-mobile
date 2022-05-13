@@ -1,8 +1,6 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable, unused_local_variable, avoid_dynamic_calls, always_specify_types
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
 import 'package:extended_image/extended_image.dart';
@@ -114,6 +112,8 @@ class _PackageEditState extends State<PackageEdit> {
     super.initState();
 
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final List<String> list;
+
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       final List<CountryModel> resCountries =
@@ -137,6 +137,13 @@ class _PackageEditState extends State<PackageEdit> {
       setState(() {
         listCountry = resCountries;
         _countryDropdown = listCountry[38];
+        subActivities1 = screenArguments['sub_activity_1'];
+        subActivities2 = screenArguments['sub_activity_2'];
+        subActivities3 = screenArguments['sub_activity_3'];
+        count = screenArguments['count'];
+        subActivities1Txt = subActivities1.name.toString();
+        subActivities2Txt = subActivities2.name.toString();
+        subActivities3Txt = subActivities3.name.toString();
       });
     });
     _loadingData = APIServices().getBadgesModel();
@@ -2033,6 +2040,15 @@ class _PackageEditState extends State<PackageEdit> {
         if (subActivityId[2] != '') {
           subBadges = '$subBadges,${subActivityId[2]}';
         }
+      }
+
+      if (subBadges.isEmpty) {
+        setState(() {
+          _isSubmit = false;
+        });
+        AdvanceSnackBar(message: ErrorMessageConstants.subActivityEmpty)
+            .show(context);
+        return;
       }
 
       /// Save image to firebase

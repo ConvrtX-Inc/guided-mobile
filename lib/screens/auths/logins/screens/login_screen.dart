@@ -1,6 +1,7 @@
 // ignore_for_file: unawaited_futures
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:advance_notification/advance_notification.dart';
 import 'package:email_validator/email_validator.dart';
@@ -15,6 +16,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
@@ -42,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool googleLoading = false;
   bool appleLoading = false;
   GoogleSignInAuthentication? _signInAuthentication;
+
   @override
   void initState() {
     _googleSignIn.signOut();
@@ -85,12 +88,17 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
+  ///Login via api
   Future<void> login() async {
     final Map<String, String> credentials = <String, String>{
       'email': _emailController.text,
       'password': _passwordController.text
     };
 
+    final String userType =
+        await SecureStorage.readValue(key: AppTextConstants.userType);
+
+    // debugPrint('User Type ${userType}');
     if (!EmailValidator.validate(_emailController.text)) {
       _emailFocus.requestFocus();
       AdvanceSnackBar(message: ErrorMessageConstants.emailInvalidorEmpty)
@@ -143,26 +151,40 @@ class _LoginScreenState extends State<LoginScreen> {
             .show(context);
         setState(() => buttonIsLoading = false);
       } else {
-        final UserModel user =
-            UserModel.fromJson(json.decode(response.successResponse));
-        UserSingleton.instance.user = user;
-        await SecureStorage.saveValue(
-            key: AppTextConstants.userToken, value: user.token!);
-        await SecureStorage.saveValue(
-            key: AppTextConstants.userId, value: user.user!.id!);
-        if (user.user?.isTraveller != true) {
-          await SecureStorage.saveValue(
-              key: AppTextConstants.userType, value: 'guide');
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              '/main_navigation', (Route<dynamic> route) => false);
-        } else {
-          await SecureStorage.saveValue(
-              key: AppTextConstants.userType, value: 'traveller');
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              '/traveller_tab', (Route<dynamic> route) => false);
-        }
+        setRoles(response);
+
       }
     });
+  }
+
+
+  Future<void> setRoles(APIStandardReturnFormat response) async {
+    final UserModel user =
+    UserModel.fromJson(json.decode(response.successResponse));
+    UserSingleton.instance.user = user;
+
+    final String userType =
+    await SecureStorage.readValue(key: AppTextConstants.userType);
+    if (userType == 'traveller') {
+      saveTokenAndId(user.token!, user.user!.id!);
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          '/traveller_tab', (Route<dynamic> route) => false);
+    }else{
+      if (user.user!.isGuide!) {
+        saveTokenAndId(user.token!, user.user!.id!);
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            '/main_navigation', (Route<dynamic> route) => false);
+      }else{
+        ErrorDialog().showErrorDialog(context: context,title: 'Login Failed',message: "You don't have any Guide Access");
+      }
+    }
+  }
+
+  Future<void> saveTokenAndId(String token , String userId) async {
+    await SecureStorage.saveValue(
+        key: AppTextConstants.userToken, value: token);
+    await SecureStorage.saveValue(
+        key: AppTextConstants.userId, value: userId);
   }
 
   @override
@@ -402,53 +424,54 @@ class _LoginScreenState extends State<LoginScreen> {
                   // SizedBox(
                   //   height: 15.h,
                   // ),
-                  LoadingElevatedButton(
-                    isLoading: appleLoading,
-                    onPressed: appleLogin,
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      primary: Colors.transparent,
-                      padding: EdgeInsets.zero,
+                  if (Platform.isIOS)
+                    LoadingElevatedButton(
+                      isLoading: appleLoading,
+                      onPressed: appleLogin,
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        primary: Colors.transparent,
+                        padding: EdgeInsets.zero,
+                      ),
+                      loadingChild: ListTile(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: AppColors.mercury,
+                          ),
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        leading: Icon(
+                          Icons.apple,
+                          size: 30.h,
+                        ),
+                        title: const Text(
+                          'Loading',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: AppColors.mercury,
+                          ),
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        leading: Icon(
+                          Icons.apple,
+                          size: 30.h,
+                        ),
+                        title: Text(
+                          'Login with Apple',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
-                    loadingChild: ListTile(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: AppColors.mercury,
-                        ),
-                        borderRadius: BorderRadius.circular(14.r),
-                      ),
-                      leading: Icon(
-                        Icons.apple,
-                        size: 30.h,
-                      ),
-                      title: const Text(
-                        'Loading',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    child: ListTile(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: AppColors.mercury,
-                        ),
-                        borderRadius: BorderRadius.circular(14.r),
-                      ),
-                      leading: Icon(
-                        Icons.apple,
-                        size: 30.h,
-                      ),
-                      title: Text(
-                        'Login with Apple',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
                   SizedBox(
                     height: 20.h,
                   ),
@@ -648,6 +671,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
   }
+
   // Future<void> _checkIfIsLogged() async {
   //   final accessToken = await FacebookAuth.instance.accessToken;
   //   setState(() {
