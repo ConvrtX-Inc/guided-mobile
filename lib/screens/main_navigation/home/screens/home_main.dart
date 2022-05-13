@@ -60,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen>
   String name3 = '';
   bool _hasData = false;
   int totalData = 0;
+  int limit = 0;
 
   @override
   void initState() {
@@ -74,15 +75,23 @@ class _HomeScreenState extends State<HomeScreen>
         await APIServices().getBookingRequest();
 
     if (resData.isNotEmpty) {
-      setState(() {
-        _hasData = true;
-        totalData = resData.length;
-      });
+
+
+
 
       pendingRequests = resData
           .where((BookingRequest request) =>
               request.status?.statusName!.toLowerCase() == 'pending')
           .toList();
+
+
+      setState(() {
+        _hasData = true;
+        totalData = resData.length;
+        limit = pendingRequests.length <= 2 ?  pendingRequests.length: 3;
+      });
+
+      debugPrint('Limit $limit');
     }
 
     /* for (int index = 0; index < resData.length; index++) {
@@ -387,12 +396,12 @@ class _HomeScreenState extends State<HomeScreen>
                           children: <Widget>[
                             Row(
                               children: [
-                                for (int i = 0; i < pendingRequests.length; i++)
+                                for (int i = 0; i < limit; i++)
                                   oneCustomerRequest(pendingRequests[i]),
                                 SizedBox(width: 15.w),
-                                for (int r = 0; r < pendingRequests.length; r++)
+                                for (int r = 0; r < limit; r++)
                                   Text(
-                                    r != pendingRequests.length - 1
+                                    r != limit - 1
                                         ? '${pendingRequests[r].fromUserFullName!.split(' ')[0]}, '
                                         : pendingRequests[r]
                                             .fromUserFullName!

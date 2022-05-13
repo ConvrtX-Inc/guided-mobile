@@ -231,6 +231,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget getProfileSetting(BuildContext context) {
     return Column(children: <Widget>[
       ListTile(
+          onTap: (){
+            Navigator.of(context).pushNamed('/change_password');
+          },
           leading: Container(
               width: 38.w,
               height: 38.h,
