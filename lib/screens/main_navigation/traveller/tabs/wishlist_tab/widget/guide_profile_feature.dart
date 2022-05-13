@@ -25,6 +25,7 @@ class GuideProfileFeature extends StatefulWidget {
     bool? isFirstAid = false,
     String mainBadgeId = '',
     String userId = '',
+    DateTime? createdDate,
     Key? key,
   })  : _id = id,
         _activityPackageId = activityPackageId,
@@ -33,6 +34,7 @@ class GuideProfileFeature extends StatefulWidget {
         _isFirstAid = isFirstAid,
         _mainBadgeId = mainBadgeId,
         _userId = userId,
+        _createdDate = createdDate,
         super(key: key);
 
   final String _id;
@@ -42,6 +44,7 @@ class GuideProfileFeature extends StatefulWidget {
   final bool? _isFirstAid;
   final String _mainBadgeId;
   final String _userId;
+  final DateTime? _createdDate;
 
   @override
   State<GuideProfileFeature> createState() => _GuideProfileFeatureState();
@@ -112,6 +115,7 @@ class _GuideProfileFeatureState extends State<GuideProfileFeature> {
                   ),
                 Expanded(
                   child: Card(
+                    color: Colors.transparent,
                     elevation: 0,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -330,8 +334,8 @@ class _GuideProfileFeatureState extends State<GuideProfileFeature> {
                             .packageDetails[index].notIncludedServices,
                         fullName: widget._name,
                         firebaseProfImg: widget._firebaseProfImg,
-                        isFirstAid: widget._isFirstAid
-                        );
+                        isFirstAid: widget._isFirstAid,
+                        createdDate: widget._createdDate);
                   });
             }
           }

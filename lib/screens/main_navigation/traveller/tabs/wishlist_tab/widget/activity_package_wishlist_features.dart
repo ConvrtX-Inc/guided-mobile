@@ -77,7 +77,7 @@ class _ActivityPackageWishlistFeatureState
   String name = '';
   String profileImg = '';
   bool? isFirstAid = false;
-
+  DateTime? createdDate;
   @override
   void initState() {
     super.initState();
@@ -193,6 +193,7 @@ class _ActivityPackageWishlistFeatureState
                 name = details.fullName;
                 profileImg = details.firebaseProfilePicUrl;
                 isFirstAid = details.isFirstAidTrained;
+                createdDate = details.createdDate;
               }
           }
           return _displayWidget;
@@ -357,7 +358,8 @@ class _ActivityPackageWishlistFeatureState
       'is_first_aid': isFirstAid,
       'firebase_cover_img': firebaseCoverImg,
       'latitude': widget._latitude,
-      'longitude': widget._longitude
+      'longitude': widget._longitude,
+      'created_date': createdDate
     };
 
     await Navigator.pushNamed(context, '/popular_guides_view',

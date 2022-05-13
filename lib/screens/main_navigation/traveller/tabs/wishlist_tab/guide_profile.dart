@@ -169,7 +169,8 @@ class _GuideProfileState extends State<GuideProfile>
             name: details.fullName,
             isFirstAid: details.isFirstAidTrained,
             mainBadgeId: mainBadgeId,
-            userId: userId),
+            userId: userId,
+            createdDate: details.createdDate),
       );
 
   Widget nearbyActivities(BuildContext context, List<Activity> activities) {

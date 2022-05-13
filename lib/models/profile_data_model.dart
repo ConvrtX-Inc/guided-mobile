@@ -3,19 +3,20 @@
 
 class ProfileDetailsModel {
   /// Constructor
-  ProfileDetailsModel({this.id = '',
-    this.fullName = '',
-    this.firstName = '',
-    this.lastName = '',
-    this.email = '',
-    this.phoneNumber = '',
-    this.countryCode = '',
-    this.about = '',
-    this.firebaseProfilePicUrl = '',
-    this.stripeAccountId = '',
-    this.isFirstAidTrained,
-    this.isForThePlanet
-  });
+  ProfileDetailsModel(
+      {this.id = '',
+      this.fullName = '',
+      this.firstName = '',
+      this.lastName = '',
+      this.email = '',
+      this.phoneNumber = '',
+      this.countryCode = '',
+      this.about = '',
+      this.firebaseProfilePicUrl = '',
+      this.stripeAccountId = '',
+      this.isFirstAidTrained,
+      this.isForThePlanet,
+      this.createdDate});
 
   /// String initialization
   String id,
@@ -26,10 +27,13 @@ class ProfileDetailsModel {
       phoneNumber,
       countryCode,
       about,
-      firebaseProfilePicUrl, stripeAccountId;
+      firebaseProfilePicUrl,
+      stripeAccountId;
 
   ///bool initialization
   bool? isForThePlanet, isFirstAidTrained;
+
+  DateTime? createdDate;
 
   /// mapping
   ProfileDetailsModel.fromJson(Map<String, dynamic> parseJson)
@@ -44,7 +48,6 @@ class ProfileDetailsModel {
         stripeAccountId = parseJson['stripe_account_id'] ?? '',
         firebaseProfilePicUrl = parseJson['profile_photo_firebase_url'] ?? '',
         isForThePlanet = parseJson['is_for_the_planet'] ?? '',
-        isFirstAidTrained = parseJson['is_first_aid_trained'] ?? '';
-
-
+        isFirstAidTrained = parseJson['is_first_aid_trained'] ?? '',
+        createdDate = DateTime.parse(parseJson['created_date']);
 }
