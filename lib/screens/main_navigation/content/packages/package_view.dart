@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_properties.dart';
+import 'package:guided/common/widgets/delete_dialog.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -207,7 +208,7 @@ class _PackageViewState extends State<PackageView>
                             size: 25,
                           ),
                           onPressed: () {
-                            removePackageItem(screenArguments['id']);
+                            DeleteDialog().show(context: context, onDeletePressed: () =>  removePackageItem(screenArguments['id']), itemName: screenArguments['name']);
                           },
                         ),
                       ),

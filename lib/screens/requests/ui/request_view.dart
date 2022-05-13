@@ -161,8 +161,8 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                             Positioned.fill(
                                 child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.memory(
-                                base64.decode(snapshot.data!.coverImg!),
+                              child: Image.network(
+                                snapshot.data!.firebaseCoverImg!,
                                 gaplessPlayback: true,
                                 width: 20,
                                 height: 20,

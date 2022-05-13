@@ -237,7 +237,7 @@ class _SettingsMainState extends State<SettingsMain>
 
                             await SecureStorage.clearAll();
                             await Navigator.of(context)
-                                .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
+                                .pushNamedAndRemoveUntil('/user_type', (Route<dynamic> route) => false);
                           },
                         ),
                       );
