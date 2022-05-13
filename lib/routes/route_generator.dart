@@ -102,6 +102,7 @@ import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
 import 'package:guided/screens/settings/edit_profile.dart';
+import 'package:guided/screens/settings/edit_profile_traveller.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
 import 'package:guided/screens/settings/subscription_details.dart';
 import 'package:guided/screens/signin_signup/phone_number.dart';
@@ -448,6 +449,9 @@ class RouteGenerator {
       case '/subscription_details':
         return MaterialPageRoute<dynamic>(
             builder: (_) => SubscriptionDetails());
+      case '/edit_profile_traveler':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => EditProfileTraveler());
       default:
         return _errorRoute();
     }

@@ -20,6 +20,7 @@ class ContainedTabBarView extends StatefulWidget {
     this.initialIndex = 0,
     this.onChange,
     this.callOnChangeWhileIndexIsChanging = false,
+    this.showBorder = true
   })  : assert(
   tabs.length == views.length,
   'There has to be an equal amount of tabs (${tabs.length}) and views (${views.length}).',
@@ -57,6 +58,9 @@ class ContainedTabBarView extends StatefulWidget {
   /// Whether [onChange] should also get called while we're animating
   /// from previousIndex to index as a consequence of calling animateTo.
   final bool callOnChangeWhileIndexIsChanging;
+
+  ///show border
+  final bool showBorder ;
 
   @override
   State<StatefulWidget> createState() => ContainedTabBarViewState();
@@ -182,9 +186,9 @@ class ContainedTabBarViewState extends State<ContainedTabBarView>
 
     final Widget tabBar = Container(
       decoration: BoxDecoration(
-          border: Border.all(
+          border: widget.showBorder ?  Border.all(
             color: Colors.grey,
-          ),
+          ) : null,
           borderRadius: BorderRadius.all(const Radius.circular(10))
       ),
       child: SizedBox(
