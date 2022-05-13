@@ -116,7 +116,7 @@ class ActivityPackage {
     activityPackageDestination = json['activity_package_destination'] != null
         ? ActivityPackageDestination.fromJson(
             json['activity_package_destination'])
-        : null;;
+        : null;
   }
 
   Map<String, dynamic> toJson() {
