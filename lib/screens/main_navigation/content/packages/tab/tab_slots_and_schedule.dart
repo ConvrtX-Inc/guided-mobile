@@ -10,6 +10,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
+import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:in_date_utils/in_date_utils.dart' as Indate;
@@ -51,32 +52,19 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
   bool _isLoadingDone = false;
   int count = 1;
   TextEditingController txtCount = TextEditingController();
+  late List<DateTime> splitDates;
   @override
   void initState() {
-    count = widget.slots;
-    WidgetsBinding.instance?.addPostFrameCallback((_) async {
-      final DateTime dt = DateTime.parse(travellerMonthController.currentDate);
-      final int mon = dt.month;
-      travellerMonthController.setSelectedDate(mon);
-
-      DateTime currentDate =
-          DateTime.parse(travellerMonthController.currentDate);
-
-      final DateTime defaultDate = DateTime(currentDate.year, currentDate.month,
-          1, currentDate.hour, currentDate.minute);
-
-      travellerMonthController.setCurrentMonth(
-        defaultDate.toString(),
-      );
-      setState(() {
-        _isLoadingDone = true;
-        txtCount = TextEditingController(text: widget.slots.toString());
-      });
-    });
-    selectedmonth = DateTime.now().month.toInt();
-    selectedMonth = AppListConstants.numberList[selectedmonth - 1];
-
     super.initState();
+    count = widget.slots;
+
+    setState(() {
+      selectedmonth = DateTime.now().month.toInt();
+      selectedMonth = AppListConstants.numberList[selectedmonth - 1];
+      splitDates = widget.availabilityDate;
+      _isLoadingDone = true;
+      txtCount = TextEditingController(text: widget.slots.toString());
+    });
   }
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
@@ -92,8 +80,6 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
   Widget build(BuildContext context) {
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
-    List<DateTime> splitDates = widget.availabilityDate;
 
     return SingleChildScrollView(
       child: Column(
@@ -230,12 +216,10 @@ class _TabSlotsAndScheduleViewState extends State<TabSlotsAndScheduleView> {
                 ),
               )
           else
-            const Center(
-              child: SkeletonText(
-                height: 500,
-                width: 500,
-                radius: 10,
-              ),
+            const SkeletonText(
+              width: 600,
+              height: 300,
+              radius: 10,
             ),
           Padding(
             padding: EdgeInsets.only(left: 20.w, right: 20.w),

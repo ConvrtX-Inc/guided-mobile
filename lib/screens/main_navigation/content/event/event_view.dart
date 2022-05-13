@@ -2,14 +2,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:cached_network_image/cached_network_image.dart';
+
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
@@ -17,7 +17,6 @@ import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:extended_image/extended_image.dart';
 
 /// Advertisement View Screen
 class EventView extends StatefulWidget {
@@ -545,7 +544,11 @@ class _EventViewState extends State<EventView> {
       'date_format': screenArguments['date_format'],
       'snapshot_img': screenArguments['snapshot_img'],
       'image_id': screenArguments['image_id'],
-      'is_published': true
+      'is_published': true,
+      'sub_activity_1': screenArguments['sub_activity_1'],
+      'sub_activity_2': screenArguments['sub_activity_2'],
+      'sub_activity_3': screenArguments['sub_activity_3'],
+      'count': screenArguments['count'],
     };
 
     await Navigator.pushNamed(context, '/event_edit', arguments: details);

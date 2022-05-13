@@ -46,7 +46,8 @@ class _PackageViewState extends State<PackageView>
   List<DateTime> splitAvailabilityDate = [];
   int initIndex;
   String title = '';
-  int slots = 0;
+  int slots = 1;
+  bool _loaded = true;
   @override
   void initState() {
     super.initState();
@@ -72,6 +73,9 @@ class _PackageViewState extends State<PackageView>
       splitAvailabilityDate
           .add(DateTime.parse(resForm[index].availability_date));
     }
+    setState(() {
+      _loaded = false;
+    });
   }
 
   void setTitle(int initIndex) {
@@ -304,12 +308,15 @@ class _PackageViewState extends State<PackageView>
                     services: screenArguments['services'],
                     starRating: screenArguments['star_rating'],
                     notIncluded: screenArguments['not_included']),
-                TabSlotsAndScheduleView(
-                    id: screenArguments['id'],
-                    availabilityId: splitId,
-                    availabilityDate: splitAvailabilityDate,
-                    numberOfTourist: screenArguments['number_of_tourist'],
-                    slots: slots)
+                IgnorePointer(
+                  ignoring: _loaded,
+                  child: TabSlotsAndScheduleView(
+                      id: screenArguments['id'],
+                      availabilityId: splitId,
+                      availabilityDate: splitAvailabilityDate,
+                      numberOfTourist: screenArguments['number_of_tourist'],
+                      slots: slots),
+                )
               ],
               onChange: setTitle,
               initialIndex: initIndex,
@@ -357,7 +364,11 @@ class _PackageViewState extends State<PackageView>
       'address': screenArguments['address'],
       'extra_cost': screenArguments['extra_cost'],
       'country': screenArguments['country'],
-      'not_included': screenArguments['not_included']
+      'not_included': screenArguments['not_included'],
+      'sub_activity_1': screenArguments['sub_activity_1'],
+      'sub_activity_2': screenArguments['sub_activity_2'],
+      'sub_activity_3': screenArguments['sub_activity_3'],
+      'count': screenArguments['count']
     };
 
     await Navigator.pushNamed(context, '/package_edit', arguments: details);
