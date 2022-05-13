@@ -9,6 +9,7 @@ import 'package:flutter_animarker/flutter_map_marker_animation.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'dart:async';
@@ -38,7 +39,8 @@ class PopularGuidesTabDescription extends StatefulWidget {
       required this.packageName,
       required this.isFirstAid,
       required this.latitude,
-      required this.longitude})
+      required this.longitude,
+      required this.createdDate})
       : super(key: key);
 
   final String name,
@@ -58,6 +60,8 @@ class PopularGuidesTabDescription extends StatefulWidget {
 
   final bool isFirstAid;
 
+  final DateTime? createdDate;
+
   @override
   State<PopularGuidesTabDescription> createState() =>
       _PopularGuidesTabDescriptionState();
@@ -74,11 +78,12 @@ class _PopularGuidesTabDescriptionState
     _controller.complete(controller);
   }
 
-  double latitude = 0;
-  double longitude = 0;
+  double latitude = 41;
+  double longitude = -18;
   List<Marker> _markers = <Marker>[];
   late Marker mark;
   late Set<Circle> circle;
+  String month = '';
   @override
   void initState() {
     super.initState();
@@ -86,6 +91,7 @@ class _PopularGuidesTabDescriptionState
     setState(() {
       latitude = double.parse(widget.latitude);
       longitude = double.parse(widget.longitude);
+      month = AppListConstants.calendarMonths[widget.createdDate!.month - 1];
     });
     WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker(context));
   }
@@ -125,17 +131,15 @@ class _PopularGuidesTabDescriptionState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              SizedBox(
-                height: 30.h,
-              ),
               guideProfile1(widget.name, widget.profileImg),
               SizedBox(
-                height: 20.h,
+                height: 10.h,
               ),
               Padding(
                 padding: const EdgeInsets.all(8),
@@ -563,7 +567,7 @@ class _PopularGuidesTabDescriptionState
                               Padding(
                                 padding: EdgeInsets.only(left: 20.w),
                                 child: Text(
-                                  'Joined in July 2015',
+                                  'Joined in $month ${widget.createdDate?.year}',
                                   style: TextStyle(
                                       fontSize: 12.sp,
                                       fontFamily: 'Gilroy',

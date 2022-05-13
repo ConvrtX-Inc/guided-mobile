@@ -141,14 +141,6 @@ class _PopularGuideHomeFeaturesState extends State<PopularGuideHomeFeatures>
                     return Container();
                   },
                 ),
-                // Text(
-                //   totalDistance.toString(),
-                //   style: TextStyle(
-                //       color: HexColor('#696D6D'),
-                //       fontSize: 11.sp,
-                //       fontFamily: 'Gilroy',
-                //       fontWeight: FontWeight.normal),
-                // ),
               ],
             ),
           ],
@@ -171,8 +163,6 @@ class _PopularGuideHomeFeaturesState extends State<PopularGuideHomeFeatures>
               if (snapshot.hasError) {
                 _displayWidget = Container();
               } else {
-                // _displayWidget = Container();
-
                 PackageDestinationModelData packageDestinationData =
                     snapshot.data!;
 
