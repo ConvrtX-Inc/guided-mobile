@@ -1,6 +1,7 @@
 // ignore_for_file: unnecessary_string_escapes, unnecessary_nullable_for_final_variable_declarations, avoid_dynamic_calls
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -451,12 +452,11 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-              'Bearer ${UserSingleton.instance.user.token}',
-              // 'Bearer $staticToken',
+              'Bearer ${UserSingleton.instance.user.token}'
         });
 
     final dynamic jsonData = jsonDecode(response.body);
-    print(jsonData);
+
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
     final activityPackage =
         (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
@@ -471,8 +471,46 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),
         headers: {
           HttpHeaders.authorizationHeader:
-              'Bearer ${UserSingleton.instance.user.token}',
-              // 'Bearer $staticToken',
+              'Bearer ${UserSingleton.instance.user.token}'
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
+    final List<ActivityPackage> activityPackages = <ActivityPackage>[];
+    final List<ActivityPackage> activityPackage =
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+    activityPackages.addAll(activityPackage);
+    return activityPackages;
+  }
+
+  /// API service for currencies
+  Future<List<ActivityPackage>> searchActivity(String searchKey) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlSearch}/$searchKey'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}'
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
+    final List<ActivityPackage> activityPackages = <ActivityPackage>[];
+    final List<ActivityPackage> activityPackage =
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+    activityPackages.addAll(activityPackage);
+    return activityPackages;
+  }
+
+  /// API service for currencies
+  Future<List<ActivityPackage>> getActivityByDateRange(
+      String startDate, String endDate) async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesbyDateRage}/$startDate/$endDate'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}'
         });
 
     final dynamic jsonData = jsonDecode(response.body);

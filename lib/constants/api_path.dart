@@ -101,6 +101,13 @@ class AppAPIPath {
   static String activityPackagesUrlDescOrder =
       'api/v1/activity-packages?sort=created_date%2CDESC';
 
+  /// Returns activity packages url
+  static String activityPackagesUrlSearch = 'api/v1/activity-packages/search';
+
+  /// Returns activity packages url
+  static String activityPackagesbyDateRage =
+      'api/v1/activity-packages/date-range';
+
   /// Returns closest-activity url
   static String closestActivity = 'api/v1/activity-packages/closest-activity';
 
@@ -218,7 +225,8 @@ class AppAPIPath {
   static String newsfeedImage = 'api/v1/activity-newsfeed-image';
 
   ///Returns certificates url
- static String certificatesUrl = 'api/v1/certificates';
+  static String certificatesUrl = 'api/v1/certificates';
+
   ///Returns wishlist url
   static String wishlistUrl = 'api/v1/wishlit';
 
