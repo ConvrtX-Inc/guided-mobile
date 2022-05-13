@@ -57,8 +57,6 @@ class _SettingsItemsState extends State<SettingsItems> {
   @override
   void initState() {
     super.initState();
-    hasPremiumSubscription =
-        UserSingleton.instance.user.user!.hasPremiumSubscription!;
   }
 
   @override
@@ -127,8 +125,9 @@ class _SettingsItemsState extends State<SettingsItems> {
             Navigator.pushNamed(context, '/notification_traveler');
             break;
           case 'premium_subscription':
-            debugPrint('has premium Subscription $hasPremiumSubscription');
-
+            ///For traveler role only
+             hasPremiumSubscription =
+            UserSingleton.instance.user.user!.hasPremiumSubscription!;
             if (hasPremiumSubscription) {
               Navigator.pushNamed(context, '/subscription_details');
             } else {

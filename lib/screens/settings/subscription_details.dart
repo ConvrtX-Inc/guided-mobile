@@ -71,7 +71,7 @@ class _SubscriptionDetailsState extends State<SubscriptionDetails> {
                   style:
                       TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
               subtitle: Text(
-                'Your subscription is valid until ${DateFormat("MMM dd,yyy").format(DateTime.parse(userSubscriptionDetails.endDate))}',
+                'Your subscription is valid until ${DateFormat("MMM dd , yyy").format(DateTime.parse(userSubscriptionDetails.endDate))}',
                 style: TextStyle(fontSize: 14.sp),
               ),
             ))

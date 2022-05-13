@@ -9,7 +9,7 @@ import 'package:guided/models/country_model.dart';
 class DropDownCountry extends StatelessWidget {
   /// Constructor
   const DropDownCountry(
-      {required this.list, required this.value, this.setCountry, this.fontSize = 14, Key? key})
+      {required this.list, required this.value, this.setCountry, this.fontSize = 14,this.borderWidth = 1, Key? key})
       : super(key: key);
 
   /// initialization for list of countries
@@ -22,6 +22,8 @@ class DropDownCountry extends StatelessWidget {
   final dynamic setCountry;
 
   final double fontSize ;
+
+  final double borderWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class DropDownCountry extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 2.h),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(color: Colors.grey.shade400),
+            border: Border.all(color: Colors.grey.shade400,width: borderWidth),
             color: Colors.white,
           ),
           child: DropdownButtonHideUnderline(

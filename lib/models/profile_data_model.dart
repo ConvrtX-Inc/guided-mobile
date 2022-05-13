@@ -16,7 +16,11 @@ class ProfileDetailsModel {
       this.stripeAccountId = '',
       this.isFirstAidTrained,
       this.isForThePlanet,
-      this.createdDate});
+      this.createdDate,
+      this.birthDate = '',
+      this.addressLine1 = '',
+      this.addressLine2 = '',
+      this.country  =''});
 
   /// String initialization
   String id,
@@ -28,7 +32,10 @@ class ProfileDetailsModel {
       countryCode,
       about,
       firebaseProfilePicUrl,
-      stripeAccountId;
+      stripeAccountId,
+      birthDate,
+      addressLine1,
+      addressLine2,country;
 
   ///bool initialization
   bool? isForThePlanet, isFirstAidTrained;
@@ -49,5 +56,9 @@ class ProfileDetailsModel {
         firebaseProfilePicUrl = parseJson['profile_photo_firebase_url'] ?? '',
         isForThePlanet = parseJson['is_for_the_planet'] ?? '',
         isFirstAidTrained = parseJson['is_first_aid_trained'] ?? '',
-        createdDate = DateTime.parse(parseJson['created_date']);
+        createdDate = DateTime.parse(parseJson['created_date']),
+        addressLine1 = parseJson['address_line1'] ?? '',
+        addressLine2 = parseJson['address_line2'] ?? '',
+        birthDate = parseJson['birth_date'] ?? '',
+        country = parseJson['country'] ?? '';
 }

@@ -272,19 +272,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
           ),
           trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
-      ListTile(
-          leading: Container(
-              width: 38.w,
-              height: 38.h,
-              decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(20)),
-              child: const Icon(Icons.lock_outline)),
-          title: Text(
-            'About Me',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
-          ),
-          trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
+     
     ]);
   }
 
