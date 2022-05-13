@@ -475,10 +475,17 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: ExtendedImage.network(
-                    image1,
-                    fit: BoxFit.cover,
-                    gaplessPlayback: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: ExtendedImage.network(
+                          image1,
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
@@ -534,10 +541,17 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: ExtendedImage.network(
-                    image1,
-                    fit: BoxFit.cover,
-                    gaplessPlayback: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: ExtendedImage.network(
+                          image1,
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
@@ -581,10 +595,17 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: ExtendedImage.network(
-                    image2,
-                    fit: BoxFit.cover,
-                    gaplessPlayback: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: ExtendedImage.network(
+                          image2,
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
@@ -644,10 +665,17 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: ExtendedImage.network(
-                    image1,
-                    fit: BoxFit.cover,
-                    gaplessPlayback: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: ExtendedImage.network(
+                          image1,
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
@@ -691,10 +719,17 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: ExtendedImage.network(
-                    image2,
-                    fit: BoxFit.cover,
-                    gaplessPlayback: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: ExtendedImage.network(
+                          image2,
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
@@ -739,10 +774,17 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: ExtendedImage.network(
-                    image3,
-                    fit: BoxFit.cover,
-                    gaplessPlayback: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                            image: ExtendedImage.network(
+                          image3,
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ).image),
+                        borderRadius: BorderRadius.all(Radius.circular(50.r)),
+                        border: Border.all(color: Colors.white, width: 4.w)),
                   ),
                 ),
               ),
