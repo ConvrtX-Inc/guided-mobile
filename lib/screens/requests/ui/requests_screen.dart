@@ -155,10 +155,13 @@ class _RequestsScreenState extends State<RequestsScreen> {
                         ],
                         color: Colors.white,
                         shape: BoxShape.circle,
-                        image: DecorationImage(
+                        image: request.fromUserFirebaseProfilePic != '' ?  DecorationImage(
                             fit: BoxFit.fitHeight,
                             image: NetworkImage(
-                                request.fromUserFirebaseProfilePic!))),
+                                request.fromUserFirebaseProfilePic!)) :DecorationImage(
+                            fit: BoxFit.fitHeight,
+                            image: AssetImage(AssetsPath.defaultProfilePic))
+                    ),
                   ),
                 ),
                 Column(

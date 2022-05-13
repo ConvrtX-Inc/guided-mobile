@@ -1255,6 +1255,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
         notificationMsg: AppTextConstants.youHavePendingRequest,
         toUserId: guideId,
         type: 'booking request',
+        transactionNo: transactionNumber,
         bookingRequestId: bookingRequestId);
 
     final NotificationModel res = await APIServices().sendNotification(params);
