@@ -121,6 +121,7 @@ class _EventEditState extends State<EventEdit> {
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   final String _storagePathEventImg = 'eventImg';
+  late List<String> subActivityId;
   @override
   void initState() {
     super.initState();
@@ -149,6 +150,13 @@ class _EventEditState extends State<EventEdit> {
       setState(() {
         listCountry = resCountries;
         _countryDropdown = listCountry[38];
+        subActivities1 = screenArguments['sub_activity_1'];
+        subActivities2 = screenArguments['sub_activity_2'];
+        subActivities3 = screenArguments['sub_activity_3'];
+        count = screenArguments['count'];
+        subActivities1Txt = subActivities1.name.toString();
+        subActivities2Txt = subActivities2.name.toString();
+        subActivities3Txt = subActivities3.name.toString();
       });
     });
     _loadingData = APIServices().getBadgesModel();
@@ -347,28 +355,25 @@ class _EventEditState extends State<EventEdit> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Align(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: SizedBox(
-                          height: 50.h,
-                          child: ListView(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              children: <Widget>[
-                                if (subActivities1 == null)
-                                  SizedBox(
-                                    height: 100.h,
-                                  )
-                                else
-                                  _chosenSubActivities1(subActivities1),
-                                if (subActivities2 == null)
-                                  SizedBox(
-                                    height: 100.h,
-                                  )
-                                else
-                                  _chosenSubActivities2(subActivities2),
-                              ]),
-                        ),
+                      child: SizedBox(
+                        height: 50.h,
+                        child: ListView(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            children: <Widget>[
+                              if (subActivities1 == null)
+                                SizedBox(
+                                  height: 100.h,
+                                )
+                              else
+                                _chosenSubActivities1(subActivities1),
+                              if (subActivities2 == null)
+                                SizedBox(
+                                  height: 100.h,
+                                )
+                              else
+                                _chosenSubActivities2(subActivities2),
+                            ]),
                       ),
                     ),
                   ],
@@ -851,7 +856,7 @@ class _EventEditState extends State<EventEdit> {
 
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
+    subActivityId = screenArguments['sub_activity'];
     Widget image1Placeholder(BuildContext context) {
       return GestureDetector(
         onTap: () {
@@ -2059,7 +2064,6 @@ class _EventEditState extends State<EventEdit> {
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   HeaderText.headerText(AppTextConstants.editsummaryTitle),
@@ -2133,6 +2137,10 @@ class _EventEditState extends State<EventEdit> {
   }
 
   Future<void> eventEditDetail() async {
+    String mainBadge;
+    String subBadges = '';
+    String name;
+
     if (isNewDate && _eventDate.text.isEmpty) {
       AdvanceSnackBar(message: ErrorMessageConstants.dateEmpty).show(context);
     } else if (_street.text.isEmpty ||
@@ -2158,22 +2166,52 @@ class _EventEditState extends State<EventEdit> {
             ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
         final String? userId = UserSingleton.instance.user.user!.id;
 
-        String subActivity;
-
-        if (_didClickedSubActivity) {
-          subActivity =
-              '${subActivities1.id.toString()},${subActivities2.id.toString()},${subActivities3.id.toString()}';
+        if (_isMainActivityEdited) {
+          mainBadge = mainActivity.id;
+          name = mainActivity.id;
         } else {
-          subActivity = _subactivity.text;
+          mainBadge = screenArguments['badge_id'];
+          name = screenArguments['main_activity'];
+        }
+
+        if (_isSubActivityEdited) {
+          if (subActivities1 != null) {
+            subBadges = subActivities1.id;
+          }
+          if (subActivities2 != null) {
+            subBadges = '$subBadges,${subActivities2.id}';
+          }
+          if (subActivities3 != null) {
+            subBadges = '$subBadges,${subActivities3.id}';
+          }
+        } else {
+          if (subActivityId[0] != '') {
+            subBadges = subActivityId[0];
+          }
+          if (subActivityId[1] != '') {
+            subBadges = '$subBadges,${subActivityId[1]}';
+          }
+          if (subActivityId[2] != '') {
+            subBadges = '$subBadges,${subActivityId[2]}';
+          }
+        }
+
+        if (subBadges.isEmpty) {
+          setState(() {
+            _isSubmit = false;
+          });
+          AdvanceSnackBar(message: ErrorMessageConstants.subActivityEmpty)
+              .show(context);
+          return;
         }
 
         final Map<String, dynamic> eventEditDetails = {
           'user_id': userId,
-          'badge_id': mainActivity.id,
+          'badge_id': mainBadge,
           'title': _title.text,
           'free_service': _services.text,
-          'main_activities': mainActivity.name,
-          'sub_activities': subActivity,
+          'main_activities': name,
+          'sub_activities': subBadges,
           'country': _country.text,
           'address':
               '${_street.text},${_city.text},${_province.text},${_postalCode.text}',
@@ -2212,29 +2250,68 @@ class _EventEditState extends State<EventEdit> {
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       final String? userId = UserSingleton.instance.user.user!.id;
 
-      String subActivity = '';
+      // String subActivity = '';
 
-      if (_didClickedSubActivity) {
+      // if (_didClickedSubActivity) {
+      //   if (subActivities1 != null) {
+      //     subActivity = subActivities1.id;
+      //   }
+      //   if (subActivities2 != null) {
+      //     subActivity = '$subActivity,${subActivities2.id}';
+      //   }
+      //   if (subActivities3 != null) {
+      //     subActivity = '$subActivity,${subActivities3.id}';
+      //   }
+      // } else {
+      //   subActivity = _subactivity.text;
+      // }
+
+      if (_isMainActivityEdited) {
+        mainBadge = mainActivity.id;
+        name = mainActivity.id;
+      } else {
+        mainBadge = screenArguments['badge_id'];
+        name = screenArguments['main_activity'];
+      }
+
+      if (_isSubActivityEdited) {
         if (subActivities1 != null) {
-          subActivity = subActivities1.id;
+          subBadges = subActivities1.id;
         }
         if (subActivities2 != null) {
-          subActivity = '$subActivity,${subActivities2.id}';
+          subBadges = '$subBadges,${subActivities2.id}';
         }
         if (subActivities3 != null) {
-          subActivity = '$subActivity,${subActivities3.id}';
+          subBadges = '$subBadges,${subActivities3.id}';
         }
       } else {
-        subActivity = _subactivity.text;
+        if (subActivityId[0] != '') {
+          subBadges = subActivityId[0];
+        }
+        if (subActivityId[1] != '') {
+          subBadges = '$subBadges,${subActivityId[1]}';
+        }
+        if (subActivityId[2] != '') {
+          subBadges = '$subBadges,${subActivityId[2]}';
+        }
+      }
+
+      if (subBadges.isEmpty) {
+        setState(() {
+          _isSubmit = false;
+        });
+        AdvanceSnackBar(message: ErrorMessageConstants.subActivityEmpty)
+            .show(context);
+        return;
       }
 
       final Map<String, dynamic> eventEditDetails = {
         'user_id': userId,
-        'badge_id': mainActivity.id,
+        'badge_id': mainBadge,
         'title': _title.text,
         'free_service': _services.text,
-        'main_activities': mainActivity.name,
-        'sub_activities': subActivity,
+        'main_activities': name,
+        'sub_activities': subBadges,
         'country': _country.text,
         'address':
             '${_street.text},${_city.text},${_province.text},${_postalCode.text}',

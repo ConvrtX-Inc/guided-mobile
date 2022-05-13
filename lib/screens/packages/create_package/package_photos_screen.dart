@@ -36,9 +36,9 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
   File? image1;
   File? image2;
   File? image3;
- 
-  int _uploadCount = 0;
 
+  int _uploadCount = 0;
+  int destinationCount = 1;
   bool _enabledImgHolder2 = false;
 
   TextEditingController _placeName = new TextEditingController();
@@ -660,7 +660,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                       AppTextConstants.subheaderUploadPhoto),
                   SizedBox(height: 20.h),
                   Text(
-                    AppTextConstants.destination1,
+                    'Destination $destinationCount',
                     style: const TextStyle(
                         fontWeight: FontWeight.w600, fontSize: 15),
                   ),
@@ -809,6 +809,10 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
       AdvanceSnackBar(message: ErrorMessageConstants.fieldMustBeFilled)
           .show(context);
     } else {
+      setState(() {
+        destinationCount++;
+      });
+
       if (_uploadCount == 1) {
         final Future<Uint8List> image1Bytes = File(image1!.path).readAsBytes();
         final String base64Image1 = base64Encode(await image1Bytes);
@@ -899,11 +903,15 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(10),
-                    child: Text(
-                      destinationList[index].placeName,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
+                    child: FittedBox(
+                      fit: BoxFit.fitWidth,
+                      child: Text(
+                        destinationList[index].placeName.substring(
+                            0, destinationList[index].placeName.indexOf(',')),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
                   ),
@@ -912,6 +920,7 @@ class _PackagePhotosScreenState extends State<PackagePhotosScreen> {
                     onPressed: () {
                       setState(() {
                         destinationList.removeAt(index);
+                        destinationCount--;
                       });
                     },
                     icon: const Icon(

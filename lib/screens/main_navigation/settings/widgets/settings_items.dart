@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:guided/common/widgets/avatar_bottom_sheet.dart';
 import 'package:guided/controller/user_subscription_controller.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
@@ -25,6 +24,8 @@ import 'package:guided/screens/widgets/reusable_widgets/discovery_payment_detail
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+
+import '../../../../common/widgets/avatar_bottom_sheet.dart';
 
 /// Widgets for displaying list of user settings
 class SettingsItems extends StatefulWidget {

@@ -80,12 +80,17 @@ class _EventFeaturesState extends State<EventFeatures> {
   late List<String> splitSubActivities;
   late List<String> splitServices;
   bool isDateRangeClicked = false;
+  dynamic subActivities1;
+  dynamic subActivities2;
+  dynamic subActivities3;
+  int count = 0;
   @override
   void initState() {
     super.initState();
     splitAddress = widget._address.split(',');
     splitSubActivities = widget._subactivities.split(',');
     splitServices = widget._services.split(',');
+    count = splitSubActivities.length;
   }
 
   @override
@@ -260,6 +265,32 @@ class _EventFeaturesState extends State<EventFeatures> {
                     return _displayWidget = Container();
                   },
                 ),
+                for (int i = 0; i < splitSubActivities.length; i++)
+                  FutureBuilder<BadgeModelData>(
+                    future:
+                        APIServices().getBadgesModelById(splitSubActivities[i]),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasData) {
+                        final BadgeModelData badgeData = snapshot.data;
+                        final int length = badgeData.badgeDetails.length;
+                        final BadgeDetailsModel badgeDetails =
+                            badgeData.badgeDetails[0];
+                        switch (i) {
+                          case 0:
+                            subActivities1 = badgeDetails;
+                            break;
+                          case 1:
+                            subActivities2 = badgeDetails;
+                            break;
+                          case 2:
+                            subActivities3 = badgeDetails;
+                            break;
+                        }
+                      }
+                      return Container();
+                    },
+                  )
               ],
             ),
           )
@@ -288,7 +319,11 @@ class _EventFeaturesState extends State<EventFeatures> {
       'path': widget._path,
       'date_format': widget._dateFormat,
       'snapshot_img': snapshotImg,
-      'image_id': imgId
+      'image_id': imgId,
+      'sub_activity_1': subActivities1,
+      'sub_activity_2': subActivities2,
+      'sub_activity_3': subActivities3,
+      'count': count
     };
 
     await Navigator.pushNamed(context, '/event_view', arguments: details);
@@ -318,7 +353,11 @@ class _EventFeaturesState extends State<EventFeatures> {
       'path': widget._path,
       'date_format': widget._dateFormat,
       'snapshot_img': snapshotImg,
-      'image_id': imgId
+      'image_id': imgId,
+      'sub_activity_1': subActivities1,
+      'sub_activity_2': subActivities2,
+      'sub_activity_3': subActivities3,
+      'count': count
     };
 
     await Navigator.pushNamed(context, '/event_edit', arguments: details);
