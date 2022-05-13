@@ -846,24 +846,24 @@ class _PopularGuidesTabDescriptionState
                   //     ],
                   //   ),
                   // ),
-                  Divider(
-                    color: Colors.grey.shade300,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
-                    child: Text(
-                      'Other Offering',
-                      style: TextStyle(
-                        fontFamily: 'Gilroy',
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 0.h),
-                    child: nearbyActivities(context, activities),
-                  ),
+                  // Divider(
+                  //   color: Colors.grey.shade300,
+                  // ),
+                  // Padding(
+                  //   padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
+                  //   child: Text(
+                  //     'Other Offering',
+                  //     style: TextStyle(
+                  //       fontFamily: 'Gilroy',
+                  //       fontSize: 20.sp,
+                  //       fontWeight: FontWeight.w700,
+                  //     ),
+                  //   ),
+                  // ),
+                  // Padding(
+                  //   padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 0.h),
+                  //   child: nearbyActivities(context, activities),
+                  // ),
                   Divider(
                     color: Colors.grey.shade300,
                   ),
@@ -927,101 +927,101 @@ class _PopularGuidesTabDescriptionState
     );
   }
 
-  Widget nearbyActivities(BuildContext context, List<Activity> activities) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.26,
-          child: ListView(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            children: List<Widget>.generate(activities.length, (int i) {
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 20.h),
-                height: 180.h,
-                width: 168.w,
-                decoration: const BoxDecoration(
-                  color: Colors.transparent,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      height: 112.h,
-                      width: 168.w,
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(15.r),
-                        ),
-                        image: DecorationImage(
-                          image: AssetImage(activities[i].featureImage),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            bottom: 0,
-                            child: CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              radius: 30,
-                              backgroundImage: AssetImage(activities[i].path),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    Text(
-                      activities[i].name,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16.sp,
-                          fontFamily: 'Gilroy',
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          height: 10.h,
-                          width: 10.w,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15.r),
-                            ),
-                            image: const DecorationImage(
-                              image: AssetImage('assets/images/png/clock.png'),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 2.w,
-                        ),
-                        Text(
-                          activities[i].distance,
-                          style: TextStyle(
-                              color: HexColor('#696D6D'),
-                              fontSize: 11.sp,
-                              fontFamily: 'Gilroy',
-                              fontWeight: FontWeight.normal),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }),
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget nearbyActivities(BuildContext context, List<Activity> activities) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: <Widget>[
+  //       SizedBox(
+  //         height: MediaQuery.of(context).size.height * 0.26,
+  //         child: ListView(
+  //           shrinkWrap: true,
+  //           scrollDirection: Axis.horizontal,
+  //           children: List<Widget>.generate(activities.length, (int i) {
+  //             return Container(
+  //               margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 20.h),
+  //               height: 180.h,
+  //               width: 168.w,
+  //               decoration: const BoxDecoration(
+  //                 color: Colors.transparent,
+  //               ),
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: <Widget>[
+  //                   Container(
+  //                     height: 112.h,
+  //                     width: 168.w,
+  //                     decoration: BoxDecoration(
+  //                       color: Colors.transparent,
+  //                       borderRadius: BorderRadius.all(
+  //                         Radius.circular(15.r),
+  //                       ),
+  //                       image: DecorationImage(
+  //                         image: AssetImage(activities[i].featureImage),
+  //                         fit: BoxFit.cover,
+  //                       ),
+  //                     ),
+  //                     child: Stack(
+  //                       children: <Widget>[
+  //                         Positioned(
+  //                           bottom: 0,
+  //                           child: CircleAvatar(
+  //                             backgroundColor: Colors.transparent,
+  //                             radius: 30,
+  //                             backgroundImage: AssetImage(activities[i].path),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                   SizedBox(
+  //                     height: 5.h,
+  //                   ),
+  //                   Text(
+  //                     activities[i].name,
+  //                     style: TextStyle(
+  //                         color: Colors.black,
+  //                         fontSize: 16.sp,
+  //                         fontFamily: 'Gilroy',
+  //                         fontWeight: FontWeight.w600),
+  //                   ),
+  //                   Row(
+  //                     children: <Widget>[
+  //                       Container(
+  //                         height: 10.h,
+  //                         width: 10.w,
+  //                         decoration: BoxDecoration(
+  //                           color: Colors.transparent,
+  //                           borderRadius: BorderRadius.all(
+  //                             Radius.circular(15.r),
+  //                           ),
+  //                           image: const DecorationImage(
+  //                             image: AssetImage('assets/images/png/clock.png'),
+  //                             fit: BoxFit.contain,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                       SizedBox(
+  //                         width: 2.w,
+  //                       ),
+  //                       Text(
+  //                         activities[i].distance,
+  //                         style: TextStyle(
+  //                             color: HexColor('#696D6D'),
+  //                             fontSize: 11.sp,
+  //                             fontFamily: 'Gilroy',
+  //                             fontWeight: FontWeight.normal),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ],
+  //               ),
+  //             );
+  //           }),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget guideProfile1(String name, String profileImg) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
