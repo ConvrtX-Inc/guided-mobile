@@ -36,7 +36,6 @@ class ActivityPackage {
   String? sEntity;
   MainBadge? mainBadge;
   ActivityPackageDestination? activityPackageDestination;
-  String? firebaseCoverImg;
 
   ActivityPackage(
       {this.id,
@@ -72,8 +71,7 @@ class ActivityPackage {
       this.deletedAt,
       this.sEntity,
       this.mainBadge,
-      this.activityPackageDestination,
-      this.firebaseCoverImg =''});
+      this.activityPackageDestination});
 
   ActivityPackage.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -119,7 +117,6 @@ class ActivityPackage {
         ? ActivityPackageDestination.fromJson(
             json['activity_package_destination'])
         : null;
-    firebaseCoverImg = json['firebase_cover_img'] ?? '';
   }
 
   Map<String, dynamic> toJson() {

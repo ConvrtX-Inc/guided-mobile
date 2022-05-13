@@ -1,13 +1,16 @@
 // ignore_for_file: file_names, diagnostic_describe_all_properties, prefer_final_locals
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -23,6 +26,7 @@ import 'package:guided/utils/services/text_service.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 /// Sign up screen
 class SignupScreen extends StatefulWidget {
@@ -53,9 +57,110 @@ class _SignupScreenState extends State<SignupScreen> {
   String cancellationPolicy = '';
   String guidedPaymentPayout = '';
   String localLaws = '';
+  bool appleLoading = false;
+  bool googleLoading = false;
+  bool facebookLoading = false;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+  GoogleSignInAuthentication? _signInAuthentication;
   @override
   void initState() {
+    _googleSignIn.signOut();
+
+    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
+      account?.authentication.then((GoogleSignInAuthentication googleKey) {
+        print(googleKey.accessToken);
+        APIServices()
+            .loginFacebook(googleKey.accessToken!)
+            .then((APIStandardReturnFormat response) async {
+          if (response.status == 'error') {
+            AdvanceSnackBar(
+                    message: ErrorMessageConstants.loginWrongEmailorPassword)
+                .show(context);
+            setState(() => buttonIsLoading = false);
+          } else {
+            final UserModel user =
+                UserModel.fromJson(json.decode(response.successResponse));
+            UserSingleton.instance.user = user;
+            if (user.user?.isTraveller != true) {
+              await SecureStorage.saveValue(
+                  key: AppTextConstants.userType, value: 'guide');
+              await Navigator.pushReplacementNamed(context, '/main_navigation');
+            } else {
+              await Navigator.pushReplacementNamed(context, '/traveller_tab');
+              await SecureStorage.saveValue(
+                  key: AppTextConstants.userType, value: 'traveller');
+            }
+          }
+        });
+        setState(() {
+          _signInAuthentication = googleKey;
+          googleLoading = false;
+        });
+      }).catchError((err) {
+        print('inner error');
+      });
+    });
+    // _googleSignIn.signInSilently();
     super.initState();
+  }
+
+  Future<void> googleSignIn() async {
+    setState(() {
+      googleLoading = true;
+    });
+    try {
+      await _googleSignIn.signIn();
+    } catch (e) {
+      print('Error signing in $e');
+      setState(() {
+        googleLoading = false;
+      });
+    }
+  }
+
+  Future<void> appleLogin() async {
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+
+    print(credential.email);
+    print(credential.authorizationCode);
+    print(credential.givenName);
+    print(credential.familyName);
+    print(credential.identityToken);
+    print(credential.userIdentifier);
+
+    if (credential.identityToken != null) {
+      setState(() {
+        appleLoading = true;
+      });
+      APIServices()
+          .loginFacebook(credential.identityToken!)
+          .then((APIStandardReturnFormat response) async {
+        if (response.status == 'error') {
+          AdvanceSnackBar(
+                  message: ErrorMessageConstants.loginWrongEmailorPassword)
+              .show(context);
+          setState(() => appleLoading = false);
+        } else {
+          final UserModel user =
+              UserModel.fromJson(json.decode(response.successResponse));
+          UserSingleton.instance.user = user;
+          if (user.user?.isTraveller != true) {
+            await SecureStorage.saveValue(
+                key: AppTextConstants.userType, value: 'guide');
+            await Navigator.pushReplacementNamed(context, '/main_navigation');
+          } else {
+            await SecureStorage.saveValue(
+                key: AppTextConstants.userType, value: 'traveller');
+            await Navigator.pushReplacementNamed(context, '/traveller_tab');
+          }
+        }
+      });
+    }
   }
 
   Future<void> getTermsAndCondition() async {
@@ -141,6 +246,246 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(
                       height: 20.h,
                     ),
+                    LoadingElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        primary: Colors.transparent,
+                        padding: EdgeInsets.zero,
+                      ),
+                      disabledWhileLoading: false,
+                      isLoading: facebookLoading,
+                      onPressed: () async {
+                        setState(() {
+                          facebookLoading = true;
+                        });
+                        final fb = FacebookLogin();
+                        final res =
+                            await fb.logIn(permissions: <FacebookPermission>[
+                          FacebookPermission.publicProfile,
+                          FacebookPermission.email,
+                        ]);
+
+                        switch (res.status) {
+                          case FacebookLoginStatus.success:
+                            setState(() {
+                              facebookLoading = false;
+                            });
+
+                            // Send access token to server for validation and auth
+                            final FacebookAccessToken? accessToken =
+                                res.accessToken;
+                            APIServices()
+                                .loginFacebook(accessToken!.token)
+                                .then((APIStandardReturnFormat response) async {
+                              if (response.status == 'error') {
+                                AdvanceSnackBar(
+                                        message: ErrorMessageConstants
+                                            .loginWrongEmailorPassword)
+                                    .show(context);
+                                setState(() => buttonIsLoading = false);
+                              } else {
+                                final UserModel user = UserModel.fromJson(
+                                    json.decode(response.successResponse));
+                                UserSingleton.instance.user = user;
+                                if (user.user?.isTraveller != true) {
+                                  await SecureStorage.saveValue(
+                                      key: AppTextConstants.userType,
+                                      value: 'guide');
+                                  await Navigator.pushReplacementNamed(
+                                      context, '/main_navigation');
+                                } else {
+                                  await SecureStorage.saveValue(
+                                      key: AppTextConstants.userType,
+                                      value: 'traveller');
+                                  await Navigator.pushReplacementNamed(
+                                      context, '/traveller_tab');
+                                }
+                              }
+                            });
+                            // print('Access token: ${accessToken?.token}');
+
+                            // // Get profile data
+                            // final profile = await fb.getUserProfile();
+                            // print(
+                            //     'Hello, ${profile?.name}! You ID: ${profile?.userId}');
+
+                            // // Get user profile image url
+                            // final imageUrl =
+                            //     await fb.getProfileImageUrl(width: 100);
+                            // print('Your profile image: $imageUrl');
+
+                            // // Get email (since we request email permission)
+                            // final email = await fb.getUserEmail();
+                            // // But user can decline permission
+                            // if (email != null) print('And your email is $email');
+
+                            break;
+                          case FacebookLoginStatus.cancel:
+                            setState(() {
+                              facebookLoading = false;
+                            });
+                            break;
+                          case FacebookLoginStatus.error:
+                            setState(() {
+                              facebookLoading = false;
+                            });
+                            print('Error while log in: ${res.error}');
+                            break;
+                        }
+                        // await Future.delayed(
+                        //   const Duration(seconds: 3),
+                        //   () {
+                        //     setState(() {
+                        //       facebookLoading = false;
+                        //     });
+                        //   },
+                        // );
+                      },
+                      loadingChild: ListTile(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: AppColors.mercury,
+                          ),
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        leading: Image.asset(
+                          AssetsPath.facebook,
+                          height: 30.h,
+                        ),
+                        title: const Text(
+                          'Loading',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: AppColors.mercury,
+                          ),
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        leading: Image.asset(
+                          AssetsPath.facebook,
+                          height: 30.h,
+                        ),
+                        title: Text(
+                          AppTextConstants.loginWithFacebook,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+
+                    LoadingElevatedButton(
+                      isLoading: googleLoading,
+                      onPressed: googleSignIn,
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        primary: Colors.transparent,
+                        padding: EdgeInsets.zero,
+                      ),
+                      loadingChild: ListTile(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: AppColors.mercury,
+                          ),
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        leading: Image.asset(
+                          'assets/images/google.png',
+                          height: 30.h,
+                        ),
+                        title: const Text(
+                          'Loading',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: AppColors.mercury,
+                          ),
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                        leading: Image.asset(
+                          'assets/images/google.png',
+                          height: 30.h,
+                        ),
+                        title: Text(
+                          AppTextConstants.loginWithGoogle,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15.h,
+                    ),
+                    if (Platform.isIOS)
+                      LoadingElevatedButton(
+                        isLoading: appleLoading,
+                        onPressed: appleLogin,
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          primary: Colors.transparent,
+                          padding: EdgeInsets.zero,
+                        ),
+                        loadingChild: ListTile(
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: AppColors.mercury,
+                            ),
+                            borderRadius: BorderRadius.circular(14.r),
+                          ),
+                          leading: Icon(
+                            Icons.apple,
+                            size: 30.h,
+                          ),
+                          title: const Text(
+                            'Loading',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        child: ListTile(
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: AppColors.mercury,
+                            ),
+                            borderRadius: BorderRadius.circular(14.r),
+                          ),
+                          leading: Icon(
+                            Icons.apple,
+                            size: 30.h,
+                          ),
+                          title: Text(
+                            'Login with Apple',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+
                     // ListTile(
                     //   onTap: () {
                     //     // Insert here the Sign up to Facebook API
@@ -332,7 +677,11 @@ class _SignupScreenState extends State<SignupScreen> {
                               'country_code': _countryCode,
                               'is_traveller': isTraveller,
                               // 'user_type_id': isTraveller ? '1e16e10d-ec6f-4c32-b5eb-cdfcfe0563a5' : 'c40cca07-110c-473e-a0e7-6720fc3d42ff', /// Dev
-                              'user_type_id': isTraveller ? 'fb536b69-3e54-415a-aaf0-1db1ab017bb3' : '3e3528ef-2387-4480-878e-685d44c6c2ee', /// Staging
+                              'user_type_id': isTraveller
+                                  ? 'fb536b69-3e54-415a-aaf0-1db1ab017bb3'
+                                  : '3e3528ef-2387-4480-878e-685d44c6c2ee',
+
+                              /// Staging
                               'is_for_the_planet': true,
                               'is_first_aid_trained': true,
                               'is_guide': !isTraveller
