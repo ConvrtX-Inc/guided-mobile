@@ -84,6 +84,7 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
   int count = 0;
   int _uploadCount = 0;
   String requestID = '';
+  String guideRequestStatus = '';
 
   @override
   void initState() {
@@ -123,7 +124,7 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
 
     if (res.userId != '' && res.userId != null) {
 
-      if (res.isApproved == true) {
+      if (res.isApproved == true || res.guideRequestStatus == 'approved') {
         await SecureStorage.saveValue(
             key: AppTextConstants.userType, value : 'guide');
         await Navigator.pushReplacementNamed(context, '/main_navigation');
@@ -182,6 +183,7 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
         _firstAid = res.isFirstAid!;
         _certificateNameController.text = res.certificateName!;
         _certDescController.text = res.certDesc!;
+        guideRequestStatus = res.guideRequestStatus!;
       });
     } else {
       setState(() {
@@ -281,18 +283,58 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
               child: Column(
                 children: <Widget> [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      AppTextConstants.becomeAGuide,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 24,
-                      ),
-                    ),
-                  ),
                   if (_isLoading == false) Column(
                     children: <Widget> [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          AppTextConstants.becomeAGuide,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 24,
+                          ),
+                        ),
+                      ),
+                      if (guideRequestStatus == 'pending') Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 15, 0, 10),
+                        child: Container(
+                            decoration: const BoxDecoration(
+                              color: Color(0xffFF961A),
+                            ),
+                            child: const Padding(
+                                padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                child: Align(
+                                  child: Text('Your request is still pending',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                )
+                            )
+                        ),
+                      ),
+                      if (guideRequestStatus == 'rejected') Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 15, 0, 10),
+                        child: Container(
+                            decoration: const BoxDecoration(
+                              color: Color(0xffFF4848),
+                            ),
+                            child: const Padding(
+                                padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                child: Align(
+                                  child: Text('Your request has been rejected, please update the information below and re-submit your application',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                )
+                            )
+                        ),
+                      ),
                       subTitleWidget(AppTextConstants.basicInfo),
                       textInputWidget('fname', 'First name', _firstNameController, false, _firstNameFocus),
                       textInputWidget('lname', 'Last name', _lastNameController, false, _lastNameFocus),
@@ -1016,6 +1058,7 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
                                           .show(context);
                                       setState(() {
                                         requestID = res.id!;
+                                        guideRequestStatus = res.guideRequestStatus!;
                                       });
                                     }
                                   } else {
@@ -1062,14 +1105,11 @@ class _SettingsBecomeAGuide extends State<SettingsBecomeAGuide> {
                         ),
                       )
                     ],
-                  ) else Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
-                        child: CircularProgressIndicator(),
-                      )
-                    ],
+                  ) else const Center(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 150, 0, 0),
+                      child: CircularProgressIndicator(),
+                    ),
                   ),
                 ],
               ),
