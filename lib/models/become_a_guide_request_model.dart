@@ -25,6 +25,7 @@ class BecomeAGudeModel {
         this.certificateName = '',
         this.imageFirebaseUrl = '',
         this.certDesc = '',
+        this.guideRequestStatus = '',
       });
 
   /// initialization for id
@@ -90,6 +91,9 @@ class BecomeAGudeModel {
   /// initialization for cert desc
   String? certDesc;
 
+  /// initialization for guideRequestStatus
+  String? guideRequestStatus;
+
   // factory SettingsAvailabilityModel.fromJson(Map<String, dynamic> json) => SettingsAvailabilityModel(
   //   id: json['id'],
   //   userId: json['user_id'],
@@ -120,6 +124,7 @@ class BecomeAGudeModel {
     certificateName = json['certificate_name'];
     imageFirebaseUrl = json['image_firebase_url'];
     certDesc = json['description'];
+    guideRequestStatus = json['guide_application_status'];
   }
 
   // Map<String, dynamic> toJson() {
