@@ -182,7 +182,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
                         child: SizedBox(
                           width: 220.w,
                           child: Text(
-                            '${request.fromUserFullName} has requested a new booking for package ${request.numberOfPerson}',
+                            '${request.fromUserFullName} has requested a new booking for package ${request.activityPackageName}',
                             style: TextStyle(
                                 color: Colors.grey,
                                 fontFamily: 'Gilroy',

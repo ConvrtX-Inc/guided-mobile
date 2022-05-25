@@ -413,14 +413,16 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
           )));
 
   void sendMessageToServer() {
-    socket.emit('msgToServer', {
-      'receiver_id': chat.receiver!.id!,
-      'sender_id': UserSingleton.instance.user.user?.id,
-      'text': _textMessageController.text,
-      'type': 'text'
-    });
-    print('success');
-    _textMessageController.clear();
+   if(_textMessageController.text.trim().isNotEmpty){
+     socket.emit('msgToServer', {
+       'receiver_id': chat.receiver!.id!,
+       'sender_id': UserSingleton.instance.user.user?.id,
+       'text': _textMessageController.text,
+       'type': 'text'
+     });
+     print('success');
+     _textMessageController.clear();
+   }
   }
 
   handleMessage(payload) {
