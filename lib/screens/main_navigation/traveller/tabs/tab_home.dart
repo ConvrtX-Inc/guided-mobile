@@ -7,6 +7,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
@@ -153,7 +154,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                         ),
                       ),
                       child: Center(
-                        child: Container(
+                        child: SvgPicture.asset('${AssetsPath.assetsSVGPath}/home.svg',color: AppColors.lightningYellow,),
+                     /*   child: Container(
                           height: 20.h,
                           width: 20.w,
                           decoration: const BoxDecoration(
@@ -163,7 +165,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                               fit: BoxFit.contain,
                             ),
                           ),
-                        ),
+                        ),*/
                       ),
                     ),
                   ),
@@ -762,8 +764,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                 children: <Widget>[
                                   GestureDetector(
                                     onTap: () {
-                                      checkAvailability(
-                                          context, snapshot.data![index]);
+                                      // checkAvailability(
+                                      //     context, snapshot.data![index]);
+                                      Navigator.of(context).pushNamed('/activity_package_info',arguments: snapshot.data![index]);
                                     },
                                     child: Container(
                                       height: 112.h,
@@ -1391,7 +1394,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   Text(
                     'Become a guide',
                     style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.lightningYellow,
                         fontSize: 24.sp,
                         fontFamily: 'Gilroy',
                         fontWeight: FontWeight.w700),
@@ -1407,18 +1410,18 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   SizedBox(
                     height: 5.h,
                   ),
-                  // SizedBox(
-                  //   width: MediaQuery.of(context).size.width * 0.3,
-                  //   child: ElevatedButton(
-                  //     onPressed: () {},
-                  //     style: AppTextStyle.active,
-                  //     child: const Text(
-                  //       'Learn more',
-                  //       style: TextStyle(
-                  //           fontWeight: FontWeight.bold, fontSize: 12),
-                  //     ),
-                  //   ),
-                  // ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: ElevatedButton(
+                      onPressed: ()  => Navigator.of(context).pushNamed('/become_a_guide'),
+                      style: AppTextStyle.active,
+                      child: const Text(
+                        'Learn more',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
+                    ),
+                  ),
                 ],
               )),
         ],

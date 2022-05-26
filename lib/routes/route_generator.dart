@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/certificate.dart';
 import 'package:guided/screens/activities/activities.dart';
+import 'package:guided/screens/activities/activity_package_info.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/bank_accounts/add_bank_account.dart';
 import 'package:guided/screens/bank_accounts/manage_payment.dart';
@@ -456,6 +458,9 @@ class RouteGenerator {
       case '/change_password':
         return MaterialPageRoute<dynamic>(
             builder: (_) => ChangePasswordScreen());
+      case '/activity_package_info':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => ActivityPackageInfo(package:  args! as ActivityPackage));
       default:
         return _errorRoute();
     }

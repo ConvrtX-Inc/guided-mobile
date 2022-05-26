@@ -466,6 +466,8 @@ class APIServices {
 
   /// API service for currencies
   Future<List<ActivityPackage>> getActivityPackagesbyDescOrder() async {
+    debugPrint('Packages Url: ${Uri.parse(
+        '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}')}');
     final http.Response response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),

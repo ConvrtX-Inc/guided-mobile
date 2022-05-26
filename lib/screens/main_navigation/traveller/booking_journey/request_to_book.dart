@@ -830,7 +830,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           SizedBox(
             height: 15.h,
           ),
-          if (!isAddPhoneNumberEnabled)
+          /*if (!isAddPhoneNumberEnabled)
             ListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(
@@ -926,7 +926,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                           })),
                 )
               ],
-            )
+            )*/
         ],
       ),
     );
