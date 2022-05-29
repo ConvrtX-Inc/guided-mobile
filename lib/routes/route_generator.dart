@@ -328,7 +328,7 @@ class RouteGenerator {
             settings: settings);
       case '/main_profile':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const MainProfileScreen());
+            builder: (_) =>   MainProfileScreen(userId: args! as String));
       case '/reviews_profile':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ReviewsProfileScreen());

@@ -17,6 +17,7 @@ import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/profile_image.dart';
 import 'package:guided/models/profile_photo_model.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/image_picker_bottom_sheet.dart';
 import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -479,7 +480,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> getImages() async {
-    final UserProfileImage res = await APIServices().getUserProfileImages();
+    final UserProfileImage res = await APIServices().getUserProfileImages(_profileDetailsController.userProfileDetails.id);
 
     if (res.id != '') {
       setState(() {

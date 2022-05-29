@@ -308,7 +308,9 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              navigatePackageDetails(
+              Navigator.pushNamed(context, '/main_profile',
+                  arguments: widget._id );
+     /*         navigatePackageDetails(
                   context,
                   details.coverImg,
                   details.description,
@@ -318,7 +320,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                   details.mainBadgeId,
                   details.address,
                   details.name,
-                  details.firebaseCoverImg);
+                  details.firebaseCoverImg);*/
             },
             child: Stack(children: <Widget>[
               if (details.firebaseCoverImg.isNotEmpty)

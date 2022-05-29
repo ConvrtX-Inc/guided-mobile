@@ -30,8 +30,7 @@ class _SignupFormState extends State<SignupForm> {
   final FocusNode _firstName = FocusNode();
   final FocusNode _lastName = FocusNode();
   final FocusNode _birthday = FocusNode();
-  final FocusNode _email = FocusNode();
-
+ final FocusNode _email = FocusNode();
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;

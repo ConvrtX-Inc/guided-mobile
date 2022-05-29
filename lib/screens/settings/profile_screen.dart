@@ -452,7 +452,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> getImages() async {
-    final UserProfileImage res = await APIServices().getUserProfileImages();
+    final UserProfileImage res = await APIServices().getUserProfileImages(_profileDetailsController.userProfileDetails.id);
     debugPrint('Data ${res.imageUrl1}');
 
     if (res.id != '') {

@@ -812,15 +812,21 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                 Radius.circular(15.r),
                                               ),
                                               image: DecorationImage(
-                                                  image: Image.memory(
-                                                base64.decode(
-                                                    _filteredActivity[i]
-                                                        .coverImg!
-                                                        .split(',')
-                                                        .last),
-                                                fit: BoxFit.cover,
-                                                gaplessPlayback: true,
-                                              ).image),
+                                                  image: Image.network(
+                                                    _filteredActivity[i].firebaseCoverImg!,
+                                                    fit: BoxFit.cover,
+                                                    gaplessPlayback: true,
+                                                  ).image),
+                                              // image: DecorationImage(
+                                              //     image: Image.memory(
+                                              //   base64.decode(
+                                              //       _filteredActivity[i]
+                                              //           .coverImg!
+                                              //           .split(',')
+                                              //           .last),
+                                              //   fit: BoxFit.cover,
+                                              //   gaplessPlayback: true,
+                                              // ).image),
                                               // image: DecorationImage(
                                               //   image: AssetImage(
                                               //       tourList[0].featureImage),

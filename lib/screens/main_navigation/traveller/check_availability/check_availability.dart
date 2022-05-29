@@ -706,5 +706,4 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
         messages: messageHistory,
         isBlocked: chat.isBlocked);
   }
-
 }

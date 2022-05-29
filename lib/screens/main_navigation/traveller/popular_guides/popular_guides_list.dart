@@ -119,7 +119,7 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
               )
             else
               for (UserDetailsModel detail in userListData.userDetails)
-                if (!detail.isTraveller) getPackage(detail)
+                if (detail.isGuide) getPackage(detail)
           ],
         ),
       );

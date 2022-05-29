@@ -16,8 +16,11 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/activity_package.dart';
+import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_description_tab.dart';
+import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_traveler_limit_schedules.dart';
+import 'package:guided/screens/message/message_screen_traveler.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:intl/intl.dart';
@@ -46,6 +49,8 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   User userGuideDetails = User();
 
   bool isGettingProfileDetail = true;
+  ChatModel chatHistory = ChatModel();
+  List<Message> messages = [];
 
   void _onMapCreated(GoogleMapController controller) {
     if (!_controller.isCompleted) {
@@ -64,29 +69,6 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   }
 
   Future<void> addMarker(BuildContext context) async {
-    /*setState(() {
-      circle = {
-        Circle(
-          circleId: const CircleId('id1'),
-          center: LatLng(
-              double.parse(_activityPackage.activityPackageDestination!
-                  .activityPackageDestinationLatitude!),
-              double.parse(_activityPackage.activityPackageDestination!
-                  .activityPackageDestinationLongitude!)),
-          radius: 500,
-        ),
-        Circle(
-          circleId: const CircleId('id2'),
-          center: LatLng(
-              double.parse(_activityPackage.activityPackageDestination!
-                  .activityPackageDestinationLatitude!),
-              double.parse(_activityPackage.activityPackageDestination!
-                  .activityPackageDestinationLongitude!)),
-          radius: 500,
-        )
-      };
-    });
-*/
     Marker set = RippleMarker(
       markerId: const MarkerId('LocationId'),
       icon: await MarkerIcon.pictureAsset(
@@ -160,10 +142,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                           color: Colors.black,
                           size: 25,
                         ),
-                        onPressed: () {
-                          // _takeScreenshot(screenArguments['name'],
-                          //     '\$${screenArguments['fee']}');
-                        },
+                        onPressed: () {},
                       ),
                     ),
                   ),
@@ -192,7 +171,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
               ])),
               Spacer(),
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   checkAvailability(_activityPackage);
                 },
                 child: Container(
@@ -218,16 +197,25 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
 
   Widget buildPackageInfoUI() => !isGettingProfileDetail
       ? Container(
-          padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 20.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                _activityPackage.name!,
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 28.sp),
+              SizedBox(height: 12.h),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 18.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      _activityPackage.name!,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 28.sp),
+                    ),
+                    SizedBox(height: 10.h),
+                    buildLocationDetails(),
+                  ],
+                ),
               ),
-              SizedBox(height: 10.h),
-              buildLocationDetails(),
               SizedBox(height: 16.h),
               Divider(color: AppColors.grey),
               SizedBox(
@@ -258,7 +246,12 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                     labelColor: Colors.black,
                     unselectedLabelColor: Colors.grey,
                   ),
-                  views: <Widget>[buildDescriptionTab(), Text('Schedule')],
+                  views: <Widget>[
+                    buildDescriptionTab(),
+                    PopularGuidesTravelerLimitSchedules(
+                        packageId: _activityPackage.id!,
+                        price: _activityPackage.basePrice!)
+                  ],
                   onChange: setTab,
                   // initialIndex: initIndex,
                 ),
@@ -269,8 +262,9 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
       : const Center(child: CircularProgressIndicator());
 
   Widget buildDescriptionTab() => Container(
-          child: SingleChildScrollView(
-              child: Column(
+      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 20.h),
+      child: SingleChildScrollView(
+          child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           ListTile(
@@ -438,6 +432,115 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                       fontWeight: FontWeight.w400,
                       fontSize: 14.sp,
                       color: Colors.grey))),
+          Row(
+            children: <Widget>[
+              Image.asset(
+                AssetsPath.iconVerified,
+                width: 20.w,
+                height: 20.h,
+              ),
+              Text(
+                'Identity verified',
+                style: TextStyle(
+                  fontFamily: 'Gilroy',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: 12.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+            child: Text(
+              'During Your Activity',
+              style: TextStyle(
+                  fontFamily: 'Gilroy',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+            child: Text(
+              "I'm available over phone 24/7 for Traveller",
+              style: TextStyle(
+                  fontFamily: 'Gilroy',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400),
+            ),
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+            child: Text(
+              'Response rate: 80%',
+              style: TextStyle(
+                  fontFamily: 'Gilroy',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+            child: Text(
+              'Response rate: A few minutes or hours or more',
+              style: TextStyle(
+                  fontFamily: 'Gilroy',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400),
+            ),
+          ),
+          SizedBox(height: 16.h),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0.w, 0.h, 0.w, 0.h),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  side: BorderSide(color: AppColors.tealGreen),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.r))),
+                ),
+                onPressed: () {
+                  getMessageHistory();
+
+                },
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
+                  child: Text('Contact Guide',
+                      style: TextStyle(
+                          color: AppColors.tealGreen,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700)),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+          SizedBox(
+            width: double.infinity,
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    'To protect your payment, never transfer money or communicate outside off the guided website or app',
+                    style: TextStyle(
+                        fontFamily: 'Gilroy',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w400),
+                  ),
+                ),
+                Image.asset(
+                  AssetsPath.logoSmall,
+                  width: 25.w,
+                  height: 25.h,
+                )
+              ],
+            ),
+          ),
           SizedBox(height: 16.h),
           buildActivityListButtonItem(
               title: AppTextConstants.availability,
@@ -449,7 +552,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
               title: 'Health & safety',
               subtitle: 'We  care about your health & safety'),
           buildActivityListButtonItem(
-              title: 'Traveler release waiver form', subtitle: 'Lorem Ipsum')
+              title: 'Traveler release waiver form', subtitle: 'Lorem Ipsum'),
         ],
       )));
 
@@ -554,5 +657,41 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
 
     Navigator.pushNamed(context, '/checkActivityAvailabityScreen',
         arguments: details);
+  }
+
+  Future<void> getMessageHistory() async {
+    final List<ChatModel> res = await APIServices()
+        .getChatMessages(UserSingleton.instance.user.user!.id!, 'all');
+
+    final ChatModel chat = res.firstWhere(
+        (ChatModel element) => element.receiver!.id! == userGuideDetails.id,
+        orElse: () => ChatModel());
+
+    setState(() {
+      if (chat.messages != null) {
+        messages = chat.messages!;
+      } else {
+        messages = [];
+      }
+    });
+
+
+
+     ChatModel _chatHistory = ChatModel(
+          receiver: Receiver(
+              fullName: userGuideDetails.fullName,
+              id: userGuideDetails.id,
+              avatar: userGuideDetails.firebaseProfilePicUrl),
+          messages: messages,
+          isBlocked: chat.isBlocked);
+
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) =>
+                MessageScreenTraveler(
+                  message: _chatHistory,
+                )));
+
   }
 }
