@@ -20,7 +20,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'firebase/firebase_options.dart';
 
 String _defaultHome = '/';
-
+//test
 void main() async {
   await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
