@@ -2300,7 +2300,7 @@ class APIServices {
   Future<UserListModel> getUserListData() async {
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/api/v1/users?page=1&limit=50'),
         // Uri.parse(
         //     '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.userTypeUrl}/tourist%20guide'),
         headers: {

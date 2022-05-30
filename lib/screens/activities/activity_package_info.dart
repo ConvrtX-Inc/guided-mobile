@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:custom_marker/marker_icon.dart';
@@ -15,6 +16,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/user_model.dart';
@@ -58,6 +60,8 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
     }
   }
 
+  List<ActivityPackage> otherPackages = <ActivityPackage>[];
+
   @override
   void initState() {
     super.initState();
@@ -65,6 +69,8 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
 
     debugPrint('Activity ${widget.package.id}');
     _activityPackage = widget.package;
+
+    getPackages();
     getGuideUserDetails();
   }
 
@@ -157,41 +163,41 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
           )),
       body: buildPackageInfoUI(),
       bottomNavigationBar: Padding(
-          padding: EdgeInsets.all(10.w),
-          child: Row(
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text.rich(TextSpan(children: [
-                TextSpan(
-                    text: '\$${_activityPackage.basePrice}',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 30.sp)),
-                const TextSpan(
-                    text: '/hour', style: TextStyle(color: Colors.grey)),
-              ])),
-              Spacer(),
-              GestureDetector(
-                onTap: () {
-                  checkAvailability(_activityPackage);
-                },
-                child: Container(
-                  height: 50.h,
-                  padding: EdgeInsets.all(10.w),
-                  decoration: BoxDecoration(
-                      color: AppColors.deepGreen,
-                      borderRadius: BorderRadius.all(Radius.circular(12))),
-                  margin: EdgeInsets.symmetric(horizontal: 12.w),
-                  child: Center(
-                    child: Text('Check Availability',
-                        style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600)),
-                  ),
+        padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
+        child: Row(
+          children: <Widget>[
+            Text.rich(TextSpan(children: [
+              TextSpan(
+                  text: '\$${_activityPackage.basePrice}',
+                  style:
+                      TextStyle(fontWeight: FontWeight.w700, fontSize: 30.sp)),
+              const TextSpan(
+                  text: '/hour', style: TextStyle(color: Colors.grey)),
+            ])),
+            Spacer(),
+            GestureDetector(
+              onTap: () {
+                checkAvailability(_activityPackage);
+              },
+              child: Container(
+                height: 40.h,
+                padding: EdgeInsets.all(10.w),
+                decoration: BoxDecoration(
+                    color: AppColors.deepGreen,
+                    borderRadius: BorderRadius.all(Radius.circular(12))),
+                margin: EdgeInsets.symmetric(horizontal: 12.w),
+                child: Center(
+                  child: Text('Check Availability',
+                      style: TextStyle(
+                          color: AppColors.white,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600)),
                 ),
-              )
-            ],
-          )),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -261,300 +267,445 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
         )
       : const Center(child: CircularProgressIndicator());
 
-  Widget buildDescriptionTab() => Container(
-      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 20.h),
-      child: SingleChildScrollView(
+  //DESCRIPTION TAB
+  Widget buildDescriptionTab() => SingleChildScrollView(
+          child: Column(
+        children: <Widget>[
+          Container(
+              padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 20.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  ListTile(
+                      contentPadding: EdgeInsets.all(2.w),
+                      leading: Container(
+                          padding: EdgeInsets.all(2.w),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 3,
+                            ),
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: const <BoxShadow>[
+                              BoxShadow(blurRadius: 3, color: Colors.grey)
+                            ],
+                          ),
+                          child: userGuideDetails.firebaseProfilePicUrl != ''
+                              ? CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                      userGuideDetails.firebaseProfilePicUrl!),
+                                )
+                              : const CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
+                                )),
+                      title: Text(
+                        userGuideDetails.fullName!,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 20.sp),
+                      ),
+                      subtitle: Row(
+                        children: <Widget>[
+                          SvgPicture.asset(
+                              '${AssetsPath.assetsSVGPath}/star.svg'),
+                          SizedBox(
+                            width: 2.w,
+                          ),
+                          Text('0 review',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14.sp,
+                              ))
+                        ],
+                      )),
+                  SizedBox(height: 12.h),
+                  Row(
+                    children: <Widget>[],
+                  ),
+                  Text(
+                    'Description',
+                    style:
+                        TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(height: 16.h),
+                  if (_activityPackage.description!.length >
+                      minDescriptionLength)
+                    Text(
+                      showMoreDescription
+                          ? _activityPackage.description!
+                          : '${_activityPackage.description!.substring(0, minDescriptionLength)}...',
+                      textAlign: TextAlign.justify,
+                    )
+                  else
+                    Text(
+                      _activityPackage.description!,
+                      textAlign: TextAlign.justify,
+                    ),
+                  SizedBox(height: 16.h),
+                  if (_activityPackage.description!.length >
+                      minDescriptionLength)
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          showMoreDescription = !showMoreDescription;
+                        });
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            showMoreDescription ? 'Read Less' : 'Read More',
+                            style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w700,
+                                decoration: TextDecoration.underline),
+                          ),
+                          SizedBox(
+                            width: 5.w,
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 12.sp,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                    ),
+                  SizedBox(height: 20.h),
+                  const Divider(color: Colors.grey),
+                  Text(
+                    'Location',
+                    style:
+                        TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(height: 16.h),
+                  buildLocationDetails(),
+                  SizedBox(height: 16.h),
+                  Center(
+                      child: SizedBox(
+                          height: 200.h,
+                          width: double.infinity,
+                          child: AbsorbPointer(
+                            child: Animarker(
+                              curve: Curves.bounceInOut,
+                              duration: const Duration(milliseconds: 2000),
+                              rippleRadius: 0.1,
+                              rippleColor:
+                                  const Color.fromARGB(255, 6, 134, 49),
+                              markers: <Marker>{mark},
+                              mapId: _controller.future.then<int>(
+                                  (GoogleMapController value) => value.mapId),
+                              child: GoogleMap(
+                                initialCameraPosition: CameraPosition(
+                                  target: LatLng(
+                                      double.parse(_activityPackage
+                                          .activityPackageDestination!
+                                          .activityPackageDestinationLatitude!),
+                                      double.parse(_activityPackage
+                                          .activityPackageDestination!
+                                          .activityPackageDestinationLongitude!)),
+                                  zoom: 15,
+                                ),
+                                onMapCreated: _onMapCreated,
+                                myLocationButtonEnabled: false,
+                                zoomControlsEnabled: false,
+                              ),
+                            ),
+                          ))),
+                  SizedBox(height: 16.h),
+                  ListTile(
+                      contentPadding: EdgeInsets.all(2.w),
+                      leading: Container(
+                          padding: EdgeInsets.all(2.w),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 3,
+                            ),
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: const <BoxShadow>[
+                              BoxShadow(blurRadius: 3, color: Colors.grey)
+                            ],
+                          ),
+                          child: userGuideDetails.firebaseProfilePicUrl != ''
+                              ? CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                      userGuideDetails.firebaseProfilePicUrl!),
+                                )
+                              : const CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
+                                )),
+                      title: Text(
+                        userGuideDetails.fullName!,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 20.sp),
+                      ),
+                      subtitle: Text(
+                          'Joined in ${DateFormat("MMM yyy").format(DateTime.parse(_activityPackage.createdDate!))}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14.sp,
+                              color: Colors.grey))),
+                  Row(
+                    children: <Widget>[
+                      Image.asset(
+                        AssetsPath.iconVerified,
+                        width: 20.w,
+                        height: 20.h,
+                      ),
+                      Text(
+                        'Identity verified',
+                        style: TextStyle(
+                          fontFamily: 'Gilroy',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 12.h),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+                    child: Text(
+                      'During Your Activity',
+                      style: TextStyle(
+                          fontFamily: 'Gilroy',
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+                    child: Text(
+                      "I'm available over phone 24/7 for Traveller",
+                      style: TextStyle(
+                          fontFamily: 'Gilroy',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+                    child: Text(
+                      'Response rate: 80%',
+                      style: TextStyle(
+                          fontFamily: 'Gilroy',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+                    child: Text(
+                      'Response rate: A few minutes or hours or more',
+                      style: TextStyle(
+                          fontFamily: 'Gilroy',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0.w, 0.h, 0.w, 0.h),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          side: BorderSide(color: AppColors.tealGreen),
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20.r))),
+                        ),
+                        onPressed: getMessageHistory,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
+                          child: Text('Contact Guide',
+                              style: TextStyle(
+                                  color: AppColors.tealGreen,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700)),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            'To protect your payment, never transfer money or communicate outside off the guided website or app',
+                            style: TextStyle(
+                                fontFamily: 'Gilroy',
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                        Image.asset(
+                          AssetsPath.logoSmall,
+                          width: 25.w,
+                          height: 25.h,
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+                  buildActivityListButtonItem(
+                      title: AppTextConstants.availability,
+                      subtitle: 'Add your travel date for exact pricing'),
+                  buildActivityListButtonItem(
+                      title: 'Guide Rules & What To Bring',
+                      subtitle: 'Follow the guide rules for safety'),
+                  buildActivityListButtonItem(
+                      title: 'Health & safety',
+                      subtitle: 'We  care about your health & safety'),
+                  buildActivityListButtonItem(
+                      title: 'Traveler release waiver form',
+                      subtitle: 'Lorem Ipsum',
+                      showDivider: false),
+                ],
+              )),
+          Divider(
+            color: AppColors.gallery,
+            thickness: 14.w,
+          ),
+          if (otherPackages.isNotEmpty) buildOtherOffering()
+        ],
+      ));
+
+  Widget buildOtherOffering() => Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          ListTile(
-              contentPadding: EdgeInsets.all(2.w),
-              leading: Container(
-                  padding: EdgeInsets.all(2.w),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 3,
-                    ),
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: const <BoxShadow>[
-                      BoxShadow(blurRadius: 3, color: Colors.grey)
-                    ],
-                  ),
-                  child: userGuideDetails.firebaseProfilePicUrl != ''
-                      ? CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              userGuideDetails.firebaseProfilePicUrl!),
-                        )
-                      : const CircleAvatar(
-                          backgroundImage: AssetImage(
-                              '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
-                        )),
-              title: Text(
-                userGuideDetails.fullName!,
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20.sp),
-              ),
-              subtitle: Row(
-                children: <Widget>[
-                  SvgPicture.asset('${AssetsPath.assetsSVGPath}/star.svg'),
-                  SizedBox(
-                    width: 2.w,
-                  ),
-                  Text('0 review',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14.sp,
-                      ))
-                ],
-              )),
-          SizedBox(height: 12.h),
-          Row(
-            children: <Widget>[],
-          ),
-          Text(
-            'Description',
-            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
-          ),
-          SizedBox(height: 16.h),
-          if (_activityPackage.description!.length > minDescriptionLength)
-            Text(
-              showMoreDescription
-                  ? _activityPackage.description!
-                  : '${_activityPackage.description!.substring(0, minDescriptionLength)}...',
-              textAlign: TextAlign.justify,
-            )
-          else
-            Text(
-              _activityPackage.description!,
-              textAlign: TextAlign.justify,
-            ),
-          SizedBox(height: 16.h),
-          if (_activityPackage.description!.length > minDescriptionLength)
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  showMoreDescription = !showMoreDescription;
-                });
-              },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    showMoreDescription ? 'Read Less' : 'Read More',
-                    style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w700,
-                        decoration: TextDecoration.underline),
-                  ),
-                  SizedBox(
-                    width: 5.w,
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    size: 12.sp,
-                    color: Colors.black,
-                  ),
-                ],
-              ),
-            ),
           SizedBox(height: 20.h),
-          Divider(color: Colors.grey),
-          Text(
-            'Location',
-            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+          const Text(
+            'Other Offering',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
           ),
-          SizedBox(height: 16.h),
-          buildLocationDetails(),
-          SizedBox(height: 16.h),
-          Center(
-              child: SizedBox(
-                  height: 200.h,
-                  width: double.infinity,
-                  child: AbsorbPointer(
-                    child: Animarker(
-                      curve: Curves.bounceInOut,
-                      duration: const Duration(milliseconds: 2000),
-                      rippleRadius: 0.1,
-                      rippleColor: const Color.fromARGB(255, 6, 134, 49),
-                      markers: <Marker>{mark},
-                      mapId: _controller.future.then<int>(
-                          (GoogleMapController value) => value.mapId),
-                      child: GoogleMap(
-                        initialCameraPosition: CameraPosition(
-                          target: LatLng(
-                              double.parse(_activityPackage
-                                  .activityPackageDestination!
-                                  .activityPackageDestinationLatitude!),
-                              double.parse(_activityPackage
-                                  .activityPackageDestination!
-                                  .activityPackageDestinationLongitude!)),
-                          zoom: 15,
+          SizedBox(height: 20.h),
+          SizedBox(
+            height: 200.h,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: otherPackages.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  margin: EdgeInsets.only(right: 5.w),
+                  height: 110,
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  decoration: const BoxDecoration(
+                    color: Colors.transparent,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          // checkAvailability(
+                          //     context, snapshot.data![index]);
+                          Navigator.of(context).pushNamed(
+                              '/activity_package_info',
+                              arguments: otherPackages[index]);
+                        },
+                        child: Container(
+                          height: 110,
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
+                            ),
+                            border: Border.all(color: AppColors.galleryWhite),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                  otherPackages[index].firebaseCoverImg!,
+                                ),
+                                fit: BoxFit.cover),
+                          ),
+                          child: Stack(
+                            children: <Widget>[
+                              Positioned(
+                                bottom: 10,
+                                left: 20,
+                                child: Image.memory(
+                                  base64.decode(otherPackages[index]
+                                      .mainBadge!
+                                      .imgIcon!
+                                      .split(',')
+                                      .last),
+                                  width: 30,
+                                  height: 30,
+                                  gaplessPlayback: true,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        onMapCreated: _onMapCreated,
-                        myLocationButtonEnabled: false,
-                        zoomControlsEnabled: false,
                       ),
-                    ),
-                  ))),
-          SizedBox(height: 16.h),
-          ListTile(
-              contentPadding: EdgeInsets.all(2.w),
-              leading: Container(
-                  padding: EdgeInsets.all(2.w),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 3,
-                    ),
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: const <BoxShadow>[
-                      BoxShadow(blurRadius: 3, color: Colors.grey)
+                      SizedBox(
+                        height: 5.h,
+                      ),
+                      Text(
+                        otherPackages[index].name!,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16.sp,
+                            fontFamily: 'Gilroy',
+                            fontWeight: FontWeight.w600),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Container(
+                            height: 10.h,
+                            width: 10.w,
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.r),
+                              ),
+                              image: const DecorationImage(
+                                image:
+                                    AssetImage('assets/images/png/clock.png'),
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 2.w,
+                          ),
+                          Text(
+                            // snapshot.data![index].timeToTravel!,
+                            '0.0 hour drive',
+                            style: TextStyle(
+                                color: HexColor('#696D6D'),
+                                fontSize: 11.sp,
+                                fontFamily: 'Gilroy',
+                                fontWeight: FontWeight.normal),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                  child: userGuideDetails.firebaseProfilePicUrl != ''
-                      ? CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              userGuideDetails.firebaseProfilePicUrl!),
-                        )
-                      : const CircleAvatar(
-                          backgroundImage: AssetImage(
-                              '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
-                        )),
-              title: Text(
-                userGuideDetails.fullName!,
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20.sp),
-              ),
-              subtitle: Text(
-                  'Joined in ${DateFormat("MMM yyy").format(DateTime.parse(_activityPackage.createdDate!))}',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14.sp,
-                      color: Colors.grey))),
-          Row(
-            children: <Widget>[
-              Image.asset(
-                AssetsPath.iconVerified,
-                width: 20.w,
-                height: 20.h,
-              ),
-              Text(
-                'Identity verified',
-                style: TextStyle(
-                  fontFamily: 'Gilroy',
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                ),
-              )
-            ],
-          ),
-          SizedBox(height: 12.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
-            child: Text(
-              'During Your Activity',
-              style: TextStyle(
-                  fontFamily: 'Gilroy',
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600),
+                );
+              },
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
-            child: Text(
-              "I'm available over phone 24/7 for Traveller",
-              style: TextStyle(
-                  fontFamily: 'Gilroy',
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400),
-            ),
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
-            child: Text(
-              'Response rate: 80%',
-              style: TextStyle(
-                  fontFamily: 'Gilroy',
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
-            child: Text(
-              'Response rate: A few minutes or hours or more',
-              style: TextStyle(
-                  fontFamily: 'Gilroy',
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400),
-            ),
-          ),
-          SizedBox(height: 16.h),
-          Padding(
-            padding: EdgeInsets.fromLTRB(0.w, 0.h, 0.w, 0.h),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  side: BorderSide(color: AppColors.tealGreen),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20.r))),
-                ),
-                onPressed: () {
-                  getMessageHistory();
-
-                },
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
-                  child: Text('Contact Guide',
-                      style: TextStyle(
-                          color: AppColors.tealGreen,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700)),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 16.h),
-          SizedBox(
-            width: double.infinity,
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: Text(
-                    'To protect your payment, never transfer money or communicate outside off the guided website or app',
-                    style: TextStyle(
-                        fontFamily: 'Gilroy',
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w400),
-                  ),
-                ),
-                Image.asset(
-                  AssetsPath.logoSmall,
-                  width: 25.w,
-                  height: 25.h,
-                )
-              ],
-            ),
-          ),
-          SizedBox(height: 16.h),
-          buildActivityListButtonItem(
-              title: AppTextConstants.availability,
-              subtitle: 'Add your travel date for exact pricing'),
-          buildActivityListButtonItem(
-              title: 'Guide Rules & What To Bring',
-              subtitle: 'Follow the guide rules for safety'),
-          buildActivityListButtonItem(
-              title: 'Health & safety',
-              subtitle: 'We  care about your health & safety'),
-          buildActivityListButtonItem(
-              title: 'Traveler release waiver form', subtitle: 'Lorem Ipsum'),
         ],
-      )));
+      ));
 
   void setTab(int initIndex) {
     switch (initIndex) {
@@ -613,7 +764,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
       );
 
   Widget buildActivityListButtonItem(
-          {String title = '', String subtitle = ''}) =>
+          {String title = '', String subtitle = '', showDivider: true}) =>
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -632,9 +783,10 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
               size: 14.sp,
             ),
           ),
-          const Divider(
-            color: Colors.grey,
-          ),
+          if (showDivider)
+            const Divider(
+              color: Colors.grey,
+            ),
         ],
       );
 
@@ -642,10 +794,25 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
     final User result =
         await APIServices().getUserDetails(_activityPackage.userId!);
     debugPrint('user details: ${_activityPackage.userId}');
+
     setState(() {
       userGuideDetails = result;
       isGettingProfileDetail = false;
     });
+  }
+
+  Future<void> getPackages() async {
+    final List<ActivityPackage> res =
+        await APIServices().getGuidePackages(_activityPackage.userId!);
+    debugPrint('Res: ${res.length} ${_activityPackage.id}');
+
+    setState(() {
+      otherPackages = res
+          .where((ActivityPackage element) => element.id != _activityPackage.id)
+          .toList();
+    });
+
+    debugPrint('Packages ${otherPackages.length}');
   }
 
   void checkAvailability(
@@ -675,23 +842,19 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
       }
     });
 
-
-
-     ChatModel _chatHistory = ChatModel(
-          receiver: Receiver(
-              fullName: userGuideDetails.fullName,
-              id: userGuideDetails.id,
-              avatar: userGuideDetails.firebaseProfilePicUrl),
-          messages: messages,
-          isBlocked: chat.isBlocked);
+    ChatModel _chatHistory = ChatModel(
+        receiver: Receiver(
+            fullName: userGuideDetails.fullName,
+            id: userGuideDetails.id,
+            avatar: userGuideDetails.firebaseProfilePicUrl),
+        messages: messages,
+        isBlocked: chat.isBlocked);
 
     await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (BuildContext context) =>
-                MessageScreenTraveler(
+            builder: (BuildContext context) => MessageScreenTraveler(
                   message: _chatHistory,
                 )));
-
   }
 }

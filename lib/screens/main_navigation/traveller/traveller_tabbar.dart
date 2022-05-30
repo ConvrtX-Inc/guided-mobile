@@ -41,7 +41,6 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
       Get.put(UserSubscriptionController());
   final UserProfileDetailsController _profileDetailsController =
       Get.put(UserProfileDetailsController());
-
   @override
   void initState() {
     _selectedWidget = TabHomeScreen(
@@ -52,7 +51,6 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     getProfileDetails();
 
     // getUserSubscription();
-
     if (_creditCardController.cards.isEmpty) {
       getUserCards();
     }
@@ -98,7 +96,6 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
       }
     });
   }
-
   void onPressed(int index) {
     setState(() {
       _selectedIndex = index;

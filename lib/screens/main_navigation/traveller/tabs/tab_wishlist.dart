@@ -60,8 +60,7 @@ class _TabWishlistScreenState extends State<TabWishlistScreen> {
         preferredSize: Size.fromHeight(50.h),
         child: AppBar(
           automaticallyImplyLeading: false,
-          flexibleSpace: title == AppTextConstants.guideProfile
-              ? Column(
+          flexibleSpace: Column(
                   children: <Widget>[
                     Text(
                       'Wish List',
@@ -80,19 +79,8 @@ class _TabWishlistScreenState extends State<TabWishlistScreen> {
                           fontWeight: FontWeight.w600),
                     ),
                   ],
-                )
-              : Column(
-                  children: <Widget>[
-                    Text(
-                      'Wish List',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 24.sp,
-                          color: Colors.black,
-                          fontFamily: AppTextConstants.fontGilroy),
-                    ),
-                  ],
                 ),
+
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
