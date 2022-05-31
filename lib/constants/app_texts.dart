@@ -726,7 +726,8 @@ class AppTextConstants {
   static String howCanWeHelp = 'How can we help you to improve your service';
 
   /// Traveler release & Waiver Form  text
-  static String travelerReleaseAndWaiverForm = 'Traveler release & Waiver Form';
+  static String travelerReleaseAndWaiverForm = ''
+      'Traveler Release & Waiver Form';
 
   /// Returns token text
   static String userToken = 'user_token';

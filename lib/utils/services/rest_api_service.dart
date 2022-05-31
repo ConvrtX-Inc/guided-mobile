@@ -286,8 +286,10 @@ class APIServices {
 
   /// API service for profile model
   Future<ProfileDetailsModel> getProfileData() async {
-    final String userId =
+    final String? userId =
         await SecureStorage.readValue(key: AppTextConstants.userId);
+
+    debugPrint('Profile USER ID $userId');
     final String url =
         '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/$userId';
     debugPrint('URL $url');
@@ -993,7 +995,9 @@ class APIServices {
   ///API Service for Retrieving User Cards
   Future<List<CardModel>> getCards() async {
     final String? token = UserSingleton.instance.user.token;
-    final String? userId = UserSingleton.instance.user.user?.id;
+    final String userId =
+        await SecureStorage.readValue(key: AppTextConstants.userId);
+    debugPrint('User id cards $userId');
 
     final Map<String, String> queryParameters = {
       'filter': 'user_id||eq||"$userId"',
@@ -1209,30 +1213,46 @@ class APIServices {
 
   /// API service for user  adding subscription
   Future<APIStandardReturnFormat> addUserSubscription(
-      UserSubscription params, String paymentMethod) async {
+      UserSubscription params, String paymentMethod, String action) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-    final http.Response response = await http.post(
-        Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.userSubscription}'),
-        headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
-          HttpHeaders.contentTypeHeader: 'application/json',
-        },
-        body: jsonEncode(<String, String>{
-          'user_id': userId.toString(),
-          'name': params.name,
-          'payment_reference_no': params.paymentReferenceNo,
-          'start_date': params.startDate,
-          'end_date': params.endDate,
-          'message': params.message,
-          'price': params.price
-        }));
+    final String requestMethod = action == 'add' ? 'POST' : 'PATCH';
+    final Uri uri = action == 'add'
+        ? Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.userSubscription}')
+        : Uri.parse(
+            '$apiBaseMode$apiBaseUrl${AppAPIPath.userSubscription}/${params.id}');
+    debugPrint('REQUEST METHOD:: $action ${params.id}');
+
+    final http.Request request = http.Request(
+      requestMethod,
+      uri,
+    );
+
+    request.headers.addAll({
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+      HttpHeaders.contentTypeHeader: 'application/json',
+    });
+    request.body = jsonEncode(<String, String>{
+      'user_id': userId.toString(),
+      'name': params.name,
+      'payment_reference_no': params.paymentReferenceNo,
+      'start_date': params.startDate,
+      'end_date': params.endDate,
+      'message': params.message,
+      'price': params.price
+    });
+
+    final http.StreamedResponse streamedResponse = await request.send();
+    final http.Response response =
+        await http.Response.fromStream(streamedResponse);
+
+    debugPrint('Response: ${response.body}');
 
     final PaymentTransactionModel transactionParams = PaymentTransactionModel(
         serviceName: 'Premium Subscription',
         transactionNumber: params.paymentReferenceNo,
-        amount: '${params.price}',
+        amount: params.price,
         type: AppTextConstants.deduction,
         paymentMethod: paymentMethod);
     await savePaymentTransaction(transactionParams);

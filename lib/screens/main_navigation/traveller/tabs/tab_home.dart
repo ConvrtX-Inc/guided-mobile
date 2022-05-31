@@ -671,17 +671,11 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
-                child: _hasLocationPermission
-                    ? nearbyActivities(context, activities)
-                    : const CircularProgressIndicator(),
-              ),
+                  padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
+                  child: nearbyActivities(context, activities)),
               Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 0.h),
-                child: _hasLocationPermission
-                    ? popularGuidesNearYou(context, guides)
-                    : const CircularProgressIndicator(),
-              ),
+                  padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 0.h),
+                  child: popularGuidesNearYou(context, guides)),
               Padding(
                 padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 20.h),
                 child: staticAdd(context),

@@ -183,7 +183,6 @@ class _NearbyActivitiesScreenState extends State<NearbyActivitiesScreen> {
                         // initialValue: 'Male',
                         allowClear: true,
                         hint: const Text('Select Activity'),
-
                         items: activities
                             .map(
                                 (Activity activity) => DropdownMenuItem<String>(

@@ -10,7 +10,8 @@ Future<dynamic> paymentSuccessful(
     {required BuildContext context,
     required Widget paymentDetails,
     required String paymentMethod,
-    Function? onOkBtnPressed
+    Function? onBtnPressed,
+      String btnText= 'Ok'
     }) {
   return showModalBottomSheet(
       context: context,
@@ -102,8 +103,8 @@ Future<dynamic> paymentSuccessful(
                       height: 40.h,
                     ),
                     CustomRoundedButton(
-                        title: AppTextConstants.ok,
-                        onpressed: onOkBtnPressed ?? () {
+                        title: btnText,
+                        onpressed: onBtnPressed ?? () {
                           int count = 0;
                           Navigator.popUntil(context, (route) {
                             return count++ == 2;

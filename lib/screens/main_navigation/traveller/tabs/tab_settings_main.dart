@@ -114,9 +114,9 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
             ),
             Expanded(
               child: ListView.builder(
-                  itemCount: travellersettingsItems.length + 1,
+                  itemCount: travellersettingsItems.length,
                   itemBuilder: (BuildContext ctx, int index) {
-                    if (travellersettingsItems.length == index) {
+                    /* if (travellersettingsItems.length == index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 10),
@@ -153,7 +153,7 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                           ),
                         ),
                       );
-                    }
+                    }*/
 
                     return SettingsItems(
                         keyName: travellersettingsItems[index].keyName,
@@ -161,6 +161,41 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                         name: travellersettingsItems[index].name);
                   }),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 60.h,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await SecureStorage.clearAll();
+                    await Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/user_type', (Route<dynamic> route) => false);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color: AppColors.silver),
+                      borderRadius: BorderRadius.circular(18.r),
+                    ),
+                    primary: AppColors.lightRed,
+                    onPrimary: Colors.black,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        AppTextConstants.logout,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.sp,
+                            color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),
@@ -233,53 +268,6 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
           ),
         ],
       );
-  /*    Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.white,
-              width: 3.w,
-            ),
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: const <BoxShadow>[
-              BoxShadow(blurRadius: 5, color: Colors.grey, spreadRadius: 2)
-            ],
-          ),
-          child: CircleAvatar(
-            backgroundColor: Colors.white,
-            radius: 35.r,
-            backgroundImage: const AssetImage(
-                '${AssetsPath.assetsPNGPath}/student_profile.png'),
-          ),
-        ),
-        Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              if (profileData.fullName.isEmpty)
-                const Text('Unknown User')
-              else
-                Column(
-                  children: <Widget>[
-                    Text(
-                      profileData.fullName,
-                      style: TextStyle(
-                          letterSpacing: 1,
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Text(profileData.email,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.grey))
-                  ],
-                )
-            ])
-      ]);*/
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

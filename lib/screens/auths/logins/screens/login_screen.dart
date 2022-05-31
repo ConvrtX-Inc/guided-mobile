@@ -164,12 +164,12 @@ class _LoginScreenState extends State<LoginScreen> {
     final String userType =
         await SecureStorage.readValue(key: AppTextConstants.userType);
     if (userType == 'traveller') {
-      saveTokenAndId(user.token!, user.user!.id!);
+     await saveTokenAndId(user.token!, user.user!.id!);
       Navigator.of(context).pushNamedAndRemoveUntil(
           '/traveller_tab', (Route<dynamic> route) => false);
     } else {
       if (user.user!.isGuide!) {
-        saveTokenAndId(user.token!, user.user!.id!);
+        await saveTokenAndId(user.token!, user.user!.id!);
         Navigator.of(context).pushNamedAndRemoveUntil(
             '/main_navigation', (Route<dynamic> route) => false);
       } else {
@@ -182,6 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> saveTokenAndId(String token, String userId) async {
+    debugPrint('Token $token , User id $userId');
     await SecureStorage.saveValue(
         key: AppTextConstants.userToken, value: token);
     await SecureStorage.saveValue(key: AppTextConstants.userId, value: userId);

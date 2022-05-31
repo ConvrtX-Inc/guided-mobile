@@ -94,6 +94,7 @@ import 'package:guided/screens/profile/profile_details/about_me/screen/edit_prof
 import 'package:guided/screens/profile/profile_details/certificate/screen/add_certificate_modal.dart';
 import 'package:guided/screens/profile/profile_details/certificate/screen/certificate_screen.dart';
 import 'package:guided/screens/profile/profile_details/certificate/screen/edit_certificate.dart';
+import 'package:guided/screens/profile/profile_details/certificate/screen/view_certificate.dart';
 import 'package:guided/screens/profile/reviews_profile.dart';
 
 import 'package:guided/screens/payments/payment_edit_card.dart';
@@ -461,6 +462,9 @@ class RouteGenerator {
       case '/activity_package_info':
         return MaterialPageRoute<dynamic>(
             builder: (_) => ActivityPackageInfo(package:  args! as ActivityPackage));
+      case '/view_certificate':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => CertificateView(certificate:  args! as Certificate));
       default:
         return _errorRoute();
     }

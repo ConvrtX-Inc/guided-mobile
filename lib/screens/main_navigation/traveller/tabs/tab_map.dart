@@ -83,6 +83,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
   final UserSubscriptionController _userSubscriptionController =
       Get.put(UserSubscriptionController());
   TextEditingController _placeName = new TextEditingController();
+
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
     setState(() {
@@ -372,12 +373,16 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                             0.7,
                                                     child: EasyScrollToIndex(
                                                       controller:
-                                                          _scrollController, // ScrollToIndexController
-                                                      scrollDirection: Axis
-                                                          .horizontal, // default Axis.vertical
-                                                      itemCount: AppListConstants
-                                                          .calendarMonths
-                                                          .length, // itemCount
+                                                          _scrollController,
+                                                      // ScrollToIndexController
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      // default Axis.vertical
+                                                      itemCount:
+                                                          AppListConstants
+                                                              .calendarMonths
+                                                              .length,
+                                                      // itemCount
                                                       itemWidth: 95,
                                                       itemHeight: 70,
                                                       itemBuilder:
@@ -774,9 +779,11 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                       // Navigator.of(context)
                                       //     .pushNamed('/discovery_map');
                                       if (!hasPremiumSubscription &&
-                                          PaymentConfig.isPaymentEnabled) {
+                                          PaymentConfig.isPaymentEnabled && _filteredActivity[i].premiumUser!) {
                                         _showDiscoveryBottomSheet(
-                                            _filteredActivity[i].coverImg!);
+                                            _filteredActivity[i].firebaseCoverImg!);
+                                      }else{
+                                        Navigator.of(context).pushNamed('/activity_package_info',arguments: _filteredActivity[i]);
                                       }
                                     },
                                     child: Container(
@@ -813,10 +820,11 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                               ),
                                               image: DecorationImage(
                                                   image: Image.network(
-                                                    _filteredActivity[i].firebaseCoverImg!,
-                                                    fit: BoxFit.cover,
-                                                    gaplessPlayback: true,
-                                                  ).image),
+                                                _filteredActivity[i]
+                                                    .firebaseCoverImg!,
+                                                fit: BoxFit.cover,
+                                                gaplessPlayback: true,
+                                              ).image),
                                               // image: DecorationImage(
                                               //     image: Image.memory(
                                               //   base64.decode(
@@ -1316,7 +1324,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
             ));
   }
 
-  Future<void> saveSubscription(String transactionNumber,
+/*  Future<void> saveSubscription(String transactionNumber,
       String subscriptionName, String price, String paymentMethod) async {
     final DateTime startDate = DateTime.now();
 
@@ -1331,6 +1339,40 @@ class _TabMapScreenState extends State<TabMapScreen> {
 
     final APIStandardReturnFormat result = await APIServices()
         .addUserSubscription(subscriptionParams, paymentMethod);
+
+    UserSingleton.instance.user.user?.hasPremiumSubscription = true;
+    setState(() {
+      hasPremiumSubscription = true;
+    });
+  }*/
+
+  Future<void> saveSubscription(String transactionNumber,
+      String subscriptionName, String price, String paymentMethod) async {
+    String actionType = 'add';
+    final DateTime startDate = DateTime.now();
+
+    final DateTime endDate = GlobalMixin().getEndDate(startDate);
+
+    UserSubscription subscriptionParams = UserSubscription(
+        paymentReferenceNo: transactionNumber,
+        name: subscriptionName,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
+        price: price);
+
+    if (_userSubscriptionController.userSubscription.id.isNotEmpty) {
+      subscriptionParams.id = _userSubscriptionController.userSubscription.id;
+      actionType = 'update';
+    }
+
+    final APIStandardReturnFormat result = await APIServices()
+        .addUserSubscription(subscriptionParams, paymentMethod, actionType);
+
+    final jsonData = jsonDecode(result.successResponse);
+
+    debugPrint('jsonData $jsonData');
+    _userSubscriptionController
+        .setSubscription(UserSubscription.fromJson(jsonData));
 
     UserSingleton.instance.user.user?.hasPremiumSubscription = true;
     setState(() {

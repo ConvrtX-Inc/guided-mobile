@@ -18,6 +18,7 @@ import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/certificate.dart';
 import 'package:guided/models/profile_image.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/image_viewers/profile_photos_viewer.dart';
 import 'package:guided/screens/profile/profile_widgets.dart';
 import 'package:guided/screens/profile/reviews_profile.dart';
 import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
@@ -227,7 +228,7 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
                           Padding(
                             padding: EdgeInsets.only(right: 20),
                             child: Text(
-                              '19 Reviews',
+                              '0 Reviews',
                               style: TextStyle(fontSize: 12),
                             ),
                           )
@@ -333,9 +334,25 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
             child: Row(
               children: <Widget>[
                 if (profileImages.imageUrl1 != '')
-                  buildImage(context, profileImages.imageUrl1),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) {
+                        return ProfilePhotosViewer(
+                            profileImages: profileImages);
+                      }));
+                    },
+                    child: buildImage(context, profileImages.imageUrl1),
+                  ),
                 if (profileImages.imageUrl1 != '')
-                  buildImageWithFilter(context, profileImages.imageUrl2)
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) {
+                          return ProfilePhotosViewer(
+                              profileImages: profileImages,initialPage: 1);
+                        }));
+                      },
+                      child: buildImageWithFilter(
+                          context, profileImages.imageUrl2))
               ],
             ),
           ),
@@ -491,12 +508,11 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
+            const Padding(
+                padding: EdgeInsets.only(left: 20, right: 20),
                 child: Text(
                   'Certificates',
-                  style:
-                      TextStyle(fontWeight: FontWeight.w700, fontSize: 16.sp),
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                 )),
             const SizedBox(height: 20),
             SizedBox(
@@ -505,9 +521,14 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    child: buildImage(context,
-                        certificates[index].certificatePhotoFirebaseUrl!),
+                  return GestureDetector(
+                    onTap: () => Navigator.of(context).pushNamed(
+                        '/view_certificate',
+                        arguments: certificates[index]),
+                    child: Container(
+                      child: buildImage(context,
+                          certificates[index].certificatePhotoFirebaseUrl!),
+                    ),
                   );
                 },
                 itemCount: certificates.length,

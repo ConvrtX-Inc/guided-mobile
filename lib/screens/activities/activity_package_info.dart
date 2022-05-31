@@ -571,7 +571,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                       title: 'Health & safety',
                       subtitle: 'We  care about your health & safety'),
                   buildActivityListButtonItem(
-                      title: 'Traveler release waiver form',
+                      title: 'Traveler Release Waiver form',
                       subtitle: 'Lorem Ipsum',
                       showDivider: false),
                 ],
