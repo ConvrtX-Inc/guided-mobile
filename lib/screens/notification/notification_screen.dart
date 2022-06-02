@@ -125,7 +125,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 SizedBox(
                   height: 6.h,
                 ),
-                Container(
+                if(notification.bookingRequestStatus!.isNotEmpty && notification.bookingRequestStatus =='Pending')
+                  Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       color: AppColors.lightningYellow,

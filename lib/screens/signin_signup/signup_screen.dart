@@ -38,14 +38,9 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  final TextEditingController name = TextEditingController();
-  final TextEditingController email = TextEditingController();
-  final TextEditingController password = TextEditingController();
   final TextEditingController _phoneTextController = TextEditingController();
   bool buttonIsLoading = false;
-  final FocusNode _name = FocusNode();
-  final FocusNode _email = FocusNode();
-  final FocusNode _password = FocusNode();
+
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   List<String> errorMessages = <String>[];
   TextServices textServices = TextServices();
@@ -62,6 +57,28 @@ class _SignupScreenState extends State<SignupScreen> {
   bool facebookLoading = false;
   final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
   GoogleSignInAuthentication? _signInAuthentication;
+
+  ///Text Editing Controllers
+  final TextEditingController name = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  final FocusNode _nameFocusNode = FocusNode();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+
+  bool hidePassword = true;
+  bool hideConfirmPassword = true;
+
+  String _password = '';
+  String _confirmPassword = '';
+
   @override
   void initState() {
     _googleSignIn.signOut();
@@ -137,7 +154,7 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         appleLoading = true;
       });
-      APIServices()
+      await APIServices()
           .loginFacebook(credential.identityToken!)
           .then((APIStandardReturnFormat response) async {
         if (response.status == 'error') {
@@ -274,7 +291,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             // Send access token to server for validation and auth
                             final FacebookAccessToken? accessToken =
                                 res.accessToken;
-                            APIServices()
+                            await APIServices()
                                 .loginFacebook(accessToken!.token)
                                 .then((APIStandardReturnFormat response) async {
                               if (response.status == 'error') {
@@ -535,17 +552,17 @@ class _SignupScreenState extends State<SignupScreen> {
                     // ),
                     // SizedBox(height: 20.h),
                     Text(
-                      AppTextConstants.name,
+                      AppTextConstants.firstName,
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     SizedBox(height: 15.h),
                     FormBuilderTextField(
-                      controller: name,
-                      focusNode: _name,
+                      controller: _firstNameController,
+                      focusNode: _nameFocusNode,
                       decoration: InputDecoration(
-                        hintText: AppTextConstants.name,
+                        hintText: AppTextConstants.firstName,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
                         ),
@@ -562,6 +579,32 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     SizedBox(height: 20.h),
                     Text(
+                      AppTextConstants.lastName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 15.h),
+                    FormBuilderTextField(
+                      controller: _lastNameController,
+                      decoration: InputDecoration(
+                        hintText: AppTextConstants.lastName,
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
+                        ),
+                      ),
+                      name: 'last_name',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                      ]),
+                    ),
+                    SizedBox(height: 20.h),
+                    Text(
                       AppTextConstants.email,
                       style: const TextStyle(
                           fontWeight: FontWeight.w600, fontSize: 15),
@@ -569,7 +612,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(height: 15.h),
                     FormBuilderTextField(
                       controller: email,
-                      focusNode: _email,
+                      focusNode: _emailFocusNode,
                       decoration: InputDecoration(
                         hintText: AppTextConstants.emailHint,
                         hintStyle: TextStyle(
@@ -596,23 +639,92 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(height: 15.h),
                     FormBuilderTextField(
                       controller: password,
-                      obscureText: true,
-                      focusNode: _password,
+                      obscureText: hidePassword,
+                      focusNode: _passwordFocusNode,
+                      onChanged: (String? val) {
+                        setState(() {
+                          _password = val!.trim();
+                        });
+                      },
                       decoration: InputDecoration(
-                        hintText: AppTextConstants.passwordHint,
-                        hintStyle: TextStyle(
-                          color: AppColors.grey,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14.r),
-                          borderSide:
-                              BorderSide(color: Colors.grey, width: 0.2.w),
-                        ),
-                      ),
+                          hintText: AppTextConstants.passwordHint,
+                          hintStyle: TextStyle(
+                            color: AppColors.grey,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14.r),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 0.2.w),
+                          ),
+                          suffixIcon: _password.isNotEmpty
+                              ? IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      hidePassword = !hidePassword;
+                                    });
+                                  },
+                                  icon: Icon(
+                                      hidePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.grey))
+                              : null),
                       name: 'password',
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.minLength(context, 6),
                         FormBuilderValidators.required(context),
+                      ]),
+                    ),
+                    SizedBox(height: 20.h),
+                    Text(
+                      AppTextConstants.confirmPassword,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 15),
+                    ),
+                    SizedBox(height: 15.h),
+                    FormBuilderTextField(
+                      controller: _confirmPasswordController,
+                      obscureText: hideConfirmPassword,
+                      onChanged: (String? val) {
+                        setState(() {
+                          _confirmPassword = val!.trim();
+                        });
+                      },
+                      decoration: InputDecoration(
+                          hintText: AppTextConstants.passwordHint,
+                          hintStyle: TextStyle(
+                            color: AppColors.grey,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14.r),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 0.2.w),
+                          ),
+                          suffixIcon: _confirmPassword.trim().isNotEmpty
+                              ? IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      hideConfirmPassword =
+                                          !hideConfirmPassword;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    hideConfirmPassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: Colors.grey,
+                                  ))
+                              : null),
+                      name: 'password',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.minLength(context, 6),
+                        FormBuilderValidators.required(context),
+                        // FormBuilderValidators.match(context, password.text,
+                        //     errorText:
+                        //         ErrorMessageConstants.passwordDoesNotMatch)
+                        FormBuilderValidators.equal(context, password.text,
+                            errorText:
+                                ErrorMessageConstants.passwordDoesNotMatch)
                       ]),
                     ),
                     SizedBox(height: 20.h),
@@ -648,107 +760,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       height: 60.h,
                       child: LoadingElevatedButton(
                         isLoading: buttonIsLoading,
-                        onPressed: () async {
-                          bool isTraveller = false;
-                          await SecureStorage.readValue(
-                                  key: AppTextConstants.userType)
-                              .then((String value) async {
-                            if (value == 'traveller') {
-                              isTraveller = true;
-                            } else {
-                              isTraveller = false;
-                            }
-                          });
-                          _formKey.currentState?.save();
-                          if (_formKey.currentState!.validate()) {
-                            setState(() {
-                              buttonIsLoading = true;
-                            });
-                            // print(_formKey.currentState?.value['email']);
-
-                            final Map<String, dynamic> details = {
-                              'email': _formKey.currentState?.value['email'],
-                              'password':
-                                  _formKey.currentState?.value['password'],
-                              'full_name':
-                                  _formKey.currentState?.value['first_name'],
-                              'user_type': isTraveller ? 'Traveller' : 'Guide',
-                              'phone_no': _phonenumber,
-                              'country_code': _countryCode,
-                              'is_traveller': isTraveller,
-                              // 'user_type_id': isTraveller ? '1e16e10d-ec6f-4c32-b5eb-cdfcfe0563a5' : 'c40cca07-110c-473e-a0e7-6720fc3d42ff', /// Dev
-                              'user_type_id': isTraveller
-                                  ? 'fb536b69-3e54-415a-aaf0-1db1ab017bb3'
-                                  : '3e3528ef-2387-4480-878e-685d44c6c2ee',
-
-                              /// Staging
-                              'is_for_the_planet': true,
-                              'is_first_aid_trained': true,
-                              'is_guide': !isTraveller
-                            };
-                            print(details);
-                            // final dynamic response = await APIServices()
-                            //     .request(AppAPIPath.signupUrl, RequestType.POST,
-                            //         data: details);
-                            final APIStandardReturnFormat result =
-                                await APIServices().register(details);
-
-                            if (result.status == 'error') {
-                              setState(() {
-                                buttonIsLoading = false;
-                              });
-                              final Map<String, dynamic> decoded =
-                                  jsonDecode(result.errorResponse);
-                              decoded['errors'].forEach((String k, dynamic v) =>
-                                  <dynamic>{
-                                    errorMessages
-                                      ..add(textServices.filterErrorMessage(v))
-                                  });
-                            } else {
-                              final Map<String, String> credentials =
-                                  <String, String>{
-                                'email': _formKey.currentState?.value['email'],
-                                'password':
-                                    _formKey.currentState?.value['password']
-                              };
-
-                              await APIServices().login(credentials).then(
-                                  (APIStandardReturnFormat response) async {
-                                final UserModel user = UserModel.fromJson(
-                                    json.decode(response.successResponse));
-                                UserSingleton.instance.user.token = user.token;
-                              });
-
-                              setState(() {
-                                buttonIsLoading = false;
-                              });
-                              await Navigator.of(context)
-                                  .pushReplacementNamed('/login');
-                            }
-                            // if (response is Map) {
-                            //   if (response.containsKey('status')) {
-                            //     if (response['status'] == 422) {
-                            //       AdvanceSnackBar(
-                            //               message: ErrorMessageConstants
-                            //                   .loginWrongEmailorPassword)
-                            //           .show(context);
-                            //     }
-                            //   } else {
-                            //     await Navigator.of(context).pushNamed('/login');
-                            //   }
-                            // } else {
-                            //   await Navigator.of(context).pushNamed('/login');
-                            // }
-                          } else {
-                            print("validation failed");
-                          }
-                          // Navigator.pushNamed(context, '/continue_with_phone',
-                          //     arguments: {
-                          //       'name': name.text,
-                          //       'email': email.text,
-                          //       'password': password.text
-                          //     });
-                        },
+                        onPressed: register,
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             side: BorderSide(
@@ -798,6 +810,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 20.h),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -896,22 +909,82 @@ class _SignupScreenState extends State<SignupScreen> {
         AppAPIPath.usersTermsAndCondition, RequestType.POST,
         needAccessToken: true, data: userTermsDetails);
   }
-  // /// Method for verifying Code
-  // Future<void> signupUser(Map<String, dynamic> data) async {
-  //   final Map<String, dynamic> details = {
-  //     'email': data['email'],
-  //     'password': data['password'],
-  //     'first_name': firstName.text,
-  //     'last_name': lastName.text,
-  //     'phone_no': data['phone_number'],
-  //     'country_code': data['country_code'],
-  //     'user_type_id': '',
-  //     'is_for_the_planet': true,
-  //     'is_first_aid_trained': true,
-  //     'user_type': 'Guide'
-  //   };
-  //   await APIServices()
-  //       .request(AppAPIPath.signupUrl, RequestType.POST, data: details);
-  //   await Navigator.pushNamed(context, '/login');
-  // }
+
+  Future<void> register() async {
+    bool isTraveller = false;
+    await SecureStorage.readValue(key: AppTextConstants.userType)
+        .then((String value) async {
+      if (value == 'traveller') {
+        isTraveller = true;
+      } else {
+        isTraveller = false;
+      }
+    });
+    _formKey.currentState?.save();
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        buttonIsLoading = true;
+      });
+      // print(_formKey.currentState?.value['email']);
+
+      final Map<String, dynamic> details = {
+        'email': _formKey.currentState?.value['email'],
+        'password': _formKey.currentState?.value['password'],
+        'full_name':
+            '${_formKey.currentState?.value['first_name']} ${_formKey.currentState?.value['last_name']}',
+        'first_name': _formKey.currentState?.value['first_name'],
+        'last_name': _formKey.currentState?.value['last_name'],
+        'user_type': isTraveller ? 'Traveller' : 'Guide',
+        'phone_no': _phonenumber,
+        'country_code': _countryCode,
+        'is_traveller': isTraveller,
+        // 'user_type_id': isTraveller ? '1e16e10d-ec6f-4c32-b5eb-cdfcfe0563a5' : 'c40cca07-110c-473e-a0e7-6720fc3d42ff', /// Dev
+        'user_type_id': isTraveller
+            ? 'fb536b69-3e54-415a-aaf0-1db1ab017bb3'
+            : '3e3528ef-2387-4480-878e-685d44c6c2ee',
+
+        /// Staging
+        'is_for_the_planet': true,
+        'is_first_aid_trained': true,
+        'is_guide': !isTraveller
+      };
+      print(details);
+
+      ///Register api
+      final APIStandardReturnFormat result =
+          await APIServices().register(details);
+
+      if (result.status == 'error') {
+        setState(() {
+          buttonIsLoading = false;
+        });
+        final Map<String, dynamic> decoded = jsonDecode(result.errorResponse);
+        decoded['errors'].forEach((String k, dynamic v) =>
+            <dynamic>{errorMessages..add(textServices.filterErrorMessage(v))});
+      } else {
+        final Map<String, String> credentials = <String, String>{
+          'email': _formKey.currentState?.value['email'],
+          'password': _formKey.currentState?.value['password']
+        };
+
+        await APIServices()
+            .login(credentials)
+            .then((APIStandardReturnFormat response) async {
+          final UserModel user =
+              UserModel.fromJson(json.decode(response.successResponse));
+          UserSingleton.instance.user.token = user.token;
+        });
+
+        setState(() {
+          buttonIsLoading = false;
+        });
+        await Navigator.of(context).pushReplacementNamed('/login');
+      }
+
+    } else {
+      print("validation failed");
+    }
+  }
+
+
 }

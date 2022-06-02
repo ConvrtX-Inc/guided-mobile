@@ -7,7 +7,7 @@ class SkeletonText extends StatelessWidget {
   const SkeletonText({
     this.height = 20,
     this.width = 20,
-    this.radius = 100,
+    this.radius = 20,
     this.shape = BoxShape.rectangle,
     Key? key}) : super(key: key);
 

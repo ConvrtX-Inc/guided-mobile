@@ -6,18 +6,20 @@ import 'package:guided/constants/app_texts.dart';
 ///Widget for BorderedTextfield
 class BorderedTextField extends StatelessWidget {
   ///Constructor
-  const BorderedTextField({required this.labelText,
-    required this.hintText,
-    this.borderColor = Colors.grey,
-    this.controller,
-    this.onChanged,
-    this.onSaved,
-    this.onValidate,
-    this.maxLines,
-    this.minLines = 1,
-    this.showLabel = true,
-    this.isPassword = false,
-    Key? key})
+  const BorderedTextField(
+      {required this.labelText,
+      required this.hintText,
+      this.borderColor = Colors.grey,
+      this.controller,
+      this.onChanged,
+      this.onSaved,
+      this.onValidate,
+      this.maxLines,
+      this.minLines = 1,
+      this.showLabel = true,
+      this.isPassword = false,
+      this.focusNode,
+      Key? key})
       : super(key: key);
 
   final String hintText;
@@ -31,6 +33,7 @@ class BorderedTextField extends StatelessWidget {
   final dynamic maxLines;
   final int minLines;
   final bool isPassword;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +52,7 @@ class BorderedTextField extends StatelessWidget {
           height: 10.h,
         ),
         TextFormField(
+          focusNode: focusNode,
           controller: controller,
           obscureText: isPassword,
           obscuringCharacter: AppTextConstants.biggerBullet,

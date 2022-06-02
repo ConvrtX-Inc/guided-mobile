@@ -41,7 +41,6 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
       Get.put(UserSubscriptionController());
   final UserProfileDetailsController _profileDetailsController =
       Get.put(UserProfileDetailsController());
-
   @override
   void initState() {
     _selectedWidget = TabHomeScreen(
@@ -52,7 +51,6 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     getProfileDetails();
 
     // getUserSubscription();
-
     if (_creditCardController.cards.isEmpty) {
       getUserCards();
     }
@@ -94,11 +92,10 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
         );
       } else {
         _selectedIndex = 0;
-        _selectedWidget = const TabDiscoveryHub();
+        _selectedWidget =   TabHomeScreen(onItemPressed: popularGuideds,);
       }
     });
   }
-
   void onPressed(int index) {
     setState(() {
       _selectedIndex = index;
@@ -119,7 +116,7 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
   }
 
   Future<void> getProfileDetails() async {
-    debugPrint('Get Profile Details');
+
     final ProfileDetailsModel res = await APIServices().getProfileData();
 
     final UserSubscription subscription =
@@ -133,8 +130,9 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
 
       if (!isExpired) {
         hasPremiumSubscription = true;
-        _userSubscriptionController.setSubscription(subscription);
+
       }
+      _userSubscriptionController.setSubscription(subscription);
     }
 
     UserSingleton.instance.user.user = User(

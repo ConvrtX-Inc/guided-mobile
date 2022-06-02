@@ -214,12 +214,12 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                         Expanded(
                           child: Row(
                             children: <Widget>[
-                              Text(
+                              Expanded(child: Text(
                                 widget._name!,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 20.sp),
-                              ),
+                              ),),
                               Padding(
                                 padding: EdgeInsets.only(top: 7.h),
                                 child: FutureBuilder<BadgeModelData>(
@@ -275,6 +275,7 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                             ],
                           ),
                         ),
+                        SizedBox(width: 12.w,),
                         if (widget._isFirstAid!)
                           Container(
                             decoration: BoxDecoration(
@@ -304,9 +305,46 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
         )
       : Container();
 
-  Widget buildGestureDetector(PackageDetailsModel details) => Column(
-        children: <Widget>[
-          GestureDetector(
+  Widget buildGestureDetector(PackageDetailsModel details) =>   Container(
+    decoration: BoxDecoration(
+      color: Colors.green
+    ),
+
+    child:   GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/main_profile',
+            arguments: widget._id );
+
+      },
+      child: Stack(children: <Widget>[
+        if (details.firebaseCoverImg.isNotEmpty)
+          SizedBox(
+            height: 280.h,
+            width: MediaQuery.of(context).size.width,
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.r),
+                child: ExtendedImage.network(
+                  details.firebaseCoverImg,
+                  fit: BoxFit.cover,
+                  gaplessPlayback: true,
+                )),
+          )
+        else
+          SizedBox(
+            height: 280.h,
+            width: MediaQuery.of(context).size.width,
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.r),
+                child: Image.asset(
+                  'assets/images/png/activity3.png',
+                )),
+          ),
+        checkData(details.id),
+        Positioned(
+          top:  10,
+          right: 0,
+          left: 0,
+          child: GestureDetector(
             onTap: () {
               navigatePackageDetails(
                   context,
@@ -320,81 +358,39 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                   details.name,
                   details.firebaseCoverImg);
             },
-            child: Stack(children: <Widget>[
-              if (details.firebaseCoverImg.isNotEmpty)
-                SizedBox(
-                  height: 280.h,
-                  width: MediaQuery.of(context).size.width,
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10.r),
-                      child: ExtendedImage.network(
-                        details.firebaseCoverImg,
+            child: widget._profileImg == ''
+                ? Container(
+              height: 100.h,
+              width: 100.w,
+              decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  shape: BoxShape.circle,
+                  image:   DecorationImage(
+                    image: AssetImage(
+                      AssetsPath.defaultProfilePic,
+                    )),
+                  border:
+                  Border.all(color: Colors.white, width: 4.w)),
+            )
+                : Container(
+              height: 100.h,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  image: DecorationImage(
+                      image: ExtendedImage.network(
+                        widget._profileImg.toString(),
                         fit: BoxFit.cover,
                         gaplessPlayback: true,
-                      )),
-                )
-              else
-                SizedBox(
-                  height: 280.h,
-                  width: MediaQuery.of(context).size.width,
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10.r),
-                      child: Image.asset(
-                        'assets/images/png/activity3.png',
-                      )),
-                ),
-              checkData(details.id),
-              Align(
-                alignment: Alignment.topCenter,
-                child: GestureDetector(
-                  onTap: () {
-                    navigatePackageDetails(
-                        context,
-                        details.coverImg,
-                        details.description,
-                        details.id,
-                        details.maxTraveller,
-                        details.basePrice,
-                        details.mainBadgeId,
-                        details.address,
-                        details.name,
-                        details.firebaseCoverImg);
-                  },
-                  child: widget._profileImg == ''
-                      ? Container(
-                          height: 100.h,
-                          width: 100.w,
-                          decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              shape: BoxShape.circle,
-                              image: const DecorationImage(
-                                image: NetworkImage(
-                                    'https://img.icons8.com/external-coco-line-kalash/344/external-person-human-body-anatomy-coco-line-kalash-4.png'),
-                                fit: BoxFit.cover,
-                              ),
-                              border:
-                                  Border.all(color: Colors.white, width: 4.w)),
-                        )
-                      : Container(
-                          height: 100.h,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              image: DecorationImage(
-                                  image: ExtendedImage.network(
-                                widget._profileImg.toString(),
-                                fit: BoxFit.cover,
-                                gaplessPlayback: true,
-                              ).image),
-                              border:
-                                  Border.all(color: Colors.white, width: 4.w)),
-                        ),
-                ),
-              )
-            ]),
+                      ).image),
+                  border:
+                  Border.all(color: Colors.white, width: 4.w)),
+            ),
           ),
-        ],
-      );
+        )
+      ]),
+    ),
+  );
 
   Widget checkData(String id) => FutureBuilder<WishlistActivityModel>(
         future: APIServices().getWishlistActivityByPackageId(id),

@@ -29,13 +29,15 @@ class _CancellationPolicyState extends State<CancellationPolicy> {
   @override
   void initState() {
     super.initState();
-    getTermsAndConditionStatus();
+    // getTermsAndConditionStatus();
 
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-      _cancellation_policy = screenArguments['cancellation_policy'];
+      setState(() {
+        _cancellation_policy = screenArguments['cancellation_policy'];
+      });
     });
   }
 
@@ -55,40 +57,33 @@ class _CancellationPolicyState extends State<CancellationPolicy> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        leading:  IconButton(
+          icon: Image.asset(
+            '${AssetsPath.assetsPNGPath}/chevron_back_button.png',
+          ),
+          iconSize: 44.h,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title:  Text(
+          AppTextConstants.cancellationPolicy,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+            fontSize: 24.sp,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                child: Row(
-                  children: <Widget>[
-                    IconButton(
-                      icon: Image.asset(
-                        '${AssetsPath.assetsPNGPath}/chevron_back_button.png',
-                      ),
-                      iconSize: 44.h,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    SizedBox(
-                      width: 15.w,
-                    ),
-                    Text(
-                      AppTextConstants.cancellationPolicy,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 24.sp,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
+
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
                 child: SizedBox(

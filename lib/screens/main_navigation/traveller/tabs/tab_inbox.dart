@@ -417,7 +417,7 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
                                                                       .messages!
                                                                       .length -
                                                                   1]
-                                                              .message!
+                                                              .message!.trim()
                                                           : 'You Sent a photo',
                                                       style: TextStyle(
                                                         fontSize: 12.sp,

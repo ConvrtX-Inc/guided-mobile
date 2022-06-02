@@ -7,6 +7,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
@@ -153,16 +154,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                         ),
                       ),
                       child: Center(
-                        child: Container(
-                          height: 20.h,
-                          width: 20.w,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                  'assets/images/png/green_house.png'),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
+                        child: SvgPicture.asset(
+                          '${AssetsPath.assetsSVGPath}/home.svg',
+                          color: AppColors.lightningYellow,
                         ),
                       ),
                     ),
@@ -677,17 +671,11 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
-                child: _hasLocationPermission
-                    ? nearbyActivities(context, activities)
-                    : const CircularProgressIndicator(),
-              ),
+                  padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
+                  child: nearbyActivities(context, activities)),
               Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 0.h),
-                child: _hasLocationPermission
-                    ? popularGuidesNearYou(context, guides)
-                    : const CircularProgressIndicator(),
-              ),
+                  padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 0.h),
+                  child: popularGuidesNearYou(context, guides)),
               Padding(
                 padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 20.h),
                 child: staticAdd(context),
@@ -752,8 +740,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                             return Container(
                               margin: EdgeInsets.symmetric(
                                   horizontal: 5.w, vertical: 20.h),
-                              height: 180.h,
-                              width: 168.w,
+                              // height: 180.h,
+                              // width: 168.w,
                               decoration: const BoxDecoration(
                                 color: Colors.transparent,
                               ),
@@ -762,12 +750,15 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                 children: <Widget>[
                                   GestureDetector(
                                     onTap: () {
-                                      checkAvailability(
-                                          context, snapshot.data![index]);
+                                      // checkAvailability(
+                                      //     context, snapshot.data![index]);
+                                      Navigator.of(context).pushNamed(
+                                          '/activity_package_info',
+                                          arguments: snapshot.data![index]);
                                     },
                                     child: Container(
-                                      height: 112.h,
-                                      width: 168.w,
+                                      height: 120.h,
+                                      width: 160.w,
                                       decoration: BoxDecoration(
                                         color: Colors.transparent,
                                         borderRadius: BorderRadius.all(
@@ -779,75 +770,31 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         //   fit: BoxFit.cover,
                                         // ),
                                         image: DecorationImage(
-                                            image: Image.network(
-                                          // base64.decode(snapshot
-                                          //     .data![index].coverImg!
-                                          //     .split(',')
-                                          //     .last),
-                                          snapshot
-                                              .data![index].firebaseCoverImg!,
-                                          fit: BoxFit.cover,
-                                          gaplessPlayback: true,
-                                        ).image),
+                                            image: NetworkImage(
+                                              // base64.decode(snapshot
+                                              //     .data![index].coverImg!
+                                              //     .split(',')
+                                              //     .last),
+                                              snapshot.data![index]
+                                                  .firebaseCoverImg!,
+                                            ),
+                                            fit: BoxFit.cover),
                                       ),
                                       child: Stack(
                                         children: <Widget>[
                                           Positioned(
                                             bottom: 10,
-                                            left: 20,
-                                            child:
-                                                FutureBuilder<BadgeModelData>(
-                                              future: APIServices()
-                                                  .getBadgesModelById(snapshot
-                                                      .data![index]
-                                                      .mainBadgeId!),
-                                              builder: (BuildContext context,
-                                                  AsyncSnapshot<dynamic>
-                                                      snapshot) {
-                                                if (snapshot.hasData) {
-                                                  final BadgeModelData
-                                                      badgeData = snapshot.data;
-                                                  final int length = badgeData
-                                                      .badgeDetails.length;
-                                                  // return CircleAvatar(
-                                                  //   backgroundColor:
-                                                  //       Colors.transparent,
-                                                  //   radius: 30,
-                                                  //   backgroundImage: AssetImage(
-                                                  //       activities[index].path),
-                                                  // );
-                                                  return Image.memory(
-                                                    base64.decode(badgeData
-                                                        .badgeDetails[0].imgIcon
-                                                        .split(',')
-                                                        .last),
-                                                    width: 30,
-                                                    height: 30,
-                                                    gaplessPlayback: true,
-                                                  );
-                                                }
-                                                if (snapshot.connectionState !=
-                                                    ConnectionState.done) {
-                                                  return Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 10.w),
-                                                    child: Column(
-                                                      children: <Widget>[
-                                                        SizedBox(
-                                                          height: 110.h,
-                                                        ),
-                                                        const SkeletonText(
-                                                          width: 30,
-                                                          height: 30,
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        )
-                                                      ],
-                                                    ),
-                                                  );
-                                                }
-                                                return Container();
-                                              },
+                                            left: 16,
+                                            child: Image.memory(
+                                              base64.decode(snapshot
+                                                  .data![index]
+                                                  .mainBadge!
+                                                  .imgIcon!
+                                                  .split(',')
+                                                  .last),
+                                              width: 30,
+                                              height: 30,
+                                              gaplessPlayback: true,
                                             ),
                                           ),
                                         ],
@@ -857,15 +804,17 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                   SizedBox(
                                     height: 5.h,
                                   ),
-                                  Text(
-                                    snapshot.data![index].name!,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16.sp,
-                                        fontFamily: 'Gilroy',
-                                        fontWeight: FontWeight.w600),
-                                  ),
+                                  SizedBox(
+                                      width: 130.w,
+                                      child: Text(
+                                        snapshot.data![index].name!,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16.sp,
+                                            fontFamily: 'Gilroy',
+                                            fontWeight: FontWeight.w600),
+                                      )),
                                   Row(
                                     children: <Widget>[
                                       Container(
@@ -1174,9 +1123,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   fontWeight: FontWeight.w700),
             ),
             GestureDetector(
-              onTap: () {
-                widget.onItemPressed('guides');
-              },
+              onTap: _settingModalBottomSheet,
               child: Text(
                 'See All',
                 style: TextStyle(
@@ -1206,13 +1153,16 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                       scrollDirection: Axis.horizontal,
                       itemCount: length,
                       itemBuilder: (BuildContext ctx, int index) {
-                        return PopularGuideHomeFeatures(
-                            id: userListData.userDetails[index].id,
-                            fullName: userListData.userDetails[index].fullName,
-                            firebaseProfImg:
-                                userListData.userDetails[index].firebaseImg,
-                            latitude: latitude,
-                            longitude: longitude);
+                        return userListData.userDetails[index].isGuide
+                            ? PopularGuideHomeFeatures(
+                                id: userListData.userDetails[index].id,
+                                fullName:
+                                    userListData.userDetails[index].fullName,
+                                firebaseProfImg:
+                                    userListData.userDetails[index].firebaseImg,
+                                latitude: latitude,
+                                longitude: longitude)
+                            : Container();
                       });
                 }
               }
@@ -1391,7 +1341,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   Text(
                     'Become a guide',
                     style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.lightningYellow,
                         fontSize: 24.sp,
                         fontFamily: 'Gilroy',
                         fontWeight: FontWeight.w700),
@@ -1407,18 +1357,19 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   SizedBox(
                     height: 5.h,
                   ),
-                  // SizedBox(
-                  //   width: MediaQuery.of(context).size.width * 0.3,
-                  //   child: ElevatedButton(
-                  //     onPressed: () {},
-                  //     style: AppTextStyle.active,
-                  //     child: const Text(
-                  //       'Learn more',
-                  //       style: TextStyle(
-                  //           fontWeight: FontWeight.bold, fontSize: 12),
-                  //     ),
-                  //   ),
-                  // ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: ElevatedButton(
+                      onPressed: () =>
+                          Navigator.of(context).pushNamed('/become_a_guide'),
+                      style: AppTextStyle.active,
+                      child: const Text(
+                        'Learn more',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
+                    ),
+                  ),
                 ],
               )),
         ],

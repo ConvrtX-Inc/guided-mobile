@@ -28,7 +28,6 @@ class SecureStorage {
       key: key,
       aOptions: const AndroidOptions(encryptedSharedPreferences: true),
     );
-
     return value!;
   }
 

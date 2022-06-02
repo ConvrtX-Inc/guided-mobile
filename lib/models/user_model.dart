@@ -55,7 +55,7 @@ class User {
 
   User(
       {this.id,
-      this.fullName,
+      this.fullName ='',
       this.firstName,
       this.lastName,
       this.email,
@@ -82,11 +82,11 @@ class User {
       this.profilePhoto,
       this.stripeAccountId,
       this.hasPremiumSubscription = false,
-      this.firebaseProfilePicUrl});
+      this.firebaseProfilePicUrl =''});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    fullName = json['full_name'];
+    fullName = json['full_name'] ?? '';
     firstName = json['first_name'];
     lastName = json['last_name'];
     email = json['email'];

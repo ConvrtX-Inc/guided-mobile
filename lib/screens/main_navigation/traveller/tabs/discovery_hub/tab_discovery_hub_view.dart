@@ -383,7 +383,7 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
             ));
   }
 
-  Future<void> saveSubscription(String transactionNumber,
+/*  Future<void> saveSubscription(String transactionNumber,
       String subscriptionName, String price, String paymentMethod) async {
     final DateTime startDate = DateTime.now();
 
@@ -406,5 +406,37 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
 
     debugPrint(
         'subscription result ${result.successResponse} Has Subscription ${UserSingleton.instance.user.user?.hasPremiumSubscription} State Premium Subscription $hasPremiumSubscription');
+  }*/
+
+  Future<void> saveSubscription(String transactionNumber,
+      String subscriptionName, String price, String paymentMethod) async {
+    String actionType = 'add';
+    final DateTime startDate = DateTime.now();
+
+    final DateTime endDate = GlobalMixin().getEndDate(startDate);
+
+    UserSubscription subscriptionParams = UserSubscription(
+        paymentReferenceNo: transactionNumber,
+        name: subscriptionName,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
+        price: price);
+
+    if(_userSubscriptionController.userSubscription.id.isNotEmpty){
+      subscriptionParams.id = _userSubscriptionController.userSubscription.id;
+      actionType ='update';
+    }
+
+
+    final APIStandardReturnFormat result = await APIServices()
+        .addUserSubscription(subscriptionParams, paymentMethod,actionType);
+
+    final jsonData = jsonDecode(result.successResponse);
+    _userSubscriptionController.setSubscription(UserSubscription.fromJson(jsonData));
+
+    UserSingleton.instance.user.user?.hasPremiumSubscription = true;
+    setState(() {
+      hasPremiumSubscription = true;
+    });
   }
 }

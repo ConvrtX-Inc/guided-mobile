@@ -32,7 +32,7 @@ void main() async {
 
   await Firebase.initializeApp(
       name: 'Guided', options: DefaultFirebaseConfig.platformOptions);
-  runApp(const MyApp());
+  // runApp(const MyApp());
 
   initializeDateFormatting().then((_) => runApp(const MyApp()));
 }
@@ -45,57 +45,45 @@ class MyApp extends StatelessWidget {
   // This widgets is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Init.instance.initialize(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        // Show splash screen while waiting for app resources to load:
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const MaterialApp(
-              // home: Splash(),
-              );
-        } else {
-          return ScreenUtilInit(
-            builder: () => KeyboardDismissOnTap(
-              child: GetMaterialApp(
-                debugShowCheckedModeBanner: false,
-                theme: ThemeData(
-                  fontFamily: 'Gilroy',
-                  backgroundColor: HexColor('#E5E5E5'),
-                  visualDensity: VisualDensity.adaptivePlatformDensity,
-                  textTheme: const TextTheme(
-                    bodyText1: TextStyle(
-                      color: Colors.black,
-                    ),
-                    bodyText2: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ).apply(
-                      // fontFamily: 'Lora',
-                      // bodyColor: Colors.white,
-                      // displayColor: Colors.white,
-                      ),
-                ),
-                initialRoute: _defaultHome,
-                onGenerateRoute: RouteGenerator.generateRoute,
-                localizationsDelegates: const [
-                  FormBuilderLocalizations.delegate,
-                ],
-                supportedLocales: const [
-                  Locale('en', ''),
-                  Locale('es', ''),
-                  Locale('fa', ''),
-                  Locale('fr', ''),
-                  Locale('ja', ''),
-                  Locale('pt', ''),
-                  Locale('sk', ''),
-                  Locale('pl', ''),
-                ],
+    return ScreenUtilInit(
+      builder: () => KeyboardDismissOnTap(
+        child: GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            fontFamily: 'Gilroy',
+            backgroundColor: HexColor('#E5E5E5'),
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            textTheme: const TextTheme(
+              bodyText1: TextStyle(
+                color: Colors.black,
               ),
-            ),
-            designSize: const Size(375, 812),
-          );
-        }
-      },
+              bodyText2: TextStyle(
+                color: Colors.black,
+              ),
+            ).apply(
+                // fontFamily: 'Lora',
+                // bodyColor: Colors.white,
+                // displayColor: Colors.white,
+                ),
+          ),
+          initialRoute: _defaultHome,
+          onGenerateRoute: RouteGenerator.generateRoute,
+          localizationsDelegates: const [
+            FormBuilderLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en', ''),
+            Locale('es', ''),
+            Locale('fa', ''),
+            Locale('fr', ''),
+            Locale('ja', ''),
+            Locale('pt', ''),
+            Locale('sk', ''),
+            Locale('pl', ''),
+          ],
+        ),
+      ),
+      designSize: const Size(375, 812),
     );
   }
 }

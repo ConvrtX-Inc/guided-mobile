@@ -18,4 +18,6 @@ class UserSubscriptionController extends GetxController {
     update();
   }
 
+  ///Set user subscription
+
 }

@@ -1,20 +1,37 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 // import 'package:google_maps_webservice/staticmap.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 // import 'package:google_static_maps_controller/google_static_maps_controller.dart';
 // import 'package:google_maps_webservice/staticmap.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/activity_package.dart';
+import 'package:guided/models/badge_model.dart';
+import 'package:guided/models/certificate.dart';
+import 'package:guided/models/profile_image.dart';
+import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/image_viewers/profile_photos_viewer.dart';
 import 'package:guided/screens/profile/profile_widgets.dart';
 import 'package:guided/screens/profile/reviews_profile.dart';
+import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
+import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:location/location.dart';
 
 // ignore: public_member_api_docs
 class MainProfileScreen extends StatefulWidget {
-  const MainProfileScreen({Key? key}) : super(key: key);
+  ///Constructor
+  const MainProfileScreen({Key? key, required this.userId}) : super(key: key);
+
+  final String userId;
 
   @override
   State<MainProfileScreen> createState() => _MainProfileScreenState();
@@ -46,7 +63,17 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
   GoogleMapController? mapController; //contrller for Google map
   Set<Marker> markers = Set(); //markers for google map
   LatLng showLocation = LatLng(27.7089427, 85.3086209);
+
   //location to show in map
+  User userGuideDetails = User();
+  UserProfileImage profileImages = UserProfileImage();
+  List<Certificate> certificates = <Certificate>[];
+  List<ActivityPackage> packages = <ActivityPackage>[];
+
+  bool isLoadingProfileDetails = true;
+  bool isLoadingCertificates = true;
+  bool isLoadingPackages = true;
+  bool isLoadingProfileImages = true;
 
   @override
   void initState() {
@@ -62,8 +89,14 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
       icon: BitmapDescriptor.defaultMarker, //Icon for Marker
     ));
 
+    debugPrint('guide id  ${widget.userId}');
+
     //you can add more markers here
     super.initState();
+
+    getGuideUserDetails();
+    getPackages();
+    getCertificates();
   }
 
   // final Completer<GoogleMapController> _controller = Completer();
@@ -74,247 +107,514 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
-        body: SafeArea(
-            child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              backButton(context),
-              const Padding(
-                padding: EdgeInsets.only(left: 20),
-                child: Text(
-                  "Ethan Hunt's Posts",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                ),
+        body: buildGuideProfile());
+  }
+
+  Widget buildGuideProfile() => SafeArea(
+          child: SingleChildScrollView(
+        child: isLoadingProfileDetails &&
+                isLoadingPackages &&
+                isLoadingProfileImages
+            ? buildLoadingData()
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  backButton(context),
+                  buildUserDetails(),
+                  /*  const SizedBox(height: 20),
+            buildCircleAvatar(userGuideDetails.firebaseProfilePicUrl!),
+            SizedBox(height: 14.h),
+            Center(
+              child: Text(
+                userGuideDetails.fullName!,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20.sp),
               ),
-              const SizedBox(height: 20),
-              buildCircleAvatar(),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(
-                    Icons.star,
-                    color: Color(0xff056028),
-                    size: 14,
-                  ),
-                  Text(
-                    '19 Reviews',
-                    style: TextStyle(fontSize: 12),
-                  )
-                ],
-              ),
-              const SizedBox(height: 20),
-              const Padding(
-                padding: EdgeInsets.only(left: 20, right: 20),
-                child: Text(
-                  'About Me',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Padding(
-                padding: EdgeInsets.only(left: 20, right: 20),
-                child: Text(
-                    'Bacon ipsum dolor amet frankfurter meatloaf short loin boudin cow capicola pork belly picanha bresaola andouille ground round porchetta kielbasa filet mignon tail.'),
-              ),
-              const SizedBox(height: 20),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: <Widget>[
-                    buildImage(context, 'assets/images/customer-2.png'),
-                    buildImageWithFilter(context)
-                  ],
-                ),
-              ),
-              const SizedBox(height: 40),
-              const Padding(
-                padding: EdgeInsets.only(left: 20, right: 20),
-                child: Text(
-                  'Explore Nearby Activities/Packages',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: <Widget>[
+            ),*/
+
+                  const SizedBox(height: 20),
+                  if (userGuideDetails.about != null)
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20, right: 20),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12.0),
-                            child: Image.asset(
-                              'assets/images/customer-2.png',
-                              width: MediaQuery.of(context).size.width * 0.4,
-                              height: 110,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
                         const Padding(
-                          padding: EdgeInsets.only(right: 80),
+                          padding: EdgeInsets.only(left: 20, right: 20),
                           child: Text(
-                            'Hunting',
+                            'About Me',
                             style: TextStyle(fontWeight: FontWeight.w700),
                           ),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(right: 45),
-                          child: Text('3.5 hour drive'),
-                        )
-                      ],
-                    ),
-                    Column(
-                      children: <Widget>[
+                        const SizedBox(
+                          height: 10,
+                        ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 20, right: 20),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.asset(
-                              'assets/images/profile-photos-2.png',
-                              width: MediaQuery.of(context).size.width * 0.4,
-                              height: 110,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                          padding: EdgeInsets.only(left: 20, right: 20),
+                          child: Text(userGuideDetails.about!),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(right: 80),
-                          child: Text('Rowing',
-                              style: TextStyle(fontWeight: FontWeight.w700)),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(right: 45),
-                          child: Text('3.5 hour drive',
-                              style: TextStyle(fontSize: 14)),
-                        )
                       ],
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              const Padding(
-                padding: EdgeInsets.only(left: 20, right: 20),
-                child: Text(
-                  'Certificates',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: <Widget>[
-                    buildImage(context, 'assets/images/customer-2.png'),
-                    buildImage(
-                      context,
-                      'assets/images/image2.png',
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Padding(
-                padding: EdgeInsets.only(left: 20, right: 20),
-                child: Text(
-                    'Bacon ipsum dolor amet turducken hamburger leberkas, brisket porchetta drumstick rump ham hock chuck chicken. Pig alcatra filet mignon ham hamburger. Prosciutto turkey chislic beef ribs. Andouille meatloaf leberkas ribeye tenderloin. Picanha burgdoggen landjaeger flank beef, tail porchetta.'),
-              ),
-              const SizedBox(height: 40),
-              const Padding(
-                padding: EdgeInsets.only(left: 20, right: 20),
-                child: Text(
-                  'Location',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Padding(
-                padding: EdgeInsets.only(left: 20, right: 20),
-                child: Text('St John, Newfoundland, Canada'),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.only(left: 20, right: 20),
-                height: 180,
-                width: MediaQuery.of(context).size.width,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      //innital position in map
-                      target: showLocation, //initial position
-                      zoom: 10, //initial zoom level
+                  if (profileImages.imageUrl1.isNotEmpty) buildProfileImages(),
+                  if (packages.isNotEmpty)
+                    Padding(
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        child: buildNearbyActivities()),
+                  if (certificates.isNotEmpty) buildCertificates(),
+                  const SizedBox(height: 20),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20, right: 20),
+                    child: Text(
+                      'Location',
+                      style: TextStyle(fontWeight: FontWeight.w700),
                     ),
-                    markers: markers, //markers to show on map
-                    onMapCreated: (GoogleMapController controller) {
-                      //method called when map is created
-                      setState(() {
-                        mapController = controller;
-                      });
-                    },
                   ),
-
-                  // child: GoogleMap(
-                  //   initialCameraPosition:
-                  //       CameraPosition(target: _initialcameraposition),
-                  //   onMapCreated: _onMapCreated,
-                  //   myLocationEnabled: true,
-                  // ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              divider(),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      const ReviewsProfileScreen()));
-                        },
-                        child: const Text(
-                          'Reviews',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xff056028),
-                          ),
-                        )),
+                  const SizedBox(height: 20),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20, right: 20),
+                    child: Text('St John, Newfoundland, Canada'),
                   ),
-                  Row(
-                    children: const <Widget>[
-                      Icon(
-                        Icons.star,
-                        color: Color(0xff056028),
-                        size: 14,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text(
-                          '19 Reviews',
-                          style: TextStyle(fontSize: 12),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    height: 180,
+                    width: MediaQuery.of(context).size.width,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          //innital position in map
+                          target: showLocation, //initial position
+                          zoom: 10, //initial zoom level
                         ),
+                        markers: markers, //markers to show on map
+                        onMapCreated: (GoogleMapController controller) {
+                          //method called when map is created
+                          setState(() {
+                            mapController = controller;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  divider(),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          const ReviewsProfileScreen()));
+                            },
+                            child: const Text(
+                              'Reviews',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xff056028),
+                              ),
+                            )),
+                      ),
+                      Row(
+                        children: const <Widget>[
+                          Icon(
+                            Icons.star,
+                            color: Color(0xff056028),
+                            size: 14,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(right: 20),
+                            child: Text(
+                              '0 Reviews',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          )
+                        ],
                       )
                     ],
                   )
                 ],
+              ),
+      ));
+
+  // UI FOR LOADING DATA
+  Widget buildLoadingData() => Container(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Center(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                    SizedBox(height: 30.h),
+                    SkeletonText(
+                      shape: BoxShape.circle,
+                      height: 110.h,
+                      width: 110.w,
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    SkeletonText(
+                      height: 15.h,
+                      width: 100.w,
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    SkeletonText(
+                      height: 15.h,
+                      width: 60.w,
+                    ),
+                  ])),
+              SizedBox(height: 20.h),
+              SkeletonText(
+                height: 15.h,
+                width: 260.w,
+              ),
+              SizedBox(height: 10.h),
+              SkeletonText(
+                height: 15.h,
+                width: 200.w,
+              ),
+              SizedBox(height: 20.h),
+              buildLoadingDataList(),
+              SizedBox(height: 20.h),
+              Center(
+                child: SkeletonText(
+                  height: 200.h,
+                  width: 350.w,
+                ),
+              )
+            ]),
+      );
+
+  //PROFILE DETAILS SECTION
+  Widget buildUserDetails() => Container(
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          buildCircleAvatar(userGuideDetails.firebaseProfilePicUrl!),
+          SizedBox(height: 14.h),
+          Center(
+            child: Text(
+              userGuideDetails.fullName!,
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20.sp),
+            ),
+          ),
+          SizedBox(height: 10.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const <Widget>[
+              Icon(
+                Icons.star,
+                color: Color(0xff056028),
+                size: 14,
+              ),
+              Text(
+                '0 Reviews',
+                style: TextStyle(fontSize: 12),
               )
             ],
           ),
-        )));
+        ],
+      ));
+
+  // PROFILE IMAGES SECTION
+  Widget buildProfileImages() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const SizedBox(height: 20),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: <Widget>[
+                if (profileImages.imageUrl1 != '')
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) {
+                        return ProfilePhotosViewer(
+                            profileImages: profileImages);
+                      }));
+                    },
+                    child: buildImage(context, profileImages.imageUrl1),
+                  ),
+                if (profileImages.imageUrl1 != '')
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) {
+                          return ProfilePhotosViewer(
+                              profileImages: profileImages,initialPage: 1);
+                        }));
+                      },
+                      child: buildImageWithFilter(
+                          context, profileImages.imageUrl2))
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+      );
+
+  //ABOUT SECTION
+  Widget buildAbout() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Padding(
+            padding: EdgeInsets.only(left: 20, right: 20),
+            child: Text(
+              'About Me',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            child: Text(userGuideDetails.about!),
+          ),
+        ],
+      );
+
+  //NEARBY ACTIVITIES SECTION
+  Widget buildNearbyActivities() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const Text(
+          'Explore Nearby Activities/Packages',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+        ),
+        SizedBox(
+          height: 200.h,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: packages.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+                margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 20.h),
+                height: 110,
+                width: MediaQuery.of(context).size.width * 0.4,
+                decoration: const BoxDecoration(
+                  color: Colors.transparent,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {
+                        // checkAvailability(
+                        //     context, snapshot.data![index]);
+                        Navigator.of(context).pushNamed(
+                            '/activity_package_info',
+                            arguments: packages[index]);
+                      },
+                      child: Container(
+                        height: 110,
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15.r),
+                          ),
+                          border: Border.all(color: AppColors.galleryWhite),
+                          image: DecorationImage(
+                              image: NetworkImage(
+                                packages[index].firebaseCoverImg!,
+                              ),
+                              fit: BoxFit.cover),
+                        ),
+                        child: Stack(
+                          children: <Widget>[
+                            Positioned(
+                              bottom: 10,
+                              left: 20,
+                              child: Image.memory(
+                                base64.decode(packages[index]
+                                    .mainBadge!
+                                    .imgIcon!
+                                    .split(',')
+                                    .last),
+                                width: 30,
+                                height: 30,
+                                gaplessPlayback: true,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    Text(
+                      packages[index].name!,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16.sp,
+                          fontFamily: 'Gilroy',
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Container(
+                          height: 10.h,
+                          width: 10.w,
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
+                            ),
+                            image: const DecorationImage(
+                              image: AssetImage('assets/images/png/clock.png'),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 2.w,
+                        ),
+                        Text(
+                          // snapshot.data![index].timeToTravel!,
+                          '0.0 hour drive',
+                          style: TextStyle(
+                              color: HexColor('#696D6D'),
+                              fontSize: 11.sp,
+                              fontFamily: 'Gilroy',
+                              fontWeight: FontWeight.normal),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // CERTIFICATES SECTION
+  Widget buildCertificates() => Container(
+        padding: const EdgeInsets.only(left: 10, right: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const Padding(
+                padding: EdgeInsets.only(left: 20, right: 20),
+                child: Text(
+                  'Certificates',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                )),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 120.h,
+              child: ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () => Navigator.of(context).pushNamed(
+                        '/view_certificate',
+                        arguments: certificates[index]),
+                    child: Container(
+                      child: buildImage(context,
+                          certificates[index].certificatePhotoFirebaseUrl!),
+                    ),
+                  );
+                },
+                itemCount: certificates.length,
+              ),
+            ),
+          ],
+        ),
+      );
+
+  //LOADING WIDGET
+  Widget buildLoadingDataList() =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+        SkeletonText(
+          height: 25.h,
+          width: 140.w,
+        ),
+        SizedBox(height: 12.h),
+        SizedBox(
+          height: 120.h,
+          child: ListView.builder(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  margin: EdgeInsets.only(right: 12.w),
+                  child: SkeletonText(
+                    height: 120.h,
+                    width: 140.w,
+                  ),
+                );
+              },
+              itemCount: 5),
+        ),
+        SizedBox(height: 12.h),
+      ]);
+
+  // API CALLS
+  Future<void> getGuideUserDetails() async {
+    final User result = await APIServices().getUserDetails(widget.userId);
+    setState(() {
+      userGuideDetails = result;
+      isLoadingProfileDetails = false;
+    });
+
+    await getImages();
+  }
+
+  Future<void> getImages() async {
+    final UserProfileImage res =
+        await APIServices().getUserProfileImages(widget.userId);
+    debugPrint('Data image: ${res.imageUrl1}');
+
+    if (res.id != '') {
+      setState(() {
+        // _profilePhotoController.setProfileImages(res);
+        profileImages = res;
+        isLoadingProfileImages = false;
+      });
+    } else {
+      final UserProfileImage addImagesResponse =
+          await APIServices().addUserProfileImages(UserProfileImage());
+      debugPrint('Response:: $addImagesResponse');
+    }
+  }
+
+  ///Get Certificates
+  Future<void> getCertificates() async {
+    final List<Certificate> res =
+        await APIServices().getCertificates(widget.userId);
+
+    debugPrint('Certificate ${res[0].certificateName}');
+    setState(() {
+      certificates = res;
+      isLoadingCertificates = false;
+    });
+  }
+
+  Future<void> getPackages() async {
+    debugPrint('USer id ${widget.userId}');
+    final List<ActivityPackage> res =
+        await APIServices().getGuidePackages(widget.userId);
+    debugPrint('Res: ${res.length}');
+
+    setState(() {
+      packages = res;
+      isLoadingPackages = false;
+    });
   }
 }

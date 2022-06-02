@@ -26,13 +26,14 @@ class UserDetailsModel {
       this.firebaseImg = '',
       this.isTraveller = false,
       this.isFirstAid = false,
+        this.isGuide = false,
       this.createdDate});
 
   /// String property initialization
   final String id, fullName, email, phoneNumber, firebaseImg;
 
   /// boolean initialization
-  final bool isTraveller, isFirstAid;
+  final bool isTraveller, isFirstAid, isGuide;
 
   final DateTime? createdDate;
 
@@ -45,5 +46,6 @@ class UserDetailsModel {
         firebaseImg = parseJson['profile_photo_firebase_url'] ?? '',
         isTraveller = parseJson['is_traveller'] ?? false,
         isFirstAid = parseJson['is_first_aid_trained'] ?? false,
+        isGuide = parseJson['is_guide'] ?? false,
         createdDate = DateTime.parse(parseJson['created_date']);
 }

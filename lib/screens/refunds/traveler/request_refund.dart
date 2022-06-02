@@ -231,7 +231,8 @@ class _RequestRefundState extends State<RequestRefund> {
                           fontWeight: FontWeight.w600,
                           color: AppColors.grey))),
               // const Spacer(),
-              Container(
+
+             /* Container(
                   color: Colors.white,
                   height: 30,
                   width: 80,
@@ -244,7 +245,7 @@ class _RequestRefundState extends State<RequestRefund> {
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                                 color: AppColors.deepGreen, width: 0.0),
-                          )))),
+                          )))),*/
             ],
           ));
 

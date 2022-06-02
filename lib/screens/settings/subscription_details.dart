@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -63,22 +64,31 @@ class _SubscriptionDetailsState extends State<SubscriptionDetails> {
               height: 15.h,
             ),
 
-            Card(
-              shadowColor: Colors.grey,
-                child: ListTile(
-                  leading: Image.asset(AssetsPath.discoveryTree),
-              title: Text('You are Subscribed',
-                  style:
-                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
-              subtitle: Text(
-                'Your subscription is valid until ${DateFormat("MMM dd , yyy").format(DateTime.parse(userSubscriptionDetails.endDate))}',
-                style: TextStyle(fontSize: 14.sp),
-              ),
-            ))
+            GetBuilder<UserSubscriptionController>(
+                builder: (UserSubscriptionController controller) {
+              userSubscriptionDetails = controller.userSubscription;
+              return Card(
+                  shadowColor: Colors.grey,
+                  child: ListTile(
+                    leading: Image.asset(AssetsPath.discoveryTree),
+                    title: Text('You are Subscribed',
+                        style: TextStyle(
+                            fontSize: 16.sp, fontWeight: FontWeight.w600)),
+                    subtitle: Text(
+                      'Your subscription is valid until ${DateFormat("MMM dd , yyy").format(DateTime.parse(userSubscriptionDetails.endDate))}',
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
+                  ));
+            })
             // Expanded(child: buildNotificationList())
           ],
         ),
       )),
     );
+  }
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<UserSubscription>('userSubscriptionDetails', userSubscriptionDetails));
   }
 }

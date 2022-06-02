@@ -57,7 +57,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
 
   ///Get Certificates
   Future<void> getCertificates() async {
-    final List<Certificate> res = await APIServices().getCertificates();
+    final List<Certificate> res = await APIServices().getCertificates(_profileDetailsController.userProfileDetails.id);
 
     debugPrint('Certificate ${res.length}');
     await _certificateController.initCertificates(res);

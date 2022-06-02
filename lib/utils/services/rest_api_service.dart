@@ -286,8 +286,10 @@ class APIServices {
 
   /// API service for profile model
   Future<ProfileDetailsModel> getProfileData() async {
-    final String userId =
+    final String? userId =
         await SecureStorage.readValue(key: AppTextConstants.userId);
+
+    debugPrint('Profile USER ID $userId');
     final String url =
         '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/$userId';
     debugPrint('URL $url');
@@ -466,6 +468,8 @@ class APIServices {
 
   /// API service for currencies
   Future<List<ActivityPackage>> getActivityPackagesbyDescOrder() async {
+    debugPrint(
+        'Packages Url: ${Uri.parse('${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}')}');
     final http.Response response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),
@@ -991,7 +995,9 @@ class APIServices {
   ///API Service for Retrieving User Cards
   Future<List<CardModel>> getCards() async {
     final String? token = UserSingleton.instance.user.token;
-    final String? userId = UserSingleton.instance.user.user?.id;
+    final String userId =
+        await SecureStorage.readValue(key: AppTextConstants.userId);
+    debugPrint('User id cards $userId');
 
     final Map<String, String> queryParameters = {
       'filter': 'user_id||eq||"$userId"',
@@ -1207,30 +1213,46 @@ class APIServices {
 
   /// API service for user  adding subscription
   Future<APIStandardReturnFormat> addUserSubscription(
-      UserSubscription params, String paymentMethod) async {
+      UserSubscription params, String paymentMethod, String action) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-    final http.Response response = await http.post(
-        Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.userSubscription}'),
-        headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
-          HttpHeaders.contentTypeHeader: 'application/json',
-        },
-        body: jsonEncode(<String, String>{
-          'user_id': userId.toString(),
-          'name': params.name,
-          'payment_reference_no': params.paymentReferenceNo,
-          'start_date': params.startDate,
-          'end_date': params.endDate,
-          'message': params.message,
-          'price': params.price
-        }));
+    final String requestMethod = action == 'add' ? 'POST' : 'PATCH';
+    final Uri uri = action == 'add'
+        ? Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.userSubscription}')
+        : Uri.parse(
+            '$apiBaseMode$apiBaseUrl${AppAPIPath.userSubscription}/${params.id}');
+    debugPrint('REQUEST METHOD:: $action ${params.id}');
+
+    final http.Request request = http.Request(
+      requestMethod,
+      uri,
+    );
+
+    request.headers.addAll({
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+      HttpHeaders.contentTypeHeader: 'application/json',
+    });
+    request.body = jsonEncode(<String, String>{
+      'user_id': userId.toString(),
+      'name': params.name,
+      'payment_reference_no': params.paymentReferenceNo,
+      'start_date': params.startDate,
+      'end_date': params.endDate,
+      'message': params.message,
+      'price': params.price
+    });
+
+    final http.StreamedResponse streamedResponse = await request.send();
+    final http.Response response =
+        await http.Response.fromStream(streamedResponse);
+
+    debugPrint('Response: ${response.body}');
 
     final PaymentTransactionModel transactionParams = PaymentTransactionModel(
         serviceName: 'Premium Subscription',
         transactionNumber: params.paymentReferenceNo,
-        amount: '${params.price}',
+        amount: params.price,
         type: AppTextConstants.deduction,
         paymentMethod: paymentMethod);
     await savePaymentTransaction(transactionParams);
@@ -1505,9 +1527,9 @@ class APIServices {
   }
 
   ///API Service for  retrieving user profile image
-  Future<UserProfileImage> getUserProfileImages() async {
+  Future<UserProfileImage> getUserProfileImages(String userId) async {
     final String? token = UserSingleton.instance.user.token;
-    final String? userId = UserSingleton.instance.user.user?.id;
+    // final String? userId = UserSingleton.instance.user.user?.id;
 
     final Map<String, String> queryParameters = {
       'filter': 'user_id||eq||"$userId"',
@@ -2244,6 +2266,8 @@ class APIServices {
 
     final List<NotificationModel> notifications = <NotificationModel>[];
 
+    debugPrint('data ${response.body}');
+
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
       final NotificationModel _notification = NotificationModel.fromJson(data);
@@ -2296,7 +2320,9 @@ class APIServices {
   Future<UserListModel> getUserListData() async {
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.userTypeUrl}/tourist%20guide'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/api/v1/users?page=1&limit=50'),
+        // Uri.parse(
+        //     '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.userTypeUrl}/tourist%20guide'),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${UserSingleton.instance.user.token}',
@@ -2330,9 +2356,9 @@ class APIServices {
   }
 
   ///Api services for certificates
-  Future<List<Certificate>> getCertificates() async {
+  Future<List<Certificate>> getCertificates(String userId) async {
     final String? token = UserSingleton.instance.user.token;
-    final String? userId = UserSingleton.instance.user.user?.id;
+    // final String? userId = UserSingleton.instance.user.user?.id;
     final Map<String, String> queryParameters = {
       'filter': 'user_id||eq||"$userId"',
     };
@@ -2491,8 +2517,7 @@ class APIServices {
 
     final http.Response response = await http.patch(
         Uri.parse(
-            '$apiBaseMode$apiBaseUrl/${AppAPIPath
-                .getProfileDetails}/newpassword/$userId'),
+            '$apiBaseMode$apiBaseUrl/${AppAPIPath.getProfileDetails}/newpassword/$userId'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           'content-type': 'application/json'
@@ -2501,7 +2526,7 @@ class APIServices {
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
-  
+
   /// API service for advertisement model
   Future<PackageModelData> getPackageDataByUserId(String userId) async {
     final http.Response response = await http.get(
@@ -2517,5 +2542,29 @@ class APIServices {
         PackageModelData.fromJson(json.decode(response.body));
 
     return PackageModelData(packageDetails: dataSummary.packageDetails);
+  }
+
+  /// API service for guide packages
+  Future<List<ActivityPackage>> getGuidePackages(String userId) async {
+    final Map<String, String> queryParameters = {
+      'filter': 'user_id||eq||"$userId"',
+      'sort': 'created_date,DESC'
+    };
+
+    final http.Response response = await http.get(
+        Uri.http(
+            apiBaseUrl, '/${AppAPIPath.activityPackagesUrl}', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}'
+        });
+
+    final dynamic jsonData = jsonDecode(response.body);
+    print(jsonData);
+    final List<ActivityPackage> activityPackages = <ActivityPackage>[];
+    final List<ActivityPackage> activityPackage =
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+    activityPackages.addAll(activityPackage);
+    return activityPackages;
   }
 }

@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/certificate.dart';
 import 'package:guided/screens/activities/activities.dart';
+import 'package:guided/screens/activities/activity_package_info.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/bank_accounts/add_bank_account.dart';
 import 'package:guided/screens/bank_accounts/manage_payment.dart';
@@ -92,6 +94,7 @@ import 'package:guided/screens/profile/profile_details/about_me/screen/edit_prof
 import 'package:guided/screens/profile/profile_details/certificate/screen/add_certificate_modal.dart';
 import 'package:guided/screens/profile/profile_details/certificate/screen/certificate_screen.dart';
 import 'package:guided/screens/profile/profile_details/certificate/screen/edit_certificate.dart';
+import 'package:guided/screens/profile/profile_details/certificate/screen/view_certificate.dart';
 import 'package:guided/screens/profile/reviews_profile.dart';
 
 import 'package:guided/screens/payments/payment_edit_card.dart';
@@ -326,7 +329,7 @@ class RouteGenerator {
             settings: settings);
       case '/main_profile':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const MainProfileScreen());
+            builder: (_) =>   MainProfileScreen(userId: args! as String));
       case '/reviews_profile':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ReviewsProfileScreen());
@@ -456,6 +459,12 @@ class RouteGenerator {
       case '/change_password':
         return MaterialPageRoute<dynamic>(
             builder: (_) => ChangePasswordScreen());
+      case '/activity_package_info':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => ActivityPackageInfo(package:  args! as ActivityPackage));
+      case '/view_certificate':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => CertificateView(certificate:  args! as Certificate));
       default:
         return _errorRoute();
     }

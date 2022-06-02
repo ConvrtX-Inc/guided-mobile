@@ -323,6 +323,14 @@ class _SettingsItemsState extends State<SettingsItems> {
                                   context: context,
                                   paymentDetails: DiscoveryPaymentDetails(
                                       transactionNumber: transactionNumber),
+                                  onBtnPressed: (){
+                                    int count = 0;
+                                    Navigator.popUntil(context, (route) {
+                                      return count++ == 2;
+                                    });
+                                    Navigator.of(context).pushNamed('/subscription_details');
+                                  },
+                                  btnText: 'View Subscription',
                                   paymentMethod: mode);
                             },
                             onPaymentFailed: () {
@@ -352,19 +360,26 @@ class _SettingsItemsState extends State<SettingsItems> {
 
   Future<void> saveSubscription(String transactionNumber,
       String subscriptionName, String price, String paymentMethod) async {
+    String actionType = 'add';
     final DateTime startDate = DateTime.now();
 
     final DateTime endDate = GlobalMixin().getEndDate(startDate);
 
-    final UserSubscription subscriptionParams = UserSubscription(
+      UserSubscription subscriptionParams = UserSubscription(
         paymentReferenceNo: transactionNumber,
         name: subscriptionName,
         startDate: startDate.toString(),
         endDate: endDate.toString(),
         price: price);
 
+    if(_userSubscriptionController.userSubscription.id.isNotEmpty){
+      subscriptionParams.id = _userSubscriptionController.userSubscription.id;
+      actionType ='update';
+    }
+
+
     final APIStandardReturnFormat result = await APIServices()
-        .addUserSubscription(subscriptionParams, paymentMethod);
+        .addUserSubscription(subscriptionParams, paymentMethod,actionType);
 
     final jsonData = jsonDecode(result.successResponse);
     _userSubscriptionController.setSubscription(UserSubscription.fromJson(jsonData));
