@@ -23,6 +23,7 @@ import 'package:guided/screens/profile/profile_widgets.dart';
 import 'package:guided/screens/profile/reviews_profile.dart';
 import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
+import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:location/location.dart';
 
@@ -352,7 +353,7 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
                         }));
                       },
                       child: buildImageWithFilter(
-                          context, profileImages.imageUrl2))
+                         context:  context, image: profileImages.imageUrl2, count:  GlobalMixin().getTotalProfileImages(profileImages) > 2 ? GlobalMixin().getTotalProfileImages(profileImages) - 2 : 0 ))
               ],
             ),
           ),

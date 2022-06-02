@@ -20,7 +20,6 @@ class Activity {
 
   /// distance
   final String distance;
-
   /// featured image
   final String featureImage;
 }

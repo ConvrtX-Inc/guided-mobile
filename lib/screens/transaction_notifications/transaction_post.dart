@@ -39,8 +39,6 @@ with SingleTickerProviderStateMixin{
   {
     this.refreshData = refreshData;
   }
-
-
   void setPosts(List<Post> posts){
     setState(() => this.posts = posts);
     filter();

@@ -296,7 +296,7 @@ class AppTextConstants {
   static String postalCodeHint = 'Postal Code (Canada)';
 
   /// Returns create outfitter text
-  static String createOutfitter = 'Create Outfitter';
+  static String createOutfitter = 'Submit Outfitter';
 
   /// Returns sample lake cleaning text
   static String lakeCleaning = 'Lake Cleaning Initiative By XYZ Company';

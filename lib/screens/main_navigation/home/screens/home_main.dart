@@ -129,9 +129,6 @@ class _HomeScreenState extends State<HomeScreen>
           } else if (index == 2) {
             if (image3 == '') {
               setData3(resData[index].fromUserFirebaseProfilePic!,
-                  resData[index].fromUserId!);
-            }
-          }
         }
 
         setState(() {

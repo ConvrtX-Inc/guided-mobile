@@ -59,7 +59,7 @@ Center buildCircleAvatar(String image) {
   );
 }
 
-Padding buildImageWithFilter(BuildContext context, String image) {
+Padding buildImageWithFilter({required BuildContext context, required String image, int count = 0}) {
   return Padding(
     padding: const EdgeInsets.only(left: 20, right: 20),
     child: ClipRRect(
@@ -71,20 +71,20 @@ Padding buildImageWithFilter(BuildContext context, String image) {
           color: AppColors.codGray,
           image: DecorationImage(
             fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.6), BlendMode.dstATop),
+            colorFilter: count > 0 ?  ColorFilter.mode(
+                Colors.black.withOpacity(0.6), BlendMode.dstATop) : null,
             image: NetworkImage(
               image,
             ),
           ),
         ),
-        child: const Center(
+        child:  count > 0 ?  Center(
           child: Text(
-            '4+',
+            '$count+',
             style: TextStyle(
                 color: Colors.white, fontSize: 28, fontWeight: FontWeight.w500),
           ),
-        ),
+        ) : null,
       ),
     ),
   );

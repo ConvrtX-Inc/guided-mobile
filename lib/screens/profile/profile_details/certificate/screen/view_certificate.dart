@@ -28,7 +28,7 @@ class _CertificateViewState extends State<CertificateView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // resizeToAvoidBottomInset: true,
+      // resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -50,34 +50,34 @@ class _CertificateViewState extends State<CertificateView> {
   }
 
   Widget buildCertificateDetailUI() => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return ImageViewerScreen(
-                    imageUrl: widget.certificate.certificatePhotoFirebaseUrl!);
-              }));
-            },
-            child: Container(
-              height: 240.h,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: NetworkImage(
-                        widget.certificate.certificatePhotoFirebaseUrl!),
-                    fit: BoxFit.contain),
-              ),
-            ),
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      GestureDetector(
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) {
+            return ImageViewerScreen(
+                imageUrl: widget.certificate.certificatePhotoFirebaseUrl!);
+          }));
+        },
+        child: Container(
+          height: 240.h,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: NetworkImage(
+                    widget.certificate.certificatePhotoFirebaseUrl!),
+                fit: BoxFit.contain),
           ),
+        ),
+      ),
 
-          Container(
-            padding: EdgeInsets.all(22.w),
-            child: Text(
-              widget.certificate.certificateDescription!,
-              textAlign: TextAlign.justify,
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
-            ),
-          )
-        ],
-      );
+      Container(
+        padding: EdgeInsets.all(22.w),
+        child: Text(
+          widget.certificate.certificateDescription!,
+          textAlign: TextAlign.justify,
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
+        ),
+      )
+    ],
+  );
 }

@@ -26,6 +26,7 @@ import 'package:guided/screens/message/message_screen_traveler.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 ///Activity Package Info Screen
 class ActivityPackageInfo extends StatefulWidget {
@@ -148,7 +149,10 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                           color: Colors.black,
                           size: 25,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Share.share('${widget.package.name!} \n  ${widget.package.firebaseCoverImg!} ${widget.package.description!}');
+
+                        },
                       ),
                     ),
                   ),

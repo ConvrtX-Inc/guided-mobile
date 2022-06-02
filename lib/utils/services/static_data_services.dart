@@ -94,7 +94,7 @@ class StaticDataService {
           id: AppAPIPath.mode == 'dev'
               ? '97253245-07c1-47e8-9da6-2187e6a1c648'
               : '0ef59c29-2c4c-4998-93d1-053e470735fd',
-          name: 'Hunt',
+          name: 'Hunting',
           path: 'assets/images/png/activity_icon0.png',
           distance: '3.5 hours drive',
           featureImage: 'assets/images/png/activity1.png'),

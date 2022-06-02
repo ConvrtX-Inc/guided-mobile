@@ -131,6 +131,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
               .activityPackageDestinationLongitude!);
           marks.add(
             Marker(
+              onTap: (){
+                debugPrint('Activity ${element.name}');
+                showActivityDetails(element);
+              },
               markerId: MarkerId(element.id!),
               icon: await MarkerIcon.pictureAsset(
                   assetPath: activity.path, width: 80, height: 80),
@@ -201,7 +205,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                 color: HexColor('#F8F7F6'),
               ),
               height: hideActivities
-                  ? MediaQuery.of(context).size.height * 0.23
+                  ? MediaQuery.of(context).size.height * 0.24
                   : MediaQuery.of(context).size.height * 0.35,
               width: MediaQuery.of(context).size.width,
               child: Column(
@@ -694,15 +698,19 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     },
                   ),
 
-                  SizedBox(
-                    height: hideActivities ? 20 : 40.h,
-                  ),
+                  // SizedBox(
+                  //   height: hideActivities ? 20 : 40.h,
+                  // ),
 
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
-                    height: activitiesContainer,
-                    child:
-                        hideActivities ? Container() : overlapped(activities),
+                    // height: activitiesContainer,
+                    child: hideActivities
+                        ? Container(margin: EdgeInsets.only(top: 20.h))
+                        : Container(
+                            margin: EdgeInsets.only(top: 40.h),
+                            child: overlapped(activities),
+                          ),
                   ),
                   // const Spacer(),
                   Align(
@@ -779,11 +787,15 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                       // Navigator.of(context)
                                       //     .pushNamed('/discovery_map');
                                       if (!hasPremiumSubscription &&
-                                          PaymentConfig.isPaymentEnabled && _filteredActivity[i].premiumUser!) {
+                                          PaymentConfig.isPaymentEnabled &&
+                                          _filteredActivity[i].premiumUser!) {
                                         _showDiscoveryBottomSheet(
-                                            _filteredActivity[i].firebaseCoverImg!);
-                                      }else{
-                                        Navigator.of(context).pushNamed('/activity_package_info',arguments: _filteredActivity[i]);
+                                            _filteredActivity[i]
+                                                .firebaseCoverImg!);
+                                      } else {
+                                        Navigator.of(context).pushNamed(
+                                            '/activity_package_info',
+                                            arguments: _filteredActivity[i]);
                                       }
                                     },
                                     child: Container(
@@ -819,12 +831,11 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                 Radius.circular(15.r),
                                               ),
                                               image: DecorationImage(
-                                                  image: Image.network(
-                                                _filteredActivity[i]
-                                                    .firebaseCoverImg!,
-                                                fit: BoxFit.cover,
-                                                gaplessPlayback: true,
-                                              ).image),
+                                                  image: NetworkImage(
+                                                    _filteredActivity[i]
+                                                        .firebaseCoverImg!,
+                                                  ),
+                                                  fit: BoxFit.cover),
                                               // image: DecorationImage(
                                               //     image: Image.memory(
                                               //   base64.decode(
@@ -1378,5 +1389,20 @@ class _TabMapScreenState extends State<TabMapScreen> {
     setState(() {
       hasPremiumSubscription = true;
     });
+  }
+
+
+  showActivityDetails(ActivityPackage activityPackage){
+    return showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+        ),
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return Text('Package ${activityPackage.name} ');
+        });
   }
 }

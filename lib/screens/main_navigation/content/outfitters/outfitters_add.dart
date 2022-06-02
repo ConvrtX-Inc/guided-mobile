@@ -736,7 +736,7 @@ class _OutfitterAddState extends State<OutfitterAdd> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    HeaderText.headerText(AppTextConstants.outfitters),
+                    HeaderText.headerText('Product'),
                     SizedBox(height: 50.h),
                     Text(
                       AppTextConstants.uploadImages,

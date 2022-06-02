@@ -15,7 +15,6 @@ import 'package:guided/utils/services/rest_api_service.dart';
 class LocationScreen extends StatefulWidget {
   /// Constructor
   const LocationScreen({Key? key}) : super(key: key);
-
   @override
   _LocationScreenState createState() => _LocationScreenState();
 }
