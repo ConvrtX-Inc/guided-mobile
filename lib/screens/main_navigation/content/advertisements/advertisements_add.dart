@@ -1708,7 +1708,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
         //Display payment successful when advertisement is created
         await paymentSuccessful(
             context: context,
-            onOkBtnPressed: () async {
+            onBtnPressed: () async {
               int count = 0;
               Navigator.popUntil(context, (route) {
                 return count++ == 3;

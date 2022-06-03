@@ -4,6 +4,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'dart:math';
 
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/profile_image.dart';
 
 ///Global Mixin
 class GlobalMixin {
@@ -61,16 +62,18 @@ class GlobalMixin {
   }
 
   ///Get Formatted Card Number
-  String getFormattedCardNumber({required String cardNumber, int startingNumber = 5}){
-    return cardNumber.replaceRange(startingNumber, cardNumber.length - 4, '*' * (cardNumber.length - 4 - startingNumber));
+  String getFormattedCardNumber(
+      {required String cardNumber, int startingNumber = 5}) {
+    return cardNumber.replaceRange(startingNumber, cardNumber.length - 4,
+        '*' * (cardNumber.length - 4 - startingNumber));
   }
 
   ///Get status Color
-  Color getStatusColor(String status){
+  Color getStatusColor(String status) {
     Color _statusColor = AppColors.lightningYellow;
-    switch(status.toLowerCase()){
+    switch (status.toLowerCase()) {
       case 'pending':
-        _statusColor =  AppColors.lightningYellow;
+        _statusColor = AppColors.lightningYellow;
         break;
       case 'completed':
         _statusColor = AppColors.mediumGreen;
@@ -81,5 +84,39 @@ class GlobalMixin {
     }
 
     return _statusColor;
+  }
+
+  int getTotalProfileImages(UserProfileImage profileImages) {
+    int count = 0;
+    if (profileImages.imageUrl1.isNotEmpty) {
+      count++;
+    }
+    if (profileImages.imageUrl2.isNotEmpty) {
+      count++;
+    }
+    if (profileImages.imageUrl3.isNotEmpty) {
+      count++;
+    }
+    if (profileImages.imageUrl4.isNotEmpty) {
+      count++;
+    }
+    if (profileImages.imageUrl5.isNotEmpty) {
+      count++;
+    }
+    if (profileImages.imageUrl6.isNotEmpty) {
+      count++;
+    }
+
+    return count;
+  }
+
+  ///Capture null data and convert it to string
+  dynamic captureNullToString(dynamic data) {
+    return <dynamic>['', null, false, 0].contains(data) ? '' : data;
+  }
+
+  ///Capture null place mark data and convert it to string
+  dynamic captureNullPlaceMarkToString(dynamic data) {
+    return <dynamic>['', null].contains(data) ? '' : '$data, ';
   }
 }

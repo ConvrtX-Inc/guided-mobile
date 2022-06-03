@@ -16,13 +16,6 @@ import 'package:guided/screens/widgets/reusable_widgets/credit_card.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 
 import 'package:pay/pay.dart' as pay;
-
-/// returns google wallet
-String googleWallet = 'assets/images/png/google_wallet.png';
-
-/// returns wallet app icon
-String walletAppIcon = 'assets/images/png/wallet_app_icon.png';
-
 /// returns bank card icon
 String bankCardIcon = 'assets/images/png/bank_card.png';
 

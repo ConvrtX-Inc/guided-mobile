@@ -1205,6 +1205,9 @@ class AppTextConstants {
 
   ///Returns birthdate text
   static String birthDate = 'Birth Date';
+
+  ///Returns nothing to display text
+  static String nothingToDisplay = 'Nothing to Display';
 }
 
 /// Class for error messages text

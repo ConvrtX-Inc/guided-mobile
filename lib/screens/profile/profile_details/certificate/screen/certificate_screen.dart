@@ -41,7 +41,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
   bool isLoading = false;
 
   final CertificateController _certificateController =
-      Get.put(CertificateController());
+  Get.put(CertificateController());
 
   final UserProfileDetailsController _profileDetailsController =
   Get.put(UserProfileDetailsController());
@@ -57,7 +57,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
 
   ///Get Certificates
   Future<void> getCertificates() async {
-    final List<Certificate> res = await APIServices().getCertificates();
+    final List<Certificate> res = await APIServices().getCertificates(_profileDetailsController.userProfileDetails.id);
 
     debugPrint('Certificate ${res.length}');
     await _certificateController.initCertificates(res);
@@ -74,7 +74,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
       setState(() {
         certificates.remove(certificate);
       });
-       Navigator.of(context).pop();
+      Navigator.of(context).pop();
     }
   }
 
@@ -112,98 +112,98 @@ class _CertificateScreenState extends State<CertificateScreen> {
           String _tempImage = '';
           return StatefulBuilder(builder: (context, setState) {
             final TextEditingController _certificateNameController =
-                TextEditingController();
+            TextEditingController();
             final TextEditingController _descriptionController =
-                TextEditingController();
+            TextEditingController();
             return SingleChildScrollView(
                 child: Form(
-              key: _formKey,
-              child: Container(
-                decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16))),
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                margin: EdgeInsets.only(left: 16.w, right: 16.w, top: 20.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 26.h,
-                    ),
-                    Row(
+                  key: _formKey,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16))),
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    margin: EdgeInsets.only(left: 16.w, right: 16.w, top: 20.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
-                          AppTextConstants.addCertificate,
-                          style: TextStyle(
-                              fontSize: 20.sp, fontWeight: FontWeight.w600),
+                        SizedBox(
+                          height: 26.h,
                         ),
-                        const Spacer(),
+                        Row(
+                          children: <Widget>[
+                            Text(
+                              AppTextConstants.addCertificate,
+                              style: TextStyle(
+                                  fontSize: 20.sp, fontWeight: FontWeight.w600),
+                            ),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () => Navigator.of(context).pop(),
+                              child: Image.asset(
+                                '${AssetsPath.assetsPNGPath}/close_btn.png',
+                                height: 22.h,
+                                width: 22.w,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        BorderedTextField(
+                          controller: _certificateNameController,
+                          labelText: AppTextConstants.certificateName,
+                          hintText: AppTextConstants.certificateName,
+                        ),
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        BorderedTextField(
+                          controller: _descriptionController,
+                          labelText: AppTextConstants.description,
+                          hintText: AppTextConstants.description,
+                          minLines: 8,
+                          maxLines: 10,
+                        ),
+                        SizedBox(
+                          height: 20.h,
+                        ),
                         GestureDetector(
-                          onTap: () => Navigator.of(context).pop(),
-                          child: Image.asset(
-                            '${AssetsPath.assetsPNGPath}/close_btn.png',
-                            height: 22.h,
-                            width: 22.w,
-                          ),
+                            onTap: () =>
+                                imagePickerBottomSheet(context, (image) async {
+                                  final Future<Uint8List> image1Bytes =
+                                  File(image.path).readAsBytes();
+                                  final String base64Image =
+                                  base64Encode(await image1Bytes);
+                                  setState(() {
+                                    _tempImage = base64Image;
+                                  });
+                                  debugPrint('Image ${_tempImage}');
+                                }),
+                            child: buildUploadCertificate(_tempImage)),
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        CustomRoundedButton(
+                            title: AppTextConstants.addNewCertificate,
+                            onpressed: () {
+                              if (_tempImage.isEmpty) {
+                                ErrorDialog().showErrorDialog(
+                                    title: '',
+                                    message: 'Certificate Image is required',
+                                    context: context);
+                              }
+                            }),
+                        SizedBox(
+                          height: 20.h,
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                    BorderedTextField(
-                      controller: _certificateNameController,
-                      labelText: AppTextConstants.certificateName,
-                      hintText: AppTextConstants.certificateName,
-                    ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                    BorderedTextField(
-                      controller: _descriptionController,
-                      labelText: AppTextConstants.description,
-                      hintText: AppTextConstants.description,
-                      minLines: 8,
-                      maxLines: 10,
-                    ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                    GestureDetector(
-                        onTap: () =>
-                            imagePickerBottomSheet(context, (image) async {
-                              final Future<Uint8List> image1Bytes =
-                                  File(image.path).readAsBytes();
-                              final String base64Image =
-                                  base64Encode(await image1Bytes);
-                              setState(() {
-                                _tempImage = base64Image;
-                              });
-                              debugPrint('Image ${_tempImage}');
-                            }),
-                        child: buildUploadCertificate(_tempImage)),
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                    CustomRoundedButton(
-                        title: AppTextConstants.addNewCertificate,
-                        onpressed: () {
-                          if (_tempImage.isEmpty) {
-                            ErrorDialog().showErrorDialog(
-                                title: '',
-                                message: 'Certificate Image is required',
-                                context: context);
-                          }
-                        }),
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                  ],
-                ),
-              ),
-            ));
+                  ),
+                ));
           });
         });
   }
@@ -216,8 +216,8 @@ class _CertificateScreenState extends State<CertificateScreen> {
           border: Border.all(color: Colors.grey, width: 0.2.w),
           image: tempImage.isNotEmpty
               ? DecorationImage(
-                  image: MemoryImage(base64Decode(tempImage)),
-                  fit: BoxFit.contain)
+              image: MemoryImage(base64Decode(tempImage)),
+              fit: BoxFit.contain)
               : null),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -331,29 +331,29 @@ class _CertificateScreenState extends State<CertificateScreen> {
     return GetBuilder<CertificateController>(
         builder: (CertificateController _controller) {
           certificates = _controller.certificates;
-      return Container(
-        padding: EdgeInsets.only(top: 19, left: 16, right: 16),
-        child: ListView.separated(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) {
-              return CertificateCard(
-                certificate: certificates[index],
-                onDeletePressed: () {
-                  _showRemoveDialog(certificates[index]);
+          return Container(
+            padding: EdgeInsets.only(top: 19, left: 16, right: 16),
+            child: ListView.separated(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (BuildContext context, int index) {
+                  return CertificateCard(
+                    certificate: certificates[index],
+                    onDeletePressed: () {
+                      _showRemoveDialog(certificates[index]);
+                    },
+                    onEditPressed: () {
+                      Navigator.of(context).pushNamed('/edit_certificate',
+                          arguments: certificates[index]);
+                    },
+                  );
                 },
-                onEditPressed: () {
-                  Navigator.of(context).pushNamed('/edit_certificate',
-                      arguments: certificates[index]);
+                separatorBuilder: (BuildContext context, int index) {
+                  return Divider(height: 10.0.h, color: Colors.transparent);
                 },
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return Divider(height: 10.0.h, color: Colors.transparent);
-            },
-            itemCount: certificates.length),
-      );
-    });
+                itemCount: certificates.length),
+          );
+        });
   }
 
   void _showRemoveDialog(Certificate certificate) {
@@ -408,17 +408,17 @@ class _CertificateScreenState extends State<CertificateScreen> {
                             height: 40.h,
                             decoration: BoxDecoration(
                                 border:
-                                    Border.all(color: Colors.red, width: 1.w),
+                                Border.all(color: Colors.red, width: 1.w),
                                 borderRadius: BorderRadius.circular(16)),
                             child: Center(
                                 child: Text(
-                              'Delete',
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12.sp,
-                                  fontFamily: 'Gilroy',
-                                  fontWeight: FontWeight.w700),
-                            ))),
+                                  'Delete',
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12.sp,
+                                      fontFamily: 'Gilroy',
+                                      fontWeight: FontWeight.w700),
+                                ))),
                       ),
                       InkWell(
                         onTap: () {
@@ -429,17 +429,17 @@ class _CertificateScreenState extends State<CertificateScreen> {
                             height: 40.h,
                             decoration: BoxDecoration(
                                 border:
-                                    Border.all(color: Colors.grey, width: 1.w),
+                                Border.all(color: Colors.grey, width: 1.w),
                                 borderRadius: BorderRadius.circular(16)),
                             child: Center(
                                 child: Text(
-                              'Cancel',
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12.sp,
-                                  fontFamily: 'Gilroy',
-                                  fontWeight: FontWeight.w700),
-                            ))),
+                                  'Cancel',
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12.sp,
+                                      fontFamily: 'Gilroy',
+                                      fontWeight: FontWeight.w700),
+                                ))),
                       ),
                     ]),
                 SizedBox(

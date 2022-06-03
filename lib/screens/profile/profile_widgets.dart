@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:guided/constants/asset_path.dart';
 
 import '../../constants/app_colors.dart';
 
@@ -29,7 +30,7 @@ Padding divider() {
   );
 }
 
-Center buildCircleAvatar() {
+Center buildCircleAvatar(String image) {
   return Center(
     child: Container(
       decoration: BoxDecoration(
@@ -40,19 +41,25 @@ Center buildCircleAvatar() {
               blurRadius: 2, color: AppColors.galleryWhite, spreadRadius: 2)
         ],
       ),
-      child: const CircleAvatar(
+      child: CircleAvatar(
         radius: 55,
         backgroundColor: Colors.white,
-        child: CircleAvatar(
+        child: image != ''
+            ? CircleAvatar(
           radius: 50,
-          backgroundImage: AssetImage('assets/images/profile-photos-2.png'),
+          backgroundImage: NetworkImage(image),
+        )
+            : const CircleAvatar(
+          radius: 50,
+          backgroundImage: AssetImage(
+              '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
         ),
       ),
     ),
   );
 }
 
-Padding buildImageWithFilter(BuildContext context) {
+Padding buildImageWithFilter({required BuildContext context, required String image, int count = 0}) {
   return Padding(
     padding: const EdgeInsets.only(left: 20, right: 20),
     child: ClipRRect(
@@ -64,36 +71,39 @@ Padding buildImageWithFilter(BuildContext context) {
           color: AppColors.codGray,
           image: DecorationImage(
             fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.6), BlendMode.dstATop),
-            image: const AssetImage(
-              'assets/images/profile-photos-2.png',
+            colorFilter: count > 0 ?  ColorFilter.mode(
+                Colors.black.withOpacity(0.6), BlendMode.dstATop) : null,
+            image: NetworkImage(
+              image,
             ),
           ),
         ),
-        child: const Center(
+        child:  count > 0 ?  Center(
           child: Text(
-            '4+',
+            '$count+',
             style: TextStyle(
                 color: Colors.white, fontSize: 28, fontWeight: FontWeight.w500),
           ),
-        ),
+        ) : null,
       ),
     ),
   );
 }
 
-Padding buildImage(BuildContext context, String asset) {
-  return Padding(
-    padding: const EdgeInsets.only(left: 20, right: 20),
+Container buildImage(BuildContext context, String image) {
+  return Container(
+    // decoration: BoxDecoration(border: Border.all(color:Colors.grey)),
+    padding: EdgeInsets.only(left: 20, right: 20),
     child: ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: Image.asset(
-        asset,
-        width: MediaQuery.of(context).size.width * 0.4,
-        height: 110,
-        fit: BoxFit.cover,
-      ),
+      child: Container(
+          decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+          child: Image.network(
+            image,
+            width: MediaQuery.of(context).size.width * 0.4,
+            height: 110,
+            fit: BoxFit.cover,
+          )),
     ),
   );
 }

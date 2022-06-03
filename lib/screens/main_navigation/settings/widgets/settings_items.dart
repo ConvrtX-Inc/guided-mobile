@@ -52,7 +52,7 @@ class _SettingsItemsState extends State<SettingsItems> {
   bool hasPremiumSubscription = false;
 
   final UserSubscriptionController _userSubscriptionController =
-      Get.put(UserSubscriptionController());
+  Get.put(UserSubscriptionController());
 
   UserSubscription userSubscriptionDetails = UserSubscription();
 
@@ -72,7 +72,7 @@ class _SettingsItemsState extends State<SettingsItems> {
               context: context,
               backgroundColor: Colors.transparent,
               builder: (BuildContext context) =>
-                  const SettingsCalendarManagement(),
+              const SettingsCalendarManagement(),
             );
             break;
           case 'transaction_history':
@@ -127,8 +127,8 @@ class _SettingsItemsState extends State<SettingsItems> {
             Navigator.pushNamed(context, '/notification_traveler');
             break;
           case 'premium_subscription':
-            ///For traveler role only
-             hasPremiumSubscription =
+          ///For traveler role only
+            hasPremiumSubscription =
             UserSingleton.instance.user.user!.hasPremiumSubscription!;
             if (hasPremiumSubscription) {
               Navigator.pushNamed(context, '/subscription_details');
@@ -141,10 +141,10 @@ class _SettingsItemsState extends State<SettingsItems> {
       },
       leading: widget._imgUrl.contains('.png')
           ? Image.asset(
-              widget._imgUrl,
-              height: 45,
-              width: 45,
-            )
+        widget._imgUrl,
+        height: 45,
+        width: 45,
+      )
           : SvgPicture.asset(widget._imgUrl),
       title: Text(
         widget._name,
@@ -163,7 +163,7 @@ class _SettingsItemsState extends State<SettingsItems> {
       isEnableTile = false;
     });
     final List<PresetFormModel> resForm =
-        await APIServices().getTermsAndCondition('terms_and_condition');
+    await APIServices().getTermsAndCondition('terms_and_condition');
     description = resForm[0].description;
     id = resForm[0].id;
 
@@ -185,7 +185,7 @@ class _SettingsItemsState extends State<SettingsItems> {
     });
 
     final List<PresetFormModel> resForm =
-        await APIServices().getTermsAndCondition('traveler_waiver_form');
+    await APIServices().getTermsAndCondition('traveler_waiver_form');
     description = resForm[0].description;
     id = resForm[0].id;
     final Map<String, dynamic> details = {
@@ -205,7 +205,7 @@ class _SettingsItemsState extends State<SettingsItems> {
     });
 
     final List<PresetFormModel> resForm =
-        await APIServices().getTermsAndCondition('cancellation_policy');
+    await APIServices().getTermsAndCondition('cancellation_policy');
     description = resForm[0].description;
     id = resForm[0].id;
     final Map<String, dynamic> details = {
@@ -226,7 +226,7 @@ class _SettingsItemsState extends State<SettingsItems> {
     });
 
     final List<PresetFormModel> resForm =
-        await APIServices().getTermsAndCondition('guided_payment_payout');
+    await APIServices().getTermsAndCondition('guided_payment_payout');
     description = resForm[0].description;
     id = resForm[0].id;
     final Map<String, dynamic> details = {
@@ -247,7 +247,7 @@ class _SettingsItemsState extends State<SettingsItems> {
     });
 
     final List<PresetFormModel> resForm =
-        await APIServices().getTermsAndCondition('local_laws');
+    await APIServices().getTermsAndCondition('local_laws');
     description = resForm[0].description;
     id = resForm[0].id;
     final Map<String, dynamic> details = {'id': id, 'local_laws': description};
@@ -270,101 +270,116 @@ class _SettingsItemsState extends State<SettingsItems> {
         backgroundColor: Colors.transparent,
         builder: (BuildContext ctx) => DiscoveryBottomSheet(
           title: 'Premium Discovery',
-              backgroundImage: backgroundImage,
-              showSkipButton: false,
-              showDiscoveryText: false,
-              useDefaultBackground: true,
-              onSubscribeBtnPressed: () {
-                const double price = 5.99;
-                Navigator.of(ctx).pop();
+          backgroundImage: backgroundImage,
+          showSkipButton: false,
+          showDiscoveryText: false,
+          useDefaultBackground: true,
+          onSubscribeBtnPressed: () {
+            const double price = 5.99;
+            Navigator.of(ctx).pop();
 
-                paymentMethod(
-                    context: context,
-                    onCreditCardSelected: (CardModel card) {
-                      debugPrint('Payment Method:: ${card.cardNo}');
-                    },
-                    onContinueBtnPressed: (dynamic data) {
-                      String mode = '';
-                      if (data is CardModel) {
-                        mode = 'Credit Card';
-                      } else {
-                        mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
-                      }
+            paymentMethod(
+                context: context,
+                onCreditCardSelected: (CardModel card) {
+                  debugPrint('Payment Method:: ${card.cardNo}');
+                },
+                onContinueBtnPressed: (dynamic data) {
+                  String mode = '';
+                  if (data is CardModel) {
+                    mode = 'Credit Card';
+                  } else {
+                    mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
+                  }
 
-                      if (mode == 'Apple Pay') {
-                        debugPrint('Data $data');
-                        saveSubscription(data, 'Premium Subscription',
-                            price.toString(), mode);
-                        paymentSuccessful(
-                            context: context,
-                            paymentDetails: DiscoveryPaymentDetails(
-                                transactionNumber: data),
-                            paymentMethod: mode);
+                  if (mode == 'Apple Pay') {
+                    debugPrint('Data $data');
+                    saveSubscription(data, 'Premium Subscription',
+                        price.toString(), mode);
+                    paymentSuccessful(
+                        context: context,
+                        paymentDetails: DiscoveryPaymentDetails(
+                            transactionNumber: data),
+                        paymentMethod: mode);
 
-                        /// Add Saving of Subscription here
-                      } else {
-                        final String transactionNumber =
-                            GlobalMixin().generateTransactionNumber();
-                        confirmPaymentModal(
-                            context: context,
-                            serviceName: 'Premium Subscription',
-                            paymentMethod: data,
-                            paymentMode: mode,
-                            price: price,
-                            onPaymentSuccessful: () {
-                              Navigator.of(context).pop();
-                              saveSubscription(
-                                  transactionNumber,
-                                  'Premium Subscription',
-                                  price.toString(),
-                                  mode);
-                              //Save Subscription
-                              paymentSuccessful(
-                                  context: context,
-                                  paymentDetails: DiscoveryPaymentDetails(
-                                      transactionNumber: transactionNumber),
-                                  paymentMethod: mode);
-                            },
-                            onPaymentFailed: () {
-                              paymentFailed(
-                                  context: context,
-                                  paymentDetails: DiscoveryPaymentDetails(
-                                      transactionNumber: transactionNumber),
-                                  paymentMethod: mode);
-                            },
-                            paymentDetails: DiscoveryPaymentDetails(
-                                transactionNumber: transactionNumber));
-                      }
-                    },
-                    price: price);
-              },
-              onSkipBtnPressed: () {
-                Navigator.of(context).pop();
-              },
-              onCloseBtnPressed: () {
-                Navigator.of(context).pop();
-              },
-              onBackBtnPressed: () {
-                Navigator.of(context).pop();
-              },
-            ));
+                    /// Add Saving of Subscription here
+                  } else {
+                    final String transactionNumber =
+                    GlobalMixin().generateTransactionNumber();
+                    confirmPaymentModal(
+                        context: context,
+                        serviceName: 'Premium Subscription',
+                        paymentMethod: data,
+                        paymentMode: mode,
+                        price: price,
+                        onPaymentSuccessful: () {
+                          Navigator.of(context).pop();
+                          saveSubscription(
+                              transactionNumber,
+                              'Premium Subscription',
+                              price.toString(),
+                              mode);
+                          //Save Subscription
+                          paymentSuccessful(
+                              context: context,
+                              paymentDetails: DiscoveryPaymentDetails(
+                                  transactionNumber: transactionNumber),
+                              onBtnPressed: (){
+                                int count = 0;
+                                Navigator.popUntil(context, (route) {
+                                  return count++ == 2;
+                                });
+                                Navigator.of(context).pushNamed('/subscription_details');
+                              },
+                              btnText: 'View Subscription',
+                              paymentMethod: mode);
+                        },
+                        onPaymentFailed: () {
+                          paymentFailed(
+                              context: context,
+                              paymentDetails: DiscoveryPaymentDetails(
+                                  transactionNumber: transactionNumber),
+                              paymentMethod: mode);
+                        },
+                        paymentDetails: DiscoveryPaymentDetails(
+                            transactionNumber: transactionNumber));
+                  }
+                },
+                price: price);
+          },
+          onSkipBtnPressed: () {
+            Navigator.of(context).pop();
+          },
+          onCloseBtnPressed: () {
+            Navigator.of(context).pop();
+          },
+          onBackBtnPressed: () {
+            Navigator.of(context).pop();
+          },
+        ));
   }
 
   Future<void> saveSubscription(String transactionNumber,
       String subscriptionName, String price, String paymentMethod) async {
+    String actionType = 'add';
     final DateTime startDate = DateTime.now();
 
     final DateTime endDate = GlobalMixin().getEndDate(startDate);
 
-    final UserSubscription subscriptionParams = UserSubscription(
+    UserSubscription subscriptionParams = UserSubscription(
         paymentReferenceNo: transactionNumber,
         name: subscriptionName,
         startDate: startDate.toString(),
         endDate: endDate.toString(),
         price: price);
 
+    if(_userSubscriptionController.userSubscription.id.isNotEmpty){
+      subscriptionParams.id = _userSubscriptionController.userSubscription.id;
+      actionType ='update';
+    }
+
+
     final APIStandardReturnFormat result = await APIServices()
-        .addUserSubscription(subscriptionParams, paymentMethod);
+        .addUserSubscription(subscriptionParams, paymentMethod,actionType);
 
     final jsonData = jsonDecode(result.successResponse);
     _userSubscriptionController.setSubscription(UserSubscription.fromJson(jsonData));

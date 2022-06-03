@@ -38,10 +38,9 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
   late Widget _selectedWidget;
   final CardController _creditCardController = Get.put(CardController());
   final UserSubscriptionController _userSubscriptionController =
-      Get.put(UserSubscriptionController());
+  Get.put(UserSubscriptionController());
   final UserProfileDetailsController _profileDetailsController =
-      Get.put(UserProfileDetailsController());
-
+  Get.put(UserProfileDetailsController());
   @override
   void initState() {
     _selectedWidget = TabHomeScreen(
@@ -52,7 +51,6 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     getProfileDetails();
 
     // getUserSubscription();
-
     if (_creditCardController.cards.isEmpty) {
       getUserCards();
     }
@@ -94,11 +92,10 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
         );
       } else {
         _selectedIndex = 0;
-        _selectedWidget = const TabDiscoveryHub();
+        _selectedWidget =   TabHomeScreen(onItemPressed: popularGuideds,);
       }
     });
   }
-
   void onPressed(int index) {
     setState(() {
       _selectedIndex = index;
@@ -119,11 +116,11 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
   }
 
   Future<void> getProfileDetails() async {
-    debugPrint('Get Profile Details');
+
     final ProfileDetailsModel res = await APIServices().getProfileData();
 
     final UserSubscription subscription =
-        await APIServices().getUserSubscription();
+    await APIServices().getUserSubscription();
     bool hasPremiumSubscription = false;
     if (subscription.id.isNotEmpty) {
       final DateTime currentDate = DateTime.now();
@@ -133,8 +130,9 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
 
       if (!isExpired) {
         hasPremiumSubscription = true;
-        _userSubscriptionController.setSubscription(subscription);
+
       }
+      _userSubscriptionController.setSubscription(subscription);
     }
 
     UserSingleton.instance.user.user = User(
@@ -171,7 +169,7 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     if (cards.isNotEmpty) {
       debugPrint('cards $cards');
       final CardModel card = cards.firstWhere(
-          (CardModel c) => c.isDefault == true,
+              (CardModel c) => c.isDefault == true,
           orElse: () => CardModel());
 
       if (card.id != '') {

@@ -1017,7 +1017,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 context: context,
                 paymentDetails: bookingPaymentDetails,
                 paymentMethod: paymentMode,
-                onOkBtnPressed: () {
+                onBtnPressed: () {
                   // show transaction details
                   Navigator.push(
                     context,

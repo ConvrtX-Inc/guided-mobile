@@ -60,39 +60,27 @@ class _TabWishlistScreenState extends State<TabWishlistScreen> {
         preferredSize: Size.fromHeight(50.h),
         child: AppBar(
           automaticallyImplyLeading: false,
-          flexibleSpace: title == AppTextConstants.guideProfile
-              ? Column(
-                  children: <Widget>[
-                    Text(
-                      'Wish List',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 24.sp,
-                          color: Colors.black,
-                          fontFamily: AppTextConstants.fontGilroy),
-                    ),
-                    Text(
-                      'Adventure, Discover, Explore',
-                      style: TextStyle(
-                          color: AppColors.lightningYellow,
-                          fontSize: 12.sp,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                )
-              : Column(
-                  children: <Widget>[
-                    Text(
-                      'Wish List',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 24.sp,
-                          color: Colors.black,
-                          fontFamily: AppTextConstants.fontGilroy),
-                    ),
-                  ],
-                ),
+          flexibleSpace: Column(
+            children: <Widget>[
+              Text(
+                'Wish List',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 24.sp,
+                    color: Colors.black,
+                    fontFamily: AppTextConstants.fontGilroy),
+              ),
+              Text(
+                'Adventure, Discover, Explore',
+                style: TextStyle(
+                    color: AppColors.lightningYellow,
+                    fontSize: 12.sp,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,

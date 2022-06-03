@@ -4,6 +4,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
+import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/package_destination_model.dart';
 import 'package:guided/models/package_model.dart';
@@ -44,20 +45,24 @@ class _PopularGuideHomeFeaturesState extends State<PopularGuideHomeFeatures>
   double latitude = 0;
   double longitude = 0;
   double totalDistance = 0;
+
   @override
   void initState() {
     super.initState();
+
+    debugPrint('ID GUIDE ${widget._id}');
   }
+
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return GestureDetector(
-      onTap: _settingModalBottomSheet,
+      onTap: () => Navigator.of(context).pushNamed('/main_profile',arguments: widget._id),
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 20.h),
-        height: 180.h,
-        width: 220.w,
+        // height: 180.h,
+        // width: 220.w,
         decoration: const BoxDecoration(
           color: Colors.transparent,
         ),
@@ -65,8 +70,8 @@ class _PopularGuideHomeFeaturesState extends State<PopularGuideHomeFeatures>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Container(
-              height: 112.h,
-              width: 220.w,
+              height: 120.h,
+              width: 160.w,
               decoration: BoxDecoration(
                 color: Colors.grey.shade300,
                 borderRadius: BorderRadius.all(
@@ -74,17 +79,15 @@ class _PopularGuideHomeFeaturesState extends State<PopularGuideHomeFeatures>
                 ),
                 image: DecorationImage(
                   image: widget._firebaseProfImg == ''
-                      ? Image.network(
-                          'https://img.icons8.com/external-coco-line-kalash/344/external-person-human-body-anatomy-coco-line-kalash-4.png',
-                          width: 50,
-                          height: 50,
-                        ).image
+                      ? Image.asset(
+                    AssetsPath.defaultProfilePic,
+                    width: 50,
+                    height: 50,
+                  ).image
                       : ExtendedImage.network(
-                          widget._firebaseProfImg,
-                        ).image,
-                  fit: widget._firebaseProfImg == ''
-                      ? BoxFit.fitHeight
-                      : BoxFit.cover,
+                    widget._firebaseProfImg,
+                  ).image,
+                  fit:  BoxFit.cover,
                 ),
               ),
               // child: Stack(
@@ -105,14 +108,14 @@ class _PopularGuideHomeFeaturesState extends State<PopularGuideHomeFeatures>
               height: 5.h,
             ),
             Text(
-              widget._fullName,
+              widget._fullName.split(' ')[0],
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 16.sp,
                   fontFamily: 'Gilroy',
                   fontWeight: FontWeight.w600),
             ),
-            Row(
+            /*Row(
               children: <Widget>[
                 Container(
                   height: 10.h,
@@ -148,7 +151,7 @@ class _PopularGuideHomeFeaturesState extends State<PopularGuideHomeFeatures>
                   },
                 ),
               ],
-            ),
+            ),*/
           ],
         ),
       ),
@@ -164,13 +167,13 @@ class _PopularGuideHomeFeaturesState extends State<PopularGuideHomeFeatures>
             case ConnectionState.waiting:
               _displayWidget = Container();
               break;
-            // ignore: no_default_cases
+          // ignore: no_default_cases
             default:
               if (snapshot.hasError) {
                 _displayWidget = Container();
               } else {
                 PackageDestinationModelData packageDestinationData =
-                    snapshot.data!;
+                snapshot.data!;
 
                 latitude = double.parse(packageDestinationData
                     .packageDestinationDetails[0].latitude);
