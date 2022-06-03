@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/certificate.dart';
 import 'package:guided/screens/activities/activities.dart';
+import 'package:guided/screens/activities/activity_package_info.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/bank_accounts/add_bank_account.dart';
 import 'package:guided/screens/bank_accounts/manage_payment.dart';
@@ -84,6 +86,7 @@ import 'package:guided/screens/packages/create_package/package_photos_screen.dar
 import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
+import 'package:guided/screens/passwords/change_password.dart';
 import 'package:guided/screens/payments/payment_add_card.dart';
 
 import 'package:guided/screens/profile/main_profile.dart';
@@ -91,6 +94,7 @@ import 'package:guided/screens/profile/profile_details/about_me/screen/edit_prof
 import 'package:guided/screens/profile/profile_details/certificate/screen/add_certificate_modal.dart';
 import 'package:guided/screens/profile/profile_details/certificate/screen/certificate_screen.dart';
 import 'package:guided/screens/profile/profile_details/certificate/screen/edit_certificate.dart';
+import 'package:guided/screens/profile/profile_details/certificate/screen/view_certificate.dart';
 import 'package:guided/screens/profile/reviews_profile.dart';
 
 import 'package:guided/screens/payments/payment_edit_card.dart';
@@ -154,7 +158,7 @@ class RouteGenerator {
       case '/main_navigation':
         return MaterialPageRoute<dynamic>(
             builder: (_) =>
-                const MainNavigationScreen(navIndex: 0, contentIndex: 0));
+            const MainNavigationScreen(navIndex: 0, contentIndex: 0));
       case '/create_package':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const CreatePackageScreen());
@@ -292,8 +296,8 @@ class RouteGenerator {
       case '/package_view':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PackageView(
-                  initIndex: 0,
-                ),
+              initIndex: 0,
+            ),
             settings: settings);
       case '/checkAvailability':
         return MaterialPageRoute<dynamic>(
@@ -325,7 +329,7 @@ class RouteGenerator {
             settings: settings);
       case '/main_profile':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const MainProfileScreen());
+            builder: (_) =>   MainProfileScreen(userId: args as String));
       case '/reviews_profile':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ReviewsProfileScreen());
@@ -382,8 +386,8 @@ class RouteGenerator {
       case '/popular_guides_view':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PopularGuidesView(
-                  initIndex: 0,
-                ),
+              initIndex: 0,
+            ),
             settings: settings);
       case '/add_card':
         return MaterialPageRoute<dynamic>(
@@ -391,9 +395,9 @@ class RouteGenerator {
       case '/popular_guides_traveler_limit_schedules':
         return MaterialPageRoute<dynamic>(
             builder: (_) => PopularGuidesTravelerLimitSchedules(
-                  packageId: '',
-                  price: '',
-                ));
+              packageId: '',
+              price: '',
+            ));
       case '/refund':
         return MaterialPageRoute<dynamic>(builder: (_) => const RefundScreen());
       case '/request_refund':
@@ -408,7 +412,7 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const EditProfileScreen());
 
-      ///Profile
+    ///Profile
       case '/profile-certificate':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const CertificateScreen());
@@ -452,6 +456,15 @@ class RouteGenerator {
       case '/edit_profile_traveler':
         return MaterialPageRoute<dynamic>(
             builder: (_) => EditProfileTraveler());
+      case '/change_password':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => ChangePasswordScreen());
+      case '/activity_package_info':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => ActivityPackageInfo(package:  args! as ActivityPackage));
+      case '/view_certificate':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => CertificateView(certificate:  args! as Certificate));
       default:
         return _errorRoute();
     }

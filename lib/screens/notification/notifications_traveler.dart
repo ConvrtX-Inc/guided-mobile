@@ -125,7 +125,7 @@ class _NotificationTravelerState extends State<NotificationTraveler> {
               },
               itemCount: notifications.length))
       : Center(
-          child: Text("You don't have any notifications yet",
+          child: Text(AppTextConstants.nothingToDisplay,
               style: TextStyle(color: AppColors.grey)),
         );
 

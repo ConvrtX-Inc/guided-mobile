@@ -52,10 +52,12 @@ class User {
   String? stripeAccountId;
   String? firebaseProfilePicUrl;
   bool? hasPremiumSubscription;
+  String? latitude;
+  String? longitude;
 
   User(
       {this.id,
-      this.fullName,
+      this.fullName = '',
       this.firstName,
       this.lastName,
       this.email,
@@ -82,11 +84,13 @@ class User {
       this.profilePhoto,
       this.stripeAccountId,
       this.hasPremiumSubscription = false,
-      this.firebaseProfilePicUrl});
+      this.firebaseProfilePicUrl ='',
+      this.latitude = '',
+      this.longitude = ''});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    fullName = json['full_name'];
+    fullName = json['full_name'] ?? '';
     firstName = json['first_name'];
     lastName = json['last_name'];
     email = json['email'];
@@ -113,6 +117,8 @@ class User {
     profilePhoto = json['profile_photo'];
     stripeAccountId = json['stripe_account_id'];
     firebaseProfilePicUrl = json['profile_photo_firebase_url'] ?? '';
+    latitude = json['latitude'] ?? '';
+    longitude = json['longitude'] ?? '';
   }
 
   Map<String, dynamic> toJson() {

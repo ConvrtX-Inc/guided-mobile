@@ -12,7 +12,7 @@ class UserListModel {
 
   UserListModel.fromJson(List<dynamic> parseJson)
       : userDetails =
-            parseJson.map((i) => UserDetailsModel.fromJson(i)).toList();
+  parseJson.map((i) => UserDetailsModel.fromJson(i)).toList();
 }
 
 /// Package Details model
@@ -20,19 +20,20 @@ class UserDetailsModel {
   /// Contructor
   UserDetailsModel(
       {this.id = '',
-      this.fullName = '',
-      this.email = '',
-      this.phoneNumber = '',
-      this.firebaseImg = '',
-      this.isTraveller = false,
-      this.isFirstAid = false,
-      this.createdDate});
+        this.fullName = '',
+        this.email = '',
+        this.phoneNumber = '',
+        this.firebaseImg = '',
+        this.isTraveller = false,
+        this.isFirstAid = false,
+        this.isGuide = false,
+        this.createdDate});
 
   /// String property initialization
   final String id, fullName, email, phoneNumber, firebaseImg;
 
   /// boolean initialization
-  final bool isTraveller, isFirstAid;
+  final bool isTraveller, isFirstAid, isGuide;
 
   final DateTime? createdDate;
 
@@ -45,5 +46,6 @@ class UserDetailsModel {
         firebaseImg = parseJson['profile_photo_firebase_url'] ?? '',
         isTraveller = parseJson['is_traveller'] ?? false,
         isFirstAid = parseJson['is_first_aid_trained'] ?? false,
+        isGuide = parseJson['is_guide'] ?? false,
         createdDate = DateTime.parse(parseJson['created_date']);
 }

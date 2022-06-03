@@ -46,60 +46,60 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
             height: height,
             child: SingleChildScrollView(
                 child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Align(
-                  child: Image.asset(
-                    AssetsPath.horizontalLine,
-                    width: 60.w,
-                    height: 5.h,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(10.w, 0.h, 20.w, 0.h),
-                  child: Align(
-                      alignment: Alignment.topLeft,
-                      child: IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          icon: const Icon(Icons.arrow_back))),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    AppTextConstants.popularGuidesNearYou,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'Gilroy',
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w700),
-                  ),
-                ),
-                FutureBuilder<UserListModel>(
-                  future: _loadingData,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                    Widget _displayWidget;
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        _displayWidget = const MainContentSkeleton();
-                        break;
-                      default:
-                        if (snapshot.hasError) {
-                          _displayWidget = Center(
-                              child: APIMessageDisplay(
-                            message: 'Result: ${snapshot.error}',
-                          ));
-                        } else {
-                          _displayWidget = buildResult(snapshot.data!);
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Align(
+                      child: Image.asset(
+                        AssetsPath.horizontalLine,
+                        width: 60.w,
+                        height: 5.h,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(10.w, 0.h, 20.w, 0.h),
+                      child: Align(
+                          alignment: Alignment.topLeft,
+                          child: IconButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              icon: const Icon(Icons.arrow_back))),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        AppTextConstants.popularGuidesNearYou,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'Gilroy',
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    FutureBuilder<UserListModel>(
+                      future: _loadingData,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                        Widget _displayWidget;
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.waiting:
+                            _displayWidget = const MainContentSkeleton();
+                            break;
+                          default:
+                            if (snapshot.hasError) {
+                              _displayWidget = Center(
+                                  child: APIMessageDisplay(
+                                    message: 'Result: ${snapshot.error}',
+                                  ));
+                            } else {
+                              _displayWidget = buildResult(snapshot.data!);
+                            }
                         }
-                    }
-                    return _displayWidget;
-                  },
-                )
-              ],
-            )),
+                        return _displayWidget;
+                      },
+                    )
+                  ],
+                )),
           ),
         ),
       ),
@@ -107,22 +107,22 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
   }
 
   Widget buildResult(UserListModel userListData) => SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            if (userListData.userDetails.isEmpty)
-              Padding(
-                padding: EdgeInsets.only(
-                    top: (MediaQuery.of(context).size.height / 3) - 40),
-                child: APIMessageDisplay(
-                  message: AppTextConstants.noResultFound,
-                ),
-              )
-            else
-              for (UserDetailsModel detail in userListData.userDetails)
-                if (!detail.isTraveller) getPackage(detail)
-          ],
-        ),
-      );
+    child: Column(
+      children: <Widget>[
+        if (userListData.userDetails.isEmpty)
+          Padding(
+            padding: EdgeInsets.only(
+                top: (MediaQuery.of(context).size.height / 3) - 40),
+            child: APIMessageDisplay(
+              message: AppTextConstants.noResultFound,
+            ),
+          )
+        else
+          for (UserDetailsModel detail in userListData.userDetails)
+            if (detail.isGuide) getPackage(detail)
+      ],
+    ),
+  );
 
   Widget getPackage(UserDetailsModel details) =>
       FutureBuilder<PackageModelData>(
@@ -134,7 +134,7 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
             case ConnectionState.waiting:
               _displayWidget = const MainContentSkeleton();
               break;
-            // ignore: no_default_cases
+          // ignore: no_default_cases
             default:
               if (snapshot.hasError) {
                 _displayWidget = Container();
@@ -161,13 +161,13 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
             case ConnectionState.waiting:
               _displayWidget = const MainContentSkeleton();
               break;
-            // ignore: no_default_cases
+          // ignore: no_default_cases
             default:
               if (snapshot.hasError) {
                 _displayWidget = Container();
               } else {
                 PackageDestinationModelData packageDestinationData =
-                    snapshot.data!;
+                snapshot.data!;
 
                 latitude = double.parse(packageDestinationData
                     .packageDestinationDetails[0].latitude);
@@ -185,7 +185,7 @@ class _PopularGuidesListState extends State<PopularGuidesList> {
       );
 
   Widget buildInfo(UserDetailsModel details, String address, double latitude,
-          double longitude) =>
+      double longitude) =>
       PopularGuideFeatures(
           id: details.id,
           name: details.fullName,

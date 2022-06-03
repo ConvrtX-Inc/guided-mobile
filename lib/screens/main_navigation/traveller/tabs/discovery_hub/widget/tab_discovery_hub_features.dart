@@ -69,7 +69,7 @@ class _DiscoveryHubFeaturesState extends State<DiscoveryHubFeatures> {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(16),
-            child: ClipRRect(
+            child: ClipRRect( 
                 borderRadius: BorderRadius.circular(10.r),
                 child: buildSlider(context)),
           ),

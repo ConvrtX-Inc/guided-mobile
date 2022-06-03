@@ -84,68 +84,69 @@ class _NotificationScreenState extends State<NotificationScreen> {
       });
 
   Widget bookingRequestNotif(NotificationModel notification) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          buildProfilePic(notification.fromUser!.profilePhotoFirebaseUrl!),
-          SizedBox(
-            width: 10.w,
-          ),
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      buildProfilePic(notification.fromUser!.profilePhotoFirebaseUrl!),
+      SizedBox(
+        width: 10.w,
+      ),
+      Flexible(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      notification.title!,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14.sp,
-                        color: Colors.black,
-                      ),
-                    ),
-                    DateTimeAgo(
-                      dateString: notification.createdDate!,
-                      size: 14.sp,
-                      color: AppColors.cloud,
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 6.h,
-                ),
                 Text(
-                  notification.notificationMsg!,
+                  notification.title!,
                   style: TextStyle(
-                    fontSize: 12.sp,
-                    color: AppColors.dustyGrey,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14.sp,
+                    color: Colors.black,
                   ),
                 ),
-                SizedBox(
-                  height: 6.h,
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: AppColors.lightningYellow,
-                      border: Border.all(
-                        color: AppColors.lightningYellow,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(10.r))),
-                  child: Text(
-                    notification.bookingRequestStatus!,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.white,
-                    ),
-                  ),
+                DateTimeAgo(
+                  dateString: notification.createdDate!,
+                  size: 14.sp,
+                  color: AppColors.cloud,
                 )
               ],
             ),
-          )
-        ],
-      );
+            SizedBox(
+              height: 6.h,
+            ),
+            Text(
+              notification.notificationMsg!,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: AppColors.dustyGrey,
+              ),
+            ),
+            SizedBox(
+              height: 6.h,
+            ),
+            if(notification.bookingRequestStatus!.isNotEmpty && notification.bookingRequestStatus =='Pending')
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: AppColors.lightningYellow,
+                    border: Border.all(
+                      color: AppColors.lightningYellow,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(10.r))),
+                child: Text(
+                  notification.bookingRequestStatus!,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: Colors.white,
+                  ),
+                ),
+              )
+          ],
+        ),
+      )
+    ],
+  );
 
   Widget _requestPending() {
     return Row(
@@ -159,7 +160,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             shape: BoxShape.circle,
             image: const DecorationImage(
               image:
-                  AssetImage('${AssetsPath.assetsPNGPath}/profile_photo.png'),
+              AssetImage('${AssetsPath.assetsPNGPath}/profile_photo.png'),
               fit: BoxFit.contain,
             ),
             boxShadow: <BoxShadow>[
@@ -249,7 +250,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             shape: BoxShape.circle,
             image: const DecorationImage(
               image:
-                  AssetImage('${AssetsPath.assetsPNGPath}/student_profile.png'),
+              AssetImage('${AssetsPath.assetsPNGPath}/student_profile.png'),
               fit: BoxFit.contain,
             ),
             boxShadow: <BoxShadow>[
@@ -389,7 +390,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ),
                     ),
                   ),
-                 /* Expanded(
+                  /* Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -421,31 +422,31 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Widget buildProfilePic(String image) => Container(
-        height: 58.h,
-        width: 58.w,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white, width: 3),
-          shape: BoxShape.circle,
-          image: image.isNotEmpty
-              ? DecorationImage(
-                  image: NetworkImage(image),
-                  fit: BoxFit.contain,
-                )
-              : DecorationImage(
-                  image: AssetImage(AssetsPath.defaultProfilePic),
-                  fit: BoxFit.contain,
-                ),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: Colors.black.withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 5,
-              // offset: const Offset(
-              //     0, 0), // changes position of shadow
-            ),
-          ],
+    height: 58.h,
+    width: 58.w,
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.white, width: 3),
+      shape: BoxShape.circle,
+      image: image.isNotEmpty
+          ? DecorationImage(
+        image: NetworkImage(image),
+        fit: BoxFit.contain,
+      )
+          : DecorationImage(
+        image: AssetImage(AssetsPath.defaultProfilePic),
+        fit: BoxFit.contain,
+      ),
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: Colors.black.withOpacity(0.5),
+          spreadRadius: 1,
+          blurRadius: 5,
+          // offset: const Offset(
+          //     0, 0), // changes position of shadow
         ),
-      );
+      ],
+    ),
+  );
 
   Future<void> getNotifications() async {
     final List<NotificationModel> res = await APIServices().getNotifications();

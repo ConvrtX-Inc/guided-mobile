@@ -7,6 +7,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
@@ -68,7 +69,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
       travellerMonthController.setSelectedDate(mon);
 
       DateTime currentDate =
-          DateTime.parse(travellerMonthController.currentDate);
+      DateTime.parse(travellerMonthController.currentDate);
 
       final DateTime defaultDate = DateTime(currentDate.year, currentDate.month,
           1, currentDate.hour, currentDate.minute);
@@ -153,16 +154,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                         ),
                       ),
                       child: Center(
-                        child: Container(
-                          height: 20.h,
-                          width: 20.w,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                  'assets/images/png/green_house.png'),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
+                        child: SvgPicture.asset(
+                          '${AssetsPath.assetsSVGPath}/home.svg',
+                          color: AppColors.lightningYellow,
                         ),
                       ),
                     ),
@@ -255,7 +249,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         ),
                                         Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
+                                          MainAxisAlignment.spaceEvenly,
                                           children: <Widget>[
                                             Icon(
                                               Icons.chevron_left,
@@ -265,14 +259,14 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                 color: Colors.transparent,
                                                 height: 80.h,
                                                 width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
+                                                    .size
+                                                    .width *
                                                     0.7,
                                                 child: EasyScrollToIndex(
                                                   controller: _scrollController,
                                                   // ScrollToIndexController
                                                   scrollDirection:
-                                                      Axis.horizontal,
+                                                  Axis.horizontal,
                                                   // default Axis.vertical
                                                   itemCount: AppListConstants
                                                       .calendarMonths.length,
@@ -281,38 +275,38 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                   itemHeight: 70,
                                                   itemBuilder:
                                                       (BuildContext context,
-                                                          int index) {
+                                                      int index) {
                                                     return InkWell(
                                                       onTap: () {
                                                         _scrollController
                                                             .easyScrollToIndex(
-                                                                index: index);
+                                                            index: index);
                                                         travellerMonthController
                                                             .setSelectedDate(
-                                                                index + 1);
+                                                            index + 1);
                                                         DateTime dt = DateTime.parse(
                                                             travellerMonthController
                                                                 .currentDate);
 
                                                         final DateTime
-                                                            plustMonth =
-                                                            DateTime(
-                                                                dt.year,
-                                                                index + 1,
-                                                                dt.day,
-                                                                dt.hour,
-                                                                dt.minute);
+                                                        plustMonth =
+                                                        DateTime(
+                                                            dt.year,
+                                                            index + 1,
+                                                            dt.day,
+                                                            dt.hour,
+                                                            dt.minute);
 
                                                         final DateTime
-                                                            setLastday =
-                                                            DateTime(
-                                                                plustMonth.year,
-                                                                plustMonth
-                                                                    .month,
-                                                                1,
-                                                                plustMonth.hour,
-                                                                plustMonth
-                                                                    .minute);
+                                                        setLastday =
+                                                        DateTime(
+                                                            plustMonth.year,
+                                                            plustMonth
+                                                                .month,
+                                                            1,
+                                                            plustMonth.hour,
+                                                            plustMonth
+                                                                .minute);
                                                         print(setLastday);
                                                         travellerMonthController
                                                             .setCurrentMonth(
@@ -320,44 +314,44 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                         );
                                                       },
                                                       child: Obx(
-                                                        () => Stack(
+                                                            () => Stack(
                                                           children: <Widget>[
                                                             Align(
                                                               alignment:
-                                                                  Alignment
-                                                                      .center,
+                                                              Alignment
+                                                                  .center,
                                                               child: Container(
                                                                 margin: EdgeInsets
                                                                     .fromLTRB(
-                                                                        index ==
-                                                                                0
-                                                                            ? 0.w
-                                                                            : 0.w,
-                                                                        0.h,
-                                                                        10.w,
-                                                                        0.h),
+                                                                    index ==
+                                                                        0
+                                                                        ? 0.w
+                                                                        : 0.w,
+                                                                    0.h,
+                                                                    10.w,
+                                                                    0.h),
                                                                 width: 89,
                                                                 height: 45,
                                                                 decoration:
-                                                                    BoxDecoration(
-                                                                        borderRadius:
-                                                                            const BorderRadius
-                                                                                .all(
-                                                                          Radius.circular(
-                                                                              10),
-                                                                        ),
-                                                                        border: Border.all(
-                                                                            color: index == travellerMonthController.selectedDate - 1
-                                                                                ? HexColor(
-                                                                                    '#FFC74A')
-                                                                                : HexColor(
-                                                                                    '#C4C4C4'),
-                                                                            width:
-                                                                                1),
-                                                                        color: index ==
-                                                                                travellerMonthController.selectedDate - 1
-                                                                            ? HexColor('#FFC74A')
-                                                                            : Colors.white),
+                                                                BoxDecoration(
+                                                                    borderRadius:
+                                                                    const BorderRadius
+                                                                        .all(
+                                                                      Radius.circular(
+                                                                          10),
+                                                                    ),
+                                                                    border: Border.all(
+                                                                        color: index == travellerMonthController.selectedDate - 1
+                                                                            ? HexColor(
+                                                                            '#FFC74A')
+                                                                            : HexColor(
+                                                                            '#C4C4C4'),
+                                                                        width:
+                                                                        1),
+                                                                    color: index ==
+                                                                        travellerMonthController.selectedDate - 1
+                                                                        ? HexColor('#FFC74A')
+                                                                        : Colors.white),
                                                                 child: Center(
                                                                     child: Text(
                                                                         AppListConstants
@@ -368,22 +362,22 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                                 right: 2,
                                                                 top: 2,
                                                                 child: index
-                                                                        .isOdd
+                                                                    .isOdd
                                                                     ? Badge(
-                                                                        padding:
-                                                                            const EdgeInsets.all(8),
-                                                                        badgeColor:
-                                                                            AppColors.deepGreen,
-                                                                        badgeContent:
-                                                                            Text(
-                                                                          '2',
-                                                                          style: TextStyle(
-                                                                              color: Colors.white,
-                                                                              fontSize: 12.sp,
-                                                                              fontWeight: FontWeight.w800,
-                                                                              fontFamily: AppTextConstants.fontPoppins),
-                                                                        ),
-                                                                      )
+                                                                  padding:
+                                                                  const EdgeInsets.all(8),
+                                                                  badgeColor:
+                                                                  AppColors.deepGreen,
+                                                                  badgeContent:
+                                                                  Text(
+                                                                    '2',
+                                                                    style: TextStyle(
+                                                                        color: Colors.white,
+                                                                        fontSize: 12.sp,
+                                                                        fontWeight: FontWeight.w800,
+                                                                        fontFamily: AppTextConstants.fontPoppins),
+                                                                  ),
+                                                                )
                                                                     : Container()),
                                                           ],
                                                         ),
@@ -400,14 +394,14 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         GetBuilder<TravellerMonthController>(
                                             id: 'calendar',
                                             builder: (TravellerMonthController
-                                                controller) {
+                                            controller) {
                                               print(controller.currentDate);
                                               return Container(
                                                 padding: EdgeInsets.fromLTRB(
                                                     20.w, 0.h, 20.w, 0.h),
                                                 height: MediaQuery.of(context)
-                                                        .size
-                                                        .height *
+                                                    .size
+                                                    .height *
                                                     0.4,
                                                 child: Sfcalendar(
                                                   context,
@@ -430,9 +424,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                               Navigator.of(context).pop();
                                               showMaterialModalBottomSheet(
                                                   shape:
-                                                      const RoundedRectangleBorder(
+                                                  const RoundedRectangleBorder(
                                                     borderRadius:
-                                                        BorderRadius.vertical(
+                                                    BorderRadius.vertical(
                                                       top: Radius.circular(20),
                                                     ),
                                                   ),
@@ -445,9 +439,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                       top: false,
                                                       child: Container(
                                                         height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height *
+                                                            context)
+                                                            .size
+                                                            .height *
                                                             0.5,
                                                         child: Column(
                                                           children: <Widget>[
@@ -456,7 +450,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                             ),
                                                             Align(
                                                               child:
-                                                                  Image.asset(
+                                                              Image.asset(
                                                                 AssetsPath
                                                                     .horizontalLine,
                                                                 width: 60.w,
@@ -465,176 +459,176 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                             ),
                                                             Padding(
                                                               padding:
-                                                                  EdgeInsets
-                                                                      .fromLTRB(
-                                                                          20.w,
-                                                                          20.h,
-                                                                          20.w,
-                                                                          20.h),
+                                                              EdgeInsets
+                                                                  .fromLTRB(
+                                                                  20.w,
+                                                                  20.h,
+                                                                  20.w,
+                                                                  20.h),
                                                               child: Align(
                                                                 alignment:
-                                                                    Alignment
-                                                                        .topCenter,
+                                                                Alignment
+                                                                    .topCenter,
                                                                 child: Text(
                                                                   '16 nearby guides',
                                                                   style: TextStyle(
                                                                       color: Colors
                                                                           .black,
                                                                       fontSize:
-                                                                          16.sp,
+                                                                      16.sp,
                                                                       fontWeight:
-                                                                          FontWeight
-                                                                              .w700),
+                                                                      FontWeight
+                                                                          .w700),
                                                                 ),
                                                               ),
                                                             ),
                                                             Expanded(
                                                                 child: Padding(
-                                                              padding: EdgeInsets
-                                                                  .only(
+                                                                  padding: EdgeInsets
+                                                                      .only(
                                                                       left:
-                                                                          20.w,
+                                                                      20.w,
                                                                       right:
-                                                                          20.w),
-                                                              child: Swiper(
-                                                                controller:
+                                                                      20.w),
+                                                                  child: Swiper(
+                                                                    controller:
                                                                     _cardController,
-                                                                itemBuilder:
-                                                                    (BuildContext
-                                                                            context,
+                                                                    itemBuilder:
+                                                                        (BuildContext
+                                                                    context,
                                                                         int index) {
-                                                                  return Column(
-                                                                    crossAxisAlignment:
+                                                                      return Column(
+                                                                        crossAxisAlignment:
                                                                         CrossAxisAlignment
                                                                             .start,
-                                                                    children: <
-                                                                        Widget>[
-                                                                      Container(
-                                                                        height:
+                                                                        children: <
+                                                                            Widget>[
+                                                                          Container(
+                                                                            height:
                                                                             200.h,
-                                                                        // width:
-                                                                        //     315.w,
-                                                                        decoration:
+                                                                            // width:
+                                                                            //     315.w,
+                                                                            decoration:
                                                                             BoxDecoration(
-                                                                          color:
+                                                                              color:
                                                                               Colors.transparent,
-                                                                          borderRadius:
+                                                                              borderRadius:
                                                                               BorderRadius.all(
-                                                                            Radius.circular(15.r),
-                                                                          ),
-                                                                          image:
+                                                                                Radius.circular(15.r),
+                                                                              ),
+                                                                              image:
                                                                               DecorationImage(
-                                                                            image:
+                                                                                image:
                                                                                 AssetImage(guides[index].featureImage),
-                                                                            fit:
+                                                                                fit:
                                                                                 BoxFit.cover,
-                                                                          ),
-                                                                        ),
-                                                                        child:
-                                                                            Stack(
-                                                                          children: <
-                                                                              Widget>[
-                                                                            Positioned(
-                                                                              top: 0,
-                                                                              right: 0,
-                                                                              child: IconButton(
-                                                                                icon: const Icon(Icons.favorite_border),
-                                                                                onPressed: () {},
-                                                                                color: HexColor('#ffffff'),
                                                                               ),
                                                                             ),
-                                                                            Align(
-                                                                              alignment: Alignment.centerLeft,
-                                                                              child: Container(
-                                                                                transform: Matrix4.translationValues(-15, 0, 0),
-                                                                                child: IconButton(
-                                                                                  onPressed: () async {
-                                                                                    await _cardController.previous();
-                                                                                  },
-                                                                                  icon: const Icon(
-                                                                                    Icons.chevron_left,
-                                                                                    size: 50,
+                                                                            child:
+                                                                            Stack(
+                                                                              children: <
+                                                                                  Widget>[
+                                                                                Positioned(
+                                                                                  top: 0,
+                                                                                  right: 0,
+                                                                                  child: IconButton(
+                                                                                    icon: const Icon(Icons.favorite_border),
+                                                                                    onPressed: () {},
+                                                                                    color: HexColor('#ffffff'),
                                                                                   ),
                                                                                 ),
-                                                                              ),
-                                                                            ),
-                                                                            Align(
-                                                                              alignment: Alignment.centerRight,
-                                                                              child: IconButton(
-                                                                                onPressed: () async {
-                                                                                  await _cardController.next();
-                                                                                },
-                                                                                icon: const Icon(
-                                                                                  Icons.chevron_right,
-                                                                                  size: 50,
+                                                                                Align(
+                                                                                  alignment: Alignment.centerLeft,
+                                                                                  child: Container(
+                                                                                    transform: Matrix4.translationValues(-15, 0, 0),
+                                                                                    child: IconButton(
+                                                                                      onPressed: () async {
+                                                                                        await _cardController.previous();
+                                                                                      },
+                                                                                      icon: const Icon(
+                                                                                        Icons.chevron_left,
+                                                                                        size: 50,
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
                                                                                 ),
-                                                                              ),
+                                                                                Align(
+                                                                                  alignment: Alignment.centerRight,
+                                                                                  child: IconButton(
+                                                                                    onPressed: () async {
+                                                                                      await _cardController.next();
+                                                                                    },
+                                                                                    icon: const Icon(
+                                                                                      Icons.chevron_right,
+                                                                                      size: 50,
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
                                                                             ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height:
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height:
                                                                             4.h,
-                                                                      ),
-                                                                      Padding(
-                                                                        padding:
+                                                                          ),
+                                                                          Padding(
+                                                                            padding:
                                                                             const EdgeInsets.all(8.0),
-                                                                        child:
+                                                                            child:
                                                                             Row(
-                                                                          children: <
-                                                                              Widget>[
-                                                                            Icon(
-                                                                              Icons.star,
-                                                                              color: HexColor('#066028'),
-                                                                              size: 10,
+                                                                              children: <
+                                                                                  Widget>[
+                                                                                Icon(
+                                                                                  Icons.star,
+                                                                                  color: HexColor('#066028'),
+                                                                                  size: 10,
+                                                                                ),
+                                                                                Text(
+                                                                                  '16 review',
+                                                                                  style: TextStyle(color: HexColor('#979B9B'), fontSize: 12.sp, fontWeight: FontWeight.normal),
+                                                                                ),
+                                                                              ],
                                                                             ),
-                                                                            Text(
-                                                                              '16 review',
-                                                                              style: TextStyle(color: HexColor('#979B9B'), fontSize: 12.sp, fontWeight: FontWeight.normal),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                      Text(
-                                                                        "St. John's, Newfoundland",
-                                                                        style: TextStyle(
-                                                                            color:
+                                                                          ),
+                                                                          Text(
+                                                                            "St. John's, Newfoundland",
+                                                                            style: TextStyle(
+                                                                                color:
                                                                                 Colors.black,
-                                                                            fontSize: 16.sp,
-                                                                            fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                      Text(
-                                                                        '\$50/ Person',
-                                                                        style: TextStyle(
-                                                                            color:
+                                                                                fontSize: 16.sp,
+                                                                                fontWeight: FontWeight.w700),
+                                                                          ),
+                                                                          Text(
+                                                                            '\$50/ Person',
+                                                                            style: TextStyle(
+                                                                                color:
                                                                                 HexColor('#3E4242'),
-                                                                            fontSize: 16.sp,
-                                                                            fontWeight: FontWeight.normal),
-                                                                      ),
-                                                                    ],
-                                                                  );
-                                                                },
-                                                                autoplay: true,
-                                                                itemCount:
+                                                                                fontSize: 16.sp,
+                                                                                fontWeight: FontWeight.normal),
+                                                                          ),
+                                                                        ],
+                                                                      );
+                                                                    },
+                                                                    autoplay: true,
+                                                                    itemCount:
                                                                     guides
                                                                         .length,
-                                                                // pagination: const SwiperPagination(
-                                                                //     builder:
-                                                                //         SwiperPagination
-                                                                //             .fraction),
-                                                                // pagination: SwiperCustomPagination(builder:
-                                                                //     (BuildContext
-                                                                //             context,
-                                                                //         SwiperPluginConfig
-                                                                //             config) {
-                                                                //   return Container();
-                                                                // }),
-                                                                // control: const SwiperControl(
-                                                                //     color: Colors
-                                                                //         .black),
-                                                              ),
-                                                            )),
+                                                                    // pagination: const SwiperPagination(
+                                                                    //     builder:
+                                                                    //         SwiperPagination
+                                                                    //             .fraction),
+                                                                    // pagination: SwiperCustomPagination(builder:
+                                                                    //     (BuildContext
+                                                                    //             context,
+                                                                    //         SwiperPluginConfig
+                                                                    //             config) {
+                                                                    //   return Container();
+                                                                    // }),
+                                                                    // control: const SwiperControl(
+                                                                    //     color: Colors
+                                                                    //         .black),
+                                                                  ),
+                                                                )),
                                                           ],
                                                         ),
                                                       ),
@@ -661,8 +655,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                               Future.delayed(const Duration(seconds: 1), () {
                                 _scrollController.easyScrollToIndex(
                                     index:
-                                        travellerMonthController.selectedDate -
-                                            1);
+                                    travellerMonthController.selectedDate -
+                                        1);
 
                                 // setState(() {
                                 //   selectedmonth = 7;
@@ -677,17 +671,11 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
-                child: _hasLocationPermission
-                    ? nearbyActivities(context, activities)
-                    : const CircularProgressIndicator(),
-              ),
+                  padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
+                  child: nearbyActivities(context, activities)),
               Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 0.h),
-                child: _hasLocationPermission
-                    ? popularGuidesNearYou(context, guides)
-                    : const CircularProgressIndicator(),
-              ),
+                  padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 0.h),
+                  child: popularGuidesNearYou(context, guides)),
               Padding(
                 padding: EdgeInsets.fromLTRB(20.w, 0.h, 15.w, 20.h),
                 child: staticAdd(context),
@@ -733,7 +721,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
           height: MediaQuery.of(context).size.height * 0.26,
           child: FutureBuilder<List<ActivityPackage>>(
             future:
-                APIServices().getActivityPackagesbyDescOrder(), // async work
+            APIServices().getActivityPackagesbyDescOrder(), // async work
             builder: (BuildContext context,
                 AsyncSnapshot<List<ActivityPackage>> snapshot) {
               switch (snapshot.connectionState) {
@@ -752,8 +740,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                             return Container(
                               margin: EdgeInsets.symmetric(
                                   horizontal: 5.w, vertical: 20.h),
-                              height: 180.h,
-                              width: 168.w,
+                              // height: 180.h,
+                              // width: 168.w,
                               decoration: const BoxDecoration(
                                 color: Colors.transparent,
                               ),
@@ -762,12 +750,15 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                 children: <Widget>[
                                   GestureDetector(
                                     onTap: () {
-                                      checkAvailability(
-                                          context, snapshot.data![index]);
+                                      // checkAvailability(
+                                      //     context, snapshot.data![index]);
+                                      Navigator.of(context).pushNamed(
+                                          '/activity_package_info',
+                                          arguments: snapshot.data![index]);
                                     },
                                     child: Container(
-                                      height: 112.h,
-                                      width: 168.w,
+                                      height: 120.h,
+                                      width: 160.w,
                                       decoration: BoxDecoration(
                                         color: Colors.transparent,
                                         borderRadius: BorderRadius.all(
@@ -779,75 +770,31 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         //   fit: BoxFit.cover,
                                         // ),
                                         image: DecorationImage(
-                                            image: Image.network(
-                                          // base64.decode(snapshot
-                                          //     .data![index].coverImg!
-                                          //     .split(',')
-                                          //     .last),
-                                          snapshot
-                                              .data![index].firebaseCoverImg!,
-                                          fit: BoxFit.cover,
-                                          gaplessPlayback: true,
-                                        ).image),
+                                            image: NetworkImage(
+                                              // base64.decode(snapshot
+                                              //     .data![index].coverImg!
+                                              //     .split(',')
+                                              //     .last),
+                                              snapshot.data![index]
+                                                  .firebaseCoverImg!,
+                                            ),
+                                            fit: BoxFit.cover),
                                       ),
                                       child: Stack(
                                         children: <Widget>[
                                           Positioned(
                                             bottom: 10,
-                                            left: 20,
-                                            child:
-                                                FutureBuilder<BadgeModelData>(
-                                              future: APIServices()
-                                                  .getBadgesModelById(snapshot
-                                                      .data![index]
-                                                      .mainBadgeId!),
-                                              builder: (BuildContext context,
-                                                  AsyncSnapshot<dynamic>
-                                                      snapshot) {
-                                                if (snapshot.hasData) {
-                                                  final BadgeModelData
-                                                      badgeData = snapshot.data;
-                                                  final int length = badgeData
-                                                      .badgeDetails.length;
-                                                  // return CircleAvatar(
-                                                  //   backgroundColor:
-                                                  //       Colors.transparent,
-                                                  //   radius: 30,
-                                                  //   backgroundImage: AssetImage(
-                                                  //       activities[index].path),
-                                                  // );
-                                                  return Image.memory(
-                                                    base64.decode(badgeData
-                                                        .badgeDetails[0].imgIcon
-                                                        .split(',')
-                                                        .last),
-                                                    width: 30,
-                                                    height: 30,
-                                                    gaplessPlayback: true,
-                                                  );
-                                                }
-                                                if (snapshot.connectionState !=
-                                                    ConnectionState.done) {
-                                                  return Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 10.w),
-                                                    child: Column(
-                                                      children: <Widget>[
-                                                        SizedBox(
-                                                          height: 110.h,
-                                                        ),
-                                                        const SkeletonText(
-                                                          width: 30,
-                                                          height: 30,
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        )
-                                                      ],
-                                                    ),
-                                                  );
-                                                }
-                                                return Container();
-                                              },
+                                            left: 16,
+                                            child: Image.memory(
+                                              base64.decode(snapshot
+                                                  .data![index]
+                                                  .mainBadge!
+                                                  .imgIcon!
+                                                  .split(',')
+                                                  .last),
+                                              width: 30,
+                                              height: 30,
+                                              gaplessPlayback: true,
                                             ),
                                           ),
                                         ],
@@ -857,15 +804,17 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                   SizedBox(
                                     height: 5.h,
                                   ),
-                                  Text(
-                                    snapshot.data![index].name!,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16.sp,
-                                        fontFamily: 'Gilroy',
-                                        fontWeight: FontWeight.w600),
-                                  ),
+                                  SizedBox(
+                                      width: 130.w,
+                                      child: Text(
+                                        snapshot.data![index].name!,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16.sp,
+                                            fontFamily: 'Gilroy',
+                                            fontWeight: FontWeight.w600),
+                                      )),
                                   Row(
                                     children: <Widget>[
                                       Container(
@@ -904,12 +853,12 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                     } else {
                       return Center(
                           child: Text(
-                        'No Nearby Activities',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.normal),
-                      ));
+                            'No Nearby Activities',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.normal),
+                          ));
                     }
                   }
               }
@@ -989,7 +938,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                 child: ListView(
                   children: List<Widget>.generate(
                     3,
-                    (int index) => Padding(
+                        (int index) => Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15.w),
                       child: sideShow(index),
                     ),
@@ -1005,7 +954,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
 
   Widget sideShow(int index) {
     final PageController pageIndicatorController =
-        PageController(initialPage: index);
+    PageController(initialPage: index);
     return SizedBox(
       height: 250.h,
       width: MediaQuery.of(context).size.width * 0.9,
@@ -1039,7 +988,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                               ),
                               image: DecorationImage(
                                 image:
-                                    AssetImage(activities[index].featureImage),
+                                AssetImage(activities[index].featureImage),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -1060,7 +1009,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                     backgroundColor: Colors.transparent,
                                     radius: 30,
                                     backgroundImage:
-                                        AssetImage(activities[index].path),
+                                    AssetImage(activities[index].path),
                                   ),
                                 ),
                               ],
@@ -1146,9 +1095,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
 
   /// Navigate to Advertisement View
   Future<void> checkAvailability(
-    BuildContext context,
-    ActivityPackage package,
-  ) async {
+      BuildContext context,
+      ActivityPackage package,
+      ) async {
     final Map<String, dynamic> details = {
       'package': package,
     };
@@ -1158,9 +1107,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   }
 
   Widget popularGuidesNearYou(
-    BuildContext context,
-    List<Guide> guides,
-  ) {
+      BuildContext context,
+      List<Guide> guides,
+      ) {
     return Column(
       children: <Widget>[
         Row(
@@ -1174,9 +1123,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   fontWeight: FontWeight.w700),
             ),
             GestureDetector(
-              onTap: () {
-                widget.onItemPressed('guides');
-              },
+              onTap: _settingModalBottomSheet,
               child: Text(
                 'See All',
                 style: TextStyle(
@@ -1206,13 +1153,16 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                       scrollDirection: Axis.horizontal,
                       itemCount: length,
                       itemBuilder: (BuildContext ctx, int index) {
-                        return PopularGuideHomeFeatures(
+                        return userListData.userDetails[index].isGuide
+                            ? PopularGuideHomeFeatures(
                             id: userListData.userDetails[index].id,
-                            fullName: userListData.userDetails[index].fullName,
+                            fullName:
+                            userListData.userDetails[index].fullName,
                             firebaseProfImg:
-                                userListData.userDetails[index].firebaseImg,
+                            userListData.userDetails[index].firebaseImg,
                             latitude: latitude,
-                            longitude: longitude);
+                            longitude: longitude)
+                            : Container();
                       });
                 }
               }
@@ -1391,7 +1341,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   Text(
                     'Become a guide',
                     style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.lightningYellow,
                         fontSize: 24.sp,
                         fontFamily: 'Gilroy',
                         fontWeight: FontWeight.w700),
@@ -1407,18 +1357,19 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                   SizedBox(
                     height: 5.h,
                   ),
-                  // SizedBox(
-                  //   width: MediaQuery.of(context).size.width * 0.3,
-                  //   child: ElevatedButton(
-                  //     onPressed: () {},
-                  //     style: AppTextStyle.active,
-                  //     child: const Text(
-                  //       'Learn more',
-                  //       style: TextStyle(
-                  //           fontWeight: FontWeight.bold, fontSize: 12),
-                  //     ),
-                  //   ),
-                  // ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: ElevatedButton(
+                      onPressed: () =>
+                          Navigator.of(context).pushNamed('/become_a_guide'),
+                      style: AppTextStyle.active,
+                      child: const Text(
+                        'Learn more',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
+                    ),
+                  ),
                 ],
               )),
         ],

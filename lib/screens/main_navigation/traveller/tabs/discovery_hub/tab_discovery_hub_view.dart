@@ -45,7 +45,7 @@ class TabDiscoveryHubView extends StatefulWidget {
 class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
   List<DiscoveryHub> features = EventUtils.getMockDiscoveryHubFeatures();
   final UserSubscriptionController _userSubscriptionController =
-      Get.put(UserSubscriptionController());
+  Get.put(UserSubscriptionController());
 
   bool hasPremiumSubscription = false;
   late List<String> imageList;
@@ -58,13 +58,13 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
     imageList = [];
     imageIdList = [];
     hasPremiumSubscription =
-        UserSingleton.instance.user.user!.hasPremiumSubscription!;
+    UserSingleton.instance.user.user!.hasPremiumSubscription!;
   }
 
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> screenArguments =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
       appBar: AppBar(
@@ -101,9 +101,9 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                           screenArguments['title'],
                           style: TextStyle(
                               fontSize: RegExp(r"\w+(\'\w+)?")
-                                          .allMatches(screenArguments['title'])
-                                          .length >
-                                      5
+                                  .allMatches(screenArguments['title'])
+                                  .length >
+                                  5
                                   ? 10.sp
                                   : 18.sp,
                               fontWeight: FontWeight.w600),
@@ -166,15 +166,15 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                     ),
                   )
                 else if (hasPremiumSubscription == false &&
-                    screenArguments['is_premium'] == false)
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Text(
-                      screenArguments['description'],
-                      style: AppTextStyle.descrStyle,
-                      textAlign: TextAlign.left,
-                    ),
-                  )
+                      screenArguments['is_premium'] == false)
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        screenArguments['description'],
+                        style: AppTextStyle.descrStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    )
               ],
             ),
           ),
@@ -195,7 +195,7 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
   }
 
   Widget buildSlider(BuildContext context, String id, String mainBadgeId,
-          bool isPremium) =>
+      bool isPremium) =>
       FutureBuilder<NewsfeedImageModel>(
         future: APIServices().getNewsfeedImageData(id),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -222,12 +222,12 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                         viewportFraction: 1,
                         onPageChanged:
                             (int index, CarouselPageChangedReason reason) =>
-                                setState(() => activeIndex = index),
+                            setState(() => activeIndex = index),
                       ),
                       itemBuilder:
                           (BuildContext context, int index, int realIndex) {
                         final NewsfeedImageDetails imgData =
-                            newsfeedImage.newsfeedImageDetails[index];
+                        newsfeedImage.newsfeedImageDetails[index];
 
                         return buildImage(imgData, index);
                       }),
@@ -259,16 +259,16 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
                           bottom: 20,
                           child: isPremium
                               ? GoldenBadge(
-                                  base64Image:
-                                      badgeData.badgeDetails[0].imgIcon,
-                                )
+                            base64Image:
+                            badgeData.badgeDetails[0].imgIcon,
+                          )
                               : Image.memory(
-                                  base64.decode(badgeData
-                                      .badgeDetails[0].imgIcon
-                                      .split(',')
-                                      .last),
-                                  gaplessPlayback: true,
-                                ),
+                            base64.decode(badgeData
+                                .badgeDetails[0].imgIcon
+                                .split(',')
+                                .last),
+                            gaplessPlayback: true,
+                          ),
                         );
                       }
                       if (snapshot.connectionState != ConnectionState.done) {
@@ -298,25 +298,25 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
       );
 
   Widget buildImage(NewsfeedImageDetails imgData, int index) => GestureDetector(
-        onTap: () {
-          // navigateEventDetails(context, imgData.firebaseSnapshotImg);
-        },
-        child: ExtendedImage.network(
-          imgData.firebaseSnapshotImg,
-          fit: BoxFit.cover,
-          gaplessPlayback: true,
-        ),
-      );
+    onTap: () {
+      // navigateEventDetails(context, imgData.firebaseSnapshotImg);
+    },
+    child: ExtendedImage.network(
+      imgData.firebaseSnapshotImg,
+      fit: BoxFit.cover,
+      gaplessPlayback: true,
+    ),
+  );
 
   Widget buildIndicator(int count) => AnimatedSmoothIndicator(
-        activeIndex: activeIndex,
-        count: count,
-        effect: SlideEffect(
-            activeDotColor: Colors.white,
-            dotColor: Colors.grey.shade800,
-            dotHeight: 10.h,
-            dotWidth: 10.w),
-      );
+    activeIndex: activeIndex,
+    count: count,
+    effect: SlideEffect(
+        activeDotColor: Colors.white,
+        dotColor: Colors.grey.shade800,
+        dotHeight: 10.h,
+        dotWidth: 10.w),
+  );
 
   void _showDiscoveryBottomSheet(String backgroundImage) {
     showCupertinoModalBottomSheet(
@@ -327,63 +327,63 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
         enableDrag: true,
         backgroundColor: Colors.transparent,
         builder: (BuildContext ctx) => DiscoveryBottomSheet(
-              backgroundImage: backgroundImage,
-              onSubscribeBtnPressed: () {
-                const double price = 5.99;
-                Navigator.of(ctx).pop();
-                paymentMethod(
-                    context: context,
-                    onContinueBtnPressed: (dynamic data) {
-                      String mode = '';
-                      if (data is CardModel) {
-                        mode = 'Credit Card';
-                      } else {
-                        mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
-                      }
-                      final String transactionNumber =
-                          GlobalMixin().generateTransactionNumber();
-                      confirmPaymentModal(
-                          context: context,
-                          serviceName: 'Discovery Subscription',
-                          paymentMethod: data,
-                          paymentMode: mode,
-                          price: price,
-                          onPaymentSuccessful: () {
-                            Navigator.of(context).pop();
-                            saveSubscription(transactionNumber,
-                                'Premium Subscription', price.toString(), mode);
+          backgroundImage: backgroundImage,
+          onSubscribeBtnPressed: () {
+            const double price = 5.99;
+            Navigator.of(ctx).pop();
+            paymentMethod(
+                context: context,
+                onContinueBtnPressed: (dynamic data) {
+                  String mode = '';
+                  if (data is CardModel) {
+                    mode = 'Credit Card';
+                  } else {
+                    mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
+                  }
+                  final String transactionNumber =
+                  GlobalMixin().generateTransactionNumber();
+                  confirmPaymentModal(
+                      context: context,
+                      serviceName: 'Discovery Subscription',
+                      paymentMethod: data,
+                      paymentMode: mode,
+                      price: price,
+                      onPaymentSuccessful: () {
+                        Navigator.of(context).pop();
+                        saveSubscription(transactionNumber,
+                            'Premium Subscription', price.toString(), mode);
 
-                            paymentSuccessful(
-                                context: context,
-                                paymentDetails: DiscoveryPaymentDetails(
-                                    transactionNumber: transactionNumber),
-                                paymentMethod: mode);
-                          },
-                          onPaymentFailed: () {
-                            paymentFailed(
-                                context: context,
-                                paymentDetails: DiscoveryPaymentDetails(
-                                    transactionNumber: transactionNumber),
-                                paymentMethod: mode);
-                          },
-                          paymentDetails: DiscoveryPaymentDetails(
-                              transactionNumber: transactionNumber));
-                    },
-                    price: price);
-              },
-              onSkipBtnPressed: () {
-                Navigator.of(context).pop();
-              },
-              onCloseBtnPressed: () {
-                Navigator.of(context).pop();
-              },
-              onBackBtnPressed: () {
-                Navigator.of(context).pop();
-              },
-            ));
+                        paymentSuccessful(
+                            context: context,
+                            paymentDetails: DiscoveryPaymentDetails(
+                                transactionNumber: transactionNumber),
+                            paymentMethod: mode);
+                      },
+                      onPaymentFailed: () {
+                        paymentFailed(
+                            context: context,
+                            paymentDetails: DiscoveryPaymentDetails(
+                                transactionNumber: transactionNumber),
+                            paymentMethod: mode);
+                      },
+                      paymentDetails: DiscoveryPaymentDetails(
+                          transactionNumber: transactionNumber));
+                },
+                price: price);
+          },
+          onSkipBtnPressed: () {
+            Navigator.of(context).pop();
+          },
+          onCloseBtnPressed: () {
+            Navigator.of(context).pop();
+          },
+          onBackBtnPressed: () {
+            Navigator.of(context).pop();
+          },
+        ));
   }
 
-  Future<void> saveSubscription(String transactionNumber,
+/*  Future<void> saveSubscription(String transactionNumber,
       String subscriptionName, String price, String paymentMethod) async {
     final DateTime startDate = DateTime.now();
 
@@ -406,5 +406,37 @@ class _TabDiscoveryHubViewState extends State<TabDiscoveryHubView> {
 
     debugPrint(
         'subscription result ${result.successResponse} Has Subscription ${UserSingleton.instance.user.user?.hasPremiumSubscription} State Premium Subscription $hasPremiumSubscription');
+  }*/
+
+  Future<void> saveSubscription(String transactionNumber,
+      String subscriptionName, String price, String paymentMethod) async {
+    String actionType = 'add';
+    final DateTime startDate = DateTime.now();
+
+    final DateTime endDate = GlobalMixin().getEndDate(startDate);
+
+    UserSubscription subscriptionParams = UserSubscription(
+        paymentReferenceNo: transactionNumber,
+        name: subscriptionName,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
+        price: price);
+
+    if(_userSubscriptionController.userSubscription.id.isNotEmpty){
+      subscriptionParams.id = _userSubscriptionController.userSubscription.id;
+      actionType ='update';
+    }
+
+
+    final APIStandardReturnFormat result = await APIServices()
+        .addUserSubscription(subscriptionParams, paymentMethod,actionType);
+
+    final jsonData = jsonDecode(result.successResponse);
+    _userSubscriptionController.setSubscription(UserSubscription.fromJson(jsonData));
+
+    UserSingleton.instance.user.user?.hasPremiumSubscription = true;
+    setState(() {
+      hasPremiumSubscription = true;
+    });
   }
 }

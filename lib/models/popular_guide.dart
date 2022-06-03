@@ -151,7 +151,6 @@ class PopularGuide {
     data['badge_id'] = this.badgeId;
     data['badge_badge_name'] = this.badgeBadgeName;
     data['badge_badge_description'] = this.badgeBadgeDescription;
-
     data['badge_is_main_activity'] = this.badgeIsMainActivity;
     data['badge_is_sub_activity'] = this.badgeIsSubActivity;
     data['badge_deletedAt'] = this.badgeDeletedAt;

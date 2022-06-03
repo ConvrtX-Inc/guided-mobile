@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator_platform_interface/src/models/position.dart';
 import 'package:get/get.dart';
 import 'package:guided/common/widgets/bottom_navigation_bar.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/user_profile_controller.dart';
+import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_model.dart';
@@ -12,6 +16,7 @@ import 'package:guided/screens/main_navigation/home/screens/home_main.dart';
 import 'package:guided/screens/main_navigation/settings/screens/settings_main.dart';
 import 'package:guided/screens/message/message_inbox.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
+import 'package:guided/utils/services/geolocation_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Screen for home
@@ -41,6 +46,9 @@ class _HomeScreenState extends State<MainNavigationScreen>
   int navIndex;
   int contentIndex;
 
+  double lat = 0;
+  double lng = 0;
+
   _HomeScreenState(this.navIndex, this.contentIndex);
 
   final CardController _creditCardController = Get.put(CardController());
@@ -61,7 +69,9 @@ class _HomeScreenState extends State<MainNavigationScreen>
       _selectedContent = contentIndex;
     });
     super.initState();
+    getCurrentLocation();
     getProfileDetails();
+    updateLocation();
     getUserCards();
   }
 
@@ -136,6 +146,32 @@ class _HomeScreenState extends State<MainNavigationScreen>
         isFirstAidTrained: res.isFirstAidTrained);
 
     _profileDetailsController.setUserProfileDetails(res);
+  }
+
+  Future<void> updateLocation() async {
+
+  }
+
+  getCurrentLocation() async {
+    final  Position location = await GeoLocationServices().getCoordinates();
+
+    final dynamic editProfileParams = {
+      'latitude': location.latitude,
+      'longitude':location.longitude,
+
+    };
+
+    final APIStandardReturnFormat res =
+    await APIServices().updateProfile(editProfileParams);
+    debugPrint('Response Location :: ${res} ${res.status} $editProfileParams');
+
+    if (res.status == 'success') {
+      final ProfileDetailsModel updatedProfile =
+      ProfileDetailsModel.fromJson(json.decode(res.successResponse));
+      _profileDetailsController.setUserProfileDetails(updatedProfile);
+    }
+
+    debugPrint('Location result ${location.latitude} ${location.latitude}');
   }
 
   @override
