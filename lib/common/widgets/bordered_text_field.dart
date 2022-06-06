@@ -17,6 +17,7 @@ class BorderedTextField extends StatelessWidget {
     this.minLines = 1,
     this.showLabel = true,
     this.isPassword = false,
+    this.isEnabled = true,
     Key? key})
       : super(key: key);
 
@@ -31,6 +32,7 @@ class BorderedTextField extends StatelessWidget {
   final dynamic maxLines;
   final int minLines;
   final bool isPassword;
+  final bool isEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +55,7 @@ class BorderedTextField extends StatelessWidget {
           obscureText: isPassword,
           obscuringCharacter: AppTextConstants.biggerBullet,
           onChanged: onChanged,
+          enabled: isEnabled,
           maxLines: maxLines,
           minLines: minLines,
           validator: (String? val) {
@@ -70,10 +73,14 @@ class BorderedTextField extends StatelessWidget {
             hintStyle: TextStyle(
               color: AppColors.grey,
             ),
-            enabledBorder: OutlineInputBorder(
+            disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14.r),
               borderSide: BorderSide(color: Colors.grey, width: 0.2.w),
             ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14.r),
+              borderSide: BorderSide(color: Colors.grey,width: 0.5.w),
+            )
           ),
         ),
       ],

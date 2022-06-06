@@ -58,12 +58,12 @@ class _LoginScreenState extends State<LoginScreen> {
             .then((APIStandardReturnFormat response) async {
           if (response.status == 'error') {
             AdvanceSnackBar(
-                    message: ErrorMessageConstants.loginWrongEmailorPassword)
+                message: ErrorMessageConstants.loginWrongEmailorPassword)
                 .show(context);
             setState(() => buttonIsLoading = false);
           } else {
             final UserModel user =
-                UserModel.fromJson(json.decode(response.successResponse));
+            UserModel.fromJson(json.decode(response.successResponse));
             UserSingleton.instance.user = user;
             if (user.user?.isTraveller != true) {
               await SecureStorage.saveValue(
@@ -96,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
     };
 
     final String userType =
-        await SecureStorage.readValue(key: AppTextConstants.userType);
+    await SecureStorage.readValue(key: AppTextConstants.userType);
 
     // debugPrint('User Type ${userType}');
     if (!EmailValidator.validate(_emailController.text)) {
@@ -147,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => buttonIsLoading = false);
       if (response.status == 'error') {
         AdvanceSnackBar(
-                message: ErrorMessageConstants.loginWrongEmailorPassword)
+            message: ErrorMessageConstants.loginWrongEmailorPassword)
             .show(context);
         setState(() => buttonIsLoading = false);
       } else {
@@ -158,18 +158,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> setRoles(APIStandardReturnFormat response) async {
     final UserModel user =
-        UserModel.fromJson(json.decode(response.successResponse));
+    UserModel.fromJson(json.decode(response.successResponse));
     UserSingleton.instance.user = user;
 
     final String userType =
-        await SecureStorage.readValue(key: AppTextConstants.userType);
+    await SecureStorage.readValue(key: AppTextConstants.userType);
     if (userType == 'traveller') {
-      saveTokenAndId(user.token!, user.user!.id!);
+      await saveTokenAndId(user.token!, user.user!.id!);
       Navigator.of(context).pushNamedAndRemoveUntil(
           '/traveller_tab', (Route<dynamic> route) => false);
     } else {
       if (user.user!.isGuide!) {
-        saveTokenAndId(user.token!, user.user!.id!);
+        await saveTokenAndId(user.token!, user.user!.id!);
         Navigator.of(context).pushNamedAndRemoveUntil(
             '/main_navigation', (Route<dynamic> route) => false);
       } else {
@@ -182,13 +182,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> saveTokenAndId(String token, String userId) async {
+    debugPrint('Token $token , User id $userId');
     await SecureStorage.saveValue(
         key: AppTextConstants.userToken, value: token);
     await SecureStorage.saveValue(key: AppTextConstants.userId, value: userId);
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: <Widget>[
                   Container(
                     margin:
-                        EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+                    EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
                     width: 40.w,
                     height: 40.h,
                     padding: EdgeInsets.zero,
@@ -254,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                       final fb = FacebookLogin();
                       final res =
-                          await fb.logIn(permissions: <FacebookPermission>[
+                      await fb.logIn(permissions: <FacebookPermission>[
                         FacebookPermission.publicProfile,
                         FacebookPermission.email,
                       ]);
@@ -273,8 +271,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               .then((APIStandardReturnFormat response) async {
                             if (response.status == 'error') {
                               AdvanceSnackBar(
-                                      message: ErrorMessageConstants
-                                          .loginWrongEmailorPassword)
+                                  message: ErrorMessageConstants
+                                      .loginWrongEmailorPassword)
                                   .show(context);
                               setState(() => buttonIsLoading = false);
                             } else {
@@ -495,7 +493,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
+                        BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -524,7 +522,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
+                        BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -557,7 +555,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: AppColors.silver,
                           ),
                           borderRadius:
-                              BorderRadius.circular(18.r), // <-- Radius
+                          BorderRadius.circular(18.r), // <-- Radius
                         ),
                         primary: AppColors.primaryGreen,
                         onPrimary: Colors.white, // <-- Splash color
@@ -640,12 +638,12 @@ class _LoginScreenState extends State<LoginScreen> {
           .then((APIStandardReturnFormat response) async {
         if (response.status == 'error') {
           AdvanceSnackBar(
-                  message: ErrorMessageConstants.loginWrongEmailorPassword)
+              message: ErrorMessageConstants.loginWrongEmailorPassword)
               .show(context);
           setState(() => appleLoading = false);
         } else {
           final UserModel user =
-              UserModel.fromJson(json.decode(response.successResponse));
+          UserModel.fromJson(json.decode(response.successResponse));
           UserSingleton.instance.user = user;
           if (user.user?.isTraveller != true) {
             await SecureStorage.saveValue(

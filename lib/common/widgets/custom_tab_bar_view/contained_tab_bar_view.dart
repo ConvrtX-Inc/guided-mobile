@@ -244,7 +244,7 @@ class ContainedTabBarViewState extends State<ContainedTabBarView>
           widget.tabBarProperties.height -
           margin.top -
           margin.bottom,
-      child: TabBarView(
+      child:TabBarView(
         controller: _controller,
         children: widget.views,
         dragStartBehavior: widget.tabBarViewProperties.dragStartBehavior,

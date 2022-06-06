@@ -73,27 +73,9 @@ class _GuideProfileFeatureState extends State<GuideProfileFeature> {
           children: <Widget>[
             Row(
               children: <Widget>[
-                if (widget._firebaseProfImg == '')
-                  Container(
-                    height: 80.h,
-                    width: 80.w,
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 5, color: Colors.white),
-                        borderRadius: BorderRadius.circular(60.r),
-                        boxShadow: const <BoxShadow>[
-                          BoxShadow(
-                              blurRadius: 1,
-                              color: Colors.grey,
-                              spreadRadius: 1)
-                        ],
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                              'https://img.icons8.com/external-coco-line-kalash/344/external-person-human-body-anatomy-coco-line-kalash-4.png'),
-                          fit: BoxFit.cover,
-                        )),
-                  )
-                else
-                  Container(
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pushNamed('/main_profile',arguments: widget._id),
+                  child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(width: 5, color: Colors.white),
                       borderRadius: BorderRadius.circular(60.r),
@@ -104,15 +86,22 @@ class _GuideProfileFeatureState extends State<GuideProfileFeature> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(60.r),
-                      child: ExtendedImage.network(
+                      child: widget._firebaseProfImg.isNotEmpty
+                          ? ExtendedImage.network(
                         widget._firebaseProfImg,
                         fit: BoxFit.cover,
                         gaplessPlayback: true,
                         width: 80,
                         height: 80,
+                      )
+                          : Image.asset(
+                        AssetsPath.defaultProfilePic,
+                        height: 80,
+                        width: 80,
                       ),
                     ),
                   ),
+                ),
                 Expanded(
                   child: Card(
                     color: Colors.transparent,
@@ -303,39 +292,41 @@ class _GuideProfileFeatureState extends State<GuideProfileFeature> {
                   shrinkWrap: true,
                   itemCount: length,
                   itemBuilder: (BuildContext ctx, int index) {
-                    return PostFeatures(
-                        id: packageData.packageDetails[index].id,
-                        name: packageData.packageDetails[index].name,
-                        mainBadgeId:
-                            packageData.packageDetails[index].mainBadgeId,
-                        subBadgeId:
-                            packageData.packageDetails[index].subBadgeId,
-                        description:
-                            packageData.packageDetails[index].description,
-                        imageUrl: packageData.packageDetails[index].coverImg,
-                        numberOfTouristMin:
-                            packageData.packageDetails[index].minTraveller,
-                        numberOfTourist:
-                            packageData.packageDetails[index].maxTraveller,
-                        starRating: '0',
-                        fee: double.parse(
-                            packageData.packageDetails[index].basePrice),
-                        dateRange: '1-9',
-                        services: packageData.packageDetails[index].services,
-                        country: packageData.packageDetails[index].country,
-                        address: packageData.packageDetails[index].address,
-                        extraCost: packageData
-                            .packageDetails[index].extraCostPerPerson,
-                        isPublished:
-                            packageData.packageDetails[index].isPublished,
-                        firebaseCoverImg:
-                            packageData.packageDetails[index].firebaseCoverImg,
-                        notIncluded: packageData
-                            .packageDetails[index].notIncludedServices,
-                        fullName: widget._name,
-                        firebaseProfImg: widget._firebaseProfImg,
-                        isFirstAid: widget._isFirstAid,
-                        createdDate: widget._createdDate);
+                    return
+                      PostFeatures(
+                          id: packageData.packageDetails[index].id,
+                          name: packageData.packageDetails[index].name,
+                          mainBadgeId:
+                          packageData.packageDetails[index].mainBadgeId,
+                          subBadgeId:
+                          packageData.packageDetails[index].subBadgeId,
+                          description:
+                          packageData.packageDetails[index].description,
+                          imageUrl: packageData.packageDetails[index].coverImg,
+                          numberOfTouristMin:
+                          packageData.packageDetails[index].minTraveller,
+                          numberOfTourist:
+                          packageData.packageDetails[index].maxTraveller,
+                          starRating: '0',
+                          fee: double.parse(
+                              packageData.packageDetails[index].basePrice),
+                          dateRange: '1-9',
+                          services: packageData.packageDetails[index].services,
+                          country: packageData.packageDetails[index].country,
+                          address: packageData.packageDetails[index].address,
+                          extraCost: packageData
+                              .packageDetails[index].extraCostPerPerson,
+                          isPublished:
+                          packageData.packageDetails[index].isPublished,
+                          firebaseCoverImg:
+                          packageData.packageDetails[index].firebaseCoverImg,
+                          notIncluded: packageData
+                              .packageDetails[index].notIncludedServices,
+                          fullName: widget._name,
+                          firebaseProfImg: widget._firebaseProfImg,
+                          isFirstAid: widget._isFirstAid,
+                          createdDate: widget._createdDate
+                    );
                   });
             }
           }

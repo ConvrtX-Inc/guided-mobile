@@ -1482,8 +1482,6 @@ class APIServices {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
-    debugPrint('Parameters $parameters $userId');
-
     final http.Response response = await http.patch(
         Uri.parse(
             '$apiBaseMode$apiBaseUrl/${AppAPIPath.getProfileDetails}/$userId'),
@@ -1499,7 +1497,8 @@ class APIServices {
   ///API Service for Retrieving User Subscription
   Future<UserSubscription> getUserSubscription() async {
     final String? token = UserSingleton.instance.user.token;
-    final String? userId = UserSingleton.instance.user.user?.id;
+    final String? userId =
+    await SecureStorage.readValue(key: AppTextConstants.userId);
 
     final Map<String, String> queryParameters = {
       'filter': 'user_id||eq||"$userId"',

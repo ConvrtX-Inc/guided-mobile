@@ -121,6 +121,8 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
 
     final UserSubscription subscription =
     await APIServices().getUserSubscription();
+
+
     bool hasPremiumSubscription = false;
     if (subscription.id.isNotEmpty) {
       final DateTime currentDate = DateTime.now();

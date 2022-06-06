@@ -162,15 +162,16 @@ class _GuideProfileState extends State<GuideProfile>
   Widget buildGuideResult(ProfileDetailsModel details, String activityPackageId,
           String mainBadgeId, String userId) =>
       Center(
-        child: GuideProfileFeature(
-            id: details.id,
-            activityPackageId: activityPackageId,
-            firebaseProfImg: details.firebaseProfilePicUrl,
-            name: details.fullName,
-            isFirstAid: details.isFirstAidTrained,
-            mainBadgeId: mainBadgeId,
-            userId: userId,
-            createdDate: details.createdDate),
+        child:GuideProfileFeature(
+              id: details.id,
+              activityPackageId: activityPackageId,
+              firebaseProfImg: details.firebaseProfilePicUrl,
+              name: details.fullName,
+              isFirstAid: details.isFirstAidTrained,
+              mainBadgeId: mainBadgeId,
+              userId: userId,
+              createdDate: details.createdDate),
+
       );
 
   Widget nearbyActivities(BuildContext context, List<Activity> activities) {

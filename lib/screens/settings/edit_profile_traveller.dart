@@ -148,11 +148,8 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
           if (selectedTabIndex == 0)
             GestureDetector(
                 onPanUpdate: (details) {
-
-
                   // Swiping in left direction.
                   if (details.delta.dx < 0) {
-
                     setState(() {
                       selectedTabIndex = 1;
                     });
@@ -246,6 +243,7 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
             children: <Widget>[
               SizedBox(height: 16.h),
               BorderedTextField(
+                  isEnabled: false,
                   controller: _emailController,
                   onValidate: (String val) {
                     if (!GlobalValidator().validEmail(val.trim())) {

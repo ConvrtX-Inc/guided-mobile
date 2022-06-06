@@ -155,7 +155,7 @@ class _HomeFeaturesState extends State<HomeFeatures>
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: ExtendedImage.network(
+                    child:ExtendedImage.network(
                       widget._firebaseCoverImg,
                       fit: BoxFit.cover,
                       gaplessPlayback: true,

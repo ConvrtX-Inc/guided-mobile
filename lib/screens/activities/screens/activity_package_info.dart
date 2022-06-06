@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +7,6 @@ import 'package:flutter_animarker/flutter_map_marker_animation.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:guided/common/widgets/custom_rounded_button.dart';
-import 'package:guided/common/widgets/custom_tab_bar_view/contained_tab_bar_view.dart';
-import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_properties.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -20,7 +15,7 @@ import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/user_model.dart';
-import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_description_tab.dart';
+import 'package:guided/screens/activities/widgets/activity_description.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_traveler_limit_schedules.dart';
 import 'package:guided/screens/message/message_screen_traveler.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
@@ -44,6 +39,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   ActivityPackage _activityPackage = ActivityPackage();
   String _selectedTab = 'Description';
   late Marker mark;
+
   bool showMoreDescription = false;
 
   Completer<GoogleMapController> _controller = Completer();
@@ -54,8 +50,10 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   bool isGettingProfileDetail = true;
   ChatModel chatHistory = ChatModel();
   List<Message> messages = [];
+  bool isFavorite = false;
 
   void _onMapCreated(GoogleMapController controller) {
+    debugPrint('Map created');
     if (!_controller.isCompleted) {
       _controller.complete(controller);
     }
@@ -97,75 +95,147 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(180),
-          child: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            leading: Transform.scale(
-              scale: 0.8,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Container(
-                  width: 50.w,
-                  height: 40.h,
-                  padding: EdgeInsets.zero,
-                  decoration: BoxDecoration(
-                    color: AppColors.harp,
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back_ios_rounded,
-                      color: Colors.black,
-                      size: 25,
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-              ),
-            ),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                /// Share Icon
-                Transform.scale(
-                  scale: 0.8,
-                  child: Padding(
-                    padding: EdgeInsets.zero,
-                    child: Container(
-                      width: 40.w,
-                      height: 40.h,
-                      padding: EdgeInsets.zero,
+      body: DefaultTabController(
+        length: 2,
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool value) {
+            return [
+              SliverAppBar(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    /// Share Icon
+
+                    Container(
+                      height: 40,
+                      width: 40,
                       decoration: BoxDecoration(
                         color: AppColors.harp,
                         borderRadius: BorderRadius.circular(10.r),
                       ),
-                      child: IconButton(
-                        icon: const Icon(
+                      child: Center(
+                        child: Icon(
                           Icons.share_outlined,
                           color: Colors.black,
-                          size: 25,
+                          size: 25.h,
                         ),
-                        onPressed: () {
-                          Share.share('${widget.package.name!} \n  ${widget.package.firebaseCoverImg!} ${widget.package.description!}');
-
-                        },
                       ),
                     ),
-                  ),
+
+                    SizedBox(width: 8.w,),
+
+                    GestureDetector(
+                      onTap: (){
+                        setState(() {
+                          isFavorite = !isFavorite;
+                        });
+                      },
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: AppColors.harp,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Center(
+                          child: Icon(
+                           isFavorite ? Icons.favorite :  Icons.favorite_border_outlined,
+                            color: isFavorite ? Colors.red :  Colors.black,
+                            size: 25.h
+                            ,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
-              ],
-            ),
-            flexibleSpace: ExtendedImage.network(
-              _activityPackage.firebaseCoverImg!,
-              gaplessPlayback: true,
-              fit: BoxFit.cover,
-            ),
-          )),
-      body: buildPackageInfoUI(),
+                flexibleSpace: ExtendedImage.network(
+                  _activityPackage.firebaseCoverImg!,
+                  gaplessPlayback: true,
+                  fit: BoxFit.cover,
+                ),
+                backgroundColor: Colors.transparent,
+                pinned: true,
+                collapsedHeight: 100.h,
+                // floating: true,
+                expandedHeight: 200.h,
+              )
+            ];
+          },
+          body: Column(
+            children: <Widget>[
+              SizedBox(height: 20.h),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 18.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      _activityPackage.name!,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 28.sp),
+                    ),
+                    SizedBox(height: 10.h),
+                    buildLocationDetails(),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20.h),
+              Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.all(Radius.circular(8.r))),
+                margin: EdgeInsets.all(4.w),
+                child: TabBar(
+                  indicatorColor: Colors.black,
+                  labelColor: Colors.black,
+                  labelStyle: AppTextStyle.blackStyle,
+                  unselectedLabelStyle: AppTextStyle.greyStyle,
+                  unselectedLabelColor: Colors.grey,
+                  tabs: [
+                    Tab(text: AppTextConstants.description),
+                    Tab(text: AppTextConstants.travelerLimitAndSchedule),
+                  ],
+                ),
+              ),
+              Expanded(
+                  child: TabBarView(
+                children: [
+                  // buildDescriptionTab(),
+                  Activity().buildDescription(
+                      activityPackage: _activityPackage,
+                      userGuideDetails: userGuideDetails,
+                      showMoreDescription: showMoreDescription,
+                      marker: mark,
+                      mapController: _controller,
+                      onMapCreated: () => _onMapCreated,
+                      context: context,
+                      getMessageHistory: getMessageHistory,
+                      otherPackages: otherPackages,
+                      mapWidget: buildMap(),
+                      onReadMoreCallBack: () {
+                        setState(() {
+                          showMoreDescription = !showMoreDescription;
+                        });
+                      }),
+                  PopularGuidesTravelerLimitSchedules(
+                      packageId: _activityPackage.id!,
+                      price: _activityPackage.basePrice!)
+                ],
+              ))
+            ],
+          ),
+          /*body: TabBarView(
+            children: [
+              buildDescriptionTab(),
+              PopularGuidesTravelerLimitSchedules(
+                  packageId: _activityPackage.id!,
+                  price: _activityPackage.basePrice!)
+            ],
+          ),*/
+        ),
+      ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
         child: Row(
@@ -174,7 +244,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
               TextSpan(
                   text: '\$${_activityPackage.basePrice}',
                   style:
-                  TextStyle(fontWeight: FontWeight.w700, fontSize: 30.sp)),
+                      TextStyle(fontWeight: FontWeight.w700, fontSize: 30.sp)),
               const TextSpan(
                   text: '/hour', style: TextStyle(color: Colors.grey)),
             ])),
@@ -205,75 +275,8 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
     );
   }
 
-  Widget buildPackageInfoUI() => !isGettingProfileDetail
-      ? Container(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(height: 12.h),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 18.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                _activityPackage.name!,
-                style: TextStyle(
-                    fontWeight: FontWeight.w700, fontSize: 28.sp),
-              ),
-              SizedBox(height: 10.h),
-              buildLocationDetails(),
-            ],
-          ),
-        ),
-        SizedBox(height: 16.h),
-        Divider(color: AppColors.grey),
-        SizedBox(
-          height: 20.h,
-        ),
-        Expanded(
-          child: ContainedTabBarView(
-            tabs: <Widget>[
-              Text(AppTextConstants.description,
-                  style: _selectedTab == AppTextConstants.description
-                      ? AppTextStyle.blackStyle
-                      : AppTextStyle.inactive),
-              Text(AppTextConstants.travelerLimitAndSchedule,
-                  style: _selectedTab ==
-                      AppTextConstants.travelerLimitAndSchedule
-                      ? AppTextStyle.blackStyle
-                      : AppTextStyle.inactive),
-            ],
-            tabBarProperties: TabBarProperties(
-              height: 42,
-              margin: const EdgeInsets.all(8),
-              indicatorColor: AppColors.rangooGreen,
-              indicator: UnderlineTabIndicator(
-                  borderSide: BorderSide(
-                      width: 2.w, color: AppColors.rangooGreen),
-                  insets: EdgeInsets.symmetric(horizontal: 18.w)),
-              indicatorWeight: 1,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-            ),
-            views: <Widget>[
-              buildDescriptionTab(),
-              PopularGuidesTravelerLimitSchedules(
-                  packageId: _activityPackage.id!,
-                  price: _activityPackage.basePrice!)
-            ],
-            onChange: setTab,
-            // initialIndex: initIndex,
-          ),
-        ),
-      ],
-    ),
-  )
-      : const Center(child: CircularProgressIndicator());
-
-  //DESCRIPTION TAB
   Widget buildDescriptionTab() => SingleChildScrollView(
-      child: Column(
+          child: Column(
         children: <Widget>[
           Container(
               padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 20.h),
@@ -297,13 +300,13 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                           ),
                           child: userGuideDetails.firebaseProfilePicUrl != ''
                               ? CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                userGuideDetails.firebaseProfilePicUrl!),
-                          )
+                                  backgroundImage: NetworkImage(
+                                      userGuideDetails.firebaseProfilePicUrl!),
+                                )
                               : const CircleAvatar(
-                            backgroundImage: AssetImage(
-                                '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
-                          )),
+                                  backgroundImage: AssetImage(
+                                      '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
+                                )),
                       title: Text(
                         userGuideDetails.fullName!,
                         style: TextStyle(
@@ -330,7 +333,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                   Text(
                     'Description',
                     style:
-                    TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+                        TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(height: 16.h),
                   if (_activityPackage.description!.length >
@@ -381,7 +384,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                   Text(
                     'Location',
                     style:
-                    TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+                        TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(height: 16.h),
                   buildLocationDetails(),
@@ -396,10 +399,10 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                               duration: const Duration(milliseconds: 2000),
                               rippleRadius: 0.1,
                               rippleColor:
-                              const Color.fromARGB(255, 6, 134, 49),
+                                  const Color.fromARGB(255, 6, 134, 49),
                               markers: <Marker>{mark},
                               mapId: _controller.future.then<int>(
-                                      (GoogleMapController value) => value.mapId),
+                                  (GoogleMapController value) => value.mapId),
                               child: GoogleMap(
                                 initialCameraPosition: CameraPosition(
                                   target: LatLng(
@@ -435,13 +438,13 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                           ),
                           child: userGuideDetails.firebaseProfilePicUrl != ''
                               ? CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                userGuideDetails.firebaseProfilePicUrl!),
-                          )
+                                  backgroundImage: NetworkImage(
+                                      userGuideDetails.firebaseProfilePicUrl!),
+                                )
                               : const CircleAvatar(
-                            backgroundImage: AssetImage(
-                                '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
-                          )),
+                                  backgroundImage: AssetImage(
+                                      '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
+                                )),
                       title: Text(
                         userGuideDetails.fullName!,
                         style: TextStyle(
@@ -473,7 +476,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                   SizedBox(height: 12.h),
                   Padding(
                     padding:
-                    EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
                     child: Text(
                       'During Your Activity',
                       style: TextStyle(
@@ -484,7 +487,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                   ),
                   Padding(
                     padding:
-                    EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
                     child: Text(
                       "I'm available over phone 24/7 for Traveller",
                       style: TextStyle(
@@ -498,7 +501,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                   ),
                   Padding(
                     padding:
-                    EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
                     child: Text(
                       'Response rate: 80%',
                       style: TextStyle(
@@ -509,7 +512,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                   ),
                   Padding(
                     padding:
-                    EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
+                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
                     child: Text(
                       'Response rate: A few minutes or hours or more',
                       style: TextStyle(
@@ -528,7 +531,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                           side: BorderSide(color: AppColors.tealGreen),
                           shape: RoundedRectangleBorder(
                               borderRadius:
-                              BorderRadius.all(Radius.circular(20.r))),
+                                  BorderRadius.all(Radius.circular(20.r))),
                         ),
                         onPressed: getMessageHistory,
                         child: Padding(
@@ -683,7 +686,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                               ),
                               image: const DecorationImage(
                                 image:
-                                AssetImage('assets/images/png/clock.png'),
+                                    AssetImage('assets/images/png/clock.png'),
                                 fit: BoxFit.contain,
                               ),
                             ),
@@ -727,48 +730,77 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   }
 
   Widget buildLocationDetails() => Row(
-    children: <Widget>[
-      SvgPicture.asset('${AssetsPath.assetsSVGPath}/location.svg'),
-      SizedBox(width: 4.w),
-      Expanded(
-          child: Text(
+        children: <Widget>[
+          SvgPicture.asset('${AssetsPath.assetsSVGPath}/location.svg'),
+          SizedBox(width: 4.w),
+          Expanded(
+              child: Text(
             _activityPackage.address!,
             style: TextStyle(
                 color: Colors.grey,
                 fontWeight: FontWeight.w400,
                 fontSize: 15.sp),
           ))
-    ],
-  );
+        ],
+      );
+
+  Widget buildMap() => Center(
+      child: SizedBox(
+          height: 200.h,
+          width: double.infinity,
+          child: AbsorbPointer(
+            child: Animarker(
+              curve: Curves.bounceInOut,
+              duration: const Duration(milliseconds: 2000),
+              rippleRadius: 0.1,
+              rippleColor: const Color.fromARGB(255, 6, 134, 49),
+              markers: <Marker>{mark},
+              mapId: _controller.future
+                  .then<int>((GoogleMapController value) => value.mapId),
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(
+                      double.parse(_activityPackage.activityPackageDestination!
+                          .activityPackageDestinationLatitude!),
+                      double.parse(_activityPackage.activityPackageDestination!
+                          .activityPackageDestinationLongitude!)),
+                  zoom: 15,
+                ),
+                onMapCreated: _onMapCreated,
+                myLocationButtonEnabled: false,
+                zoomControlsEnabled: false,
+              ),
+            ),
+          )));
 
   // Skeleton Texts
   Widget buildFakeProfile() => Row(
-    children: <Widget>[
-      const SkeletonText(
-        shape: BoxShape.circle,
-        height: 40,
-        width: 40,
-      ),
-      SizedBox(width: 8.w),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SkeletonText(
-            height: 15.h,
-            width: 100.w,
+          const SkeletonText(
+            shape: BoxShape.circle,
+            height: 40,
+            width: 40,
           ),
-          SizedBox(height: 8.h),
-          SkeletonText(
-            height: 15.h,
-            width: 50.w,
-          ),
+          SizedBox(width: 8.w),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SkeletonText(
+                height: 15.h,
+                width: 100.w,
+              ),
+              SizedBox(height: 8.h),
+              SkeletonText(
+                height: 15.h,
+                width: 50.w,
+              ),
+            ],
+          )
         ],
-      )
-    ],
-  );
+      );
 
   Widget buildActivityListButtonItem(
-      {String title = '', String subtitle = '', showDivider: true}) =>
+          {String title = '', String subtitle = '', showDivider: true}) =>
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -796,7 +828,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
 
   Future<void> getGuideUserDetails() async {
     final User result =
-    await APIServices().getUserDetails(_activityPackage.userId!);
+        await APIServices().getUserDetails(_activityPackage.userId!);
     debugPrint('user details: ${_activityPackage.userId}');
 
     setState(() {
@@ -807,7 +839,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
 
   Future<void> getPackages() async {
     final List<ActivityPackage> res =
-    await APIServices().getGuidePackages(_activityPackage.userId!);
+        await APIServices().getGuidePackages(_activityPackage.userId!);
     debugPrint('Res: ${res.length} ${_activityPackage.id}');
 
     setState(() {
@@ -820,8 +852,8 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   }
 
   void checkAvailability(
-      ActivityPackage package,
-      ) {
+    ActivityPackage package,
+  ) {
     final Map<String, dynamic> details = {
       'package': package,
     };
@@ -835,7 +867,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
         .getChatMessages(UserSingleton.instance.user.user!.id!, 'all');
 
     final ChatModel chat = res.firstWhere(
-            (ChatModel element) => element.receiver!.id! == userGuideDetails.id,
+        (ChatModel element) => element.receiver!.id! == userGuideDetails.id,
         orElse: () => ChatModel());
 
     setState(() {
@@ -858,7 +890,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
         context,
         MaterialPageRoute(
             builder: (BuildContext context) => MessageScreenTraveler(
-              message: _chatHistory,
-            )));
+                  message: _chatHistory,
+                )));
   }
 }

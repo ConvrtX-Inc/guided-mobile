@@ -36,7 +36,6 @@ class SettingsItems extends StatefulWidget {
         _imgUrl = imgUrl,
         _name = name,
         super(key: key);
-
   final String _keyName;
   final String _imgUrl;
   final String _name;
