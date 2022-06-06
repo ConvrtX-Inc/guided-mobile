@@ -31,7 +31,6 @@ class SecureStorage {
 
     return value!;
   }
-
   /// Clear storage
   static Future<void> clearAll() async {
     await _secureStorage.deleteAll();

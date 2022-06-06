@@ -103,20 +103,20 @@ class SettingsUtils {
   /// generate mock data for traveller settings
   static List<SettingsModel> getMockedTravellerDataSettings() {
     return <SettingsModel>[
-      SettingsModel(
+      /*SettingsModel(
           keyName: 'availability',
           name: 'Availability',
           icon: 'calendar',
           color: Colors.black,
           imgUrl: 'assets/images/svg/settings_icon_availability.svg',
+          subSettings: []),*/
+      SettingsModel(
+          keyName: 'my_booking',
+          name: 'My Bookings',
+          icon: 'test',
+          color: Colors.black,
+          imgUrl: 'assets/images/svg/settings_icon_calendar.svg',
           subSettings: []),
-      // SettingsModel(
-      //     keyName: 'my_booking',
-      //     name: 'My Bookings',
-      //     icon: 'test',
-      //     color: Colors.black,
-      //     imgUrl: 'assets/images/svg/settings_icon_calendar.svg',
-      //     subSettings: []),
       // SettingsModel(
       //     keyName: 'personal_information',
       //     name: 'Personal Information',
