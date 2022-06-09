@@ -6,15 +6,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/booking_request.dart';
 import 'package:guided/models/requests.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/date_time_ago.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/requests.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
-
-import '../../../models/booking_request.dart';
-import '../../../models/user_model.dart';
 
 /// Request Screen
 class RequestsScreen extends StatefulWidget {
@@ -29,7 +28,9 @@ class _RequestsScreenState extends State<RequestsScreen> {
   final List<RequestsScreenModel> requestsItems =
       RequestsScreenUtils.getMockedDataRequestsScreen();
 
-  List<BookingRequest> bookingRequests = [];
+  List<BookingRequest> bookingRequests = <BookingRequest>[];
+  List<BookingRequest> filteredRequests = <BookingRequest>[];
+  String _filterType = 'All';
 
   @override
   void initState() {
@@ -65,9 +66,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
                       ),
                       const Spacer(),
                       InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/request_filter');
-                          },
+                          onTap: filterBookingRequests,
                           child: const Icon(Icons.tune)),
                       const SizedBox(
                         width: 30,
@@ -77,35 +76,21 @@ class _RequestsScreenState extends State<RequestsScreen> {
                   const SizedBox(
                     height: 30,
                   ),
-                  FutureBuilder<List<BookingRequest>>(
-                    future: APIServices().getBookingRequest(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<BookingRequest>> snapshot) {
-                      if (snapshot.hasData) {
-                        return Expanded(
-                          child: ListView.builder(
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (BuildContext ctx, int index) {
-                                return Column(
-                                  children: <Widget>[
-                                    _requestsListItem(
-                                        context, index, snapshot.data![index]),
-                                    const Divider(
-                                      thickness: 0.5,
-                                    )
-                                  ],
-                                );
-                              }),
-                        );
-                      }
-                      if (snapshot.connectionState != ConnectionState.done) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      return const Center(
-                        child: Text("You Don't Have Any Request Yet"),
-                      );
-                    },
-                  ),
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: filteredRequests.length,
+                        itemBuilder: (BuildContext ctx, int index) {
+                          return Column(
+                            children: <Widget>[
+                              _requestsListItem(
+                                  context, index, filteredRequests[index]),
+                              const Divider(
+                                thickness: 0.5,
+                              )
+                            ],
+                          );
+                        }),
+                  )
                 ],
               ),
             ),
@@ -155,13 +140,15 @@ class _RequestsScreenState extends State<RequestsScreen> {
                         ],
                         color: Colors.white,
                         shape: BoxShape.circle,
-                        image: request.fromUserFirebaseProfilePic != '' ?  DecorationImage(
-                            fit: BoxFit.fitHeight,
-                            image: NetworkImage(
-                                request.fromUserFirebaseProfilePic!)) :DecorationImage(
-                            fit: BoxFit.fitHeight,
-                            image: AssetImage(AssetsPath.defaultProfilePic))
-                    ),
+                        image: request.fromUserFirebaseProfilePic != ''
+                            ? DecorationImage(
+                                fit: BoxFit.fitHeight,
+                                image: NetworkImage(
+                                    request.fromUserFirebaseProfilePic!))
+                            : DecorationImage(
+                                fit: BoxFit.fitHeight,
+                                image:
+                                    AssetImage(AssetsPath.defaultProfilePic))),
                   ),
                 ),
                 Column(
@@ -190,13 +177,11 @@ class _RequestsScreenState extends State<RequestsScreen> {
                                 fontWeight: FontWeight.w400),
                           ),
                         )),
-
                     buildStatus(request.status!.statusName!)
                   ],
                 ),
                 Expanded(
-
-              child:  DateTimeAgo(
+                    child: DateTimeAgo(
                   dateString: request.createdDate!,
                   color: Colors.grey,
                   size: 10.sp,
@@ -209,6 +194,34 @@ class _RequestsScreenState extends State<RequestsScreen> {
     );
   }
 
+  Future<void> filterBookingRequests() async {
+    final dynamic filterType =
+    await Navigator.pushNamed(
+        context, '/request_filter', arguments: _filterType);
+
+    List<BookingRequest> data = [];
+    if (filterType != null) {
+      if (filterType.toString().toLowerCase() ==
+          'all') {
+        data = bookingRequests;
+      } else {
+        data = bookingRequests
+            .where((element) =>
+        element.status!.statusName!
+            .toLowerCase() ==
+            filterType.toString().toLowerCase())
+            .toList();
+      }
+    } else {
+      data = bookingRequests;
+    }
+    debugPrint('Data ${data.length}');
+    setState(() {
+      filteredRequests = data;
+      _filterType = filterType ?? 'All';
+    });
+  }
+
   Future<void> getBookingRequestList() async {
     final List<BookingRequest> res = await APIServices().getBookingRequest();
     debugPrint('Response:: $res');
@@ -216,28 +229,30 @@ class _RequestsScreenState extends State<RequestsScreen> {
     if (res.isNotEmpty) {
       setState(() {
         bookingRequests = res;
+        filteredRequests = res;
       });
     }
 
     debugPrint('Total booking request ${bookingRequests.length}');
   }
 
-  Widget buildStatus(String statusName) {
 
+
+  Widget buildStatus(String statusName) {
     return Padding(
-      padding: EdgeInsets.all( 4.w),
+      padding: EdgeInsets.all(4.w),
       child: Container(
         width: 70.w,
         height: 30.h,
         padding: EdgeInsets.all(4.w),
         decoration: BoxDecoration(
-            color:   GlobalMixin().getStatusColor(statusName),
+            color: GlobalMixin().getStatusColor(statusName),
             borderRadius: BorderRadius.circular(7.r)),
         child: Center(
           child: Text(
             statusName,
-            style:   const TextStyle(
-               color: Colors.white,
+            style: const TextStyle(
+                color: Colors.white,
                 fontFamily: 'Gilroy',
                 fontSize: 12,
                 fontWeight: FontWeight.w600),
@@ -246,6 +261,8 @@ class _RequestsScreenState extends State<RequestsScreen> {
       ),
     );
   }
+
+
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

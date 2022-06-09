@@ -526,7 +526,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                           travellerMonthController
                                                               .setSelectedDates(
                                                               value);
-                                                        },
+                                                        },[]
                                                       ));
                                                 }),
                                             // SizedBox(

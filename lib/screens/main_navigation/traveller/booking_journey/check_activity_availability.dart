@@ -5,25 +5,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_list.dart';
+import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/constants/app_texts.dart';
+import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/activity_availability_hours.dart';
 import 'package:guided/models/activity_package.dart';
+import 'package:guided/models/available_date_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/services/static_data_services.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-import '../../../../constants/app_list.dart';
-import '../../../../constants/app_text_style.dart';
-import '../../../../constants/app_texts.dart';
-import '../../../../controller/traveller_controller.dart';
-import '../../../widgets/reusable_widgets/easy_scroll_to_index.dart';
 
 ///
 class CheckActivityAvailabityScreen extends StatefulWidget {
   ////
-  const CheckActivityAvailabityScreen({Key? key}) : super(key: key);
+  const CheckActivityAvailabityScreen({required this.activityPackage, Key? key})
+      : super(key: key);
+
+  final ActivityPackage activityPackage;
+
 
   @override
   State<CheckActivityAvailabityScreen> createState() =>
@@ -38,13 +47,18 @@ class _CheckActivityAvailabityScreenState
   final travellerMonthController = Get.put(TravellerMonthController());
   final DateTime now = DateTime.now();
 
+  List<AvailableDateModel> dates = [];
+
+  List<ActivityHourAvailability> availableHours = [];
+  List<DateTime> availableDates = [];
+  List<String> availableDateSlots = [];
+
   @override
   void initState() {
     initializeDateFormatting('en', null);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       Future.delayed(const Duration(seconds: 1), () {
-        _scrollController.easyScrollToIndex(
-            index: travellerMonthController.selectedDate - 1);
+        _scrollController.easyScrollToIndex(index: 0);
       });
       final DateTime dt = DateTime.parse(travellerMonthController.currentDate);
       final int mon = dt.month;
@@ -52,6 +66,10 @@ class _CheckActivityAvailabityScreenState
     });
 
     super.initState();
+
+    dates = List.from(AppListConstants().availableDates, growable: true);
+
+    getAvailableSlots(widget.activityPackage.id!);
   }
 
   @override
@@ -64,10 +82,6 @@ class _CheckActivityAvailabityScreenState
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> screenArguments =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final ActivityPackage activityPackage =
-        screenArguments['package'] as ActivityPackage;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -198,22 +212,24 @@ class _CheckActivityAvailabityScreenState
                     height: 80.h,
                     width: MediaQuery.of(context).size.width * 0.7,
                     child: EasyScrollToIndex(
-                      controller: _scrollController, // ScrollToIndexController
-                      scrollDirection: Axis.horizontal, // default Axis.vertical
-                      itemCount:
-                          AppListConstants.calendarMonths.length, // itemCount
+                      controller: _scrollController,
+                      // ScrollToIndexController
+                      scrollDirection: Axis.horizontal,
+                      // default Axis.vertical
+                      itemCount: dates.length,
+                      // itemCount
                       itemWidth: 95,
                       itemHeight: 70,
                       itemBuilder: (BuildContext context, int index) {
                         return InkWell(
                           onTap: () {
                             _scrollController.easyScrollToIndex(index: index);
-                            travellerMonthController.setSelectedDate(index + 1);
+                            travellerMonthController.setSelectedDate(dates[index].month);
                             DateTime dt = DateTime.parse(
                                 travellerMonthController.currentDate);
 
                             final DateTime plustMonth = DateTime(
-                                dt.year, index + 1, dt.day, dt.hour, dt.minute);
+                                dt.year, dates[index].month, dt.day, dt.hour, dt.minute);
 
                             final DateTime setLastday = DateTime(
                                 plustMonth.year,
@@ -225,6 +241,14 @@ class _CheckActivityAvailabityScreenState
                             travellerMonthController.setCurrentMonth(
                               setLastday.toString(),
                             );
+
+
+                            setState(() {
+                              availableDates = dates[index].availableDates;
+                              availableDateSlots = ['2022-06-24'];
+                            });
+
+                            debugPrint('DATES ${availableDates}');
                           },
                           child: Obx(
                             () => Stack(
@@ -241,42 +265,38 @@ class _CheckActivityAvailabityScreenState
                                           Radius.circular(10),
                                         ),
                                         border: Border.all(
-                                            color: index ==
+                                            color: dates[index].month ==
                                                     travellerMonthController
-                                                            .selectedDate -
-                                                        1
+                                                        .selectedDate
                                                 ? HexColor('#FFC74A')
                                                 : HexColor('#C4C4C4'),
                                             width: 1),
-                                        color: index ==
+                                        color: dates[index].month ==
                                                 travellerMonthController
-                                                        .selectedDate -
-                                                    1
+                                                    .selectedDate
                                             ? HexColor('#FFC74A')
                                             : Colors.white),
                                     child: Center(
-                                        child: Text(AppListConstants
-                                            .calendarMonths[index])),
+                                        child: Text(dates[index].monthName)),
                                   ),
                                 ),
-                                Positioned(
-                                    right: 2,
-                                    top: 2,
-                                    child: index.isOdd
-                                        ? Badge(
-                                            padding: const EdgeInsets.all(8),
-                                            badgeColor: AppColors.deepGreen,
-                                            badgeContent: Text(
-                                              '2',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12.sp,
-                                                  fontWeight: FontWeight.w800,
-                                                  fontFamily: AppTextConstants
-                                                      .fontPoppins),
-                                            ),
-                                          )
-                                        : Container()),
+                                if (dates[index].availableDates.isNotEmpty)
+                                  Positioned(
+                                      right: 2,
+                                      top: 2,
+                                      child: Badge(
+                                        padding: const EdgeInsets.all(8),
+                                        badgeColor: AppColors.deepGreen,
+                                        badgeContent: Text(
+                                          '${dates[index].availableDates.length}',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12.sp,
+                                              fontWeight: FontWeight.w800,
+                                              fontFamily:
+                                                  AppTextConstants.fontPoppins),
+                                        ),
+                                      )),
                               ],
                             ),
                           ),
@@ -295,17 +315,19 @@ class _CheckActivityAvailabityScreenState
             GetBuilder<TravellerMonthController>(
                 id: 'calendar',
                 builder: (TravellerMonthController controller) {
+                  debugPrint('Calendar:: ${availableDates.length}');
+
+                  List<DateTime> _dates = availableDates;
+
                   return Container(
                     padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
                     height: MediaQuery.of(context).size.height * 0.4,
                     child: Sfcalendar(
-                      context,
-                      travellerMonthController.currentDate,
-                      (List<DateTime> value) {
-                        travellerMonthController.selectedDates.clear();
-                        travellerMonthController.setSelectedDates(value);
-                      },
-                    ),
+                        context, travellerMonthController.currentDate,
+                        (List<DateTime> value) {
+                      travellerMonthController.selectedDates.clear();
+                      travellerMonthController.setSelectedDates(value);
+                    }, availableDates),
                   );
                 }),
             SizedBox(
@@ -316,7 +338,7 @@ class _CheckActivityAvailabityScreenState
               height: 60.h,
               child: ElevatedButton(
                 onPressed: () {
-                  checkAvailability(context, activityPackage,
+                  checkAvailability(context, widget.activityPackage,
                       travellerMonthController.selectedDates);
                 },
                 style: AppTextStyle.activeGreen,
@@ -333,6 +355,41 @@ class _CheckActivityAvailabityScreenState
         ),
       ),
     );
+  }
+
+  Future<void> getAvailableSlots(String packageId) async {
+    debugPrint('Package Id:: $packageId');
+
+    final List<ActivityHourAvailability> data = await APIServices()
+        .getActivityHours(DateTime.now().toString(), DateTime(DateTime.now().year, 12,31).toString(), packageId);
+
+    // debugPrint('Data hours ${res}');
+
+    if (data.isNotEmpty) {
+      data.forEach((e) {
+        final int monthNumber = DateTime.parse(e.availabilityDate!).month;
+
+        AvailableDateModel slot =
+            dates.firstWhere((item) => item.month == monthNumber);
+
+        final List<DateTime> availableDates =
+            List.from(slot.availableDates, growable: true)
+              ..add(DateTime.parse(e.availabilityDate!));
+
+        slot.availableDates = availableDates;
+        final int index = dates.indexOf(slot);
+        setState(() {
+          dates[index] = slot;
+        });
+      });
+    }
+
+    setState(() {
+      dates = dates.where((AvailableDateModel e) => e.month >= DateTime.now().month).toList();
+      availableDates = dates
+          .firstWhere((AvailableDateModel item) => item.month == DateTime.now().month)
+          .availableDates;
+    });
   }
 
   Future<void> checkAvailability(BuildContext context, ActivityPackage package,

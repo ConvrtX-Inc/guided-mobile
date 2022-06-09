@@ -27,7 +27,10 @@ class Activity {
       required BuildContext context,
       required Function getMessageHistory,
       required List<ActivityPackage> otherPackages,
-      required mapWidget}) {
+      required mapWidget,
+      required List<DateTime> availableDates,
+      required Function onAvailabilityPressed
+      }) {
     return SingleChildScrollView(
         child: Column(
       children: <Widget>[
@@ -285,9 +288,16 @@ class Activity {
                   ),
                 ),
                 SizedBox(height: 16.h),
-                buildActivityListButtonItem(
-                    title: AppTextConstants.availability,
-                    subtitle: 'Add your travel date for exact pricing'),
+                GestureDetector(
+                  onTap: () {
+                    onAvailabilityPressed();
+                  },
+                  child: buildActivityListButtonItem(
+                      title: AppTextConstants.availability,
+                      subtitle: availableDates.isNotEmpty
+                          ? '${DateFormat("MMM dd -").format(availableDates[0])} ${availableDates[availableDates.length - 1].day}'
+                          : 'Add your travel date for exact pricing'),
+                ),
                 buildActivityListButtonItem(
                     title: 'Guide Rules & What To Bring',
                     subtitle: 'Follow the guide rules for safety'),

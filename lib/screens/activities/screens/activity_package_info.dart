@@ -12,7 +12,9 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/activity_availability_hours.dart';
 import 'package:guided/models/activity_package.dart';
+import 'package:guided/models/available_date_model.dart';
 import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/activities/widgets/activity_description.dart';
@@ -52,6 +54,8 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   List<Message> messages = [];
   bool isFavorite = false;
 
+  List<DateTime> availableDates = [];
+
   void _onMapCreated(GoogleMapController controller) {
     debugPrint('Map created');
     if (!_controller.isCompleted) {
@@ -71,6 +75,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
 
     getPackages();
     getGuideUserDetails();
+    getAvailableDates(_activityPackage.id!);
   }
 
   Future<void> addMarker(BuildContext context) async {
@@ -122,10 +127,12 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                       ),
                     ),
 
-                    SizedBox(width: 8.w,),
+                    SizedBox(
+                      width: 8.w,
+                    ),
 
                     GestureDetector(
-                      onTap: (){
+                      onTap: () {
                         setState(() {
                           isFavorite = !isFavorite;
                         });
@@ -139,10 +146,11 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                         ),
                         child: Center(
                           child: Icon(
-                           isFavorite ? Icons.favorite :  Icons.favorite_border_outlined,
-                            color: isFavorite ? Colors.red :  Colors.black,
-                            size: 25.h
-                            ,
+                            isFavorite
+                                ? Icons.favorite
+                                : Icons.favorite_border_outlined,
+                            color: isFavorite ? Colors.red : Colors.black,
+                            size: 25.h,
                           ),
                         ),
                       ),
@@ -218,7 +226,9 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                         setState(() {
                           showMoreDescription = !showMoreDescription;
                         });
-                      }),
+                      },
+                      availableDates: availableDates,
+                      onAvailabilityPressed: checkAvailability),
                   PopularGuidesTravelerLimitSchedules(
                       packageId: _activityPackage.id!,
                       price: _activityPackage.basePrice!)
@@ -250,9 +260,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
             ])),
             Spacer(),
             GestureDetector(
-              onTap: () {
-                checkAvailability(_activityPackage);
-              },
+              onTap: checkAvailability,
               child: Container(
                 height: 40.h,
                 padding: EdgeInsets.all(10.w),
@@ -570,7 +578,9 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                   SizedBox(height: 16.h),
                   buildActivityListButtonItem(
                       title: AppTextConstants.availability,
-                      subtitle: 'Add your travel date for exact pricing'),
+                      subtitle: availableDates.isNotEmpty
+                          ? "TEST"
+                          : 'Add your travel date for exact pricing'),
                   buildActivityListButtonItem(
                       title: 'Guide Rules & What To Bring',
                       subtitle: 'Follow the guide rules for safety'),
@@ -851,15 +861,9 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
     debugPrint('Packages ${otherPackages.length}');
   }
 
-  void checkAvailability(
-    ActivityPackage package,
-  ) {
-    final Map<String, dynamic> details = {
-      'package': package,
-    };
-
+  void checkAvailability() {
     Navigator.pushNamed(context, '/checkActivityAvailabityScreen',
-        arguments: details);
+        arguments: _activityPackage);
   }
 
   Future<void> getMessageHistory() async {
@@ -892,5 +896,52 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
             builder: (BuildContext context) => MessageScreenTraveler(
                   message: _chatHistory,
                 )));
+  }
+
+  Future<void> getAvailableDates(String packageId) async {
+    final DateTime currentDate = DateTime.now();
+
+    final List<ActivityHourAvailability> data = await APIServices()
+        .getActivityHours(
+            DateTime.now().toString(),
+            DateTime(currentDate.year, currentDate.month + 1, 0).toString(),
+            packageId);
+
+    debugPrint(
+        'DATES AVAILABLE ${DateTime.now().toString()} ${DateTime(currentDate.year, currentDate.month + 1, 0).toString()}');
+
+    if (data.isNotEmpty) {
+      data.forEach((element) {
+        setState(() {
+          availableDates.add(DateTime.parse(element.availabilityDate!));
+        });
+      });
+    }
+
+    /*  if (data.isNotEmpty) {
+      data.forEach((e) {
+        final int monthNumber = DateTime.parse(e.availabilityDate!).month;
+
+        AvailableDateModel slot =
+        dates.firstWhere((item) => item.month == monthNumber);
+
+        final List<DateTime> availableDates =
+        List.from(slot.availableDates, growable: true)
+          ..add(DateTime.parse(e.availabilityDate!));
+
+        slot.availableDates = availableDates;
+        final int index = dates.indexOf(slot);
+        setState(() {
+          dates[index] = slot;
+        });
+      });
+    }
+
+    setState(() {
+      dates = dates.where((AvailableDateModel e) => e.month >= DateTime.now().month).toList();
+      availableDates = dates
+          .firstWhere((AvailableDateModel item) => item.month == DateTime.now().month)
+          .availableDates;
+    });*/
   }
 }

@@ -1208,6 +1208,12 @@ class AppTextConstants {
 
   ///Returns nothing to display text
   static String nothingToDisplay = 'Nothing to Display';
+
+  ///Returns my booking dates text
+  static String myBookingDates = 'My Booking Dates';
+
+  ///Returns no reviews yet text
+  static String noReviewsYet = 'No Reviews Yet';
 }
 
 /// Class for error messages text

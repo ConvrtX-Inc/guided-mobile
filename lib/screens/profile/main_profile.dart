@@ -114,8 +114,7 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
                 children: <Widget>[
                   backButton(context),
                   buildUserDetails(),
-                  /*  const SizedBox(height: 20),
-            buildCircleAvatar(userGuideDetails.firebaseProfilePicUrl!),
+                  /*  const SizedBox(height: 20),,
             SizedBox(height: 14.h),
             Center(
               child: Text(

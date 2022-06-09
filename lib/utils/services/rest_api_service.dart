@@ -303,12 +303,14 @@ class APIServices {
     return dataSummary;
   }
 
-  /// API service for get booking request
+  /// API service for
   Future<List<BookingRequest>> getBookingRequest() async {
-    final String? userId = UserSingleton.instance.user.user?.id;
+    final String? userId =
+    await SecureStorage.readValue(key: AppTextConstants.userId);
 
     final Map<String, String> queryParameters = {
       'filter': 'user_id||eq||"$userId"',
+      'sort':'created_date,DESC'
     };
 
     debugPrint(

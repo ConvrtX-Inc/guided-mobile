@@ -20,6 +20,7 @@ import 'package:guided/models/stripe_bank_account_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/stripe_service.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../models/activity_package.dart';
@@ -166,6 +167,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                 gaplessPlayback: true,
                                 width: 20,
                                 height: 20,
+                                fit: BoxFit.cover,
                               ),
                             )),
                             Positioned(
@@ -268,54 +270,37 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                             Positioned(
                               top: 10,
                               right: 0,
-                              child: Row(
-                                children: <Widget>[
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: AppColors.duckEggBlue,
-                                      border: Border.all(
-                                        color: AppColors.duckEggBlue,
-                                      ),
-                                      borderRadius: BorderRadius.circular(18),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 10),
-                                    child: Row(
-                                      children: <Widget>[
-                                        SvgPicture.asset(
-                                          AssetsPath.homeFeatureCalendarIcon,
-                                          height: 15,
-                                          width: 15,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        // Text(
-                                        //   '1 - 9',
-                                        //   style: TextStyle(
-                                        //       fontWeight: FontWeight.w500,
-                                        //       color: AppColors.tropicalRainForest,
-                                        //       fontSize: 14.sp,),
-                                        // ),
-                                      ],
-                                    ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.duckEggBlue,
+                                  border: Border.all(
+                                    color: AppColors.duckEggBlue,
                                   ),
-                                  // SizedBox(
-                                  //   width: 50,
-                                  //   height: 30,
-                                  //   child: ElevatedButton(
-                                  //     onPressed: () {},
-                                  //     style: ElevatedButton.styleFrom(
-                                  //       shape: const CircleBorder(),
-                                  //       primary: Colors.white, // <-- Button color
-                                  //       onPrimary: Colors.grey, // <-- Splash color
-                                  //     ),
-                                  //     child: Icon(Icons.edit,
-                                  //         size: 15,
-                                  //         color: AppColors.tropicalRainForest),
-                                  //   ),
-                                  // )
-                                ],
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 10),
+                                margin: EdgeInsets.only(right: 8.w),
+                                child: Row(
+                                  children: <Widget>[
+                                    SvgPicture.asset(
+                                      AssetsPath.homeFeatureCalendarIcon,
+                                      height: 15,
+                                      width: 15,
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      getStartAndEndDate(),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.tropicalRainForest,
+                                        fontSize: 14.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             )
                           ],
@@ -887,5 +872,18 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
     final NotificationModel res = await APIServices().sendNotification(params);
 
     debugPrint('Response: ${res.id} ${res.title}');
+  }
+
+  String getStartAndEndDate() {
+    String date = '';
+    if (DateTime.parse(bookingRequest.bookingDateStart!).day ==
+        DateTime.parse(bookingRequest.bookingDateStart!).day) {
+      date =
+          '${DateFormat("MMM dd hh:mm a").format(DateTime.parse(bookingRequest.bookingDateStart!))} - ${DateFormat("hh:mm a").format(DateTime.parse(bookingRequest.bookingDateEnd!))}';
+    } else {
+      date =
+          '${DateFormat("MMM dd").format(DateTime.parse(bookingRequest.bookingDateStart!))} - ${DateFormat("MMM dd").format(DateTime.parse(bookingRequest.bookingDateEnd!))}';
+    }
+    return date;
   }
 }

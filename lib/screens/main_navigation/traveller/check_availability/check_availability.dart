@@ -494,7 +494,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                       ),
                       SizedBox(width: 10.w),
                       Text(
-                        'Contact Tourist Guide',
+                        'Contact Your Guide',
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
