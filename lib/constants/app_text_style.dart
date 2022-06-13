@@ -106,7 +106,7 @@ class AppTextStyle {
       elevation: 0,
       shadowColor: Colors.transparent,
       onPrimary: Colors.black,
-      side: BorderSide(width: 1.5, color: AppColors.lightningYellow),
+      // side: BorderSide(width: 1.5, color: AppColors.lightningYellow),
       textStyle: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w800,

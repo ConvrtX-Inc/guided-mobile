@@ -81,7 +81,7 @@ class _HomeScreenState extends State<MainNavigationScreen>
   late final List<Widget> _mainNavigationWidgetOptions = <Widget>[
     const HomeScreen(),
     MainContent(initIndex: _selectedContent),
-    const RequestsScreen(),
+    const RequestsScreen(filterType: 'Pending'),
     const MessageInbox(),
     SettingsMain(),
   ];

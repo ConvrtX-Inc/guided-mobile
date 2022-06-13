@@ -13,11 +13,10 @@ import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/message.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/message/message_screen_traveler.dart';
+import 'package:guided/screens/widgets/reusable_widgets/app_home_button.dart';
 import 'package:guided/screens/widgets/reusable_widgets/date_time_ago.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
-
-import '../../../message/message_individual_screen.dart';
 import 'package:guided/screens/message/widgets/inbox_actions.dart';
 
 /// TabInboxScreen Screen
@@ -51,31 +50,28 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
     return Scaffold(
       backgroundColor: HexColor('#FFFFFF'),
       resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        leadingWidth: 60,
+        leading: AppHomeButton(),
+        title: Text(
+          AppTextConstants.inbox,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 22,
+            color: Colors.black
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
           child: Column(
             children: <Widget>[
-              SizedBox(
-                height: 15.h,
-              ),
-              Padding(
-                  padding: EdgeInsets.only(left: 8.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        AppTextConstants.inbox,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 22,
-                        ),
-                      ),
-                    ],
-                  )),
-              SizedBox(
-                height: 15.h,
-              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(15.w, 0.h, 15.w, 0.h),
                 child: SizedBox(

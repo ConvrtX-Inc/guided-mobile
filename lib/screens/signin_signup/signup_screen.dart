@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 
@@ -13,6 +14,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_input_formatter.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/text_helper.dart';
@@ -560,6 +562,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(height: 15.h),
                     FormBuilderTextField(
                       controller: _firstNameController,
+                      inputFormatters: [AppInputFormatters.name],
                       focusNode: _nameFocusNode,
                       decoration: InputDecoration(
                         hintText: AppTextConstants.firstName,
@@ -587,6 +590,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(height: 15.h),
                     FormBuilderTextField(
                       controller: _lastNameController,
+                      inputFormatters: [AppInputFormatters.name],
                       decoration: InputDecoration(
                         hintText: AppTextConstants.lastName,
                         hintStyle: TextStyle(

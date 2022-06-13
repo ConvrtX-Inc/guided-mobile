@@ -9,20 +9,6 @@ import 'package:intl/date_symbol_data_local.dart';
 
 Widget Sfcalendar(
     BuildContext context, String date, ValueSetter<List<DateTime>> onPressed, List<DateTime> initialSelectedDates) {
-  debugPrint('Selected Dates ${initialSelectedDates.length}');
-  /*debugPrint('Selected Dates ${initialSelectedDates.length}');
-
-  debugPrint('Selected Dates ${initialSelectedDates.length}');
-
-  List<DateTime> dates  = [];
-
-  if(initialSelectedDates.isNotEmpty){
-    for(date in initialSelectedDates){
-      dates.add(DateTime.parse(date));
-    }
-  }*/
-
-
   return Container(
     padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
     height: MediaQuery.of(context).size.height * 0.4,
@@ -37,14 +23,11 @@ Widget Sfcalendar(
         specialDates: initialSelectedDates,
 
       ),
-
-
       monthCellStyle: DateRangePickerMonthCellStyle(
         textStyle: TextStyle(color: HexColor('#3E4242')),
         todayTextStyle:
             TextStyle(fontWeight: FontWeight.bold, color: HexColor('#3E4242')),
           specialDatesDecoration: BoxDecoration(
-              // color: Colors.green,
               border: Border.all(color: AppColors.dirtyWhite, width: 2.5),
               shape: BoxShape.circle),
           blackoutDateTextStyle: TextStyle(color: Colors.white, decoration: TextDecoration.lineThrough)
@@ -58,7 +41,7 @@ Widget Sfcalendar(
       headerHeight: 0,
       selectionMode: DateRangePickerSelectionMode.multiple,
       // initialSelectedDates: [],
-      initialSelectedDates: initialSelectedDates,
+      // initialSelectedDates: initialSelectedDates,
       onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
         onPressed(args.value);
       },

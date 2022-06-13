@@ -30,6 +30,7 @@ void main() async {
   Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
   Stripe.instance.applySettings();
 
+  // INITIALIZE FIREBASE
   await Firebase.initializeApp(
       name: 'Guided', options: DefaultFirebaseConfig.platformOptions);
   // runApp(const MyApp());

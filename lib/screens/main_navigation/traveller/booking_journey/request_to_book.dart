@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:guided/common/widgets/bordered_text_field.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/constants/payment_config.dart';
@@ -40,8 +41,6 @@ import 'package:guided/models/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
-
-import '../../../../constants/app_colors.dart';
 
 /// Screen for RequestToBookScreen
 class RequestToBookScreen extends StatefulWidget {
@@ -82,7 +81,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
   String cancellationPolicy = '';
   String _dialCode = '+1';
   String cancellationPolicyId = '';
-  int travelerCount =  0;
+  int travelerCount = 0;
 
   @override
   void initState() {
@@ -100,10 +99,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     final int numberOfTraveller = screenArguments['numberOfTraveller'] as int;
     selectedDate = screenArguments['selectedDate'] as String;
     travelerCount = numberOfTraveller;
-    price =
-        double.parse(activityPackage.basePrice!) * travelerCount;
-
-
+    price = double.parse(activityPackage.basePrice!) * travelerCount;
 
     return Scaffold(
       backgroundColor: HexColor('#ECEFF0'),
@@ -194,7 +190,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                                     height: 5.w,
                                   ),
                                   Text(
-                                    'Hunt',
+                                    activityPackage.mainBadge!.badgeName!,
                                     style: TextStyle(
                                         color: HexColor('#181B1B'),
                                         fontSize: 14.sp,
@@ -229,12 +225,12 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                   ],
                 ),
               ),
-              sectionTwo(screenArguments),
-              sectionThree(),
-              if (PaymentConfig.isPaymentEnabled) sectionFour(),
-              sectionFive(),
-              sectionSix(),
-              sectionSeven(screenArguments),
+              descriptionSection(screenArguments),
+              priceDetailsSection(),
+              if (PaymentConfig.isPaymentEnabled) paymentMethodSection(),
+              requiredForTripSection(),
+              cancellationPolicySection(),
+              bookingPaymentInfoSection(screenArguments),
             ],
           ),
         ),
@@ -255,7 +251,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     return '$date1 $hour1 - $hour2';
   }
 
-  Widget sectionTwo(Map<String, dynamic> screenArguments) {
+  Widget descriptionSection(Map<String, dynamic> screenArguments) {
     final String bookingDate = screenArguments['selectedDate'] as String;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
@@ -351,7 +347,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionThree() {
+  Widget priceDetailsSection() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
@@ -554,7 +550,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionFour() {
+  Widget paymentMethodSection() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
@@ -713,7 +709,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionFive() {
+  Widget requiredForTripSection() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
@@ -918,7 +914,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionSix() {
+  Widget cancellationPolicySection() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
@@ -1013,30 +1009,9 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                             color: HexColor('#181B1B'),
                           )),
                     )),
-                    TextSpan(text: 'the best!'),
+                    // TextSpan(text: 'the best!'),
                   ],
                 ),
-
-                /*TextSpan(
-                  text: ' Learn more!',
-                  style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                    color: HexColor('#181B1B'),
-
-                  ),
-                  recognizer: TapGestureRecognizer()..onTap = () {
-                    debugPrint('Learn More tapped');
-                   */ /* final Map<String, dynamic> details = {
-                        'id': cancellationPolicyId,
-                        'cancellation_policy': cancellationPolicy
-                      };
-
-                        Navigator.pushNamed(context, '/cancellation_policy',
-                          arguments: details);*/ /*
-                    },
-                ),*/
               ],
             ),
           )
@@ -1045,7 +1020,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionSeven(Map<String, dynamic> screenArguments) {
+  Widget bookingPaymentInfoSection(Map<String, dynamic> screenArguments) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),

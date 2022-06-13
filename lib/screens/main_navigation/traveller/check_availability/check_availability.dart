@@ -122,7 +122,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                           fontFamily: 'Gilroy',
                           fontWeight: FontWeight.w700),
                     ),
-                    Container(
+                    /*Container(
                       padding: const EdgeInsets.all(8),
                       height: 35,
                       decoration: BoxDecoration(
@@ -142,7 +142,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                               fontWeight: FontWeight.normal),
                         ),
                       ),
-                    ),
+                    ),*/
                   ],
                 ),
                 SizedBox(
@@ -163,7 +163,6 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      // 'Jun 2021',
                       formatDateMonthYear(ListDates[_selectedDay]),
                       style: TextStyle(
                           color: HexColor('#181B1B'),
@@ -288,17 +287,6 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                                                   fontWeight: FontWeight.w700),
                                             )
                                           : Container(),
-                                      // trailing: index == 0
-                                      //     ? Icon(
-                                      //         Icons.radio_button_checked,
-                                      //         color: AppColors.deepGreen,
-                                      //       )
-                                      //     : index == 4
-                                      //         ? Icon(
-                                      //             Icons.radio_button_unchecked,
-                                      //             color: AppColors.deepGreen,
-                                      //           )
-                                      //         : null,
                                       trailing: checkDateIfAvailable(
                                               outputList
                                                   .activityAvailabilityHours!,
@@ -379,16 +367,18 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     IconButton(
-                      onPressed: () {
-                        if (_numberOfTravellers > 0) {
-                          setState(() {
-                            _numberOfTravellers--;
-                          });
-                        }
-                      },
+                      onPressed: _numberOfTravellers > 0
+                          ? () {
+                              setState(() {
+                                _numberOfTravellers--;
+                              });
+                            }
+                          : null,
                       icon: Icon(
                         Icons.remove_circle_outline,
-                        color: AppColors.deepGreen,
+                        color: _numberOfTravellers > 0
+                            ? AppColors.deepGreen
+                            : AppColors.gallery,
                       ),
                       iconSize: 46,
                     ),
@@ -414,16 +404,18 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () {
-                        setState(() {
-                          if (_numberOfTravellers < _slotsAvailable) {
-                            _numberOfTravellers++;
-                          }
-                        });
-                      },
+                      onPressed: _numberOfTravellers < _slotsAvailable
+                          ? () {
+                              setState(() {
+                                _numberOfTravellers++;
+                              });
+                            }
+                          : null,
                       icon: Icon(
                         Icons.add_circle_outline,
-                        color: AppColors.deepGreen,
+                        color: _numberOfTravellers < _slotsAvailable
+                            ? AppColors.deepGreen
+                            : AppColors.gallery,
                       ),
                       iconSize: 46,
                     ),
@@ -462,18 +454,11 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
               color: Colors.white,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 GestureDetector(
                   onTap: () async {
                     await getGuideDetails(activityPackage.userId!);
-
-                    /*     final ChatModel message = ChatModel(
-                        receiver: Receiver(
-                            fullName: guideDetails.fullName,
-                            id: activityPackage.userId,
-                            avatar: guideDetails.firebaseProfilePicUrl),
-                        messages: messageHistory);*/
 
                     final ChatModel message =
                         await getMessageHistory(activityPackage.userId!);
@@ -508,17 +493,17 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                   width: 125.w,
                   height: 53.h,
                   child: ElevatedButton(
-                    onPressed: () async {
-                      if (_numberOfTravellers > 0) {
-                        await travellerBookingDetailsScreen(
-                            context,
-                            activityPackage,
-                            _activityAvailabilityHours.availabilityDateHour,
-                            _numberOfTravellers);
-                      }
-                    },
+                    onPressed: _numberOfTravellers > 0
+                        ? () async {
+                            await travellerBookingDetailsScreen(
+                                context,
+                                activityPackage,
+                                _activityAvailabilityHours.availabilityDateHour,
+                                _numberOfTravellers);
+                          }
+                        : null,
                     style: AppTextStyle.active,
-                    child: const Text(
+                    child: Text(
                       'Book Now',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
@@ -543,6 +528,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
       'package': package,
       'selectedDate': selectedDate,
       'numberOfTraveller': numberOfTraveller,
+      'tourGuideDetails': guideDetails
     };
     if (selectedDate != null) {
       await Navigator.pushNamed(context, '/travellerBookingDetailsScreen',
@@ -706,5 +692,4 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
         messages: messageHistory,
         isBlocked: chat.isBlocked);
   }
-
 }

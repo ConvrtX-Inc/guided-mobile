@@ -349,14 +349,14 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsCalendarManagement(),
             settings: settings);
-      case '/checkActivityAvailabityScreen':
+      case  '/checkActivityAvailabityScreen':
         return MaterialPageRoute<dynamic>(
-            builder: (_) =>   CheckActivityAvailabityScreen(activityPackage: args! as ActivityPackage,),
+            builder: (_) =>   CheckActivityAvailabityScreen(params: args),
             settings: settings);
       case '/travellerBookingDetailsScreen':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TravellerBookingDetailsScreen(),
-            settings: settings);
+            builder: (_) =>  TravellerBookingDetailsScreen(params: args),
+        );
       case '/requestToBookScreen':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RequestToBookScreen(), settings: settings);

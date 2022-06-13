@@ -24,15 +24,15 @@ import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-
 ///
 class CheckActivityAvailabityScreen extends StatefulWidget {
   ////
-  const CheckActivityAvailabityScreen({required this.activityPackage, Key? key})
+  const CheckActivityAvailabityScreen({Key? key, this.params})
       : super(key: key);
 
-  final ActivityPackage activityPackage;
+  // final ActivityPackage activityPackage;
 
+  final dynamic params;
 
   @override
   State<CheckActivityAvailabityScreen> createState() =>
@@ -53,6 +53,8 @@ class _CheckActivityAvailabityScreenState
   List<DateTime> availableDates = [];
   List<String> availableDateSlots = [];
 
+  ActivityPackage activityPackage = ActivityPackage();
+
   @override
   void initState() {
     initializeDateFormatting('en', null);
@@ -67,9 +69,13 @@ class _CheckActivityAvailabityScreenState
 
     super.initState();
 
+    activityPackage = widget.params['activityPackage'];
+    availableHours = widget.params['availableDateSlots'];
     dates = List.from(AppListConstants().availableDates, growable: true);
 
-    getAvailableSlots(widget.activityPackage.id!);
+    getAvailableSlots();
+
+    // debugPrint('Activity Date ${activityPackage.name!} SLOTS ${availableHours.length}');
   }
 
   @override
@@ -111,7 +117,7 @@ class _CheckActivityAvailabityScreenState
                   ),
                 ),
                 const Spacer(),
-                Padding(
+                /*Padding(
                   padding: EdgeInsets.fromLTRB(20.w, 20.h, 10.w, 0.h),
                   child: TextButton(
                     style: TextButton.styleFrom(
@@ -131,7 +137,7 @@ class _CheckActivityAvailabityScreenState
                               fontWeight: FontWeight.w700)),
                     ),
                   ),
-                ),
+                ),*/
               ],
             ),
             Padding(
@@ -224,12 +230,13 @@ class _CheckActivityAvailabityScreenState
                         return InkWell(
                           onTap: () {
                             _scrollController.easyScrollToIndex(index: index);
-                            travellerMonthController.setSelectedDate(dates[index].month);
+                            travellerMonthController
+                                .setSelectedDate(dates[index].month);
                             DateTime dt = DateTime.parse(
                                 travellerMonthController.currentDate);
 
-                            final DateTime plustMonth = DateTime(
-                                dt.year, dates[index].month, dt.day, dt.hour, dt.minute);
+                            final DateTime plustMonth = DateTime(dt.year,
+                                dates[index].month, dt.day, dt.hour, dt.minute);
 
                             final DateTime setLastday = DateTime(
                                 plustMonth.year,
@@ -242,13 +249,9 @@ class _CheckActivityAvailabityScreenState
                               setLastday.toString(),
                             );
 
-
                             setState(() {
                               availableDates = dates[index].availableDates;
-                              availableDateSlots = ['2022-06-24'];
                             });
-
-                            debugPrint('DATES ${availableDates}');
                           },
                           child: Obx(
                             () => Stack(
@@ -315,10 +318,6 @@ class _CheckActivityAvailabityScreenState
             GetBuilder<TravellerMonthController>(
                 id: 'calendar',
                 builder: (TravellerMonthController controller) {
-                  debugPrint('Calendar:: ${availableDates.length}');
-
-                  List<DateTime> _dates = availableDates;
-
                   return Container(
                     padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
                     height: MediaQuery.of(context).size.height * 0.4,
@@ -338,7 +337,7 @@ class _CheckActivityAvailabityScreenState
               height: 60.h,
               child: ElevatedButton(
                 onPressed: () {
-                  checkAvailability(context, widget.activityPackage,
+                  checkAvailability(context, activityPackage,
                       travellerMonthController.selectedDates);
                 },
                 style: AppTextStyle.activeGreen,
@@ -357,13 +356,39 @@ class _CheckActivityAvailabityScreenState
     );
   }
 
-  Future<void> getAvailableSlots(String packageId) async {
-    debugPrint('Package Id:: $packageId');
+  Future<void> getAvailableSlots() async {
+    availableHours.forEach((e) {
+      final int monthNumber = DateTime.parse(e.availabilityDate!).month;
 
+      AvailableDateModel slot =
+          dates.firstWhere((item) => item.month == monthNumber);
+
+      final List<DateTime> availableDates =
+          List.from(slot.availableDates, growable: true)
+            ..add(DateTime.parse(e.availabilityDate!));
+
+      slot.availableDates = availableDates;
+      final int index = dates.indexOf(slot);
+      setState(() {
+        dates[index] = slot;
+      });
+    });
+
+    setState(() {
+      dates = dates
+          .where((AvailableDateModel e) => e.month >= DateTime.now().month)
+          .toList();
+      availableDates = dates
+          .firstWhere(
+              (AvailableDateModel item) => item.month == DateTime.now().month)
+          .availableDates;
+    });
+  }
+
+  Future<void> _getAvailableSlots(String packageId) async {
     final List<ActivityHourAvailability> data = await APIServices()
-        .getActivityHours(DateTime.now().toString(), DateTime(DateTime.now().year, 12,31).toString(), packageId);
-
-    // debugPrint('Data hours ${res}');
+        .getActivityHours(DateTime.now().toString(),
+            DateTime(DateTime.now().year, 12, 31).toString(), packageId);
 
     if (data.isNotEmpty) {
       data.forEach((e) {
@@ -385,9 +410,12 @@ class _CheckActivityAvailabityScreenState
     }
 
     setState(() {
-      dates = dates.where((AvailableDateModel e) => e.month >= DateTime.now().month).toList();
+      dates = dates
+          .where((AvailableDateModel e) => e.month >= DateTime.now().month)
+          .toList();
       availableDates = dates
-          .firstWhere((AvailableDateModel item) => item.month == DateTime.now().month)
+          .firstWhere(
+              (AvailableDateModel item) => item.month == DateTime.now().month)
           .availableDates;
     });
   }

@@ -20,6 +20,7 @@ import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/activities/widgets/activity_description.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_traveler_limit_schedules.dart';
 import 'package:guided/screens/message/message_screen_traveler.dart';
+import 'package:guided/screens/widgets/reusable_widgets/reviews_count.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:intl/intl.dart';
@@ -40,7 +41,7 @@ class ActivityPackageInfo extends StatefulWidget {
 class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   ActivityPackage _activityPackage = ActivityPackage();
   String _selectedTab = 'Description';
-  late Marker mark;
+  final List<Marker> markers = <Marker>[];
 
   bool showMoreDescription = false;
 
@@ -65,36 +66,40 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
 
   List<ActivityPackage> otherPackages = <ActivityPackage>[];
 
+  late BitmapDescriptor markerIcon;
+
+  List<ActivityHourAvailability> availableDateSlots = [];
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker(context));
+    WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker());
 
     debugPrint('Activity ${widget.package.id}');
     _activityPackage = widget.package;
 
+    // addMarker();
     getPackages();
     getGuideUserDetails();
     getAvailableDates(_activityPackage.id!);
   }
 
-  Future<void> addMarker(BuildContext context) async {
-    Marker set = RippleMarker(
-      markerId: const MarkerId('LocationId'),
-      icon: await MarkerIcon.pictureAsset(
-          assetPath: 'assets/images/png/ellipse.png',
-          width: 90.w,
-          height: 90.h),
+  Future<void> addMarker() async {
+    markerIcon = await MarkerIcon.svgAsset(
+        assetName: '${AssetsPath.assetsSVGPath}/location_point.svg',
+        context: context,
+        size: 35);
+
+    markers.add(Marker(
+      //add marker on google map
+      markerId: MarkerId(_activityPackage.id!),
       position: LatLng(
           double.parse(_activityPackage
               .activityPackageDestination!.activityPackageDestinationLatitude!),
           double.parse(_activityPackage.activityPackageDestination!
               .activityPackageDestinationLongitude!)),
-    );
-
-    setState(() {
-      mark = set;
-    });
+      icon: markerIcon, //Icon for Marker
+    ));
   }
 
   @override
@@ -209,13 +214,12 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
               ),
               Expanded(
                   child: TabBarView(
-                children: [
+                children: <Widget>[
                   // buildDescriptionTab(),
                   Activity().buildDescription(
                       activityPackage: _activityPackage,
                       userGuideDetails: userGuideDetails,
                       showMoreDescription: showMoreDescription,
-                      marker: mark,
                       mapController: _controller,
                       onMapCreated: () => _onMapCreated,
                       context: context,
@@ -236,14 +240,6 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
               ))
             ],
           ),
-          /*body: TabBarView(
-            children: [
-              buildDescriptionTab(),
-              PopularGuidesTravelerLimitSchedules(
-                  packageId: _activityPackage.id!,
-                  price: _activityPackage.basePrice!)
-            ],
-          ),*/
         ),
       ),
       bottomNavigationBar: Padding(
@@ -282,324 +278,6 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
       ),
     );
   }
-
-  Widget buildDescriptionTab() => SingleChildScrollView(
-          child: Column(
-        children: <Widget>[
-          Container(
-              padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 20.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  ListTile(
-                      contentPadding: EdgeInsets.all(2.w),
-                      leading: Container(
-                          padding: EdgeInsets.all(2.w),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 3,
-                            ),
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: const <BoxShadow>[
-                              BoxShadow(blurRadius: 3, color: Colors.grey)
-                            ],
-                          ),
-                          child: userGuideDetails.firebaseProfilePicUrl != ''
-                              ? CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                      userGuideDetails.firebaseProfilePicUrl!),
-                                )
-                              : const CircleAvatar(
-                                  backgroundImage: AssetImage(
-                                      '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
-                                )),
-                      title: Text(
-                        userGuideDetails.fullName!,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 20.sp),
-                      ),
-                      subtitle: Row(
-                        children: <Widget>[
-                          SvgPicture.asset(
-                              '${AssetsPath.assetsSVGPath}/star.svg'),
-                          SizedBox(
-                            width: 2.w,
-                          ),
-                          Text('0 review',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14.sp,
-                              ))
-                        ],
-                      )),
-                  SizedBox(height: 12.h),
-                  Row(
-                    children: <Widget>[],
-                  ),
-                  Text(
-                    'Description',
-                    style:
-                        TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
-                  ),
-                  SizedBox(height: 16.h),
-                  if (_activityPackage.description!.length >
-                      minDescriptionLength)
-                    Text(
-                      showMoreDescription
-                          ? _activityPackage.description!
-                          : '${_activityPackage.description!.substring(0, minDescriptionLength)}...',
-                      textAlign: TextAlign.justify,
-                    )
-                  else
-                    Text(
-                      _activityPackage.description!,
-                      textAlign: TextAlign.justify,
-                    ),
-                  SizedBox(height: 16.h),
-                  if (_activityPackage.description!.length >
-                      minDescriptionLength)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          showMoreDescription = !showMoreDescription;
-                        });
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Text(
-                            showMoreDescription ? 'Read Less' : 'Read More',
-                            style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w700,
-                                decoration: TextDecoration.underline),
-                          ),
-                          SizedBox(
-                            width: 5.w,
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            size: 12.sp,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
-                    ),
-                  SizedBox(height: 20.h),
-                  const Divider(color: Colors.grey),
-                  Text(
-                    'Location',
-                    style:
-                        TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
-                  ),
-                  SizedBox(height: 16.h),
-                  buildLocationDetails(),
-                  SizedBox(height: 16.h),
-                  Center(
-                      child: SizedBox(
-                          height: 200.h,
-                          width: double.infinity,
-                          child: AbsorbPointer(
-                            child: Animarker(
-                              curve: Curves.bounceInOut,
-                              duration: const Duration(milliseconds: 2000),
-                              rippleRadius: 0.1,
-                              rippleColor:
-                                  const Color.fromARGB(255, 6, 134, 49),
-                              markers: <Marker>{mark},
-                              mapId: _controller.future.then<int>(
-                                  (GoogleMapController value) => value.mapId),
-                              child: GoogleMap(
-                                initialCameraPosition: CameraPosition(
-                                  target: LatLng(
-                                      double.parse(_activityPackage
-                                          .activityPackageDestination!
-                                          .activityPackageDestinationLatitude!),
-                                      double.parse(_activityPackage
-                                          .activityPackageDestination!
-                                          .activityPackageDestinationLongitude!)),
-                                  zoom: 15,
-                                ),
-                                onMapCreated: _onMapCreated,
-                                myLocationButtonEnabled: false,
-                                zoomControlsEnabled: false,
-                              ),
-                            ),
-                          ))),
-                  SizedBox(height: 16.h),
-                  ListTile(
-                      contentPadding: EdgeInsets.all(2.w),
-                      leading: Container(
-                          padding: EdgeInsets.all(2.w),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 3,
-                            ),
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: const <BoxShadow>[
-                              BoxShadow(blurRadius: 3, color: Colors.grey)
-                            ],
-                          ),
-                          child: userGuideDetails.firebaseProfilePicUrl != ''
-                              ? CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                      userGuideDetails.firebaseProfilePicUrl!),
-                                )
-                              : const CircleAvatar(
-                                  backgroundImage: AssetImage(
-                                      '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
-                                )),
-                      title: Text(
-                        userGuideDetails.fullName!,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 20.sp),
-                      ),
-                      subtitle: Text(
-                          'Joined in ${DateFormat("MMM yyy").format(DateTime.parse(_activityPackage.createdDate!))}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14.sp,
-                              color: Colors.grey))),
-                  Row(
-                    children: <Widget>[
-                      Image.asset(
-                        AssetsPath.iconVerified,
-                        width: 20.w,
-                        height: 20.h,
-                      ),
-                      Text(
-                        'Identity verified',
-                        style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 12.h),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
-                    child: Text(
-                      'During Your Activity',
-                      style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
-                    child: Text(
-                      "I'm available over phone 24/7 for Traveller",
-                      style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
-                    child: Text(
-                      'Response rate: 80%',
-                      style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 5.h),
-                    child: Text(
-                      'Response rate: A few minutes or hours or more',
-                      style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0.w, 0.h, 0.w, 0.h),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          side: BorderSide(color: AppColors.tealGreen),
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20.r))),
-                        ),
-                        onPressed: getMessageHistory,
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
-                          child: Text('Contact Guide',
-                              style: TextStyle(
-                                  color: AppColors.tealGreen,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700)),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            'To protect your payment, never transfer money or communicate outside off the guided website or app',
-                            style: TextStyle(
-                                fontFamily: 'Gilroy',
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                        Image.asset(
-                          AssetsPath.logoSmall,
-                          width: 25.w,
-                          height: 25.h,
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  buildActivityListButtonItem(
-                      title: AppTextConstants.availability,
-                      subtitle: availableDates.isNotEmpty
-                          ? "TEST"
-                          : 'Add your travel date for exact pricing'),
-                  buildActivityListButtonItem(
-                      title: 'Guide Rules & What To Bring',
-                      subtitle: 'Follow the guide rules for safety'),
-                  buildActivityListButtonItem(
-                      title: 'Health & safety',
-                      subtitle: 'We  care about your health & safety'),
-                  buildActivityListButtonItem(
-                      title: 'Traveler Release Waiver form',
-                      subtitle: 'Lorem Ipsum',
-                      showDivider: false),
-                ],
-              )),
-          Divider(
-            color: AppColors.gallery,
-            thickness: 14.w,
-          ),
-          if (otherPackages.isNotEmpty) buildOtherOffering()
-        ],
-      ));
 
   Widget buildOtherOffering() => Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -754,19 +432,11 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
         ],
       );
 
-  Widget buildMap() => Center(
-      child: SizedBox(
-          height: 200.h,
-          width: double.infinity,
-          child: AbsorbPointer(
-            child: Animarker(
-              curve: Curves.bounceInOut,
-              duration: const Duration(milliseconds: 2000),
-              rippleRadius: 0.1,
-              rippleColor: const Color.fromARGB(255, 6, 134, 49),
-              markers: <Marker>{mark},
-              mapId: _controller.future
-                  .then<int>((GoogleMapController value) => value.mapId),
+  Widget buildMap() => Stack(
+        children: <Widget>[
+          SizedBox(
+              height: 200.h,
+              width: double.infinity,
               child: GoogleMap(
                 initialCameraPosition: CameraPosition(
                   target: LatLng(
@@ -779,9 +449,19 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                 onMapCreated: _onMapCreated,
                 myLocationButtonEnabled: false,
                 zoomControlsEnabled: false,
-              ),
-            ),
-          )));
+                markers: Set<Marker>.of(markers),
+              )),
+          Positioned(
+              bottom: 0,
+              child: Container(
+                color: AppColors.dirtyWhite,
+                padding: EdgeInsets.all(8.w),
+                width: MediaQuery.of(context).size.width,
+                // decoration: BoxDecoration(color: Colors.white10),
+                child: const Text('Exact Location Provided after booking'),
+              ))
+        ],
+      );
 
   // Skeleton Texts
   Widget buildFakeProfile() => Row(
@@ -863,7 +543,10 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
 
   void checkAvailability() {
     Navigator.pushNamed(context, '/checkActivityAvailabityScreen',
-        arguments: _activityPackage);
+        arguments: {
+          'activityPackage':_activityPackage,
+          'availableDateSlots': availableDateSlots
+        });
   }
 
   Future<void> getMessageHistory() async {
@@ -904,13 +587,17 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
     final List<ActivityHourAvailability> data = await APIServices()
         .getActivityHours(
             DateTime.now().toString(),
-            DateTime(currentDate.year, currentDate.month + 1, 0).toString(),
+        DateTime(DateTime.now().year, 12, 31).toString(),
+            // DateTime(currentDate.year, currentDate.month + 1, 0).toString(),
             packageId);
 
     debugPrint(
         'DATES AVAILABLE ${DateTime.now().toString()} ${DateTime(currentDate.year, currentDate.month + 1, 0).toString()}');
 
     if (data.isNotEmpty) {
+      setState(() {
+        availableDateSlots = data;
+      });
       data.forEach((element) {
         setState(() {
           availableDates.add(DateTime.parse(element.availabilityDate!));

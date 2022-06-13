@@ -11,6 +11,7 @@ import 'package:guided/models/settings.dart';
 import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 import 'package:guided/screens/main_navigation/settings/widgets/settings_items.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
+import 'package:guided/screens/widgets/reusable_widgets/app_home_button.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/settings.dart';
@@ -37,31 +38,24 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        leadingWidth: 60,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: AppHomeButton(),
+        title: Text(
+          AppTextConstants.settings,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+            color: Colors.black
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     Navigator.pop(context);
-                  //   },
-                  //   child: SvgPicture.asset(AssetsPath.arrowWithTail,
-                  //       fit: BoxFit.scaleDown),
-                  // ),
-                  Text(
-                    AppTextConstants.settings,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 24,
-                    ),
-                  ),
-                ],
-              ),
-            ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
               child: Container(

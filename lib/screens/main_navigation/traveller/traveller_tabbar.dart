@@ -34,13 +34,14 @@ class TravellerTabScreen extends StatefulWidget {
 }
 
 class _TravellerTabScreenState extends State<TravellerTabScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 5;
   late Widget _selectedWidget;
   final CardController _creditCardController = Get.put(CardController());
   final UserSubscriptionController _userSubscriptionController =
-  Get.put(UserSubscriptionController());
+      Get.put(UserSubscriptionController());
   final UserProfileDetailsController _profileDetailsController =
-  Get.put(UserProfileDetailsController());
+      Get.put(UserProfileDetailsController());
+
   @override
   void initState() {
     _selectedWidget = TabHomeScreen(
@@ -92,10 +93,13 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
         );
       } else {
         _selectedIndex = 0;
-        _selectedWidget =   TabHomeScreen(onItemPressed: popularGuideds,);
+        _selectedWidget = TabHomeScreen(
+          onItemPressed: popularGuideds,
+        );
       }
     });
   }
+
   void onPressed(int index) {
     setState(() {
       _selectedIndex = index;
@@ -116,12 +120,10 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
   }
 
   Future<void> getProfileDetails() async {
-
     final ProfileDetailsModel res = await APIServices().getProfileData();
 
     final UserSubscription subscription =
-    await APIServices().getUserSubscription();
-
+        await APIServices().getUserSubscription();
 
     bool hasPremiumSubscription = false;
     if (subscription.id.isNotEmpty) {
@@ -132,7 +134,6 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
 
       if (!isExpired) {
         hasPremiumSubscription = true;
-
       }
       _userSubscriptionController.setSubscription(subscription);
     }
@@ -148,22 +149,6 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     _profileDetailsController.setUserProfileDetails(res);
   }
 
-/*  Future<void> getUserSubscription() async {
-    final UserSubscription subscription =
-        await APIServices().getUserSubscription();
-
-    final DateTime currentDate = DateTime.now();
-    final DateTime endDate = DateTime.parse(subscription.endDate);
-
-    final bool isExpired = endDate.isBefore(currentDate);
-
-    if (!isExpired) {
-
-      UserSingleton.instance.user.user!.hasPremiumSubscription = true;
-      _userSubscriptionController.setSubscription(subscription);
-    }
-  }*/
-
   Future<void> getUserCards() async {
     final List<CardModel> cards = await APIServices().getCards();
     await _creditCardController.initCards(cards);
@@ -171,7 +156,7 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     if (cards.isNotEmpty) {
       debugPrint('cards $cards');
       final CardModel card = cards.firstWhere(
-              (CardModel c) => c.isDefault == true,
+          (CardModel c) => c.isDefault == true,
           orElse: () => CardModel());
 
       if (card.id != '') {
