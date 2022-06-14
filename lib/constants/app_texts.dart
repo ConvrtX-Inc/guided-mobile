@@ -1214,6 +1214,12 @@ class AppTextConstants {
 
   ///Returns no reviews yet text
   static String noReviewsYet = 'No Reviews Yet';
+
+  ///Returns explore nearby activities text
+  static String exploreNearbyActivities = 'Explore Nearby Activities/Packages';
+
+  ///Returns see all
+  static String seeAll ='See All';
 }
 
 /// Class for error messages text

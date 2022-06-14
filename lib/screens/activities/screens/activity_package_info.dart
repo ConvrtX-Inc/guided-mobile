@@ -40,7 +40,6 @@ class ActivityPackageInfo extends StatefulWidget {
 
 class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   ActivityPackage _activityPackage = ActivityPackage();
-  String _selectedTab = 'Description';
   final List<Marker> markers = <Marker>[];
 
   bool showMoreDescription = false;
@@ -242,38 +241,44 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
-        child: Row(
-          children: <Widget>[
-            Text.rich(TextSpan(children: [
-              TextSpan(
-                  text: '\$${_activityPackage.basePrice}',
-                  style:
-                      TextStyle(fontWeight: FontWeight.w700, fontSize: 30.sp)),
-              const TextSpan(
-                  text: '/hour', style: TextStyle(color: Colors.grey)),
-            ])),
-            Spacer(),
-            GestureDetector(
-              onTap: checkAvailability,
-              child: Container(
-                height: 40.h,
-                padding: EdgeInsets.all(10.w),
-                decoration: BoxDecoration(
-                    color: AppColors.deepGreen,
-                    borderRadius: BorderRadius.all(Radius.circular(12))),
-                margin: EdgeInsets.symmetric(horizontal: 12.w),
-                child: Center(
-                  child: Text('Check Availability',
-                      style: TextStyle(
-                          color: AppColors.white,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600)),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+            border: Border(
+          top: BorderSide(width: 2, color: AppColors.gallery),
+        )),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
+          child: Row(
+            children: <Widget>[
+              Text.rich(TextSpan(children: [
+                TextSpan(
+                    text: '\$${_activityPackage.basePrice}',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w700, fontSize: 30.sp)),
+                const TextSpan(
+                    text: '/person', style: TextStyle(color: Colors.grey)),
+              ])),
+              Spacer(),
+              GestureDetector(
+                onTap: checkAvailability,
+                child: Container(
+                  height: 45.h,
+                  padding: EdgeInsets.all(10.w),
+                  decoration: BoxDecoration(
+                      color: AppColors.deepGreen,
+                      borderRadius: BorderRadius.all(Radius.circular(6.w))),
+                  margin: EdgeInsets.symmetric(horizontal: 12.w),
+                  child: Center(
+                    child: Text('Check Availability',
+                        style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600)),
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -402,21 +407,6 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
         ],
       ));
 
-  void setTab(int initIndex) {
-    switch (initIndex) {
-      case 0:
-        setState(() {
-          _selectedTab = AppTextConstants.description;
-        });
-        break;
-      case 1:
-        setState(() {
-          _selectedTab = AppTextConstants.travelerLimitAndSchedule;
-        });
-        break;
-    }
-  }
-
   Widget buildLocationDetails() => Row(
         children: <Widget>[
           SvgPicture.asset('${AssetsPath.assetsSVGPath}/location.svg'),
@@ -542,11 +532,10 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   }
 
   void checkAvailability() {
-    Navigator.pushNamed(context, '/checkActivityAvailabityScreen',
-        arguments: {
-          'activityPackage':_activityPackage,
-          'availableDateSlots': availableDateSlots
-        });
+    Navigator.pushNamed(context, '/checkActivityAvailabityScreen', arguments: {
+      'activityPackage': _activityPackage,
+      'availableDateSlots': availableDateSlots
+    });
   }
 
   Future<void> getMessageHistory() async {
@@ -584,15 +573,12 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   Future<void> getAvailableDates(String packageId) async {
     final DateTime currentDate = DateTime.now();
 
-    final List<ActivityHourAvailability> data = await APIServices()
-        .getActivityHours(
+    final List<ActivityHourAvailability> data =
+        await APIServices().getActivityHours(
             DateTime.now().toString(),
-        DateTime(DateTime.now().year, 12, 31).toString(),
+            DateTime(DateTime.now().year, 12, 31).toString(),
             // DateTime(currentDate.year, currentDate.month + 1, 0).toString(),
             packageId);
-
-    debugPrint(
-        'DATES AVAILABLE ${DateTime.now().toString()} ${DateTime(currentDate.year, currentDate.month + 1, 0).toString()}');
 
     if (data.isNotEmpty) {
       setState(() {
@@ -600,35 +586,12 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
       });
       data.forEach((element) {
         setState(() {
-          availableDates.add(DateTime.parse(element.availabilityDate!));
+          final DateTime _date = DateTime.parse(element.availabilityDate!);
+          if (_date.month == DateTime.now().month) {
+            availableDates.add(_date);
+          }
         });
       });
     }
-
-    /*  if (data.isNotEmpty) {
-      data.forEach((e) {
-        final int monthNumber = DateTime.parse(e.availabilityDate!).month;
-
-        AvailableDateModel slot =
-        dates.firstWhere((item) => item.month == monthNumber);
-
-        final List<DateTime> availableDates =
-        List.from(slot.availableDates, growable: true)
-          ..add(DateTime.parse(e.availabilityDate!));
-
-        slot.availableDates = availableDates;
-        final int index = dates.indexOf(slot);
-        setState(() {
-          dates[index] = slot;
-        });
-      });
-    }
-
-    setState(() {
-      dates = dates.where((AvailableDateModel e) => e.month >= DateTime.now().month).toList();
-      availableDates = dates
-          .firstWhere((AvailableDateModel item) => item.month == DateTime.now().month)
-          .availableDates;
-    });*/
   }
 }

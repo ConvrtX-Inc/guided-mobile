@@ -302,13 +302,21 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 ],
               ),
               Spacer(),
-              Text(
-                'Edit',
-                style: TextStyle(
-                  color: HexColor('#3E4242'),
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  decoration: TextDecoration.underline,
+              GestureDetector(
+                onTap: () {
+                  int count = 0;
+                  Navigator.popUntil(context, (route) {
+                    return count++ == 3;
+                  });
+                },
+                child: Text(
+                  'Edit',
+                  style: TextStyle(
+                    color: HexColor('#3E4242'),
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               )
             ],
@@ -332,7 +340,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                   height: 5.h,
                 ),
                 Text(
-                  'Hunting',
+                  activityPackage.mainBadge!.badgeName!,
                   style: TextStyle(
                     color: HexColor('#696D6D'),
                     fontSize: 14.sp,
@@ -936,30 +944,6 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           SizedBox(
             height: 15.h,
           ),
-          /*         RichText(
-            text: TextSpan(
-              children: <TextSpan>[
-                TextSpan(
-                  text:
-                      'Located northwest if Montreal in Quebec’s the Laurentian Mountains, Mont-Tremblant is best known for its skiing, specifically Mont.  ',
-                  style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    color: HexColor('#696D6D'),
-                  ),
-                ),
-                TextSpan(
-                  text: 'Learn more!',
-                  style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                    color: HexColor('#181B1B'),
-                  ),
-                ),
-              ],
-            ),
-          ),*/
           SizedBox(
             height: 15.h,
           ),

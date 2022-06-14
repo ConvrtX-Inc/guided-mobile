@@ -60,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen>
   String name3 = '';
   bool _hasData = false;
   int totalData = 0;
+  int pendingRequestDisplayLimit = 0;
 
   @override
   void initState() {
@@ -83,6 +84,9 @@ class _HomeScreenState extends State<HomeScreen>
           .where((BookingRequest request) =>
               request.status?.statusName!.toLowerCase() == 'pending')
           .toList();
+
+      pendingRequestDisplayLimit =
+          pendingRequests.length >= 3 ? 3 : pendingRequests.length;
     }
   }
 
@@ -313,10 +317,10 @@ class _HomeScreenState extends State<HomeScreen>
                           children: <Widget>[
                             Row(
                               children: [
-                                for (int i = 0; i < pendingRequests.length; i++)
+                                for (int i = 0; i < pendingRequestDisplayLimit; i++)
                                   oneCustomerRequest(pendingRequests[i]),
                                 SizedBox(width: 15.w),
-                                for (int r = 0; r < pendingRequests.length; r++)
+                                for (int r = 0; r < pendingRequestDisplayLimit  ; r++)
                                   Text(
                                     r != pendingRequests.length - 1
                                         ? '${pendingRequests[r].fromUserFullName!.split(' ')[0]}, '
@@ -436,7 +440,6 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
             ),
-
         ],
       );
 

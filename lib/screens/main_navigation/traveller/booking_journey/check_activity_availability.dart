@@ -4,6 +4,7 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -325,6 +326,9 @@ class _CheckActivityAvailabityScreenState
                         context, travellerMonthController.currentDate,
                         (List<DateTime> value) {
                       travellerMonthController.selectedDates.clear();
+
+                      debugPrint(
+                          'Selected Dates: ${travellerMonthController.selectedDates.length}');
                       travellerMonthController.setSelectedDates(value);
                     }, availableDates),
                   );
@@ -332,23 +336,26 @@ class _CheckActivityAvailabityScreenState
             SizedBox(
               height: 20.h,
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: 60.h,
-              child: ElevatedButton(
-                onPressed: () {
-                  checkAvailability(context, activityPackage,
-                      travellerMonthController.selectedDates);
-                },
-                style: AppTextStyle.activeGreen,
-                child: const Text(
-                  'Next',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12),
-                ),
-              ),
+            Obx(
+              () => SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  height: 60.h,
+                  child: ElevatedButton(
+                      onPressed:
+                          travellerMonthController.selectedDates.isNotEmpty
+                              ? () {
+                                  checkAvailability(context, activityPackage,
+                                      travellerMonthController.selectedDates);
+                                }
+                              : null,
+                      style: AppTextStyle.activeGreen,
+                      child: const Text(
+                        'Next',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12),
+                      ))),
             ),
           ],
         ),
@@ -373,41 +380,6 @@ class _CheckActivityAvailabityScreenState
         dates[index] = slot;
       });
     });
-
-    setState(() {
-      dates = dates
-          .where((AvailableDateModel e) => e.month >= DateTime.now().month)
-          .toList();
-      availableDates = dates
-          .firstWhere(
-              (AvailableDateModel item) => item.month == DateTime.now().month)
-          .availableDates;
-    });
-  }
-
-  Future<void> _getAvailableSlots(String packageId) async {
-    final List<ActivityHourAvailability> data = await APIServices()
-        .getActivityHours(DateTime.now().toString(),
-            DateTime(DateTime.now().year, 12, 31).toString(), packageId);
-
-    if (data.isNotEmpty) {
-      data.forEach((e) {
-        final int monthNumber = DateTime.parse(e.availabilityDate!).month;
-
-        AvailableDateModel slot =
-            dates.firstWhere((item) => item.month == monthNumber);
-
-        final List<DateTime> availableDates =
-            List.from(slot.availableDates, growable: true)
-              ..add(DateTime.parse(e.availabilityDate!));
-
-        slot.availableDates = availableDates;
-        final int index = dates.indexOf(slot);
-        setState(() {
-          dates[index] = slot;
-        });
-      });
-    }
 
     setState(() {
       dates = dates

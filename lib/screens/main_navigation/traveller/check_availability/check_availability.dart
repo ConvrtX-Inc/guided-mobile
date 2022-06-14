@@ -76,6 +76,39 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: const Icon(
+            Icons.keyboard_backspace,
+            size: 30,
+            color: Colors.black,
+          ),
+
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text(
+              'Clear',
+              style: TextStyle(
+                  color: HexColor('#181B1B'),
+                  fontSize: 15.sp,
+                  fontFamily: 'Gilroy',
+                  fontWeight: FontWeight.w600),
+            ),
+            onPressed: () {
+              setState(() {
+                _numberOfTravellers  = 0;
+                _selectedScheduleIndex = 999;
+              });
+            },
+          )
+        ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
@@ -83,34 +116,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(
-                        Icons.keyboard_backspace,
-                        size: 30,
-                      ),
-                    ),
-                    TextButton(
-                      child: Text(
-                        'Clear',
-                        style: TextStyle(
-                            color: HexColor('#181B1B'),
-                            fontSize: 15.sp,
-                            fontFamily: 'Gilroy',
-                            fontWeight: FontWeight.w600),
-                      ),
-                      onPressed: () {},
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 25.h,
-                ),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -250,86 +256,88 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                               (int index) {
                                 return Column(
                                   children: <Widget>[
-                                    // padding: EdgeInsets.fromLTRB(0, 15.h, 0, 15.h),
-                                    ListTile(
-                                      leading: Text(
-                                        '${listTime[index].startHour} - ${listTime[index].endHour}',
-                                        style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontFamily: 'Gilroy',
-                                            fontWeight: checkDateIfAvailable(
-                                                    outputList
-                                                        .activityAvailabilityHours!,
-                                                    stringDateToDateTime(
-                                                        month,
-                                                        listTime[index]
-                                                            .hour24format))
-                                                ? FontWeight.bold
-                                                : FontWeight.w500),
-                                      ),
-                                      title: checkDateIfAvailable(
-                                              outputList
-                                                  .activityAvailabilityHours!,
-                                              stringDateToDateTime(month,
-                                                  listTime[index].hour24format))
-                                          ? Text(
-                                              getSlots(
-                                                  outputList
-                                                      .activityAvailabilityHours!,
-                                                  stringDateToDateTime(
-                                                      month,
-                                                      listTime[index]
-                                                          .hour24format)),
-                                              style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  fontFamily: 'Gilroy',
-                                                  color: AppColors.deepGreen,
-                                                  fontWeight: FontWeight.w700),
-                                            )
-                                          : Container(),
-                                      trailing: checkDateIfAvailable(
-                                              outputList
-                                                  .activityAvailabilityHours!,
-                                              stringDateToDateTime(month,
-                                                  listTime[index].hour24format))
-                                          ? _selectedScheduleIndex != index
-                                              ? GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      _selectedScheduleIndex =
-                                                          index;
-                                                      _numberOfTravellers = 0;
-                                                      _slotsAvailable = availableSlot(
+                                    Container(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 16.h),
+                                      child: Row(children: <Widget>[
+                                        Text(
+                                          '${listTime[index].startHour} - ${listTime[index].endHour}',
+                                          style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontFamily: 'Gilroy',
+                                              fontWeight: checkDateIfAvailable(
+                                                      outputList
+                                                          .activityAvailabilityHours!,
+                                                      stringDateToDateTime(
+                                                          month,
+                                                          listTime[index]
+                                                              .hour24format))
+                                                  ? FontWeight.bold
+                                                  : FontWeight.w500),
+                                        ),
+                                        SizedBox(width: 20.w),
+                                        if (checkDateIfAvailable(
+                                            outputList
+                                                .activityAvailabilityHours!,
+                                            stringDateToDateTime(month,
+                                                listTime[index].hour24format)))
+                                          Text(
+                                            getSlots(
+                                                outputList
+                                                    .activityAvailabilityHours!,
+                                                stringDateToDateTime(
+                                                    month,
+                                                    listTime[index]
+                                                        .hour24format)),
+                                            style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontFamily: 'Gilroy',
+                                                color: AppColors.deepGreen,
+                                                fontWeight: FontWeight.w700),
+                                          ),
+                                        Spacer(),
+                                        if (checkDateIfAvailable(
+                                                outputList
+                                                    .activityAvailabilityHours!,
+                                                stringDateToDateTime(
+                                                    month,
+                                                    listTime[index]
+                                                        .hour24format)) &&
+                                            _selectedScheduleIndex != index)
+                                          GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  _selectedScheduleIndex =
+                                                      index;
+                                                  _numberOfTravellers = 0;
+                                                  _slotsAvailable = availableSlot(
+                                                      outputList
+                                                          .activityAvailabilityHours!,
+                                                      stringDateToDateTime(
+                                                          month,
+                                                          listTime[index]
+                                                              .hour24format));
+                                                  _activityAvailabilityHours =
+                                                      getSelectedActivityAvailabilityHours(
                                                           outputList
                                                               .activityAvailabilityHours!,
                                                           stringDateToDateTime(
                                                               month,
                                                               listTime[index]
-                                                                  .hour24format));
-                                                      _activityAvailabilityHours =
-                                                          getSelectedActivityAvailabilityHours(
-                                                              outputList
-                                                                  .activityAvailabilityHours!,
-                                                              stringDateToDateTime(
-                                                                  month,
-                                                                  listTime[
-                                                                          index]
-                                                                      .hour24format))!;
-                                                    });
-                                                  },
-                                                  child: Icon(
-                                                    Icons
-                                                        .radio_button_unchecked,
-                                                    color: AppColors.deepGreen,
-                                                  ),
-                                                )
-                                              : Icon(
-                                                  Icons.radio_button_checked,
-                                                  color: AppColors.deepGreen,
-                                                )
-                                          : null,
+                                                                  .hour24format))!;
+                                                });
+                                              },
+                                              child: Icon(
+                                                Icons.radio_button_unchecked,
+                                                color: AppColors.deepGreen,
+                                              )),
+                                        if (_selectedScheduleIndex == index)
+                                          Icon(
+                                            Icons.radio_button_checked,
+                                            color: AppColors.deepGreen,
+                                          )
+                                      ]),
                                     ),
-
                                     const Divider(),
                                   ],
                                 );
@@ -503,7 +511,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                           }
                         : null,
                     style: AppTextStyle.active,
-                    child: Text(
+                    child: const Text(
                       'Book Now',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 14),

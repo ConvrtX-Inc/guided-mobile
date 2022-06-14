@@ -120,7 +120,7 @@ class AppTextStyle {
       elevation: 0,
       shadowColor: Colors.transparent,
       onPrimary: Colors.black,
-      side: BorderSide(width: 1.5, color: AppColors.deepGreen),
+      // side: BorderSide(width: 1.5, color: AppColors.deepGreen),
       textStyle: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w800,

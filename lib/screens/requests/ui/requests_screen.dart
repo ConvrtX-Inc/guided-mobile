@@ -147,11 +147,11 @@ class _RequestsScreenState extends State<RequestsScreen> {
                               fontWeight: FontWeight.w600),
                         )),
                     Padding(
-                        padding: EdgeInsets.fromLTRB(12.w, 10.h, 0, 0),
+                        padding: EdgeInsets.fromLTRB(12.w, 10.h, 0, 10.h),
                         child: SizedBox(
                           width: 220.w,
                           child: Text(
-                            '${request.fromUserFullName} has requested a new booking for package ${request.numberOfPerson}',
+                            '${request.fromUserFullName} has requested a new booking for  ${request.activityPackageName}',
                             style: TextStyle(
                                 color: Colors.grey,
                                 fontFamily: 'Gilroy',
