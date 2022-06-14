@@ -22,7 +22,7 @@ class AppHomeButton extends StatelessWidget {
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
               spreadRadius: 1,
-              blurRadius: 8,
+              blurRadius: 4,
              // changes position of shadow
             ),
           ]
