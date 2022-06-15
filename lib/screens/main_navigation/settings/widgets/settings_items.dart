@@ -14,6 +14,7 @@ import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/routes/route_generator.dart';
+import 'package:guided/screens/bookings/screens/my_booking_date.dart';
 import 'package:guided/screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
 import 'package:guided/screens/payments/payment_failed.dart';
@@ -136,6 +137,10 @@ class _SettingsItemsState extends State<SettingsItems> {
               _showDiscoveryBottomSheet('');
             }
             break;
+          case 'my_booking':
+            selectBookingDates(context: context);
+            break;
+            // Navigator.pushNamed(context, '/booking_history');
         }
       },
       leading: widget._imgUrl.contains('.png')

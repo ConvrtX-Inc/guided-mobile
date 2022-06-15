@@ -22,6 +22,7 @@ import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/guide.dart';
+import 'package:guided/models/paginated_data.dart';
 import 'package:guided/models/user_list_model.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/widget/popular_guide_home_features.dart';
@@ -60,6 +61,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   List<String> userIds = [];
   late Future<UserListModel> _loadingData;
 
+  List<ActivityPackage> nearbyActivityPackages = [];
+  bool isLoadingPackages = true;
+
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -69,7 +73,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
       travellerMonthController.setSelectedDate(mon);
 
       DateTime currentDate =
-      DateTime.parse(travellerMonthController.currentDate);
+          DateTime.parse(travellerMonthController.currentDate);
 
       final DateTime defaultDate = DateTime(currentDate.year, currentDate.month,
           1, currentDate.hour, currentDate.minute);
@@ -81,6 +85,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
     getCurrentLocation();
     _loadingData = APIServices().getUserListData();
     super.initState();
+
+    getNearbyActivities();
   }
 
   Future<void> getCurrentLocation() async {
@@ -166,6 +172,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                       padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
                       child: TextField(
                         onSubmitted: (value) {
+                          debugPrint('Query $value');
                           widget.onItemPressed('guides');
                         },
                         textAlign: TextAlign.left,
@@ -249,7 +256,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         ),
                                         Row(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                                              MainAxisAlignment.spaceEvenly,
                                           children: <Widget>[
                                             Icon(
                                               Icons.chevron_left,
@@ -259,14 +266,14 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                 color: Colors.transparent,
                                                 height: 80.h,
                                                 width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
+                                                        .size
+                                                        .width *
                                                     0.7,
                                                 child: EasyScrollToIndex(
                                                   controller: _scrollController,
                                                   // ScrollToIndexController
                                                   scrollDirection:
-                                                  Axis.horizontal,
+                                                      Axis.horizontal,
                                                   // default Axis.vertical
                                                   itemCount: AppListConstants
                                                       .calendarMonths.length,
@@ -275,38 +282,38 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                   itemHeight: 70,
                                                   itemBuilder:
                                                       (BuildContext context,
-                                                      int index) {
+                                                          int index) {
                                                     return InkWell(
                                                       onTap: () {
                                                         _scrollController
                                                             .easyScrollToIndex(
-                                                            index: index);
+                                                                index: index);
                                                         travellerMonthController
                                                             .setSelectedDate(
-                                                            index + 1);
+                                                                index + 1);
                                                         DateTime dt = DateTime.parse(
                                                             travellerMonthController
                                                                 .currentDate);
 
                                                         final DateTime
-                                                        plustMonth =
-                                                        DateTime(
-                                                            dt.year,
-                                                            index + 1,
-                                                            dt.day,
-                                                            dt.hour,
-                                                            dt.minute);
+                                                            plustMonth =
+                                                            DateTime(
+                                                                dt.year,
+                                                                index + 1,
+                                                                dt.day,
+                                                                dt.hour,
+                                                                dt.minute);
 
                                                         final DateTime
-                                                        setLastday =
-                                                        DateTime(
-                                                            plustMonth.year,
-                                                            plustMonth
-                                                                .month,
-                                                            1,
-                                                            plustMonth.hour,
-                                                            plustMonth
-                                                                .minute);
+                                                            setLastday =
+                                                            DateTime(
+                                                                plustMonth.year,
+                                                                plustMonth
+                                                                    .month,
+                                                                1,
+                                                                plustMonth.hour,
+                                                                plustMonth
+                                                                    .minute);
                                                         print(setLastday);
                                                         travellerMonthController
                                                             .setCurrentMonth(
@@ -314,44 +321,44 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                         );
                                                       },
                                                       child: Obx(
-                                                            () => Stack(
+                                                        () => Stack(
                                                           children: <Widget>[
                                                             Align(
                                                               alignment:
-                                                              Alignment
-                                                                  .center,
+                                                                  Alignment
+                                                                      .center,
                                                               child: Container(
                                                                 margin: EdgeInsets
                                                                     .fromLTRB(
-                                                                    index ==
-                                                                        0
-                                                                        ? 0.w
-                                                                        : 0.w,
-                                                                    0.h,
-                                                                    10.w,
-                                                                    0.h),
+                                                                        index ==
+                                                                                0
+                                                                            ? 0.w
+                                                                            : 0.w,
+                                                                        0.h,
+                                                                        10.w,
+                                                                        0.h),
                                                                 width: 89,
                                                                 height: 45,
                                                                 decoration:
-                                                                BoxDecoration(
-                                                                    borderRadius:
-                                                                    const BorderRadius
-                                                                        .all(
-                                                                      Radius.circular(
-                                                                          10),
-                                                                    ),
-                                                                    border: Border.all(
-                                                                        color: index == travellerMonthController.selectedDate - 1
-                                                                            ? HexColor(
-                                                                            '#FFC74A')
-                                                                            : HexColor(
-                                                                            '#C4C4C4'),
-                                                                        width:
-                                                                        1),
-                                                                    color: index ==
-                                                                        travellerMonthController.selectedDate - 1
-                                                                        ? HexColor('#FFC74A')
-                                                                        : Colors.white),
+                                                                    BoxDecoration(
+                                                                        borderRadius:
+                                                                            const BorderRadius
+                                                                                .all(
+                                                                          Radius.circular(
+                                                                              10),
+                                                                        ),
+                                                                        border: Border.all(
+                                                                            color: index == travellerMonthController.selectedDate - 1
+                                                                                ? HexColor(
+                                                                                    '#FFC74A')
+                                                                                : HexColor(
+                                                                                    '#C4C4C4'),
+                                                                            width:
+                                                                                1),
+                                                                        color: index ==
+                                                                                travellerMonthController.selectedDate - 1
+                                                                            ? HexColor('#FFC74A')
+                                                                            : Colors.white),
                                                                 child: Center(
                                                                     child: Text(
                                                                         AppListConstants
@@ -362,22 +369,22 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                                 right: 2,
                                                                 top: 2,
                                                                 child: index
-                                                                    .isOdd
+                                                                        .isOdd
                                                                     ? Badge(
-                                                                  padding:
-                                                                  const EdgeInsets.all(8),
-                                                                  badgeColor:
-                                                                  AppColors.deepGreen,
-                                                                  badgeContent:
-                                                                  Text(
-                                                                    '2',
-                                                                    style: TextStyle(
-                                                                        color: Colors.white,
-                                                                        fontSize: 12.sp,
-                                                                        fontWeight: FontWeight.w800,
-                                                                        fontFamily: AppTextConstants.fontPoppins),
-                                                                  ),
-                                                                )
+                                                                        padding:
+                                                                            const EdgeInsets.all(8),
+                                                                        badgeColor:
+                                                                            AppColors.deepGreen,
+                                                                        badgeContent:
+                                                                            Text(
+                                                                          '2',
+                                                                          style: TextStyle(
+                                                                              color: Colors.white,
+                                                                              fontSize: 12.sp,
+                                                                              fontWeight: FontWeight.w800,
+                                                                              fontFamily: AppTextConstants.fontPoppins),
+                                                                        ),
+                                                                      )
                                                                     : Container()),
                                                           ],
                                                         ),
@@ -394,23 +401,21 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                         GetBuilder<TravellerMonthController>(
                                             id: 'calendar',
                                             builder: (TravellerMonthController
-                                            controller) {
+                                                controller) {
                                               print(controller.currentDate);
                                               return Container(
                                                 padding: EdgeInsets.fromLTRB(
                                                     20.w, 0.h, 20.w, 0.h),
                                                 height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
+                                                        .size
+                                                        .height *
                                                     0.4,
                                                 child: Sfcalendar(
-                                                  context,
-                                                  travellerMonthController
-                                                      .currentDate,
-                                                  ((value) {
-                                                    print(value);
-                                                  }),
-                                                ),
+                                                    context,
+                                                    travellerMonthController
+                                                        .currentDate, ((value) {
+                                                  print(value);
+                                                }), []),
                                               );
                                             }),
                                         // SizedBox(
@@ -424,9 +429,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                               Navigator.of(context).pop();
                                               showMaterialModalBottomSheet(
                                                   shape:
-                                                  const RoundedRectangleBorder(
+                                                      const RoundedRectangleBorder(
                                                     borderRadius:
-                                                    BorderRadius.vertical(
+                                                        BorderRadius.vertical(
                                                       top: Radius.circular(20),
                                                     ),
                                                   ),
@@ -439,9 +444,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                       top: false,
                                                       child: Container(
                                                         height: MediaQuery.of(
-                                                            context)
-                                                            .size
-                                                            .height *
+                                                                    context)
+                                                                .size
+                                                                .height *
                                                             0.5,
                                                         child: Column(
                                                           children: <Widget>[
@@ -450,7 +455,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                             ),
                                                             Align(
                                                               child:
-                                                              Image.asset(
+                                                                  Image.asset(
                                                                 AssetsPath
                                                                     .horizontalLine,
                                                                 width: 60.w,
@@ -459,176 +464,176 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                                             ),
                                                             Padding(
                                                               padding:
-                                                              EdgeInsets
-                                                                  .fromLTRB(
-                                                                  20.w,
-                                                                  20.h,
-                                                                  20.w,
-                                                                  20.h),
+                                                                  EdgeInsets
+                                                                      .fromLTRB(
+                                                                          20.w,
+                                                                          20.h,
+                                                                          20.w,
+                                                                          20.h),
                                                               child: Align(
                                                                 alignment:
-                                                                Alignment
-                                                                    .topCenter,
+                                                                    Alignment
+                                                                        .topCenter,
                                                                 child: Text(
                                                                   '16 nearby guides',
                                                                   style: TextStyle(
                                                                       color: Colors
                                                                           .black,
                                                                       fontSize:
-                                                                      16.sp,
+                                                                          16.sp,
                                                                       fontWeight:
-                                                                      FontWeight
-                                                                          .w700),
+                                                                          FontWeight
+                                                                              .w700),
                                                                 ),
                                                               ),
                                                             ),
                                                             Expanded(
                                                                 child: Padding(
-                                                                  padding: EdgeInsets
-                                                                      .only(
+                                                              padding: EdgeInsets
+                                                                  .only(
                                                                       left:
-                                                                      20.w,
+                                                                          20.w,
                                                                       right:
-                                                                      20.w),
-                                                                  child: Swiper(
-                                                                    controller:
+                                                                          20.w),
+                                                              child: Swiper(
+                                                                controller:
                                                                     _cardController,
-                                                                    itemBuilder:
-                                                                        (BuildContext
-                                                                    context,
+                                                                itemBuilder:
+                                                                    (BuildContext
+                                                                            context,
                                                                         int index) {
-                                                                      return Column(
-                                                                        crossAxisAlignment:
+                                                                  return Column(
+                                                                    crossAxisAlignment:
                                                                         CrossAxisAlignment
                                                                             .start,
-                                                                        children: <
-                                                                            Widget>[
-                                                                          Container(
-                                                                            height:
+                                                                    children: <
+                                                                        Widget>[
+                                                                      Container(
+                                                                        height:
                                                                             200.h,
-                                                                            // width:
-                                                                            //     315.w,
-                                                                            decoration:
+                                                                        // width:
+                                                                        //     315.w,
+                                                                        decoration:
                                                                             BoxDecoration(
-                                                                              color:
+                                                                          color:
                                                                               Colors.transparent,
-                                                                              borderRadius:
+                                                                          borderRadius:
                                                                               BorderRadius.all(
-                                                                                Radius.circular(15.r),
-                                                                              ),
-                                                                              image:
+                                                                            Radius.circular(15.r),
+                                                                          ),
+                                                                          image:
                                                                               DecorationImage(
-                                                                                image:
+                                                                            image:
                                                                                 AssetImage(guides[index].featureImage),
-                                                                                fit:
+                                                                            fit:
                                                                                 BoxFit.cover,
+                                                                          ),
+                                                                        ),
+                                                                        child:
+                                                                            Stack(
+                                                                          children: <
+                                                                              Widget>[
+                                                                            Positioned(
+                                                                              top: 0,
+                                                                              right: 0,
+                                                                              child: IconButton(
+                                                                                icon: const Icon(Icons.favorite_border),
+                                                                                onPressed: () {},
+                                                                                color: HexColor('#ffffff'),
                                                                               ),
                                                                             ),
-                                                                            child:
-                                                                            Stack(
-                                                                              children: <
-                                                                                  Widget>[
-                                                                                Positioned(
-                                                                                  top: 0,
-                                                                                  right: 0,
-                                                                                  child: IconButton(
-                                                                                    icon: const Icon(Icons.favorite_border),
-                                                                                    onPressed: () {},
-                                                                                    color: HexColor('#ffffff'),
+                                                                            Align(
+                                                                              alignment: Alignment.centerLeft,
+                                                                              child: Container(
+                                                                                transform: Matrix4.translationValues(-15, 0, 0),
+                                                                                child: IconButton(
+                                                                                  onPressed: () async {
+                                                                                    await _cardController.previous();
+                                                                                  },
+                                                                                  icon: const Icon(
+                                                                                    Icons.chevron_left,
+                                                                                    size: 50,
                                                                                   ),
                                                                                 ),
-                                                                                Align(
-                                                                                  alignment: Alignment.centerLeft,
-                                                                                  child: Container(
-                                                                                    transform: Matrix4.translationValues(-15, 0, 0),
-                                                                                    child: IconButton(
-                                                                                      onPressed: () async {
-                                                                                        await _cardController.previous();
-                                                                                      },
-                                                                                      icon: const Icon(
-                                                                                        Icons.chevron_left,
-                                                                                        size: 50,
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                                Align(
-                                                                                  alignment: Alignment.centerRight,
-                                                                                  child: IconButton(
-                                                                                    onPressed: () async {
-                                                                                      await _cardController.next();
-                                                                                    },
-                                                                                    icon: const Icon(
-                                                                                      Icons.chevron_right,
-                                                                                      size: 50,
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              ],
+                                                                              ),
                                                                             ),
-                                                                          ),
-                                                                          SizedBox(
-                                                                            height:
+                                                                            Align(
+                                                                              alignment: Alignment.centerRight,
+                                                                              child: IconButton(
+                                                                                onPressed: () async {
+                                                                                  await _cardController.next();
+                                                                                },
+                                                                                icon: const Icon(
+                                                                                  Icons.chevron_right,
+                                                                                  size: 50,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(
+                                                                        height:
                                                                             4.h,
-                                                                          ),
-                                                                          Padding(
-                                                                            padding:
+                                                                      ),
+                                                                      Padding(
+                                                                        padding:
                                                                             const EdgeInsets.all(8.0),
-                                                                            child:
+                                                                        child:
                                                                             Row(
-                                                                              children: <
-                                                                                  Widget>[
-                                                                                Icon(
-                                                                                  Icons.star,
-                                                                                  color: HexColor('#066028'),
-                                                                                  size: 10,
-                                                                                ),
-                                                                                Text(
-                                                                                  '16 review',
-                                                                                  style: TextStyle(color: HexColor('#979B9B'), fontSize: 12.sp, fontWeight: FontWeight.normal),
-                                                                                ),
-                                                                              ],
+                                                                          children: <
+                                                                              Widget>[
+                                                                            Icon(
+                                                                              Icons.star,
+                                                                              color: HexColor('#066028'),
+                                                                              size: 10,
                                                                             ),
-                                                                          ),
-                                                                          Text(
-                                                                            "St. John's, Newfoundland",
-                                                                            style: TextStyle(
-                                                                                color:
+                                                                            Text(
+                                                                              '16 review',
+                                                                              style: TextStyle(color: HexColor('#979B9B'), fontSize: 12.sp, fontWeight: FontWeight.normal),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                      Text(
+                                                                        "St. John's, Newfoundland",
+                                                                        style: TextStyle(
+                                                                            color:
                                                                                 Colors.black,
-                                                                                fontSize: 16.sp,
-                                                                                fontWeight: FontWeight.w700),
-                                                                          ),
-                                                                          Text(
-                                                                            '\$50/ Person',
-                                                                            style: TextStyle(
-                                                                                color:
+                                                                            fontSize: 16.sp,
+                                                                            fontWeight: FontWeight.w700),
+                                                                      ),
+                                                                      Text(
+                                                                        '\$50/ Person',
+                                                                        style: TextStyle(
+                                                                            color:
                                                                                 HexColor('#3E4242'),
-                                                                                fontSize: 16.sp,
-                                                                                fontWeight: FontWeight.normal),
-                                                                          ),
-                                                                        ],
-                                                                      );
-                                                                    },
-                                                                    autoplay: true,
-                                                                    itemCount:
+                                                                            fontSize: 16.sp,
+                                                                            fontWeight: FontWeight.normal),
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                },
+                                                                autoplay: true,
+                                                                itemCount:
                                                                     guides
                                                                         .length,
-                                                                    // pagination: const SwiperPagination(
-                                                                    //     builder:
-                                                                    //         SwiperPagination
-                                                                    //             .fraction),
-                                                                    // pagination: SwiperCustomPagination(builder:
-                                                                    //     (BuildContext
-                                                                    //             context,
-                                                                    //         SwiperPluginConfig
-                                                                    //             config) {
-                                                                    //   return Container();
-                                                                    // }),
-                                                                    // control: const SwiperControl(
-                                                                    //     color: Colors
-                                                                    //         .black),
-                                                                  ),
-                                                                )),
+                                                                // pagination: const SwiperPagination(
+                                                                //     builder:
+                                                                //         SwiperPagination
+                                                                //             .fraction),
+                                                                // pagination: SwiperCustomPagination(builder:
+                                                                //     (BuildContext
+                                                                //             context,
+                                                                //         SwiperPluginConfig
+                                                                //             config) {
+                                                                //   return Container();
+                                                                // }),
+                                                                // control: const SwiperControl(
+                                                                //     color: Colors
+                                                                //         .black),
+                                                              ),
+                                                            )),
                                                           ],
                                                         ),
                                                       ),
@@ -655,8 +660,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                               Future.delayed(const Duration(seconds: 1), () {
                                 _scrollController.easyScrollToIndex(
                                     index:
-                                    travellerMonthController.selectedDate -
-                                        1);
+                                        travellerMonthController.selectedDate -
+                                            1);
 
                                 // setState(() {
                                 //   selectedmonth = 7;
@@ -697,7 +702,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              'Explore Nearby Activities/Packages',
+              AppTextConstants.exploreNearbyActivities,
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 16.sp,
@@ -706,7 +711,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
             GestureDetector(
               onTap: exploreNearbyActivities,
               child: Text(
-                'See All',
+                AppTextConstants.seeAll,
                 style: TextStyle(
                   color: HexColor('#3E4242'),
                   fontSize: 14.sp,
@@ -717,157 +722,142 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
             ),
           ],
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.26,
-          child: FutureBuilder<List<ActivityPackage>>(
-            future:
-            APIServices().getActivityPackagesbyDescOrder(), // async work
-            builder: (BuildContext context,
-                AsyncSnapshot<List<ActivityPackage>> snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.waiting:
-                  return const MainContentSkeletonHorizontal();
-                default:
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else {
-                    if (snapshot.data!.isNotEmpty) {
-                      return ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: snapshot.data!.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 5.w, vertical: 20.h),
-                              // height: 180.h,
-                              // width: 168.w,
-                              decoration: const BoxDecoration(
-                                color: Colors.transparent,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () {
-                                      // checkAvailability(
-                                      //     context, snapshot.data![index]);
-                                      Navigator.of(context).pushNamed(
-                                          '/activity_package_info',
-                                          arguments: snapshot.data![index]);
-                                    },
-                                    child: Container(
-                                      height: 120.h,
-                                      width: 160.w,
-                                      decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(15.r),
-                                        ),
-                                        // image: DecorationImage(
-                                        //   image: AssetImage(
-                                        //       activities[index].featureImage),
-                                        //   fit: BoxFit.cover,
-                                        // ),
-                                        image: DecorationImage(
-                                            image: NetworkImage(
-                                              // base64.decode(snapshot
-                                              //     .data![index].coverImg!
-                                              //     .split(',')
-                                              //     .last),
-                                              snapshot.data![index]
-                                                  .firebaseCoverImg!,
-                                            ),
-                                            fit: BoxFit.cover),
+
+        buildNearbyActivitiesAndPackages()
+      ],
+    );
+  }
+
+  Widget buildNearbyActivitiesAndPackages() => SizedBox(
+        height: MediaQuery.of(context).size.height * 0.26,
+        child: !isLoadingPackages
+            ? nearbyActivityPackages.isNotEmpty
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: nearbyActivityPackages.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 5.w, vertical: 20.h),
+                        // height: 180.h,
+                        // width: 168.w,
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                // checkAvailability(
+                                //     context, snapshot.data![index]);
+                                Navigator.of(context).pushNamed(
+                                    '/activity_package_info',
+                                    arguments: nearbyActivityPackages[index]);
+                              },
+                              child: Container(
+                                height: 120.h,
+                                width: 160.w,
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.r),
+                                  ),
+                                  // image: DecorationImage(
+                                  //   image: AssetImage(
+                                  //       activities[index].featureImage),
+                                  //   fit: BoxFit.cover,
+                                  // ),
+                                  image: DecorationImage(
+                                      image: NetworkImage(
+                                        // base64.decode(snapshot
+                                        //     .data![index].coverImg!
+                                        //     .split(',')
+                                        //     .last),
+                                        nearbyActivityPackages[index]
+                                            .firebaseCoverImg!,
                                       ),
-                                      child: Stack(
-                                        children: <Widget>[
-                                          Positioned(
-                                            bottom: 10,
-                                            left: 16,
-                                            child: Image.memory(
-                                              base64.decode(snapshot
-                                                  .data![index]
+                                      fit: BoxFit.cover),
+                                ),
+                                child: Stack(
+                                  children: <Widget>[
+                                    if (nearbyActivityPackages[index]
+                                            .mainBadge !=
+                                        null)
+                                      Positioned(
+                                        bottom: 10,
+                                        left: 16,
+                                        child: Image.memory(
+                                          base64.decode(
+                                              nearbyActivityPackages[index]
                                                   .mainBadge!
                                                   .imgIcon!
                                                   .split(',')
                                                   .last),
-                                              width: 30,
-                                              height: 30,
-                                              gaplessPlayback: true,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 5.h,
-                                  ),
-                                  SizedBox(
-                                      width: 130.w,
-                                      child: Text(
-                                        snapshot.data![index].name!,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16.sp,
-                                            fontFamily: 'Gilroy',
-                                            fontWeight: FontWeight.w600),
-                                      )),
-                                  Row(
-                                    children: <Widget>[
-                                      Container(
-                                        height: 10.h,
-                                        width: 10.w,
-                                        decoration: BoxDecoration(
-                                          color: Colors.transparent,
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(15.r),
-                                          ),
-                                          image: const DecorationImage(
-                                            image: AssetImage(
-                                                'assets/images/png/clock.png'),
-                                            fit: BoxFit.contain,
-                                          ),
+                                          width: 30,
+                                          height: 30,
+                                          gaplessPlayback: true,
                                         ),
                                       ),
-                                      SizedBox(
-                                        width: 2.w,
-                                      ),
-                                      Text(
-                                        // snapshot.data![index].timeToTravel!,
-                                        '0.0 hour drive',
-                                        style: TextStyle(
-                                            color: HexColor('#696D6D'),
-                                            fontSize: 11.sp,
-                                            fontFamily: 'Gilroy',
-                                            fontWeight: FontWeight.normal),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            );
-                          });
-                    } else {
-                      return Center(
-                          child: Text(
-                            'No Nearby Activities',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.normal),
-                          ));
-                    }
-                  }
-              }
-            },
-          ),
-        ),
-      ],
-    );
-  }
+                            ),
+                            SizedBox(
+                              height: 5.h,
+                            ),
+                            SizedBox(
+                                width: 130.w,
+                                child: Text(
+                                  nearbyActivityPackages[index].name!,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16.sp,
+                                      fontFamily: 'Gilroy',
+                                      fontWeight: FontWeight.w600),
+                                )),
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                  height: 10.h,
+                                  width: 10.w,
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(15.r),
+                                    ),
+                                    image: const DecorationImage(
+                                      image: AssetImage(
+                                          'assets/images/png/clock.png'),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 2.w,
+                                ),
+                                Text(
+                                  // snapshot.data![index].timeToTravel!,
+                                  '0.0 hour drive',
+                                  style: TextStyle(
+                                      color: HexColor('#696D6D'),
+                                      fontSize: 11.sp,
+                                      fontFamily: 'Gilroy',
+                                      fontWeight: FontWeight.normal),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    })
+                : const Center(
+                    child: Text('Nothing to Display'),
+                  )
+            : const MainContentSkeletonHorizontal(),
+      );
 
   void exploreNearbyActivities() {
     showMaterialModalBottomSheet(
@@ -935,14 +925,12 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                 height: 20.h,
               ),
               Expanded(
-                child: ListView(
-                  children: List<Widget>.generate(
-                    3,
-                        (int index) => Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15.w),
-                      child: sideShow(index),
-                    ),
-                  ),
+                child: ListView.builder(
+                  itemCount: nearbyActivityPackages.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return buildActivityPackageListItem(
+                        nearbyActivityPackages[index]);
+                  },
                 ),
               ),
             ],
@@ -952,9 +940,104 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
     );
   }
 
+  Widget buildActivityPackageListItem(ActivityPackage activityPackage) =>
+     GestureDetector(
+       onTap: () => Navigator.of(context).pushNamed('/activity_package_info',arguments: activityPackage),
+       child:  Container(
+         padding: EdgeInsets.symmetric(horizontal: 15.w),
+         margin: EdgeInsets.only(bottom: 16.h),
+         child: Column(
+           children: <Widget>[
+             Container(
+               height: 200.h,
+               decoration: BoxDecoration(
+                 color: Colors.transparent,
+                 borderRadius: BorderRadius.all(
+                   Radius.circular(15.r),
+                 ),
+                 image: DecorationImage(
+                   image: NetworkImage(activityPackage.firebaseCoverImg!),
+                   fit: BoxFit.cover,
+                 ),
+               ),
+               child: Stack(
+                 children: <Widget>[
+                   Positioned(
+                     top: 0,
+                     right: 0,
+                     child: IconButton(
+                       icon: const Icon(Icons.favorite_border),
+                       onPressed: () {},
+                       color: HexColor('#ffffff'),
+                     ),
+                   ),
+                   Positioned(
+                     bottom: 0,
+                     child: CircleAvatar(
+                       backgroundColor: Colors.transparent,
+                       radius: 30,
+                       child: Image.memory(
+                         base64.decode(activityPackage.mainBadge!.imgIcon!),
+                         height: 35.h,
+                         width: 35.w,
+                       ),
+                     ),
+                   ),
+                 ],
+               ),
+             ),
+             SizedBox(
+               height: 10.h,
+             ),
+             Row(
+               children: <Widget>[
+                 Text(
+                   activityPackage.name!,
+                   style: TextStyle(
+                       color: Colors.black,
+                       fontSize: 16.sp,
+                       fontWeight: FontWeight.w700),
+                 ),
+                 Spacer(),
+                 Row(
+                   children: <Widget>[
+                     Container(
+                       height: 10.h,
+                       width: 10.w,
+                       decoration: BoxDecoration(
+                         color: Colors.transparent,
+                         borderRadius: BorderRadius.all(
+                           Radius.circular(15.r),
+                         ),
+                         image: const DecorationImage(
+                           image: AssetImage('assets/images/png/clock.png'),
+                           fit: BoxFit.contain,
+                         ),
+                       ),
+                     ),
+                     // SizedBox(
+                     //   width: 2.w,
+                     // ),
+                     Text(
+                       '0.0 hour drive',
+                       style: TextStyle(
+                           color: HexColor('#696D6D'),
+                           fontSize: 11.sp,
+                           fontFamily: 'Gilroy',
+                           fontWeight: FontWeight.normal),
+                     ),
+                   ],
+                 ),
+               ],
+             )
+           ],
+         ),
+       ),
+     );
+
   Widget sideShow(int index) {
     final PageController pageIndicatorController =
-    PageController(initialPage: index);
+        PageController(initialPage: index);
     return SizedBox(
       height: 250.h,
       width: MediaQuery.of(context).size.width * 0.9,
@@ -988,7 +1071,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                               ),
                               image: DecorationImage(
                                 image:
-                                AssetImage(activities[index].featureImage),
+                                    AssetImage(activities[index].featureImage),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -1009,7 +1092,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                                     backgroundColor: Colors.transparent,
                                     radius: 30,
                                     backgroundImage:
-                                    AssetImage(activities[index].path),
+                                        AssetImage(activities[index].path),
                                   ),
                                 ),
                               ],
@@ -1095,9 +1178,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
 
   /// Navigate to Advertisement View
   Future<void> checkAvailability(
-      BuildContext context,
-      ActivityPackage package,
-      ) async {
+    BuildContext context,
+    ActivityPackage package,
+  ) async {
     final Map<String, dynamic> details = {
       'package': package,
     };
@@ -1107,9 +1190,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   }
 
   Widget popularGuidesNearYou(
-      BuildContext context,
-      List<Guide> guides,
-      ) {
+    BuildContext context,
+    List<Guide> guides,
+  ) {
     return Column(
       children: <Widget>[
         Row(
@@ -1155,13 +1238,13 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                       itemBuilder: (BuildContext ctx, int index) {
                         return userListData.userDetails[index].isGuide
                             ? PopularGuideHomeFeatures(
-                            id: userListData.userDetails[index].id,
-                            fullName:
-                            userListData.userDetails[index].fullName,
-                            firebaseProfImg:
-                            userListData.userDetails[index].firebaseImg,
-                            latitude: latitude,
-                            longitude: longitude)
+                                id: userListData.userDetails[index].id,
+                                fullName:
+                                    userListData.userDetails[index].fullName,
+                                firebaseProfImg:
+                                    userListData.userDetails[index].firebaseImg,
+                                latitude: latitude,
+                                longitude: longitude)
                             : Container();
                       });
                 }
@@ -1173,131 +1256,6 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
             },
           ),
         ),
-        // SizedBox(
-        //   height: MediaQuery.of(context).size.height * 0.25,
-        //   child: FutureBuilder<List<User>>(
-        //       future: APIServices().getPopularGuides(), // async work
-        //       builder:
-        //           (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
-        //         switch (snapshot.connectionState) {
-        //           case ConnectionState.waiting:
-        //             return const MainContentSkeletonHorizontal();
-        //           default:
-        //             if (snapshot.hasError) {
-        //               return Center(child: Text('Error: ${snapshot.error}'));
-        //             } else {
-        //               return GestureDetector(
-        //                 onTap: _settingModalBottomSheet,
-        //                 child: ListView(
-        //                   shrinkWrap: true,
-        //                   scrollDirection: Axis.horizontal,
-        //                   children: List<Widget>.generate(snapshot.data!.length,
-        //                       (int i) {
-        //                     return Container(
-        //                       margin: EdgeInsets.symmetric(
-        //                           horizontal: 5.w, vertical: 20.h),
-        //                       height: 180.h,
-        //                       width: 220.w,
-        //                       decoration: const BoxDecoration(
-        //                         color: Colors.transparent,
-        //                       ),
-        //                       child: Column(
-        //                         crossAxisAlignment: CrossAxisAlignment.start,
-        //                         children: <Widget>[
-        //                           Container(
-        //                             height: 112.h,
-        //                             width: 220.w,
-        //                             decoration: BoxDecoration(
-        //                               color: Colors.grey.shade300,
-        //                               borderRadius: BorderRadius.all(
-        //                                 Radius.circular(15.r),
-        //                               ),
-        //                               image: DecorationImage(
-        //                                 image: snapshot.data![i]
-        //                                             .firebaseProfilePicUrl ==
-        //                                         ''
-        //                                     ? Image.network(
-        //                                         'https://img.icons8.com/external-coco-line-kalash/344/external-person-human-body-anatomy-coco-line-kalash-4.png',
-        //                                         width: 50,
-        //                                         height: 50,
-        //                                       ).image
-        //                                     : ExtendedImage.network(
-        //                                         snapshot.data![i]
-        //                                             .firebaseProfilePicUrl
-        //                                             .toString(),
-        //                                       ).image,
-        //                                 fit: snapshot.data![i]
-        //                                             .firebaseProfilePicUrl ==
-        //                                         ''
-        //                                     ? BoxFit.fitHeight
-        //                                     : BoxFit.cover,
-        //                               ),
-        //                             ),
-        //                             // child: Stack(
-        //                             //   children: <Widget>[
-        //                             //     Positioned(
-        //                             //       bottom: 0,
-        //                             //       child: CircleAvatar(
-        //                             //         backgroundColor: Colors.transparent,
-        //                             //         radius: 30,
-        //                             //         backgroundImage:
-        //                             //             AssetImage(guides[1].path),
-        //                             //       ),
-        //                             //     ),
-        //                             //   ],
-        //                             // ),
-        //                           ),
-        //                           SizedBox(
-        //                             height: 5.h,
-        //                           ),
-        //                           Text(
-        //                             snapshot.data![i].fullName ?? '',
-        //                             style: TextStyle(
-        //                                 color: Colors.black,
-        //                                 fontSize: 16.sp,
-        //                                 fontFamily: 'Gilroy',
-        //                                 fontWeight: FontWeight.w600),
-        //                           ),
-        //                           Row(
-        //                             children: <Widget>[
-        //                               Container(
-        //                                 height: 10.h,
-        //                                 width: 10.w,
-        //                                 decoration: BoxDecoration(
-        //                                   color: Colors.transparent,
-        //                                   borderRadius: BorderRadius.all(
-        //                                     Radius.circular(15.r),
-        //                                   ),
-        //                                   image: const DecorationImage(
-        //                                     image: AssetImage(
-        //                                         'assets/images/png/marker.png'),
-        //                                     fit: BoxFit.contain,
-        //                                   ),
-        //                                 ),
-        //                               ),
-        //                               SizedBox(
-        //                                 width: 2.w,
-        //                               ),
-        //                               Text(
-        //                                 '1 KM',
-        //                                 style: TextStyle(
-        //                                     color: HexColor('#696D6D'),
-        //                                     fontSize: 11.sp,
-        //                                     fontFamily: 'Gilroy',
-        //                                     fontWeight: FontWeight.normal),
-        //                               ),
-        //                             ],
-        //                           ),
-        //                         ],
-        //                       ),
-        //                     );
-        //                   }),
-        //                 ),
-        //               );
-        //             }
-        //         }
-        //       }),
-        // ),
       ],
     );
   }
@@ -1375,6 +1333,16 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         ],
       ),
     );
+  }
+
+  //
+  Future<void> getNearbyActivities() async {
+    final List<ActivityPackage> res =
+        await APIServices().getActivityPackagesbyDescOrder();
+    setState(() {
+      nearbyActivityPackages = res;
+      isLoadingPackages = false;
+    });
   }
 
   void _settingModalBottomSheet() {

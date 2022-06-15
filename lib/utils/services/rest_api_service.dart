@@ -39,6 +39,7 @@ import 'package:guided/models/outfitter_model.dart';
 import 'package:guided/models/package_destination_image_model.dart';
 import 'package:guided/models/package_destination_model.dart';
 import 'package:guided/models/package_model.dart';
+import 'package:guided/models/paginated_data.dart';
 import 'package:guided/models/payment_transaction.dart';
 import 'package:guided/models/popular_guide.dart';
 import 'package:guided/models/preset_form_model.dart';
@@ -303,12 +304,14 @@ class APIServices {
     return dataSummary;
   }
 
-  /// API service for get booking request
+  /// API service for
   Future<List<BookingRequest>> getBookingRequest() async {
-    final String? userId = UserSingleton.instance.user.user?.id;
+    final String? userId =
+    await SecureStorage.readValue(key: AppTextConstants.userId);
 
     final Map<String, String> queryParameters = {
       'filter': 'user_id||eq||"$userId"',
+      'sort':'created_date,DESC'
     };
 
     debugPrint(
@@ -2567,5 +2570,35 @@ class APIServices {
     (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
+  }
+
+  /// API service for Activity Packages
+  Future<PaginatedData> getActivityPackagesPaginated(int page,int limit) async {
+
+    final Map<String, String> queryParameters = {
+      'page': '$page',
+      'sort':'created_date,DESC',
+      'limit': '$limit'
+    };
+
+      /*final http.Response response = await http.get(
+        Uri.parse(
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),
+        headers: {
+          HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}'
+        });*/
+
+    final http.Response response = await http
+        .get(Uri.http(apiBaseUrl, '/api/v1/activity-packages', queryParameters), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
+    });
+
+
+    final dynamic jsonData = jsonDecode(response.body);
+
+    debugPrint('Json Data:: url: ${Uri.http(apiBaseUrl, '/api/v1/activity-packages', queryParameters)}');
+    final PaginatedData data = PaginatedData.fromJson(jsonData);
+    return data;
   }
 }

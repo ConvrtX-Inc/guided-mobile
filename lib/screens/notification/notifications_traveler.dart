@@ -26,6 +26,7 @@ class _NotificationTravelerState extends State<NotificationTraveler> {
   String selectedFilter = 'All';
 
   List<NotificationModel> notifications = [];
+  List<NotificationModel> filteredNotifications = [];
   bool isLoading = false;
 
   @override
@@ -115,15 +116,14 @@ class _NotificationTravelerState extends State<NotificationTraveler> {
 
   Widget buildNotificationsUI() =>
       isLoading ? buildLoadingNotificationUI() : buildNotificationList();
-
-  Widget buildNotificationList() => notifications.isNotEmpty
+  Widget buildNotificationList() => filteredNotifications.isNotEmpty
       ? Container(
           margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 12.h),
           child: ListView.builder(
               itemBuilder: (BuildContext context, int index) {
-                return buildNotificationItem(notifications[index]);
+                return buildNotificationItem(filteredNotifications[index]);
               },
-              itemCount: notifications.length))
+              itemCount: filteredNotifications.length))
       : Center(
           child: Text(AppTextConstants.nothingToDisplay,
               style: TextStyle(color: AppColors.grey)),
@@ -171,7 +171,7 @@ class _NotificationTravelerState extends State<NotificationTraveler> {
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400),
                 ),
-                Spacer(),
+                const Spacer(),
                 Text(
                   'No: ${notification.transactionNo!}',
                   style: TextStyle(
@@ -225,7 +225,7 @@ class _NotificationTravelerState extends State<NotificationTraveler> {
     switch (index) {
       case 1:
         _tabColor = AppColors.mediumGreen;
-        _selectedTab = 'Accepted';
+        _selectedTab = 'Completed';
         break;
       case 2:
         _tabColor = AppColors.lightRed;
@@ -242,7 +242,7 @@ class _NotificationTravelerState extends State<NotificationTraveler> {
       selectedFilter = _selectedTab;
     });
 
-    getNotifications();
+     filterNotifications();
   }
 
   Future<void> getNotifications() async {
@@ -255,6 +255,7 @@ class _NotificationTravelerState extends State<NotificationTraveler> {
 
       setState(() {
         notifications = res;
+        filteredNotifications = res;
         isLoading = false;
       });
     }on Exception catch(e){
@@ -263,6 +264,18 @@ class _NotificationTravelerState extends State<NotificationTraveler> {
         isLoading = false;
       });
     }
+  }
 
+  void filterNotifications(){
+
+    if(selectedFilter.toLowerCase() == 'all'){
+      setState(() {
+        filteredNotifications = notifications;
+      });
+    }else{
+      setState(() {
+        filteredNotifications = notifications.where((notif) => notif.bookingRequestStatus!.toLowerCase() == selectedFilter.toLowerCase()).toList();
+      });
+    }
   }
 }

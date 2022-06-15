@@ -2,13 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_properties.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/constants/asset_path.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/activity_packages_wishlist.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/guide_profile.dart';
+import 'package:guided/screens/widgets/reusable_widgets/app_home_button.dart';
 
 /// Tab Wishlist Screen
 class TabWishlistScreen extends StatefulWidget {
@@ -56,35 +59,33 @@ class _TabWishlistScreenState extends State<TabWishlistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(50.h),
-        child: AppBar(
-          automaticallyImplyLeading: false,
-          flexibleSpace: Column(
-            children: <Widget>[
-              Text(
-                'Wish List',
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 24.sp,
-                    color: Colors.black,
-                    fontFamily: AppTextConstants.fontGilroy),
-              ),
-              Text(
-                'Adventure, Discover, Explore',
-                style: TextStyle(
-                    color: AppColors.lightningYellow,
-                    fontSize: 12.sp,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-
-          backgroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: true,
+      appBar: AppBar(
+        leadingWidth: 60,
+        leading: AppHomeButton(),
+        title: Column(
+          children: <Widget>[
+            Text(
+              'Wish List',
+              style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24.sp,
+                  color: Colors.black,
+                  fontFamily: AppTextConstants.fontGilroy),
+            ),
+            Text(
+              'Adventure, Discover, Explore',
+              style: TextStyle(
+                  color: AppColors.lightningYellow,
+                  fontSize: 12.sp,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
+
+        backgroundColor:Colors.white,
+        elevation: 0,
+        centerTitle: true,
       ),
       body: ContainedTabBarView(
         tabs: <Widget>[

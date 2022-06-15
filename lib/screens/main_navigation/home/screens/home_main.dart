@@ -60,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen>
   String name3 = '';
   bool _hasData = false;
   int totalData = 0;
+  int pendingRequestDisplayLimit = 0;
 
   @override
   void initState() {
@@ -83,81 +84,10 @@ class _HomeScreenState extends State<HomeScreen>
           .where((BookingRequest request) =>
               request.status?.statusName!.toLowerCase() == 'pending')
           .toList();
+
+      pendingRequestDisplayLimit =
+          pendingRequests.length >= 3 ? 3 : pendingRequests.length;
     }
-
-    /* for (int index = 0; index < resData.length; index++) {
-      if (resData[index].isApproved! == false) {
-        if (resData.length == 1) {
-          if (index == 0) {
-            if (image1 == '') {
-              setData1(resData[index].fromUserFirebaseProfilePic!,
-                  resData[index].fromUserId!);
-            }
-          }
-        } else if (resData.length == 2) {
-          if (index == 0) {
-            if (image1 == '') {
-              setData1(resData[index].fromUserFirebaseProfilePic!,
-                  resData[index].fromUserId!);
-            }
-          } else if (index == 1) {
-            if (image2 == '') {
-              setData2(resData[index].fromUserFirebaseProfilePic!,
-                  resData[index].fromUserId!);
-            }
-          }
-        } else if (resData.length >= 3) {
-          if (index == 0) {
-            if (image1 == '') {
-              setData1(resData[index].fromUserFirebaseProfilePic!,
-                  resData[index].fromUserId!);
-            }
-          } else if (index == 1) {
-            if (image2 == '') {
-              setData2(resData[index].fromUserFirebaseProfilePic!,
-                  resData[index].fromUserId!);
-            }
-          } else if (index == 2) {
-            if (image3 == '') {
-              setData3(resData[index].fromUserFirebaseProfilePic!,
-                  resData[index].fromUserId!);
-            }
-          }
-        }
-
-        setState(() {
-          total = resData.length;
-        });
-      }
-    }*/
-  }
-
-  setData1(String img, String id) async {
-    final ProfileDetailsModel resUsername0 =
-        await APIServices().getProfileDataById(id);
-
-    setState(() {
-      image1 = img;
-      name1 = resUsername0.firstName;
-    });
-  }
-
-  setData2(String img, String id) async {
-    final ProfileDetailsModel resUsername0 =
-        await APIServices().getProfileDataById(id);
-    setState(() {
-      image2 = img;
-      name2 = ', ${resUsername0.firstName}';
-    });
-  }
-
-  setData3(String img, String id) async {
-    final ProfileDetailsModel resUsername0 =
-        await APIServices().getProfileDataById(id);
-    setState(() {
-      image3 = img;
-      name3 = ', ${resUsername0.firstName}';
-    });
   }
 
   @override
@@ -387,10 +317,10 @@ class _HomeScreenState extends State<HomeScreen>
                           children: <Widget>[
                             Row(
                               children: [
-                                for (int i = 0; i < pendingRequests.length; i++)
+                                for (int i = 0; i < pendingRequestDisplayLimit; i++)
                                   oneCustomerRequest(pendingRequests[i]),
                                 SizedBox(width: 15.w),
-                                for (int r = 0; r < pendingRequests.length; r++)
+                                for (int r = 0; r < pendingRequestDisplayLimit  ; r++)
                                   Text(
                                     r != pendingRequests.length - 1
                                         ? '${pendingRequests[r].fromUserFullName!.split(' ')[0]}, '
@@ -403,12 +333,6 @@ class _HomeScreenState extends State<HomeScreen>
                                   ),
                               ],
                             ),
-                            // if (pendingRequests.length == 2)
-                            //   manyCustomerRequest()
-                            // else if (pendingRequests.length == 2)
-                            //   twoCustomerRequest()
-                            // else
-                            //   oneCustomerRequest(pendingRequests[0]),
                             SizedBox(height: 10.h),
                             Text(
                               'Great news! You have got ${pendingRequests.length} requests from your clients. Please check these out',
@@ -516,11 +440,6 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
             ),
-          // SizedBox(width: 15.w),
-          // Text(
-          //   request.fromUserFullName!,
-          //   style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          // ),
         ],
       );
 

@@ -12,13 +12,13 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/reviews_count.dart';
 import 'package:intl/intl.dart';
 
 class Activity {
   Widget buildDescription(
       {required ActivityPackage activityPackage,
       required User userGuideDetails,
-      Marker? marker,
       int minDescriptionLength = 200,
       required bool showMoreDescription,
       Function? onReadMoreCallBack,
@@ -27,7 +27,10 @@ class Activity {
       required BuildContext context,
       required Function getMessageHistory,
       required List<ActivityPackage> otherPackages,
-      required mapWidget}) {
+      required mapWidget,
+      required List<DateTime> availableDates,
+      required Function onAvailabilityPressed,
+      int reviewCount = 0}) {
     return SingleChildScrollView(
         child: Column(
       children: <Widget>[
@@ -65,20 +68,9 @@ class Activity {
                       style: TextStyle(
                           fontWeight: FontWeight.w600, fontSize: 20.sp),
                     ),
-                    subtitle: Row(
-                      children: <Widget>[
-                        SvgPicture.asset(
-                            '${AssetsPath.assetsSVGPath}/star.svg'),
-                        SizedBox(
-                          width: 2.w,
-                        ),
-                        Text('0 review',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14.sp,
-                            ))
-                      ],
-                    )),
+                    subtitle: ReviewsCount(
+                        count: reviewCount,
+                        mainAxisAlignment: MainAxisAlignment.start)),
                 SizedBox(height: 12.h),
                 Row(
                   children: <Widget>[],
@@ -130,16 +122,33 @@ class Activity {
                   ),
                 SizedBox(height: 20.h),
                 const Divider(color: Colors.grey),
+                SizedBox(height: 20.h),
                 Text(
                   'Location',
                   style:
                       TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 20.h),
                 buildLocationDetails(activityPackage),
-                SizedBox(height: 16.h),
+                SizedBox(height: 20.h),
                 mapWidget,
-                SizedBox(height: 16.h),
+                SizedBox(height: 20.h),
+                const Divider(color: Colors.grey),
+                SizedBox(height: 20.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      AppTextConstants.reviews,
+                      style: TextStyle(
+                          fontSize: 20.sp, fontWeight: FontWeight.w700),
+                    ),
+                    ReviewsCount()
+                  ],
+                ),
+                SizedBox(height: 20.h),
+                const Divider(color: Colors.grey),
+                SizedBox(height: 20.h),
                 ListTile(
                     contentPadding: EdgeInsets.all(2.w),
                     leading: Container(
@@ -285,9 +294,19 @@ class Activity {
                   ),
                 ),
                 SizedBox(height: 16.h),
-                buildActivityListButtonItem(
-                    title: AppTextConstants.availability,
-                    subtitle: 'Add your travel date for exact pricing'),
+
+                GestureDetector(
+                  onTap: () {
+                    onAvailabilityPressed();
+                  },
+                  child: buildActivityListButtonItem(
+                      title: AppTextConstants.availability,
+                      subtitle: availableDates.isNotEmpty
+                          ? availableDates.length > 1
+                              ? '${DateFormat("MMM dd -").format(availableDates[0])} ${availableDates[availableDates.length - 1].day}'
+                              : DateFormat("MMM dd").format(availableDates[0])
+                          : 'Add your travel date for exact pricing'),
+                ),
                 buildActivityListButtonItem(
                     title: 'Guide Rules & What To Bring',
                     subtitle: 'Follow the guide rules for safety'),
@@ -296,7 +315,7 @@ class Activity {
                     subtitle: 'We  care about your health & safety'),
                 buildActivityListButtonItem(
                     title: 'Traveler Release Waiver form',
-                    subtitle: 'Lorem Ipsum',
+                    subtitle: '',
                     showDivider: false),
               ],
             )),

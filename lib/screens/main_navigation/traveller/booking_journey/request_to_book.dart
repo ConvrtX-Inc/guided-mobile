@@ -1,11 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:extended_image/extended_image.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:guided/common/widgets/bordered_text_field.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/constants/payment_config.dart';
@@ -14,6 +19,7 @@ import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/notification_model.dart';
+import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
@@ -33,8 +39,8 @@ import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/user_model.dart';
 
 import 'package:intl/intl.dart';
-
-import '../../../../constants/app_colors.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 
 /// Screen for RequestToBookScreen
 class RequestToBookScreen extends StatefulWidget {
@@ -60,10 +66,28 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
       Get.put(UserProfileDetailsController());
 
   bool isLoading = false;
+  bool isDonationEmpty = false;
+  TextEditingController _donationTextController = TextEditingController();
+  bool isAddMessageEnabled = false;
+  bool isAddPhoneNumberEnabled = false;
+  String messageToGuide = '';
+  String phoneNumber = '';
+  TextEditingController _messageToGuideController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
+
+  FocusNode addMessageFocusNode = FocusNode();
+  FocusNode phoneNumberFocusNode = FocusNode();
+  FocusNode donationFocusNode = FocusNode();
+  String cancellationPolicy = '';
+  String _dialCode = '+1';
+  String cancellationPolicyId = '';
+  int travelerCount = 0;
 
   @override
   void initState() {
     super.initState();
+
+    getCancellationPolicy();
   }
 
   @override
@@ -74,9 +98,8 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
 
     final int numberOfTraveller = screenArguments['numberOfTraveller'] as int;
     selectedDate = screenArguments['selectedDate'] as String;
-
-    price =
-        getTotalHours(selectedDate) * double.parse(activityPackage.basePrice!);
+    travelerCount = numberOfTraveller;
+    price = double.parse(activityPackage.basePrice!) * travelerCount;
 
     return Scaffold(
       backgroundColor: HexColor('#ECEFF0'),
@@ -131,19 +154,11 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10.r),
                                 ),
-                                // image: const DecorationImage(
-                                //   image: AssetImage(
-                                //       'assets/images/png/activity1.png'),
-                                //   fit: BoxFit.cover,
-                                // ),
                                 image: DecorationImage(
-                                    image: Image.memory(
-                                  base64.decode(activityPackage.coverImg!
-                                      .split(',')
-                                      .last),
-                                  fit: BoxFit.fill,
-                                  gaplessPlayback: true,
-                                ).image),
+                                    image: NetworkImage(
+                                      activityPackage.firebaseCoverImg!,
+                                    ),
+                                    fit: BoxFit.cover),
                               ),
                             ),
                             SizedBox(
@@ -175,7 +190,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                                     height: 5.w,
                                   ),
                                   Text(
-                                    'Hunt',
+                                    activityPackage.mainBadge!.badgeName!,
                                     style: TextStyle(
                                         color: HexColor('#181B1B'),
                                         fontSize: 14.sp,
@@ -192,7 +207,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                                         color: AppColors.deepGreen,
                                       ),
                                       Text(
-                                        '16 reviews',
+                                        AppTextConstants.noReviewsYet,
                                         style: TextStyle(
                                             color: HexColor('#979B9B'),
                                             fontSize: 12.sp,
@@ -210,12 +225,12 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                   ],
                 ),
               ),
-              sectionTwo(screenArguments),
-              sectionThree(),
-              if (PaymentConfig.isPaymentEnabled) sectionFour(),
-              sectionFive(),
-              sectionSix(),
-              sectionSeven(screenArguments),
+              descriptionSection(screenArguments),
+              priceDetailsSection(),
+              if (PaymentConfig.isPaymentEnabled) paymentMethodSection(),
+              requiredForTripSection(),
+              cancellationPolicySection(),
+              bookingPaymentInfoSection(screenArguments),
             ],
           ),
         ),
@@ -236,7 +251,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     return '$date1 $hour1 - $hour2';
   }
 
-  Widget sectionTwo(Map<String, dynamic> screenArguments) {
+  Widget descriptionSection(Map<String, dynamic> screenArguments) {
     final String bookingDate = screenArguments['selectedDate'] as String;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
@@ -287,13 +302,21 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 ],
               ),
               Spacer(),
-              Text(
-                'Edit',
-                style: TextStyle(
-                  color: HexColor('#3E4242'),
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  decoration: TextDecoration.underline,
+              GestureDetector(
+                onTap: () {
+                  int count = 0;
+                  Navigator.popUntil(context, (route) {
+                    return count++ == 3;
+                  });
+                },
+                child: Text(
+                  'Edit',
+                  style: TextStyle(
+                    color: HexColor('#3E4242'),
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               )
             ],
@@ -317,7 +340,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                   height: 5.h,
                 ),
                 Text(
-                  'Hunting',
+                  activityPackage.mainBadge!.badgeName!,
                   style: TextStyle(
                     color: HexColor('#696D6D'),
                     fontSize: 14.sp,
@@ -332,11 +355,10 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionThree() {
+  Widget priceDetailsSection() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
-      height: 320.h,
       width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -357,7 +379,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           ),
           Container(
             height: 43.h,
-            width: 101.w,
+            width: 85.w,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(
                 Radius.circular(10.r),
@@ -369,49 +391,66 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
             ),
           ),
           SizedBox(
-            height: 5.h,
+            height: 15.h,
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
                 padding: const EdgeInsets.all(10),
                 height: 47.h,
                 width: 236.w,
                 decoration: BoxDecoration(
-                  color: HexColor('#C5FFCF'),
+                  color: !isDonationEmpty
+                      ? HexColor('#C5FFCF')
+                      : HexColor('#FFD0D0'),
                   borderRadius: BorderRadius.all(
                     Radius.circular(10.r),
                   ),
                 ),
                 child: Center(
                   child: Text(
-                    'A minimum of \$1 payment will be donated to 1% For The Planet',
+                    r'A minimum of $1 payment will be donated to 1% For The Planet',
                     style: TextStyle(
-                      color: HexColor('#066028'),
+                      color:
+                          !isDonationEmpty ? HexColor('#066028') : Colors.red,
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
               ),
-              const Spacer(),
+              SizedBox(width: 16.w),
               Container(
-                padding: const EdgeInsets.all(10),
-                height: 47.h,
-                width: 65.w,
-                decoration: BoxDecoration(
-                  color: HexColor('#ECEFF0'),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10.r),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    '\$1',
-                    style: TextStyle(
-                      color: HexColor('#696D6D'),
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
+                width: 60.w,
+                child: TextField(
+                  focusNode: donationFocusNode,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  controller: _donationTextController,
+                  onChanged: (val) {
+                    if (int.parse(val.trim()) >= 1) {
+                      setState(() {
+                        isDonationEmpty = false;
+                      });
+                    }
+                  },
+                  decoration: InputDecoration(
+                    isDense: true,
+                    hintText: r'$1',
+                    prefix: _donationTextController.text.isNotEmpty
+                        ? Text(r'$')
+                        : null,
+                    contentPadding: EdgeInsets.all(8.w),
+                    fillColor: Colors.white,
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color:
+                            !isDonationEmpty ? Colors.grey : AppColors.lightRed,
+                      ),
                     ),
                   ),
                 ),
@@ -424,7 +463,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           Row(
             children: <Widget>[
               Text(
-                '${activityPackage.basePrice} X ${getTotalHours(selectedDate)} hours',
+                '${activityPackage.basePrice} X $travelerCount person',
                 style: TextStyle(
                   color: HexColor('#696D6D'),
                   fontSize: 12.sp,
@@ -433,7 +472,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
               ),
               const Spacer(),
               Text(
-                '\$360',
+                '\$$price',
                 style: TextStyle(
                   color: HexColor('#696D6D'),
                   fontSize: 12.sp,
@@ -442,7 +481,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
               ),
             ],
           ),
-          SizedBox(
+          /*    SizedBox(
             height: 20.h,
           ),
           Row(
@@ -465,11 +504,11 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 ),
               ),
             ],
-          ),
+          ),*/
           SizedBox(
             height: 20.h,
           ),
-          Row(
+          /*  Row(
             children: <Widget>[
               Text(
                 'Adventure Fee: ',
@@ -489,7 +528,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 ),
               ),
             ],
-          ),
+          ),*/
           SizedBox(
             height: 20.h,
           ),
@@ -505,7 +544,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
               ),
               const Spacer(),
               Text(
-                '\$354',
+                '\$${price}',
                 style: TextStyle(
                   color: HexColor('#3E4242'),
                   fontSize: 14.sp,
@@ -519,7 +558,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionFour() {
+  Widget paymentMethodSection() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
@@ -571,7 +610,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              GestureDetector(
+              /*     GestureDetector(
                   onTap: selectPaymentMethod,
                   child: Container(
                     height: 36.h,
@@ -585,8 +624,34 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                         fit: BoxFit.contain,
                       ),
                     ),
+                  )),*/
+              GestureDetector(
+                  onTap: selectPaymentMethod,
+                  child: buildPaymentMethodBtn(
+                    isSelected: paymentMode == 'Credit Card',
+                    iconUrl: '${AssetsPath.assetsPNGPath}/credit_card_icon.png',
                   )),
               GestureDetector(
+                  onTap: () => Platform.isAndroid
+                      ? selectPaymentMethod(selectedPaymentMode: 1)
+                      : null,
+                  child: buildPaymentMethodBtn(
+                    isSelected: paymentMode == 'Google Pay',
+                    isEnabled: Platform.isAndroid,
+                    iconUrl:
+                        '${AssetsPath.assetsPNGPath}/google_wallet_icon.png',
+                  )),
+              GestureDetector(
+                  onTap: () => Platform.isIOS
+                      ? selectPaymentMethod(selectedPaymentMode: 2)
+                      : null,
+                  child: buildPaymentMethodBtn(
+                    isSelected: paymentMode == 'Apple Pay',
+                    isEnabled: Platform.isIOS,
+                    iconUrl:
+                        '${AssetsPath.assetsPNGPath}/apple_wallet_icon.png',
+                  )),
+              /*   GestureDetector(
                   onTap: Platform.isAndroid
                       ? () {
                           selectPaymentMethod(selectedPaymentMode: 1);
@@ -623,7 +688,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                         fit: BoxFit.contain,
                       ),
                     ),
-                  )),
+                  )),*/
             ],
           ),
           SizedBox(
@@ -652,11 +717,10 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionFive() {
+  Widget requiredForTripSection() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
-      height: 255.h,
       width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -675,103 +739,193 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           SizedBox(
             height: 15.h,
           ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              'Message the guide',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 18.sp,
-                color: HexColor('#3E4242'),
-              ),
-            ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 15),
-              child: Text(
-                'Located northwest if Montreal in Quebec’s the Laurentian Mountains',
+          if (!isAddMessageEnabled)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                'Message the guide',
                 textAlign: TextAlign.left,
                 style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.sp,
-                  color: HexColor('#696D6D'),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.sp,
+                  color: HexColor('#3E4242'),
                 ),
               ),
-            ),
-            trailing: TextButton(
-              style: TextButton.styleFrom(
-                primary: HexColor('#181B1B'),
-                onSurface: Colors.yellow,
-                side: BorderSide(color: HexColor('#696D6D'), width: 1),
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(15))),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: Text(
+                  messageToGuide.isEmpty
+                      ? 'Add Message To Guide'
+                      : messageToGuide,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 14.sp,
+                    color: HexColor('#696D6D'),
+                  ),
+                ),
               ),
-              onPressed: () {},
-              child: Padding(
-                padding: EdgeInsets.only(left: 10.w, right: 10.w),
-                child: Text('Add',
-                    style: TextStyle(
-                        color: HexColor('#181B1B'),
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500)),
+              trailing: TextButton(
+                style: TextButton.styleFrom(
+                  primary: HexColor('#181B1B'),
+                  onSurface: Colors.yellow,
+                  side: BorderSide(color: HexColor('#696D6D'), width: 1),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                ),
+                onPressed: () {
+                  addMessageFocusNode.requestFocus();
+
+                  setState(() {
+                    isAddMessageEnabled = true;
+                  });
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(left: 10.w, right: 10.w),
+                  child: Text(messageToGuide.isEmpty ? 'Add' : 'Edit',
+                      style: TextStyle(
+                          color: HexColor('#181B1B'),
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500)),
+                ),
               ),
+            )
+          else
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                BorderedTextField(
+                  controller: _messageToGuideController,
+                  focusNode: addMessageFocusNode,
+                  hintText: 'Write your message here...',
+                  labelText: 'Message the guide',
+                ),
+                SizedBox(height: 12.h),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: SizedBox(
+                      height: 40.h,
+                      width: 66.w,
+                      child: CustomRoundedButton(
+                          title: 'Done',
+                          onpressed: () {
+                            setState(() {
+                              messageToGuide = _messageToGuideController.text;
+                              isAddMessageEnabled = false;
+                            });
+                          })),
+                )
+              ],
             ),
-          ),
           SizedBox(
             height: 15.h,
           ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              'Phone Number',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 18.sp,
-                color: HexColor('#3E4242'),
-              ),
-            ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 15),
-              child: Text(
-                'Located northwest if Montreal in Quebec’s the Laurentian Mountains',
+          if (!isAddPhoneNumberEnabled)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                'Phone Number',
                 textAlign: TextAlign.left,
                 style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.sp,
-                  color: HexColor('#696D6D'),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.sp,
+                  color: HexColor('#3E4242'),
                 ),
               ),
-            ),
-            trailing: TextButton(
-              style: TextButton.styleFrom(
-                primary: HexColor('#181B1B'),
-                onSurface: Colors.yellow,
-                side: BorderSide(color: HexColor('#696D6D'), width: 1),
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(15))),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: Text(
+                  phoneNumber.isEmpty
+                      ? 'Add Your Phone Number'
+                      : '$_dialCode$phoneNumber',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 14.sp,
+                    color: HexColor('#696D6D'),
+                  ),
+                ),
               ),
-              onPressed: () {},
-              child: Padding(
-                padding: EdgeInsets.only(left: 10.w, right: 10.w),
-                child: Text('Add',
-                    style: TextStyle(
-                        color: HexColor('#181B1B'),
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500)),
+              trailing: TextButton(
+                style: TextButton.styleFrom(
+                  primary: HexColor('#181B1B'),
+                  onSurface: Colors.yellow,
+                  side: BorderSide(color: HexColor('#696D6D'), width: 1),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                ),
+                onPressed: () {
+                  setState(() {
+                    isAddPhoneNumberEnabled = true;
+                  });
+                  phoneNumberFocusNode.requestFocus();
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(left: 10.w, right: 10.w),
+                  child: Text('Add',
+                      style: TextStyle(
+                          color: HexColor('#181B1B'),
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500)),
+                ),
               ),
-            ),
-          )
+            )
+          else
+            Column(
+              children: <Widget>[
+                IntlPhoneField(
+                  initialCountryCode: 'CA',
+                  controller: _phoneController,
+                  focusNode: phoneNumberFocusNode,
+                  dropdownIcon: const Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.white,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Phone number',
+                    hintStyle: TextStyle(
+                      color: AppColors.grey,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14.r),
+                      borderSide: BorderSide(color: Colors.grey, width: 0.2.w),
+                    ),
+                  ),
+                  // initialCountryCode: '+$_dialCode',
+                  onChanged: (PhoneNumber phone) {
+                    setState(() {
+                      phoneNumber = phone.number;
+                      debugPrint('country code ${phone.countryCode}');
+                      _dialCode = phone.countryCode;
+                    });
+                  },
+                ),
+                SizedBox(height: 12.h),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: SizedBox(
+                      height: 40.h,
+                      width: 66.w,
+                      child: CustomRoundedButton(
+                          title: 'Done',
+                          onpressed: () {
+                            setState(() {
+                              phoneNumber = _phoneController.text;
+                              isAddPhoneNumberEnabled = false;
+                            });
+                          })),
+                )
+              ],
+            )
         ],
       ),
     );
   }
 
-  Widget sectionSix() {
+  Widget cancellationPolicySection() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
-      height: 200.h,
       width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -790,39 +944,16 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           SizedBox(
             height: 15.h,
           ),
-          RichText(
-            text: TextSpan(
-              children: <TextSpan>[
-                TextSpan(
-                  text:
-                      'Located northwest if Montreal in Quebec’s the Laurentian Mountains, Mont-Tremblant is best known for its skiing, specifically Mont.  ',
-                  style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    color: HexColor('#696D6D'),
-                  ),
-                ),
-                TextSpan(
-                  text: 'Learn more!',
-                  style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                    color: HexColor('#181B1B'),
-                  ),
-                ),
-              ],
-            ),
-          ),
           SizedBox(
             height: 15.h,
           ),
           RichText(
+            textAlign: TextAlign.justify,
             text: TextSpan(
               children: <TextSpan>[
                 TextSpan(
                   text:
-                      'Make sure this guide cancellaion policy works for you.',
+                      'Make sure this guide cancellation policy works for you.',
                   style: TextStyle(
                     fontFamily: 'Gilroy',
                     fontSize: 14.sp,
@@ -831,22 +962,39 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                   ),
                 ),
                 TextSpan(
-                  text:
-                      'Mont-Tremblant is best known for its skiing, specifically Mont.  ',
+                  text: cancellationPolicy.isNotEmpty
+                      ? cancellationPolicy.substring(0, 285)
+                      : '',
                   style: TextStyle(
                     fontFamily: 'Gilroy',
+                    overflow: TextOverflow.ellipsis,
                     fontSize: 14.sp,
                     color: HexColor('#696D6D'),
                   ),
                 ),
                 TextSpan(
-                  text: 'Learn more!',
-                  style: TextStyle(
-                    fontFamily: 'Gilroy',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                    color: HexColor('#181B1B'),
-                  ),
+                  children: <InlineSpan>[
+                    WidgetSpan(
+                        child: GestureDetector(
+                      onTap: () {
+                        final Map<String, dynamic> details = {
+                          'id': cancellationPolicyId,
+                          'cancellation_policy': cancellationPolicy
+                        };
+
+                        Navigator.pushNamed(context, '/cancellation_policy',
+                            arguments: details);
+                      },
+                      child: Text(' Learn More!',
+                          style: TextStyle(
+                            fontFamily: 'Gilroy',
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w700,
+                            color: HexColor('#181B1B'),
+                          )),
+                    )),
+                    // TextSpan(text: 'the best!'),
+                  ],
                 ),
               ],
             ),
@@ -856,7 +1004,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
-  Widget sectionSeven(Map<String, dynamic> screenArguments) {
+  Widget bookingPaymentInfoSection(Map<String, dynamic> screenArguments) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
       margin: EdgeInsets.only(top: 10.h),
@@ -934,16 +1082,31 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 title: AppTextConstants.requestToBook,
                 onpressed: () async {
                   if (PaymentConfig.isPaymentEnabled) {
-                    dynamic paymentClicked = await Navigator.push(
+                    /*  dynamic paymentClicked = await Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (BuildContext context) => PaymentManageCard(
                                 price: '$price',
                               )),
-                    );
+                    );*/
 
-                    if (paymentClicked != null) {
-                      handleConfirmPayment(screenArguments);
+                    // if (paymentClicked != null) {
+
+                    // }
+
+                    if (_donationTextController.text.isEmpty) {
+                      setState(() {
+                        isDonationEmpty = true;
+                      });
+                      donationFocusNode.requestFocus();
+                    } else {
+                      if (int.parse(_donationTextController.text) < 1) {
+                        isDonationEmpty = true;
+                        donationFocusNode.requestFocus();
+                        return;
+                      } else {
+                        handleConfirmPayment(screenArguments);
+                      }
                     }
                   } else {
                     setState(() {
@@ -959,6 +1122,55 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     );
   }
 
+  Future<void> getCancellationPolicy() async {
+    final List<PresetFormModel> resForm =
+        await APIServices().getTermsAndCondition('cancellation_policy');
+    setState(() {
+      cancellationPolicy = resForm[0].description;
+      cancellationPolicyId = resForm[0].id;
+    });
+  }
+
+  Widget buildPaymentMethodBtn(
+          {bool isSelected = false,
+          String iconUrl = '',
+          bool isEnabled = true}) =>
+      SizedBox(
+          height: 45.h,
+          width: 90.w,
+          child: Stack(children: <Widget>[
+            Align(
+              child: Container(
+                height: 38.h,
+                width: 84.w,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                      color: isSelected ? AppColors.deepGreen : Colors.grey),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10.r),
+                  ),
+                ),
+                // child: Center(child: Image.asset(iconUrl)),
+                child: isEnabled
+                    ? Image.asset(iconUrl)
+                    : Center(
+                        child: ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                              AppColors.gallery,
+                              BlendMode.saturation,
+                            ),
+                            child: Image.asset(iconUrl))),
+              ),
+            ),
+            if (isSelected)
+              Positioned(
+                right: -8,
+                top: -6,
+                child: SvgPicture.asset(
+                    '${AssetsPath.assetsSVGPath}/check_green_circle.svg'),
+              ),
+          ]));
+
   Future<void> goToPaymentMethod(
       BuildContext context, Map<String, dynamic> screenArguments) async {
     final ActivityPackage activityPackage =
@@ -968,7 +1180,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     final Map<String, dynamic> details = {
       'user_id': activityPackage.userId,
       'from_user_id': UserSingleton.instance.user.user!.id,
-      'request_msg': activityPackage.name,
+      'request_msg': messageToGuide,
       'activity_package_id': activityPackage.id,
       'status_id': 'b0d8e728-e0f3-4db2-af0f-f90d124c482c',
       'booking_date_start': bookingDateStart(bookingDate),
@@ -1209,6 +1421,11 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     return endDate.difference(startDate).inHours;
   }
 
+  int getTotalPrice(String selectedDate) {
+    return int.parse(activityPackage.basePrice!) *
+        int.parse(activityPackage.extraCostPerPerson!);
+  }
+
   Future<void> _showDialog(BuildContext context) async {
     await showDialog(
         context: context,
@@ -1261,5 +1478,9 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     final NotificationModel res = await APIServices().sendNotification(params);
 
     debugPrint('Response: ${res.id} ${res.title}');
+  }
+
+  double getTotal(double hours) {
+    return price * hours;
   }
 }

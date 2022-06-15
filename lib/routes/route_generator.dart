@@ -9,6 +9,7 @@ import 'package:guided/screens/activities/screens/activity_package_info.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/bank_accounts/add_bank_account.dart';
 import 'package:guided/screens/bank_accounts/manage_payment.dart';
+import 'package:guided/screens/bookings/screens/my_booking_date.dart';
 
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
 import 'package:guided/screens/dicovery/discovery.dart';
@@ -277,7 +278,7 @@ class RouteGenerator {
             builder: (_) => const LocalLawsTaxesForm(), settings: settings);
       case '/request_filter':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const RequestFilterScreen());
+            builder: (_) =>   RequestFilterScreen(selectedFilter: args! as String));
       case '/request_view':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RequestViewScreen(), settings: settings);
@@ -348,14 +349,14 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsCalendarManagement(),
             settings: settings);
-      case '/checkActivityAvailabityScreen':
+      case  '/checkActivityAvailabityScreen':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const CheckActivityAvailabityScreen(),
+            builder: (_) =>   CheckActivityAvailabityScreen(params: args),
             settings: settings);
       case '/travellerBookingDetailsScreen':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TravellerBookingDetailsScreen(),
-            settings: settings);
+            builder: (_) =>  TravellerBookingDetailsScreen(params: args),
+        );
       case '/requestToBookScreen':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RequestToBookScreen(), settings: settings);
@@ -465,6 +466,9 @@ class RouteGenerator {
       case '/view_certificate':
         return MaterialPageRoute<dynamic>(
             builder: (_) => CertificateView(certificate:  args! as Certificate));
+      /*case '/booking_history':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => MyBookingDates());*/
       default:
         return _errorRoute();
     }

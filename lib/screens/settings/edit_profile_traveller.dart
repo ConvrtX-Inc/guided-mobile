@@ -18,6 +18,7 @@ import 'package:guided/common/widgets/custom_tab_bar_view/contained_tab_bar_view
 import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_properties.dart';
 import 'package:guided/common/widgets/custom_tab_bar_view/tab_bar_view_properties.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_input_formatter.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/user_profile_controller.dart';
@@ -307,10 +308,14 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
                 controller: _fullNameController,
                 labelText: AppTextConstants.fullName,
                 hintText: AppTextConstants.fullName,
+                inputFormatters: [
+                  AppInputFormatters.name
+                ],
                 onValidate: (String val) {
                   if (val.trim().isEmpty) {
                     return '${AppTextConstants.fullName} is required';
                   }
+
                   return null;
                 },
               ),

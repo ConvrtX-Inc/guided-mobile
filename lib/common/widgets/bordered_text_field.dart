@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -6,21 +7,22 @@ import 'package:guided/constants/app_texts.dart';
 ///Widget for BorderedTextfield
 class BorderedTextField extends StatelessWidget {
   ///Constructor
-  const BorderedTextField({required this.labelText,
-    required this.hintText,
-    this.borderColor = Colors.grey,
-    this.controller,
-    this.onChanged,
-    this.onSaved,
-    this.onValidate,
-    this.maxLines,
-    this.minLines = 1,
-    this.showLabel = true,
-    this.isPassword = false,
-    this.isEnabled = true,
-    Key? key})
+  const BorderedTextField(
+      {required this.labelText,
+      required this.hintText,
+      this.borderColor = Colors.grey,
+      this.controller,
+      this.onChanged,
+      this.onSaved,
+      this.onValidate,
+      this.maxLines,
+      this.minLines = 1,
+      this.showLabel = true,
+      this.isPassword = false,
+      this.focusNode,
+      this.isEnabled = true,this.inputFormatters =const [],
+      Key? key})
       : super(key: key);
-
   final String hintText;
   final Color borderColor;
   final String labelText;
@@ -32,7 +34,9 @@ class BorderedTextField extends StatelessWidget {
   final dynamic maxLines;
   final int minLines;
   final bool isPassword;
+  final FocusNode? focusNode;
   final bool isEnabled;
+  final List<TextInputFormatter> inputFormatters;
 
   @override
   Widget build(BuildContext context) {
@@ -51,13 +55,15 @@ class BorderedTextField extends StatelessWidget {
           height: 10.h,
         ),
         TextFormField(
+          enabled: isEnabled,
+          focusNode: focusNode,
           controller: controller,
           obscureText: isPassword,
           obscuringCharacter: AppTextConstants.biggerBullet,
           onChanged: onChanged,
-          enabled: isEnabled,
           maxLines: maxLines,
           minLines: minLines,
+          inputFormatters:  inputFormatters,
           validator: (String? val) {
             if (onValidate != null) {
               return onValidate!(val);
@@ -73,14 +79,10 @@ class BorderedTextField extends StatelessWidget {
             hintStyle: TextStyle(
               color: AppColors.grey,
             ),
-            disabledBorder: OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14.r),
               borderSide: BorderSide(color: Colors.grey, width: 0.2.w),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14.r),
-              borderSide: BorderSide(color: Colors.grey,width: 0.5.w),
-            )
           ),
         ),
       ],

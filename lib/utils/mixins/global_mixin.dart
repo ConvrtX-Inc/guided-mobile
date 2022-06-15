@@ -119,4 +119,6 @@ class GlobalMixin {
   dynamic captureNullPlaceMarkToString(dynamic data) {
     return <dynamic>['', null].contains(data) ? '' : '$data, ';
   }
+
+
 }

@@ -27,36 +27,32 @@ class GuidedBottomNavigationBar extends StatelessWidget {
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
             icon: _selectedIndex == 0
-                ? SvgPicture.asset(
-                    AssetsPath.bottomNavigationIconHomeSelected)
+                ? SvgPicture.asset(AssetsPath.bottomNavigationIconHomeSelected)
                 : SvgPicture.asset(AssetsPath.bottomNavigationIconHome),
             label: 'Home'),
         BottomNavigationBarItem(
             icon: _selectedIndex == 1
-                ? SvgPicture.asset(
-                AssetsPath.bottomNavigationIconUnionSelected)
+                ? SvgPicture.asset(AssetsPath.bottomNavigationIconUnionSelected)
                 : SvgPicture.asset(AssetsPath.bottomNavigationIconUnion),
-            label: 'Union'),
+            label: 'Packages'),
         BottomNavigationBarItem(
             icon: _selectedIndex == 2
                 ? SvgPicture.asset(
                 AssetsPath.bottomNavigationIconAddPersonSelected)
                 : SvgPicture.asset(
                 AssetsPath.bottomNavigationIconAddPerson),
-            label: 'Add Person'),
+            label: 'Booking Requests'),
         BottomNavigationBarItem(
             icon: _selectedIndex == 3
-                ? SvgPicture.asset(
-                AssetsPath.bottomNavigationIconChatSelected)
+                ? SvgPicture.asset(AssetsPath.bottomNavigationIconChatSelected)
                 : SvgPicture.asset(AssetsPath.bottomNavigationIconChat),
-            label: 'Add Person'),
+            label: 'Inbox'),
         BottomNavigationBarItem(
             icon: _selectedIndex == 4
                 ? SvgPicture.asset(
-                AssetsPath.bottomNavigationIconSettingsSelected)
-                : SvgPicture.asset(
-                AssetsPath.bottomNavigationIconSettings),
-            label: 'Add Person'),
+                    AssetsPath.bottomNavigationIconSettingsSelected)
+                : SvgPicture.asset(AssetsPath.bottomNavigationIconSettings),
+            label: 'Settings'),
       ],
     );
   }

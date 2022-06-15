@@ -7,7 +7,9 @@ import 'package:guided/constants/app_texts.dart';
 /// Notification Screen
 class RequestFilterScreen extends StatefulWidget {
   /// Constructor
-  const RequestFilterScreen({Key? key}) : super(key: key);
+  const RequestFilterScreen({Key? key, this.selectedFilter}) : super(key: key);
+
+  final String? selectedFilter;
 
   @override
   _RequestFilterScreenState createState() => _RequestFilterScreenState();
@@ -15,6 +17,12 @@ class RequestFilterScreen extends StatefulWidget {
 
 class _RequestFilterScreenState extends State<RequestFilterScreen> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = AppListConstants.requestFilterList.indexOf(widget.selectedFilter!);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,6 +84,8 @@ class _RequestFilterScreenState extends State<RequestFilterScreen> {
                         setState(() {
                           _selectedIndex = index;
                         });
+
+                        Navigator.pop(context,AppListConstants.requestFilterList[index]);
                       },
                     );
                   },
