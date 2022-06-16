@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_texts.dart';
 
-/// Notification Screen
+/// Request filter Screen
 class RequestFilterScreen extends StatefulWidget {
   /// Constructor
   const RequestFilterScreen({Key? key, this.selectedFilter}) : super(key: key);

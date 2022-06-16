@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/user_subscription_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 
 ///Discovery Screen
@@ -16,6 +18,8 @@ class DiscoveryScreen extends StatefulWidget {
 }
 
 class _DiscoveryScreenState extends State<DiscoveryScreen> {
+
+  final UserSubscriptionController _subscriptionController = Get.put(UserSubscriptionController());
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -145,23 +149,24 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
                             ],
                           ),
                         ),
-                        // SizedBox(
-                        //   height: 20.h,
-                        // ),
-                        // SizedBox(
-                        //   width: width * 0.4,
-                        //   child: ElevatedButton(
-                        //     onPressed: () {
-                        //       Navigator.of(context).pushNamed('/sign_up');
-                        //     },
-                        //     style: AppTextStyle.active,
-                        //     child: const Text(
-                        //       'Subscribe',
-                        //       style: TextStyle(
-                        //           fontWeight: FontWeight.bold, fontSize: 12),
-                        //     ),
-                        //   ),
-                        // ),
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        SizedBox(
+                          width: width * 0.4,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _subscriptionController.setSubscribeButtonClicked(data: true);
+                              Navigator.of(context).pushNamed('/sign_up');
+                            },
+                            style: AppTextStyle.active,
+                            child: const Text(
+                              'Subscribe',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 12),
+                            ),
+                          ),
+                        ),
                         SizedBox(
                           height: 20.h,
                         ),

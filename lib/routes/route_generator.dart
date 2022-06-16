@@ -110,6 +110,7 @@ import 'package:guided/screens/settings/edit_profile.dart';
 import 'package:guided/screens/settings/edit_profile_traveller.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
 import 'package:guided/screens/settings/subscription_details.dart';
+import 'package:guided/screens/settings/update_phone_number.dart';
 import 'package:guided/screens/signin_signup/phone_number.dart';
 import 'package:guided/screens/signin_signup/signup_form.dart';
 import 'package:guided/screens/signin_signup/signup_screen.dart';
@@ -159,7 +160,7 @@ class RouteGenerator {
       case '/main_navigation':
         return MaterialPageRoute<dynamic>(
             builder: (_) =>
-            const MainNavigationScreen(navIndex: 0, contentIndex: 0));
+                const MainNavigationScreen(navIndex: 0, contentIndex: 0));
       case '/create_package':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const CreatePackageScreen());
@@ -278,7 +279,8 @@ class RouteGenerator {
             builder: (_) => const LocalLawsTaxesForm(), settings: settings);
       case '/request_filter':
         return MaterialPageRoute<dynamic>(
-            builder: (_) =>   RequestFilterScreen(selectedFilter: args! as String));
+            builder: (_) =>
+                RequestFilterScreen(selectedFilter: args! as String));
       case '/request_view':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const RequestViewScreen(), settings: settings);
@@ -297,8 +299,8 @@ class RouteGenerator {
       case '/package_view':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PackageView(
-              initIndex: 0,
-            ),
+                  initIndex: 0,
+                ),
             settings: settings);
       case '/checkAvailability':
         return MaterialPageRoute<dynamic>(
@@ -330,7 +332,7 @@ class RouteGenerator {
             settings: settings);
       case '/main_profile':
         return MaterialPageRoute<dynamic>(
-            builder: (_) =>   MainProfileScreen(userId: args as String));
+            builder: (_) => MainProfileScreen(userId: args as String));
       case '/reviews_profile':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ReviewsProfileScreen());
@@ -349,13 +351,13 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const SettingsCalendarManagement(),
             settings: settings);
-      case  '/checkActivityAvailabityScreen':
+      case '/checkActivityAvailabityScreen':
         return MaterialPageRoute<dynamic>(
-            builder: (_) =>   CheckActivityAvailabityScreen(params: args),
+            builder: (_) => CheckActivityAvailabityScreen(params: args),
             settings: settings);
       case '/travellerBookingDetailsScreen':
         return MaterialPageRoute<dynamic>(
-            builder: (_) =>  TravellerBookingDetailsScreen(params: args),
+          builder: (_) => TravellerBookingDetailsScreen(params: args),
         );
       case '/requestToBookScreen':
         return MaterialPageRoute<dynamic>(
@@ -387,8 +389,8 @@ class RouteGenerator {
       case '/popular_guides_view':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PopularGuidesView(
-              initIndex: 0,
-            ),
+                  initIndex: 0,
+                ),
             settings: settings);
       case '/add_card':
         return MaterialPageRoute<dynamic>(
@@ -396,9 +398,9 @@ class RouteGenerator {
       case '/popular_guides_traveler_limit_schedules':
         return MaterialPageRoute<dynamic>(
             builder: (_) => PopularGuidesTravelerLimitSchedules(
-              packageId: '',
-              price: '',
-            ));
+                  packageId: '',
+                  price: '',
+                ));
       case '/refund':
         return MaterialPageRoute<dynamic>(builder: (_) => const RefundScreen());
       case '/request_refund':
@@ -413,7 +415,7 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const EditProfileScreen());
 
-    ///Profile
+      ///Profile
       case '/profile-certificate':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const CertificateScreen());
@@ -462,10 +464,13 @@ class RouteGenerator {
             builder: (_) => ChangePasswordScreen());
       case '/activity_package_info':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => ActivityPackageInfo(package:  args! as ActivityPackage));
+            builder: (_) =>
+                ActivityPackageInfo(package: args! as ActivityPackage));
       case '/view_certificate':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => CertificateView(certificate:  args! as Certificate));
+            builder: (_) => CertificateView(certificate: args! as Certificate));
+      case '/change_phone_number':
+        return MaterialPageRoute<dynamic>(builder: (_) => UpdatePhoneNumber());
       /*case '/booking_history':
         return MaterialPageRoute<dynamic>(
             builder: (_) => MyBookingDates());*/

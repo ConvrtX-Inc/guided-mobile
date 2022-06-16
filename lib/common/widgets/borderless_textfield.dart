@@ -1,22 +1,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:guided/helpers/hexColor.dart';
 
 /// Custom Textfield without border
 class BorderlessTextField extends StatelessWidget {
   /// Constructor
-  const BorderlessTextField(
-      {required this.title,
-      Key? key,
-      this.hint,
-      this.onChanged,
-      this.description,
-      this.controller,
-      this.onSaved,
-      this.onValidate,
-      this.textInputType = TextInputType.text
-      })
-      : super(key: key);
+  const BorderlessTextField({
+    required this.title,
+    Key? key,
+    this.hint,
+    this.onChanged,
+    this.description,
+    this.controller,
+    this.onSaved,
+    this.onValidate,
+    this.textInputType = TextInputType.text,
+    this.inputFormatters = const [],
+  }) : super(key: key);
 
   /// Title of the textfield
   final String title;
@@ -40,7 +41,10 @@ class BorderlessTextField extends StatelessWidget {
   final String? description;
 
   ///Text input type
-  final TextInputType  textInputType;
+  final TextInputType textInputType;
+
+  ///Input formatters
+  final List<TextInputFormatter> inputFormatters;
 
   @override
   Widget build(BuildContext context) {
@@ -69,20 +73,19 @@ class BorderlessTextField extends StatelessWidget {
         TextFormField(
           controller: controller,
           keyboardType: textInputType,
-
+          inputFormatters: inputFormatters,
           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
           onChanged: onChanged,
           // onSaved: onSaved,
           validator: (String? val) {
-            if(onValidate != null){
+            if (onValidate != null) {
               return onValidate!(val);
             }
           },
           onSaved: (String? val) {
-            if(onSaved != null){
+            if (onSaved != null) {
               return onSaved!(val);
             }
-
           },
 
           decoration: InputDecoration(
@@ -103,9 +106,7 @@ class BorderlessTextField extends StatelessWidget {
                   style: BorderStyle.none,
                 ),
               ),
-          errorStyle: const TextStyle(fontSize: 10)
-
-          ),
+              errorStyle: const TextStyle(fontSize: 10)),
         )
       ],
     );

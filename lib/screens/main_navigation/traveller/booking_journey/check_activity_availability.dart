@@ -177,11 +177,9 @@ class _CheckActivityAvailabityScreenState
                   style: TextButton.styleFrom(
                     side: BorderSide(color: AppColors.tealGreen),
                     shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25))),
+                        borderRadius: BorderRadius.all(Radius.circular(14))),
                   ),
-                  onPressed: () {
-                    print('Pressed');
-                  },
+                  onPressed:null,
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
                     child: Obx(

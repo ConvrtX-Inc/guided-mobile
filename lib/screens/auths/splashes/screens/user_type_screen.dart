@@ -49,6 +49,9 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                         Navigator.of(context)
                             .pushNamed('/user_on_boarding', arguments: details);
                       });
+
+
+                      debugPrint('Traveler Selected..');
                     },
                     child: Container(
                       width: double.infinity,

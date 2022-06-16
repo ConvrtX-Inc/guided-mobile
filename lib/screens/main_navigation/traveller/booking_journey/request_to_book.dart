@@ -472,7 +472,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
               ),
               const Spacer(),
               Text(
-                '\$$price',
+                '\$${price.toStringAsFixed(2)}',
                 style: TextStyle(
                   color: HexColor('#696D6D'),
                   fontSize: 12.sp,
@@ -544,7 +544,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
               ),
               const Spacer(),
               Text(
-                '\$${price}',
+                '\$${price.toStringAsFixed(2)}',
                 style: TextStyle(
                   color: HexColor('#3E4242'),
                   fontSize: 14.sp,
@@ -1231,7 +1231,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 paymentMethod: paymentMode,
                 onBtnPressed: () {
                   // show transaction details
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => RequestRefund(

@@ -5,6 +5,7 @@ import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/card_model.dart';
@@ -30,7 +31,6 @@ class RequestRefund extends StatefulWidget {
   final dynamic paymentDetails;
 
   final String? paymentMode;
-
   final ActivityPackage? activityPackageDetails;
 
   @override
@@ -65,7 +65,7 @@ class _RequestRefundState extends State<RequestRefund> {
           ),
         ),
         actions: [
-          Padding(
+          /*Padding(
               padding: const EdgeInsets.all(8.0),
               child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
@@ -76,7 +76,7 @@ class _RequestRefundState extends State<RequestRefund> {
                   ),
                   onPressed: _showRescheduleBottomSheet,
                   child: Text(AppTextConstants.reschedule,
-                      style: TextStyle(color: AppColors.deepGreen))))
+                      style: TextStyle(color: AppColors.deepGreen))))*/
         ],
       ),
       backgroundColor: Colors.white,
@@ -168,7 +168,7 @@ class _RequestRefundState extends State<RequestRefund> {
                     buildPackageDetailInput(
                         AppTextConstants.bookingDate, '0', '', true),
                   buildPackageDetail(AppTextConstants.price,
-                      'CAD ${widget.transactionDetails?.total}'),
+                      '${PaymentConfig.currencyCode} ${widget.transactionDetails?.total}'),
                   SizedBox(height: 14.h),
                   Divider(
                     color: AppColors.grey,

@@ -10,7 +10,6 @@ class SecureStorage {
 
   ///Returns user_id key;
   static const String userIdKey = 'user_id';
-
   /// For saving secure string
   static Future<void> saveValue(
       {required String key, required String value}) async {
@@ -29,7 +28,7 @@ class SecureStorage {
       aOptions: const AndroidOptions(encryptedSharedPreferences: true),
     );
 
-    return value!;
+    return value ?? '';
   }
   /// Clear storage
   static Future<void> clearAll() async {
