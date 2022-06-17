@@ -69,7 +69,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
   final SwiperController _cardController = SwiperController();
   final List<Guide> guides = StaticDataService.getGuideList();
   final List<Activity> activities =
-  StaticDataService.getActivityForNearybyGuides();
+      StaticDataService.getActivityForNearybyGuides();
   final List<Activity> tourList = StaticDataService.getTourList();
   bool hideActivities = false;
   bool showBottomScroll = true;
@@ -81,7 +81,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
   List<ActivityPackage> _filteredActivity = [];
   final CardController _creditCardController = Get.put(CardController());
   final UserSubscriptionController _userSubscriptionController =
-  Get.put(UserSubscriptionController());
+      Get.put(UserSubscriptionController());
   TextEditingController _placeName = new TextEditingController();
 
   void _onMapCreated(GoogleMapController controller) {
@@ -108,7 +108,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
     }*/
 
     hasPremiumSubscription =
-    UserSingleton.instance.user.user!.hasPremiumSubscription!;
+        UserSingleton.instance.user.user!.hasPremiumSubscription!;
   }
 
   @override
@@ -131,7 +131,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
               .activityPackageDestinationLongitude!);
           marks.add(
             Marker(
-              onTap: (){
+              onTap: () {
                 debugPrint('Activity ${element.name}');
                 showActivityDetails(element);
               },
@@ -175,8 +175,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
               CameraPosition(
                   target: LatLng(location.latitude, location.longitude),
                   zoom: 17)
-            //17 is new zoom level
-          ));
+              //17 is new zoom level
+              ));
         },
         child: const Icon(
           Icons.my_location,
@@ -271,8 +271,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                             CameraPosition(
                                                 target: LatLng(lat, long),
                                                 zoom: 17)
-                                          //17 is new zoom level
-                                        ));
+                                            //17 is new zoom level
+                                            ));
                                   }
                                 });
                               }
@@ -322,8 +322,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                       top: false,
                                       child: Container(
                                         height:
-                                        MediaQuery.of(context).size.height *
-                                            0.72,
+                                            MediaQuery.of(context).size.height *
+                                                0.72,
                                         decoration: const BoxDecoration(
                                             color: Colors.white,
                                             borderRadius: BorderRadius.only(
@@ -355,13 +355,13 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                       color: Colors.black,
                                                       fontSize: 24.sp,
                                                       fontWeight:
-                                                      FontWeight.w700),
+                                                          FontWeight.w700),
                                                 ),
                                               ),
                                             ),
                                             Row(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
+                                                  MainAxisAlignment.spaceEvenly,
                                               children: <Widget>[
                                                 Icon(
                                                   Icons.chevron_left,
@@ -371,62 +371,62 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                     color: Colors.transparent,
                                                     height: 80.h,
                                                     width:
-                                                    MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                        0.7,
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.7,
                                                     child: EasyScrollToIndex(
                                                       controller:
-                                                      _scrollController,
+                                                          _scrollController,
                                                       // ScrollToIndexController
                                                       scrollDirection:
-                                                      Axis.horizontal,
+                                                          Axis.horizontal,
                                                       // default Axis.vertical
                                                       itemCount:
-                                                      AppListConstants
-                                                          .calendarMonths
-                                                          .length,
+                                                          AppListConstants
+                                                              .calendarMonths
+                                                              .length,
                                                       // itemCount
                                                       itemWidth: 95,
                                                       itemHeight: 70,
                                                       itemBuilder:
                                                           (BuildContext context,
-                                                          int index) {
+                                                              int index) {
                                                         return InkWell(
                                                           onTap: () {
                                                             _scrollController
                                                                 .easyScrollToIndex(
-                                                                index:
-                                                                index);
+                                                                    index:
+                                                                        index);
                                                             travellerMonthController
                                                                 .setSelectedDate(
-                                                                index + 1);
+                                                                    index + 1);
                                                             DateTime dt =
-                                                            DateTime.parse(
-                                                                travellerMonthController
-                                                                    .currentDate);
+                                                                DateTime.parse(
+                                                                    travellerMonthController
+                                                                        .currentDate);
 
                                                             final DateTime
-                                                            plustMonth =
-                                                            DateTime(
-                                                                dt.year,
-                                                                index + 1,
-                                                                dt.day,
-                                                                dt.hour,
-                                                                dt.minute);
+                                                                plustMonth =
+                                                                DateTime(
+                                                                    dt.year,
+                                                                    index + 1,
+                                                                    dt.day,
+                                                                    dt.hour,
+                                                                    dt.minute);
 
                                                             final DateTime
-                                                            setLastday =
-                                                            DateTime(
-                                                                plustMonth
-                                                                    .year,
-                                                                plustMonth
-                                                                    .month,
-                                                                1,
-                                                                plustMonth
-                                                                    .hour,
-                                                                plustMonth
-                                                                    .minute);
+                                                                setLastday =
+                                                                DateTime(
+                                                                    plustMonth
+                                                                        .year,
+                                                                    plustMonth
+                                                                        .month,
+                                                                    1,
+                                                                    plustMonth
+                                                                        .hour,
+                                                                    plustMonth
+                                                                        .minute);
 
                                                             travellerMonthController
                                                                 .setCurrentMonth(
@@ -435,18 +435,18 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                             );
                                                           },
                                                           child: Obx(
-                                                                () => Stack(
+                                                            () => Stack(
                                                               children: <
                                                                   Widget>[
                                                                 Align(
                                                                   alignment:
-                                                                  Alignment
-                                                                      .center,
+                                                                      Alignment
+                                                                          .center,
                                                                   child:
-                                                                  Container(
+                                                                      Container(
                                                                     margin: EdgeInsets.fromLTRB(
                                                                         index ==
-                                                                            0
+                                                                                0
                                                                             ? 0.w
                                                                             : 0.w,
                                                                         0.h,
@@ -496,38 +496,38 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                               ],
                                             ),
                                             GetBuilder<
-                                                TravellerMonthController>(
+                                                    TravellerMonthController>(
                                                 id: 'calendar',
                                                 builder:
                                                     (TravellerMonthController
-                                                controller) {
+                                                        controller) {
                                                   print(
                                                       controller.selectedDates);
                                                   return Container(
                                                       padding:
-                                                      EdgeInsets.fromLTRB(
-                                                          20.w,
-                                                          0.h,
-                                                          20.w,
-                                                          0.h),
+                                                          EdgeInsets.fromLTRB(
+                                                              20.w,
+                                                              0.h,
+                                                              20.w,
+                                                              0.h),
                                                       height:
-                                                      MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                          0.4,
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.4,
                                                       child: Sfcalendar(
-                                                        context,
+                                                          context,
+                                                          travellerMonthController
+                                                              .currentDate,
+                                                          (List<DateTime>
+                                                              value) {
                                                         travellerMonthController
-                                                            .currentDate,
-                                                            (List<DateTime> value) {
-                                                          travellerMonthController
-                                                              .selectedDates
-                                                              .clear();
-                                                          travellerMonthController
-                                                              .setSelectedDates(
-                                                              value);
-                                                        },[]
-                                                      ));
+                                                            .selectedDates
+                                                            .clear();
+                                                        travellerMonthController
+                                                            .setSelectedDates(
+                                                                value);
+                                                      }, []));
                                                 }),
                                             // SizedBox(
                                             //   height: 20.h,
@@ -544,34 +544,34 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                     travellerMonthController
                                                         .selectedDates
                                                         .sort((DateTime a,
-                                                        DateTime b) =>
-                                                        a.compareTo(b));
+                                                                DateTime b) =>
+                                                            a.compareTo(b));
 
                                                     APIServices()
                                                         .getActivityByDateRange(
-                                                        formatDate(
-                                                            travellerMonthController
-                                                                .selectedDates
-                                                                .first),
-                                                        formatDate(
-                                                            travellerMonthController
-                                                                .selectedDates
-                                                                .last))
+                                                            formatDate(
+                                                                travellerMonthController
+                                                                    .selectedDates
+                                                                    .first),
+                                                            formatDate(
+                                                                travellerMonthController
+                                                                    .selectedDates
+                                                                    .last))
                                                         .then((value) {
                                                       if (value.isNotEmpty) {
                                                         final ActivityPackage?
-                                                        activity =
+                                                            activity =
                                                             value.firstOrNull;
                                                         if (activity != null) {
                                                           addMarker(value);
                                                           double lat = double
                                                               .parse(activity
-                                                              .activityPackageDestination!
-                                                              .activityPackageDestinationLatitude!);
+                                                                  .activityPackageDestination!
+                                                                  .activityPackageDestinationLatitude!);
                                                           double long = double
                                                               .parse(activity
-                                                              .activityPackageDestination!
-                                                              .activityPackageDestinationLongitude!);
+                                                                  .activityPackageDestination!
+                                                                  .activityPackageDestinationLongitude!);
                                                           mapController?.animateCamera(
                                                               CameraUpdate.newCameraPosition(
                                                                   CameraPosition(
@@ -579,8 +579,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                                           lat,
                                                                           long),
                                                                       zoom: 17)
-                                                                //17 is new zoom level
-                                                              ));
+                                                                  //17 is new zoom level
+                                                                  ));
                                                         }
                                                       }
                                                     });
@@ -592,7 +592,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                   style: TextStyle(
                                                       color: Colors.white,
                                                       fontWeight:
-                                                      FontWeight.bold,
+                                                          FontWeight.bold,
                                                       fontSize: 12),
                                                 ),
                                               ),
@@ -606,16 +606,16 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                         index: 0);
                                   });
                                   Future.delayed(const Duration(seconds: 1),
-                                          () {
-                                        _scrollController.easyScrollToIndex(
-                                            index: travellerMonthController
+                                      () {
+                                    _scrollController.easyScrollToIndex(
+                                        index: travellerMonthController
                                                 .selectedDate -
-                                                1);
+                                            1);
 
-                                        // setState(() {
-                                        //   selectedmonth = 7;
-                                        // });
-                                      });
+                                    // setState(() {
+                                    //   selectedmonth = 7;
+                                    // });
+                                  });
                                 },
                               ),
                             ),
@@ -641,7 +641,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                               child: Container(
                                 decoration: const BoxDecoration(
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
+                                      BorderRadius.all(Radius.circular(10)),
                                   color: Colors.white,
                                 ),
                                 height: 44.h,
@@ -708,9 +708,9 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     child: hideActivities
                         ? Container(margin: EdgeInsets.only(top: 20.h))
                         : Container(
-                      margin: EdgeInsets.only(top: 40.h),
-                      child: overlapped(activities),
-                    ),
+                            margin: EdgeInsets.only(top: 40.h),
+                            child: overlapped(activities),
+                          ),
                   ),
                   // const Spacer(),
                   Align(
@@ -776,8 +776,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                 _filteredActivity.length, (int i) {
                               final Activity? icon = activities
                                   .firstWhereOrNull((Activity element) =>
-                              element.id ==
-                                  _filteredActivity[i].mainBadgeId);
+                                      element.id ==
+                                      _filteredActivity[i].mainBadgeId);
                               // final ActivityPackage? enable = _filteredActivity
                               //     .firstWhereOrNull((ActivityPackage element) =>
                               //         element.id == _loadingData[i].id);
@@ -808,7 +808,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                       ),
                                       child: Column(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             _filteredActivity[i].name!,
@@ -859,10 +859,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                   bottom: 5,
                                                   child: CircleAvatar(
                                                     backgroundColor:
-                                                    Colors.transparent,
+                                                        Colors.transparent,
                                                     radius: 12,
                                                     backgroundImage:
-                                                    AssetImage(icon.path),
+                                                        AssetImage(icon.path),
                                                   ),
                                                 ),
                                               ],
@@ -992,7 +992,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
             onTap: () {
               final List<ActivityPackage> filteredActivity = _loadingData
                   .where((ActivityPackage a) =>
-              a.mainBadge!.id == activities[i].id)
+                      a.mainBadge!.id == activities[i].id)
                   .toList();
 
               if (filteredActivity.isNotEmpty) {
@@ -1000,7 +1000,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   if (_selectedActivity.contains(i)) {
                     _selectedActivity.remove(i);
                     _filteredActivity.removeWhere(
-                            (element) => element.mainBadgeId == activities[i].id);
+                        (element) => element.mainBadgeId == activities[i].id);
                   } else {
                     _filteredActivity.addAll(filteredActivity);
                     _selectedActivity.add(i);
@@ -1025,8 +1025,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     .activityPackageDestinationLongitude!);
                 mapController?.animateCamera(CameraUpdate.newCameraPosition(
                     CameraPosition(target: LatLng(lat, long), zoom: 17)
-                  //17 is new zoom level
-                ));
+                    //17 is new zoom level
+                    ));
               }
             },
             child: Container(
@@ -1064,21 +1064,21 @@ class _TabMapScreenState extends State<TabMapScreen> {
                       right: 8,
                       child: _selectedActivity.contains(i)
                           ? Container(
-                        padding: const EdgeInsets.all(1),
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 2,
-                          ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.check,
-                          size: 10.h,
-                          color: Colors.white,
-                        ),
-                      )
+                              padding: const EdgeInsets.all(1),
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 2,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.check,
+                                size: 10.h,
+                                color: Colors.white,
+                              ),
+                            )
                           : const SizedBox()),
                 ],
               ),
@@ -1092,7 +1092,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
             onTap: () {
               final List<ActivityPackage> filteredActivity = _loadingData
                   .where((ActivityPackage a) =>
-              a.mainBadge!.id == activities[i].id)
+                      a.mainBadge!.id == activities[i].id)
                   .toList();
 
               if (filteredActivity.isNotEmpty) {
@@ -1100,7 +1100,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   if (_selectedActivity.contains(i)) {
                     _selectedActivity.remove(i);
                     _filteredActivity.removeWhere(
-                            (element) => element.mainBadgeId == activities[i].id);
+                        (element) => element.mainBadgeId == activities[i].id);
                   } else {
                     _filteredActivity.addAll(filteredActivity);
                     _selectedActivity.add(i);
@@ -1124,8 +1124,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     .activityPackageDestinationLongitude!);
                 mapController?.animateCamera(CameraUpdate.newCameraPosition(
                     CameraPosition(target: LatLng(lat, long), zoom: 17)
-                  //17 is new zoom level
-                ));
+                    //17 is new zoom level
+                    ));
               }
               // mapController?.animateCamera(CameraUpdate.newCameraPosition(
               //     CameraPosition(
@@ -1179,21 +1179,21 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     right: 8,
                     child: _selectedActivity.contains(i)
                         ? Container(
-                      padding: const EdgeInsets.all(1),
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 2,
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.check,
-                        size: 10.h,
-                        color: Colors.white,
-                      ),
-                    )
+                            padding: const EdgeInsets.all(1),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 2,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.check,
+                              size: 10.h,
+                              color: Colors.white,
+                            ),
+                          )
                         : const SizedBox(),
                   ),
                 ],
@@ -1205,21 +1205,21 @@ class _TabMapScreenState extends State<TabMapScreen> {
     }
 
     List<Widget> stackLayersLeft =
-    List<Widget>.generate(items.getRange(0, 4).length, (index) {
+        List<Widget>.generate(items.getRange(0, 4).length, (index) {
       return Padding(
         padding: EdgeInsets.fromLTRB(index.toDouble() * overlap, 0, 0, 0),
         child: items[index],
       );
     });
     List<Widget> stackLayersRight =
-    List<Widget>.generate(items.getRange(5, 9).length, (index) {
+        List<Widget>.generate(items.getRange(5, 9).length, (index) {
       return Padding(
         padding: EdgeInsets.fromLTRB(index.toDouble() * overlap, 0, 0, 0),
         child: items[5 + index],
       );
     });
     List<Widget> stackLayersCenter =
-    List<Widget>.generate(items.getRange(5, 5).length, (index) {
+        List<Widget>.generate(items.getRange(5, 5).length, (index) {
       return Padding(
         padding: EdgeInsets.fromLTRB(index.toDouble() * overlap, 0, 0, 0),
         child: items[5],
@@ -1258,81 +1258,81 @@ class _TabMapScreenState extends State<TabMapScreen> {
         enableDrag: true,
         backgroundColor: Colors.transparent,
         builder: (BuildContext ctx) => DiscoveryBottomSheet(
-          backgroundImage: backgroundImage,
-          onSubscribeBtnPressed: () {
-            const double price = 5.99;
-            Navigator.of(ctx).pop();
+              backgroundImage: backgroundImage,
+              onSubscribeBtnPressed: () {
+                const double price = 5.99;
+                Navigator.of(ctx).pop();
 
-            paymentMethod(
-                context: context,
-                onCreditCardSelected: (CardModel card) {
-                  debugPrint('Payment Method:: ${card.cardNo}');
-                },
-                onContinueBtnPressed: (dynamic data) {
-                  String mode = '';
-                  if (data is CardModel) {
-                    mode = 'Credit Card';
-                  } else {
-                    mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
-                  }
+                paymentMethod(
+                    context: context,
+                    onCreditCardSelected: (CardModel card) {
+                      debugPrint('Payment Method:: ${card.cardNo}');
+                    },
+                    onContinueBtnPressed: (dynamic data) {
+                      String mode = '';
+                      if (data is CardModel) {
+                        mode = 'Credit Card';
+                      } else {
+                        mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
+                      }
 
-                  if (mode == 'Apple Pay') {
-                    debugPrint('Data $data');
-                    saveSubscription(data, 'Premium Subscription',
-                        price.toString(), mode);
-                    paymentSuccessful(
-                        context: context,
-                        paymentDetails: DiscoveryPaymentDetails(
-                            transactionNumber: data),
-                        paymentMethod: mode);
+                      if (mode == 'Apple Pay') {
+                        debugPrint('Data $data');
+                        saveSubscription(data, 'Premium Subscription',
+                            price.toString(), mode);
+                        paymentSuccessful(
+                            context: context,
+                            paymentDetails: DiscoveryPaymentDetails(
+                                transactionNumber: data),
+                            paymentMethod: mode);
 
-                    /// Add Saving of Subscription here
-                  } else {
-                    final String transactionNumber =
-                    GlobalMixin().generateTransactionNumber();
-                    confirmPaymentModal(
-                        context: context,
-                        serviceName: 'Premium Subscription',
-                        paymentMethod: data,
-                        paymentMode: mode,
-                        price: price,
-                        onPaymentSuccessful: () {
-                          Navigator.of(context).pop();
-                          saveSubscription(
-                              transactionNumber,
-                              'Premium Subscription',
-                              price.toString(),
-                              mode);
-                          //Save Subscription
-                          paymentSuccessful(
-                              context: context,
-                              paymentDetails: DiscoveryPaymentDetails(
-                                  transactionNumber: transactionNumber),
-                              paymentMethod: mode);
-                        },
-                        onPaymentFailed: () {
-                          paymentFailed(
-                              context: context,
-                              paymentDetails: DiscoveryPaymentDetails(
-                                  transactionNumber: transactionNumber),
-                              paymentMethod: mode);
-                        },
-                        paymentDetails: DiscoveryPaymentDetails(
-                            transactionNumber: transactionNumber));
-                  }
-                },
-                price: price);
-          },
-          onSkipBtnPressed: () {
-            Navigator.of(context).pop();
-          },
-          onCloseBtnPressed: () {
-            Navigator.of(context).pop();
-          },
-          onBackBtnPressed: () {
-            Navigator.of(context).pop();
-          },
-        ));
+                        /// Add Saving of Subscription here
+                      } else {
+                        final String transactionNumber =
+                            GlobalMixin().generateTransactionNumber();
+                        confirmPaymentModal(
+                            context: context,
+                            serviceName: 'Premium Subscription',
+                            paymentMethod: data,
+                            paymentMode: mode,
+                            price: price,
+                            onPaymentSuccessful: () {
+                              Navigator.of(context).pop();
+                              saveSubscription(
+                                  transactionNumber,
+                                  'Premium Subscription',
+                                  price.toString(),
+                                  mode);
+                              //Save Subscription
+                              paymentSuccessful(
+                                  context: context,
+                                  paymentDetails: DiscoveryPaymentDetails(
+                                      transactionNumber: transactionNumber),
+                                  paymentMethod: mode);
+                            },
+                            onPaymentFailed: () {
+                              paymentFailed(
+                                  context: context,
+                                  paymentDetails: DiscoveryPaymentDetails(
+                                      transactionNumber: transactionNumber),
+                                  paymentMethod: mode);
+                            },
+                            paymentDetails: DiscoveryPaymentDetails(
+                                transactionNumber: transactionNumber));
+                      }
+                    },
+                    price: price);
+              },
+              onSkipBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+              onCloseBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+              onBackBtnPressed: () {
+                Navigator.of(context).pop();
+              },
+            ));
   }
 
 /*  Future<void> saveSubscription(String transactionNumber,
@@ -1391,8 +1391,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
     });
   }
 
-
-  showActivityDetails(ActivityPackage activityPackage){
+  showActivityDetails(ActivityPackage activityPackage) {
     return showModalBottomSheet(
         context: context,
         backgroundColor: Colors.white,

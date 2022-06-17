@@ -186,14 +186,13 @@ class _SignupVerifyState extends State<SignupVerify> {
       'phone_number': data['phone_number'],
       'verifyCode': _verifyCodeController.text
     };
-    
+
     if (_verifyCodeController.text.isNotEmpty) {
       incorrectOTP = false;
       await APIServices().request(
           AppAPIPath.checkVericationCodeSignUpUrl, RequestType.POST,
           data: details);
-      await Navigator.pushNamed(context, '/sign_up_form',
-          arguments: data);
+      await Navigator.pushNamed(context, '/sign_up_form', arguments: data);
     } else {
       setState(() {
         incorrectOTP = true;

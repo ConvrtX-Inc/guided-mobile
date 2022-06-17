@@ -82,11 +82,11 @@ class APIServices {
     final http.Response response = await http
         .get(Uri.http(apiBaseUrl, AppAPIPath.getOutfitterDetail), headers: {
       HttpHeaders.authorizationHeader:
-      'Bearer ${UserSingleton.instance.user.token}',
+          'Bearer ${UserSingleton.instance.user.token}',
     });
 
     final ActivityOutfitterModel dataSummary =
-    ActivityOutfitterModel.fromJson(json.decode(response.body));
+        ActivityOutfitterModel.fromJson(json.decode(response.body));
 
     /// I stopped here. Data is not being retrieved
     print(dataSummary);
@@ -102,7 +102,7 @@ class APIServices {
   /// This this Global function for creating api request
   Future<dynamic> request(String url, RequestType type,
       {bool needAccessToken = false,
-        Map<String, dynamic> data = const <String, dynamic>{}}) async {
+      Map<String, dynamic> data = const <String, dynamic>{}}) async {
     final Uri completeUri = Uri.parse('$apiBaseMode$apiBaseUrl/$url');
     String? token;
     dynamic body;
@@ -138,7 +138,7 @@ class APIServices {
 
     final http.StreamedResponse streamedResponse = await request.send();
     final http.Response response =
-    await http.Response.fromStream(streamedResponse);
+        await http.Response.fromStream(streamedResponse);
 
     if (response.body.isNotEmpty) {
       body = jsonDecode(response.body);
@@ -180,7 +180,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createOutfitterUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final http.Response response2 = await http.get(
@@ -188,11 +188,11 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final OutfitterModelData dataSummary =
-    OutfitterModelData.fromJson(json.decode(response.body));
+        OutfitterModelData.fromJson(json.decode(response.body));
 
     return OutfitterModelData(outfitterDetails: dataSummary.outfitterDetails);
   }
@@ -204,16 +204,16 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}?s={"activity_outfitter_id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<OutfitterImageDetailsModel> details =
-    <OutfitterImageDetailsModel>[];
+        <OutfitterImageDetailsModel>[];
 
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
       final OutfitterImageDetailsModel imageModel =
-      OutfitterImageDetailsModel.fromJson(data);
+          OutfitterImageDetailsModel.fromJson(data);
       details.add(imageModel);
     }
 
@@ -227,16 +227,16 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}?s={"id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<OutfitterImageDetailsModel> details =
-    <OutfitterImageDetailsModel>[];
+        <OutfitterImageDetailsModel>[];
 
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
       final OutfitterImageDetailsModel imageModel =
-      OutfitterImageDetailsModel.fromJson(data);
+          OutfitterImageDetailsModel.fromJson(data);
       details.add(imageModel);
     }
 
@@ -251,16 +251,16 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getAdvertisementImage}?s={"activity_advertisement_id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<AdvertisementImageDetailsModel> details =
-    <AdvertisementImageDetailsModel>[];
+        <AdvertisementImageDetailsModel>[];
 
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
       final AdvertisementImageDetailsModel imageModel =
-      AdvertisementImageDetailsModel.fromJson(data);
+          AdvertisementImageDetailsModel.fromJson(data);
       details.add(imageModel);
     }
 
@@ -274,12 +274,12 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createAdvertisementUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     /// seeding for data summary
     final AdvertisementModelData dataSummary =
-    AdvertisementModelData.fromJson(json.decode(response.body));
+        AdvertisementModelData.fromJson(json.decode(response.body));
 
     return AdvertisementModelData(
         advertisementDetails: dataSummary.advertisementDetails);
@@ -288,7 +288,7 @@ class APIServices {
   /// API service for profile model
   Future<ProfileDetailsModel> getProfileData() async {
     final String? userId =
-    await SecureStorage.readValue(key: AppTextConstants.userId);
+        await SecureStorage.readValue(key: AppTextConstants.userId);
 
     debugPrint('Profile USER ID $userId');
     final String url =
@@ -296,22 +296,22 @@ class APIServices {
     debugPrint('URL $url');
     final http.Response response = await http.get(Uri.parse(url), headers: {
       HttpHeaders.authorizationHeader:
-      'Bearer ${UserSingleton.instance.user.token}',
+          'Bearer ${UserSingleton.instance.user.token}',
     });
 
     final ProfileDetailsModel dataSummary =
-    ProfileDetailsModel.fromJson(json.decode(response.body));
+        ProfileDetailsModel.fromJson(json.decode(response.body));
     return dataSummary;
   }
 
   /// API service for
   Future<List<BookingRequest>> getBookingRequest() async {
     final String? userId =
-    await SecureStorage.readValue(key: AppTextConstants.userId);
+        await SecureStorage.readValue(key: AppTextConstants.userId);
 
     final Map<String, String> queryParameters = {
       'filter': 'user_id||eq||"$userId"',
-      'sort':'created_date,DESC'
+      'sort': 'created_date,DESC'
     };
 
     debugPrint(
@@ -321,13 +321,13 @@ class APIServices {
             apiBaseUrl, '/${AppAPIPath.getBookingRequest}', queryParameters),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
     final List<BookingRequest> bookingRequest = <BookingRequest>[];
     final List<BookingRequest> booking =
-    (jsonData as List).map((i) => BookingRequest.fromJson(i)).toList();
+        (jsonData as List).map((i) => BookingRequest.fromJson(i)).toList();
     bookingRequest.addAll(booking);
     return bookingRequest;
   }
@@ -340,7 +340,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}/$id'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final dynamic parsedJson = json.decode(response.body);
@@ -356,7 +356,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getCurrencies}?sort=currency_name,ASC'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
@@ -457,14 +457,14 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}'
+              'Bearer ${UserSingleton.instance.user.token}'
         });
 
     final dynamic jsonData = jsonDecode(response.body);
 
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
     final activityPackage =
-    (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
   }
@@ -478,14 +478,14 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}'
+              'Bearer ${UserSingleton.instance.user.token}'
         });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(jsonData);
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
     final List<ActivityPackage> activityPackage =
-    (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
   }
@@ -497,14 +497,14 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlSearch}/$searchKey'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}'
+              'Bearer ${UserSingleton.instance.user.token}'
         });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(jsonData);
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
     final List<ActivityPackage> activityPackage =
-    (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
   }
@@ -517,14 +517,14 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesbyDateRage}/$startDate/$endDate'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}'
+              'Bearer ${UserSingleton.instance.user.token}'
         });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(jsonData);
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
     final List<ActivityPackage> activityPackage =
-    (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
   }
@@ -536,7 +536,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}/$id'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     print(response.body);
     final dynamic parsedJson = json.decode(response.body);
@@ -550,12 +550,12 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     /// seeding for data summary
     final PackageModelData dataSummary =
-    PackageModelData.fromJson(json.decode(response.body));
+        PackageModelData.fromJson(json.decode(response.body));
 
     return PackageModelData(packageDetails: dataSummary.packageDetails);
   }
@@ -568,12 +568,12 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityDestinationDetails}?s={"activity_package_id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     /// seeding for data summary
     final PackageDestinationModelData dataSummary =
-    PackageDestinationModelData.fromJson(json.decode(response.body));
+        PackageDestinationModelData.fromJson(json.decode(response.body));
 
     return PackageDestinationModelData(
         packageDestinationDetails: dataSummary.packageDestinationDetails);
@@ -587,16 +587,16 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityDestinationImage}?s={"activity_package_destination_id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<PackageDestinationImageDetailsModel> details =
-    <PackageDestinationImageDetailsModel>[];
+        <PackageDestinationImageDetailsModel>[];
 
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
       final PackageDestinationImageDetailsModel imageModel =
-      PackageDestinationImageDetailsModel.fromJson(data);
+          PackageDestinationImageDetailsModel.fromJson(data);
       details.add(imageModel);
     }
 
@@ -611,12 +611,12 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityEventUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     /// seeding for data summary
     final EventModelData dataSummary =
-    EventModelData.fromJson(json.decode(response.body));
+        EventModelData.fromJson(json.decode(response.body));
 
     return EventModelData(eventDetails: dataSummary.eventDetails);
   }
@@ -628,7 +628,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getEventImage}?s={"activity_event_id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<EventImageDetailsModel> details = <EventImageDetailsModel>[];
@@ -636,7 +636,7 @@ class APIServices {
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
       final EventImageDetailsModel imageModel =
-      EventImageDetailsModel.fromJson(data);
+          EventImageDetailsModel.fromJson(data);
       details.add(imageModel);
     }
 
@@ -650,7 +650,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getTransactions}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
@@ -662,7 +662,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getPosts}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
@@ -692,7 +692,7 @@ class APIServices {
     print("url2:" + url);
     final http.Response response = await http.get(Uri.parse(url), headers: {
       HttpHeaders.authorizationHeader:
-      'Bearer ${UserSingleton.instance.user.token}',
+          'Bearer ${UserSingleton.instance.user.token}',
     });
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
@@ -704,7 +704,7 @@ class APIServices {
       'Content-Type': 'application/json',
       'Accept': '*/*',
       HttpHeaders.authorizationHeader:
-      'Bearer ${UserSingleton.instance.user.token}',
+          'Bearer ${UserSingleton.instance.user.token}',
     };
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.closestActivity}'),
@@ -718,9 +718,9 @@ class APIServices {
     print(jsonData['response']['data']['details']);
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
     final List<ActivityPackage> activityPackage =
-    (jsonData['response']['data']['details'] as List)
-        .map((i) => ActivityPackage.fromJson(i))
-        .toList();
+        (jsonData['response']['data']['details'] as List)
+            .map((i) => ActivityPackage.fromJson(i))
+            .toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
   }
@@ -732,7 +732,7 @@ class APIServices {
       'Content-Type': 'application/json',
       'Accept': '*/*',
       HttpHeaders.authorizationHeader:
-      'Bearer ${UserSingleton.instance.user.token}',
+          'Bearer ${UserSingleton.instance.user.token}',
     };
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.requestBooking}'),
@@ -783,13 +783,13 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityAvailabilityHours}/$packageId/$startDate/$endDate'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     print(response.request!.url);
     print(response.body);
     final dynamic jsonData = jsonDecode(response.body);
     final List<ActivityHourAvailability> activityHours =
-    <ActivityHourAvailability>[];
+        <ActivityHourAvailability>[];
     final List<ActivityHourAvailability> activityHour = (jsonData as List)
         .map((i) => ActivityHourAvailability.fromJson(i))
         .toList();
@@ -805,7 +805,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.badgesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<BadgeDetailsModel> details = <BadgeDetailsModel>[];
@@ -826,14 +826,14 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.badgesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(jsonData);
     final List<ActivityBadge> badges = <ActivityBadge>[];
     final List<ActivityBadge> badge =
-    (jsonData as List).map((i) => ActivityBadge.fromJson(i)).toList();
+        (jsonData as List).map((i) => ActivityBadge.fromJson(i)).toList();
     badges.addAll(badge);
 
     return badges;
@@ -843,13 +843,13 @@ class APIServices {
 
   Future<List<User>> getPopularGuides() async {
     final http.Response response = await http.get(
-      // Uri.parse(
-      //     '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.popularGuides}/51.43/-122.21/20'),
+        // Uri.parse(
+        //     '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.popularGuides}/51.43/-122.21/20'),
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getProfileDetails}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     final dynamic jsonData = jsonDecode(response.body);
 
@@ -877,7 +877,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.badgesUrl}?s={"id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<BadgeDetailsModel> details = <BadgeDetailsModel>[];
@@ -894,7 +894,7 @@ class APIServices {
   /// API service for countries
   Future<List<CountryModel>> getCountries() async {
     final http.Response response =
-    await http.get(Uri.http(apiBaseUrl, '/api/v1/countries'));
+        await http.get(Uri.http(apiBaseUrl, '/api/v1/countries'));
     final List<dynamic> res = jsonDecode(response.body);
     final List<CountryModel> countries = <CountryModel>[];
 
@@ -948,7 +948,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}?s={"id":"4c33d045-e881-4d93-a7b2-3ffa2a44c82c"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     final List<dynamic> res = jsonDecode(response.body);
     final List<PresetFormModel> forms = <PresetFormModel>[];
@@ -981,7 +981,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}/$id'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     final List<dynamic> res = jsonDecode(response.body);
     final List<PresetFormModel> forms = <PresetFormModel>[];
@@ -999,7 +999,7 @@ class APIServices {
   Future<List<CardModel>> getCards() async {
     final String? token = UserSingleton.instance.user.token;
     final String userId =
-    await SecureStorage.readValue(key: AppTextConstants.userId);
+        await SecureStorage.readValue(key: AppTextConstants.userId);
     debugPrint('User id cards $userId');
 
     final Map<String, String> queryParameters = {
@@ -1156,7 +1156,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.termsAndCondition}/$id'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     final List<dynamic> res = jsonDecode(response.body);
     final List<PresetFormModel> forms = <PresetFormModel>[];
@@ -1179,15 +1179,15 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.usersTermsAndCondition}?s={"user_id":\"$userId\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     final List<dynamic> res = jsonDecode(response.body);
     final List<UsersTermsAndConditionModel> forms =
-    <UsersTermsAndConditionModel>[];
+        <UsersTermsAndConditionModel>[];
 
     for (final dynamic data in res) {
       final UsersTermsAndConditionModel form =
-      UsersTermsAndConditionModel.fromJson(data);
+          UsersTermsAndConditionModel.fromJson(data);
       forms.add(form);
     }
 
@@ -1224,7 +1224,7 @@ class APIServices {
     final Uri uri = action == 'add'
         ? Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.userSubscription}')
         : Uri.parse(
-        '$apiBaseMode$apiBaseUrl${AppAPIPath.userSubscription}/${params.id}');
+            '$apiBaseMode$apiBaseUrl${AppAPIPath.userSubscription}/${params.id}');
     debugPrint('REQUEST METHOD:: $action ${params.id}');
 
     final http.Request request = http.Request(
@@ -1248,7 +1248,7 @@ class APIServices {
 
     final http.StreamedResponse streamedResponse = await request.send();
     final http.Response response =
-    await http.Response.fromStream(streamedResponse);
+        await http.Response.fromStream(streamedResponse);
 
     debugPrint('Response: ${response.body}');
 
@@ -1289,7 +1289,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityAvailability}?s={"activity_package_id":\"$activityPackageId\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     final List<dynamic> res = jsonDecode(response.body);
     final List<ActivityAvailability> forms = <ActivityAvailability>[];
@@ -1351,14 +1351,14 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createSlotAvailabilityHour}?s={"activity_availability_id":\"$activityAvailabilityId\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
     final List<dynamic> res = jsonDecode(response.body);
     final List<ActivityAvailabilityHour> forms = <ActivityAvailabilityHour>[];
 
     for (final dynamic data in res) {
       final ActivityAvailabilityHour form =
-      ActivityAvailabilityHour.fromJson(data);
+          ActivityAvailabilityHour.fromJson(data);
       forms.add(form);
     }
 
@@ -1429,12 +1429,12 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"\$and": [{"user_id": \"$id\"}, {"is_published": true}]}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     /// seeding for data summary
     final PackageModelData dataSummary =
-    PackageModelData.fromJson(json.decode(response.body));
+        PackageModelData.fromJson(json.decode(response.body));
 
     return PackageModelData(packageDetails: dataSummary.packageDetails);
   }
@@ -1446,12 +1446,12 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityEventUrl}?s={"is_post": true}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     /// seeding for data summary
     final EventModelData dataSummary =
-    EventModelData.fromJson(json.decode(response.body));
+        EventModelData.fromJson(json.decode(response.body));
 
     return EventModelData(eventDetails: dataSummary.eventDetails);
   }
@@ -1463,7 +1463,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.createOutfitterUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final http.Response response2 = await http.get(
@@ -1471,11 +1471,11 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.outfitterImageUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final OutfitterModelData dataSummary =
-    OutfitterModelData.fromJson(json.decode(response.body));
+        OutfitterModelData.fromJson(json.decode(response.body));
 
     return OutfitterModelData(outfitterDetails: dataSummary.outfitterDetails);
   }
@@ -1501,7 +1501,7 @@ class APIServices {
   Future<UserSubscription> getUserSubscription() async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId =
-    await SecureStorage.readValue(key: AppTextConstants.userId);
+        await SecureStorage.readValue(key: AppTextConstants.userId);
 
     final Map<String, String> queryParameters = {
       'filter': 'user_id||eq||"$userId"',
@@ -1569,20 +1569,20 @@ class APIServices {
     final String? userId = UserSingleton.instance.user.user?.id;
 
     final http.Response response =
-    await http.post(Uri.http(apiBaseUrl, '/api/v1/user-profile-images'),
-        headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
-          HttpHeaders.contentTypeHeader: 'application/json',
-        },
-        body: jsonEncode(<String, String>{
-          'user_id': userId.toString(),
-          'image_firebase_url_1': params.imageUrl1,
-          'image_firebase_url_2': params.imageUrl2,
-          'image_firebase_url_3': params.imageUrl3,
-          'image_firebase_url_4': params.imageUrl4,
-          'image_firebase_url_5': params.imageUrl5,
-          'image_firebase_url_6': params.imageUrl6,
-        }));
+        await http.post(Uri.http(apiBaseUrl, '/api/v1/user-profile-images'),
+            headers: {
+              HttpHeaders.authorizationHeader: 'Bearer $token',
+              HttpHeaders.contentTypeHeader: 'application/json',
+            },
+            body: jsonEncode(<String, String>{
+              'user_id': userId.toString(),
+              'image_firebase_url_1': params.imageUrl1,
+              'image_firebase_url_2': params.imageUrl2,
+              'image_firebase_url_3': params.imageUrl3,
+              'image_firebase_url_4': params.imageUrl4,
+              'image_firebase_url_5': params.imageUrl5,
+              'image_firebase_url_6': params.imageUrl6,
+            }));
 
     final jsonData = json.decode(response.body);
 
@@ -1716,17 +1716,17 @@ class APIServices {
     final String? token = UserSingleton.instance.user.token;
 
     final http.Response response =
-    await http.post(Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/transfer'),
-        headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
-          HttpHeaders.contentTypeHeader: 'application/json',
-        },
-        body: jsonEncode(<String, String>{
-          'account': accountId,
-          'total_service_amount': totalServiceAmount.toString(),
-          'transfer_money': applicationFee.toString(),
-          'payee_email': payeeEmail
-        }));
+        await http.post(Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/transfer'),
+            headers: {
+              HttpHeaders.authorizationHeader: 'Bearer $token',
+              HttpHeaders.contentTypeHeader: 'application/json',
+            },
+            body: jsonEncode(<String, String>{
+              'account': accountId,
+              'total_service_amount': totalServiceAmount.toString(),
+              'transfer_money': applicationFee.toString(),
+              'payee_email': payeeEmail
+            }));
 
     debugPrint('Response Payment Intent :: ${response.body}');
     final jsonData = jsonDecode(response.body);
@@ -1859,11 +1859,11 @@ class APIServices {
     debugPrint('URL $url');
     final http.Response response = await http.get(Uri.parse(url), headers: {
       HttpHeaders.authorizationHeader:
-      'Bearer ${UserSingleton.instance.user.token}',
+          'Bearer ${UserSingleton.instance.user.token}',
     });
 
     final ProfileDetailsModel dataSummary =
-    ProfileDetailsModel.fromJson(json.decode(response.body));
+        ProfileDetailsModel.fromJson(json.decode(response.body));
     return dataSummary;
   }
 
@@ -1991,14 +1991,14 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.badgesUrl}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(jsonData);
     final List<ActivityModel> badges = <ActivityModel>[];
     final List<ActivityModel> badge =
-    (jsonData as List).map((i) => ActivityModel.fromJson(i)).toList();
+        (jsonData as List).map((i) => ActivityModel.fromJson(i)).toList();
     badges.addAll(badge);
     return badges;
   }
@@ -2072,16 +2072,16 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.eventDestination}?s={"activity_event_id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<ActivityEventDestinationDetailsModel> details =
-    <ActivityEventDestinationDetailsModel>[];
+        <ActivityEventDestinationDetailsModel>[];
 
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
       final ActivityEventDestinationDetailsModel eventDestinationModel =
-      ActivityEventDestinationDetailsModel.fromJson(data);
+          ActivityEventDestinationDetailsModel.fromJson(data);
       details.add(eventDestinationModel);
     }
 
@@ -2095,7 +2095,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.getEventImage}?s={"activity_event_id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<EventImageDetailsModel> details = <EventImageDetailsModel>[];
@@ -2103,7 +2103,7 @@ class APIServices {
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
       final EventImageDetailsModel imageModel =
-      EventImageDetailsModel.fromJson(data);
+          EventImageDetailsModel.fromJson(data);
       details.add(imageModel);
     }
 
@@ -2118,16 +2118,16 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.eventDestinationImage}?s={"activity_event_destination_id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<EventImageDestinationDetails> details =
-    <EventImageDestinationDetails>[];
+        <EventImageDestinationDetails>[];
 
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
       final EventImageDestinationDetails eventImageDestination =
-      EventImageDestinationDetails.fromJson(data);
+          EventImageDestinationDetails.fromJson(data);
       details.add(eventImageDestination);
     }
 
@@ -2182,12 +2182,12 @@ class APIServices {
         });
 
     final List<PaymentTransactionModel> paymentTransactions =
-    <PaymentTransactionModel>[];
+        <PaymentTransactionModel>[];
 
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
       final PaymentTransactionModel _paymentTransaction =
-      PaymentTransactionModel.fromJson(data);
+          PaymentTransactionModel.fromJson(data);
       paymentTransactions.add(_paymentTransaction);
     }
 
@@ -2288,12 +2288,12 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.newsfeedList}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     /// seeding for data summary
     final NewsFeedModel dataSummary =
-    NewsFeedModel.fromJson(json.decode(response.body));
+        NewsFeedModel.fromJson(json.decode(response.body));
 
     return NewsFeedModel(newsfeedDetails: dataSummary.newsfeedDetails);
   }
@@ -2305,7 +2305,7 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.newsfeedImage}?s={"activity_newsfeed_id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final List<NewsfeedImageDetails> details = <NewsfeedImageDetails>[];
@@ -2313,7 +2313,7 @@ class APIServices {
     final List<dynamic> res = jsonDecode(response.body);
     for (final dynamic data in res) {
       final NewsfeedImageDetails eventImageDestination =
-      NewsfeedImageDetails.fromJson(data);
+          NewsfeedImageDetails.fromJson(data);
       details.add(eventImageDestination);
     }
 
@@ -2329,7 +2329,7 @@ class APIServices {
         //     '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.userTypeUrl}/tourist%20guide'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     // final dynamic jsonData = jsonDecode(response.body);
@@ -2354,7 +2354,7 @@ class APIServices {
     // }
 
     final UserListModel dataSummary =
-    UserListModel.fromJson(json.decode(response.body));
+        UserListModel.fromJson(json.decode(response.body));
 
     return UserListModel(userDetails: dataSummary.userDetails);
   }
@@ -2469,11 +2469,11 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.wishlistUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final WishlistActivityModel dataSummary =
-    WishlistActivityModel.fromJson(json.decode(response.body));
+        WishlistActivityModel.fromJson(json.decode(response.body));
 
     return WishlistActivityModel(
         wishlistActivityDetails: dataSummary.wishlistActivityDetails);
@@ -2486,12 +2486,12 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"id":\"$activityPackageid\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     /// seeding for data summary
     final PackageModelData dataSummary =
-    PackageModelData.fromJson(json.decode(response.body));
+        PackageModelData.fromJson(json.decode(response.body));
 
     return PackageModelData(packageDetails: dataSummary.packageDetails);
   }
@@ -2504,11 +2504,11 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.wishlistUrl}?s={"activity_package_id": \"$id\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     final WishlistActivityModel dataSummary =
-    WishlistActivityModel.fromJson(json.decode(response.body));
+        WishlistActivityModel.fromJson(json.decode(response.body));
 
     return WishlistActivityModel(
         wishlistActivityDetails: dataSummary.wishlistActivityDetails);
@@ -2538,12 +2538,12 @@ class APIServices {
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"user_id": \"$userId\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}',
+              'Bearer ${UserSingleton.instance.user.token}',
         });
 
     /// seeding for data summary
     final PackageModelData dataSummary =
-    PackageModelData.fromJson(json.decode(response.body));
+        PackageModelData.fromJson(json.decode(response.body));
 
     return PackageModelData(packageDetails: dataSummary.packageDetails);
   }
@@ -2560,28 +2560,28 @@ class APIServices {
             apiBaseUrl, '/${AppAPIPath.activityPackagesUrl}', queryParameters),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}'
+              'Bearer ${UserSingleton.instance.user.token}'
         });
 
     final dynamic jsonData = jsonDecode(response.body);
     print(jsonData);
     final List<ActivityPackage> activityPackages = <ActivityPackage>[];
     final List<ActivityPackage> activityPackage =
-    (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
+        (jsonData as List).map((i) => ActivityPackage.fromJson(i)).toList();
     activityPackages.addAll(activityPackage);
     return activityPackages;
   }
 
   /// API service for Activity Packages
-  Future<PaginatedData> getActivityPackagesPaginated(int page,int limit) async {
-
+  Future<PaginatedData> getActivityPackagesPaginated(
+      int page, int limit) async {
     final Map<String, String> queryParameters = {
       'page': '$page',
-      'sort':'created_date,DESC',
+      'sort': 'created_date,DESC',
       'limit': '$limit'
     };
 
-      /*final http.Response response = await http.get(
+    /*final http.Response response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),
         headers: {
@@ -2589,15 +2589,17 @@ class APIServices {
           'Bearer ${UserSingleton.instance.user.token}'
         });*/
 
-    final http.Response response = await http
-        .get(Uri.http(apiBaseUrl, '/api/v1/activity-packages', queryParameters), headers: {
-      HttpHeaders.authorizationHeader: 'Bearer ${UserSingleton.instance.user.token}',
-    });
-
+    final http.Response response = await http.get(
+        Uri.http(apiBaseUrl, '/api/v1/activity-packages', queryParameters),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${UserSingleton.instance.user.token}',
+        });
 
     final dynamic jsonData = jsonDecode(response.body);
 
-    debugPrint('Json Data:: url: ${Uri.http(apiBaseUrl, '/api/v1/activity-packages', queryParameters)}');
+    debugPrint(
+        'Json Data:: url: ${Uri.http(apiBaseUrl, '/api/v1/activity-packages', queryParameters)}');
     final PaginatedData data = PaginatedData.fromJson(jsonData);
     return data;
   }

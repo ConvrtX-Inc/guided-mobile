@@ -16,6 +16,7 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/popular_guides_controller.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
@@ -53,6 +54,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   int selectedmonth = 0;
   final ScrollToIndexController _scrollController = ScrollToIndexController();
   final travellerMonthController = Get.put(TravellerMonthController());
+  final popularGuidesController = Get.put(PopularGuidesController());
   final SwiperController _cardController = SwiperController();
   double latitude = 0.0;
   double longitude = 0.0;
@@ -173,7 +175,10 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                       child: TextField(
                         onSubmitted: (value) {
                           debugPrint('Query $value');
-                          widget.onItemPressed('guides');
+                          if (value.isNotEmpty) {
+                            popularGuidesController.setSearchKey(value);
+                            widget.onItemPressed('guides');
+                          }
                         },
                         textAlign: TextAlign.left,
                         keyboardType: TextInputType.text,
@@ -722,7 +727,6 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
             ),
           ],
         ),
-
         buildNearbyActivitiesAndPackages()
       ],
     );
@@ -941,99 +945,100 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   }
 
   Widget buildActivityPackageListItem(ActivityPackage activityPackage) =>
-     GestureDetector(
-       onTap: () => Navigator.of(context).pushNamed('/activity_package_info',arguments: activityPackage),
-       child:  Container(
-         padding: EdgeInsets.symmetric(horizontal: 15.w),
-         margin: EdgeInsets.only(bottom: 16.h),
-         child: Column(
-           children: <Widget>[
-             Container(
-               height: 200.h,
-               decoration: BoxDecoration(
-                 color: Colors.transparent,
-                 borderRadius: BorderRadius.all(
-                   Radius.circular(15.r),
-                 ),
-                 image: DecorationImage(
-                   image: NetworkImage(activityPackage.firebaseCoverImg!),
-                   fit: BoxFit.cover,
-                 ),
-               ),
-               child: Stack(
-                 children: <Widget>[
-                   Positioned(
-                     top: 0,
-                     right: 0,
-                     child: IconButton(
-                       icon: const Icon(Icons.favorite_border),
-                       onPressed: () {},
-                       color: HexColor('#ffffff'),
-                     ),
-                   ),
-                   Positioned(
-                     bottom: 0,
-                     child: CircleAvatar(
-                       backgroundColor: Colors.transparent,
-                       radius: 30,
-                       child: Image.memory(
-                         base64.decode(activityPackage.mainBadge!.imgIcon!),
-                         height: 35.h,
-                         width: 35.w,
-                       ),
-                     ),
-                   ),
-                 ],
-               ),
-             ),
-             SizedBox(
-               height: 10.h,
-             ),
-             Row(
-               children: <Widget>[
-                 Text(
-                   activityPackage.name!,
-                   style: TextStyle(
-                       color: Colors.black,
-                       fontSize: 16.sp,
-                       fontWeight: FontWeight.w700),
-                 ),
-                 Spacer(),
-                 Row(
-                   children: <Widget>[
-                     Container(
-                       height: 10.h,
-                       width: 10.w,
-                       decoration: BoxDecoration(
-                         color: Colors.transparent,
-                         borderRadius: BorderRadius.all(
-                           Radius.circular(15.r),
-                         ),
-                         image: const DecorationImage(
-                           image: AssetImage('assets/images/png/clock.png'),
-                           fit: BoxFit.contain,
-                         ),
-                       ),
-                     ),
-                     // SizedBox(
-                     //   width: 2.w,
-                     // ),
-                     Text(
-                       '0.0 hour drive',
-                       style: TextStyle(
-                           color: HexColor('#696D6D'),
-                           fontSize: 11.sp,
-                           fontFamily: 'Gilroy',
-                           fontWeight: FontWeight.normal),
-                     ),
-                   ],
-                 ),
-               ],
-             )
-           ],
-         ),
-       ),
-     );
+      GestureDetector(
+        onTap: () => Navigator.of(context)
+            .pushNamed('/activity_package_info', arguments: activityPackage),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.w),
+          margin: EdgeInsets.only(bottom: 16.h),
+          child: Column(
+            children: <Widget>[
+              Container(
+                height: 200.h,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(15.r),
+                  ),
+                  image: DecorationImage(
+                    image: NetworkImage(activityPackage.firebaseCoverImg!),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: IconButton(
+                        icon: const Icon(Icons.favorite_border),
+                        onPressed: () {},
+                        color: HexColor('#ffffff'),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.transparent,
+                        radius: 30,
+                        child: Image.memory(
+                          base64.decode(activityPackage.mainBadge!.imgIcon!),
+                          height: 35.h,
+                          width: 35.w,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
+              Row(
+                children: <Widget>[
+                  Text(
+                    activityPackage.name!,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  Spacer(),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        height: 10.h,
+                        width: 10.w,
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15.r),
+                          ),
+                          image: const DecorationImage(
+                            image: AssetImage('assets/images/png/clock.png'),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      // SizedBox(
+                      //   width: 2.w,
+                      // ),
+                      Text(
+                        '0.0 hour drive',
+                        style: TextStyle(
+                            color: HexColor('#696D6D'),
+                            fontSize: 11.sp,
+                            fontFamily: 'Gilroy',
+                            fontWeight: FontWeight.normal),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      );
 
   Widget sideShow(int index) {
     final PageController pageIndicatorController =
