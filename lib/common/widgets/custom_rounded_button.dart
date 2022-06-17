@@ -15,7 +15,7 @@ class CustomRoundedButton extends StatelessWidget {
       this.isLoading = false,
       this.buttonHeight = 60,
       this.buttonWidth,
-        this.isEnabled = true,
+      this.isEnabled = true,
       Key? key})
       : super(key: key);
 
@@ -46,28 +46,27 @@ class CustomRoundedButton extends StatelessWidget {
           onPressed: !isLoading ? onpressed : null,
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: AppColors.deepGreen,
-              ),
+              // side: BorderSide(
+              //   color: !isLoading ? Colors.white:  AppColors.deepGreen,
+              // ),
               borderRadius: BorderRadius.circular(18),
             ),
             onPrimary: Colors.white,
             primary: AppColors.deepGreen,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              if (isLoading)
-                const CircularProgressIndicator(color: Colors.white),
-              if (isLoading)
-                SizedBox(width: 10.w),
-              Text(
-                title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-            ],
-          )),
+          child: isLoading
+              ? const CircularProgressIndicator(color: Colors.white)
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(width: 10.w),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                  ],
+                )),
     );
   }
 

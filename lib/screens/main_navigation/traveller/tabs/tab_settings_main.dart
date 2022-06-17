@@ -13,6 +13,7 @@ import 'package:guided/screens/main_navigation/settings/widgets/settings_items.d
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/screens/widgets/reusable_widgets/app_home_button.dart';
 import 'package:guided/utils/secure_storage.dart';
+import 'package:guided/utils/services/auth_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/settings.dart';
 
@@ -47,10 +48,7 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
         title: Text(
           AppTextConstants.settings,
           style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 24,
-            color: Colors.black
-          ),
+              fontWeight: FontWeight.w600, fontSize: 24, color: Colors.black),
         ),
       ),
       body: SafeArea(
@@ -118,10 +116,14 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
                           width: MediaQuery.of(context).size.width,
                           height: 60.h,
                           child: ElevatedButton(
-                            onPressed: () async {
-                              await SecureStorage.clearAll();
+                            onPressed: ()   {
+                            /*  await SecureStorage.clearAll();
                               await Navigator.of(context)
-                                  .pushNamedAndRemoveUntil('/user_type', (Route<dynamic> route) => false);
+                                  .pushNamedAndRemoveUntil('/user_type',
+                                      (Route<dynamic> route) => false);*/
+                              AuthServices().logout(context);
+
+
                             },
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
@@ -227,6 +229,7 @@ class _TabSettingsMainState extends State<TabSettingsMain> {
           ),
         ],
       );
+
   /*    Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[

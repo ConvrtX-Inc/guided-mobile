@@ -355,7 +355,7 @@ class _AdvertisementViewState extends State<AdvertisementView> {
                     ),
                     SizedBox(width: 38.w),
                     Text(
-                      'USD ${screenArguments['price'].toString().substring(1, 6)}',
+                      ' ${double.parse(screenArguments['price']).toStringAsFixed(0)}',
                       style: AppTextStyle.greyStyle,
                     )
                   ],

@@ -188,7 +188,6 @@ class StripeServices {
     final http.Response response = await http.delete(
         Uri.parse('$stripeApiUrl/accounts/$stripeAccountId/external_accounts/${id}'),
         headers: headers);
-
     final Map<String, dynamic> jsonData = jsonDecode(response.body);
     return response;
   }

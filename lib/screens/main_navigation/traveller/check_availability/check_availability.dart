@@ -129,8 +129,6 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                           fontWeight: FontWeight.w700),
                     ),
                     /*Container(
-                      padding: const EdgeInsets.all(8),
-                      height: 35,
                       decoration: BoxDecoration(
                           borderRadius: const BorderRadius.all(
                             Radius.circular(20),
