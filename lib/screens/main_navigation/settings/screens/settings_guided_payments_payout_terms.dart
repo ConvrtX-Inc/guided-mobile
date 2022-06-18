@@ -28,17 +28,20 @@ class _GuidedPaymentPayoutTermsState extends State<GuidedPaymentPayoutTerms> {
   bool _isEnabledEdit = false;
 
   String _guided_payment = '';
+
   @override
   void initState() {
     super.initState();
-    getTermsAndConditionStatus();
+    // getTermsAndConditionStatus();
 
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final Map<String, dynamic> screenArguments =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-      _guided_payment = screenArguments['guided_payment_payout'];
-    });
+      setState(() {
+        _guided_payment = screenArguments['guided_payment_payout'];
+      });
+     });
   }
 
   Future<void> getTermsAndConditionStatus() async {
@@ -56,62 +59,41 @@ class _GuidedPaymentPayoutTermsState extends State<GuidedPaymentPayoutTerms> {
     final Map<String, dynamic> screenArguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                child: Row(
-                  children: <Widget>[
-                    IconButton(
-                      icon: Image.asset(
-                        '${AssetsPath.assetsPNGPath}/chevron_back_button.png',
-                      ),
-                      iconSize: 44.h,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    SizedBox(
-                      width: 15.w,
-                    ),
-                    Expanded(
-                      child: Text(
-                        AppTextConstants.guidedPaymentPayoutTerms,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 24.sp,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-                child: SizedBox(
-                  child: SingleChildScrollView(
-                    physics: const ScrollPhysics(),
-                    child: Text(_guided_payment,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400,
-                            height: 2,
-                            fontSize: 12.sp,
-                            fontFamily: 'Gilroy')),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-            ],
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          centerTitle: false,
+          leading: IconButton(
+            icon: Image.asset(
+              '${AssetsPath.assetsPNGPath}/chevron_back_button.png',
+            ),
+            iconSize: 44.h,
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
+          elevation: 0,
+          title: Text(
+            AppTextConstants.guidedPaymentPayoutTerms,
+            style: const TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          backgroundColor: Colors.white,
         ),
-      ),
-    );
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 10.h),
+          child: SingleChildScrollView(
+            // physics: const ScrollPhysics(),
+            child: Text(_guided_payment,
+                textAlign: TextAlign.justify,
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400,
+                    height: 2,
+                    fontSize: 12.sp,
+                    fontFamily: 'Gilroy')),
+          ),
+        ));
   }
 }

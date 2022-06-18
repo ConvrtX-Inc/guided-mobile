@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/controller/user_subscription_controller.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
@@ -154,10 +155,10 @@ class _SettingsItemsState extends State<SettingsItems> {
         widget._name,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
       ),
-      trailing: const Icon(
+      trailing:   Icon(
         Icons.navigate_next,
         size: 36,
-        color: Colors.black,
+        color: AppColors.capeCod,
       ),
     );
   }

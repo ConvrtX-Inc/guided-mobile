@@ -464,7 +464,9 @@ class _MessageInboxState extends State<MessageInbox> {
 
   Future<void> getMessages() async {
     final List<ChatModel> res = await APIServices()
-        .getChatMessages(UserSingleton.instance.user.user!.id!, 'all');
+        .getChatMessages( 'all');
+
+    debugPrint('Messages: $res');
 
     if (res.isNotEmpty) {
       setState(() {

@@ -139,7 +139,6 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
                     ),
                     Padding(padding: EdgeInsets.only(right: 6.w),
                         child: ReviewsCount(),)
-
                   ],
                 )
               ],

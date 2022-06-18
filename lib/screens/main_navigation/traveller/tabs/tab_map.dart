@@ -1,35 +1,30 @@
 // ignore_for_file: public_member_api_docs, use_named_constants
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
-import 'package:badges/badges.dart';
+
 import 'package:card_swiper/card_swiper.dart';
+import 'package:collection/collection.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart';
-import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
-import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/controller/user_subscription_controller.dart';
-import 'dart:async';
-
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/activity_availability_hours.dart';
+import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/guide.dart';
@@ -49,9 +44,6 @@ import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-
-import 'package:guided/models/activity_package.dart';
-import 'package:collection/collection.dart';
 
 /// PopularGuides
 class TabMapScreen extends StatefulWidget {
@@ -596,8 +588,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                                   .activityPackageDestinationLongitude!);
                                                           mapController?.animateCamera(
                                                               CameraUpdate.newCameraPosition(
-                                                                  CameraPosition(
-                                                                      target: LatLng(
+                                                                  CameraPosition(target: LatLng(
                                                                           lat,
                                                                           long),
                                                                       zoom: 17)

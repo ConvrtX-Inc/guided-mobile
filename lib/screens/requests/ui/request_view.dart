@@ -13,11 +13,15 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/activity_availability_hours.dart';
+import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/notification_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/stripe_bank_account_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
+import 'package:guided/screens/widgets/reusable_widgets/reviews_count.dart';
+import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/stripe_service.dart';
 import 'package:intl/intl.dart';
@@ -30,7 +34,9 @@ import '../../../models/user_model.dart';
 /// Notification Screen
 class RequestViewScreen extends StatefulWidget {
   /// Constructor
-  const RequestViewScreen({Key? key}) : super(key: key);
+  const RequestViewScreen({Key? key, this.params}) : super(key: key);
+
+  final dynamic params;
 
   @override
   _RequestViewScreenState createState() => _RequestViewScreenState();
@@ -63,24 +69,30 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
 
   String requestStatus = '';
 
+  ActivityAvailabilityHours dateSlot = ActivityAvailabilityHours();
+
   @override
   void initState() {
     super.initState();
+    bookingRequest = widget.params['bookingRequest'];
+    travellerDetails = widget.params['traveller'];
     getBankAccounts();
+
+    getActivityAvailableDates();
   }
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> screenArguments =
-        ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
-    bookingRequest = screenArguments['bookingRequest'] as BookingRequest;
-    travellerDetails = screenArguments['traveller'] as User;
+    /* final Map<String, dynamic> screenArguments =
+        ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;*/
 
     stripeAcctId = _profileDetailsController.userProfileDetails.stripeAccountId;
 
     debugPrint('Stripe Account id $stripeAcctId');
 
     requestStatus = bookingRequest.status!.statusName!;
+
+    // getActivityAvailableDates();
 
     //
     // getBookingPaymentIntentId(bookingRequest.id!);
@@ -107,7 +119,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                           height: 40.h,
                           width: 40.w),
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.pop(context,'Pending');
                       },
                     ),
                     SizedBox(
@@ -140,9 +152,32 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                       height: 15.h,
                     ),
                     Padding(
+                      padding: EdgeInsets.all(4.w),
+                      child: Container(
+                        width: 70.w,
+                        height: 30.h,
+                        padding: EdgeInsets.all(4.w),
+                        decoration: BoxDecoration(
+                            color: GlobalMixin().getStatusColor(
+                                requestStatus),
+                            borderRadius: BorderRadius.circular(7.r)),
+                        child: Center(
+                          child: Text(
+                            requestStatus,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Gilroy',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    Padding(
                       padding: EdgeInsets.only(left: 8.w),
                       child: Text(
-                        '${travellerDetails.fullName} has requested a new booking for package ${bookingRequest.numberOfPerson}',
+                        '${travellerDetails.fullName} has requested a new booking for ${bookingRequest.activityPackageName!} package.',
                         style: TextStyle(
                             color: AppColors.doveGrey,
                             fontSize: 14.sp,
@@ -214,7 +249,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                             ),
                                           ),
                                           Text(
-                                              '${bookingRequest.numberOfPerson} Traveller',
+                                              '${bookingRequest.numberOfPerson} Traveler',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w600,
                                                   fontSize: 14.sp))
@@ -233,8 +268,10 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(10),
                                       child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
-                                          const Icon(Icons.star_rate, size: 18),
+                                          /* const Icon(Icons.star_rate, size: 18),
                                           Text(
                                             '0',
                                             style: TextStyle(
@@ -253,9 +290,10 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 12.sp),
                                             ),
-                                          ),
+                                          ),*/
+                                          const ReviewsCount(),
                                           Text(
-                                            '\$${snapshot.data!.basePrice}',
+                                            '\$${double.parse(snapshot.data!.basePrice!) * bookingRequest.numberOfPerson!}',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 14.sp),
@@ -368,6 +406,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                               title: AppTextConstants.acceptRequest,
                               onpressed: () {
                                 chargePayment();
+
                               },
                               isLoading: isLoading,
                               isEnabled: isAccepted ? false : true),
@@ -465,6 +504,8 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                 'Request Accepted',
                 '${AppTextConstants.yourRequestHasApprovedBy} ${UserSingleton.instance.user.user!.fullName!}',
                 bookingRequest.fromUserId!);
+
+            await updateSlot();
 
             setState(() {
               isLoading = false;
@@ -885,5 +926,30 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
           '${DateFormat("MMM dd").format(DateTime.parse(bookingRequest.bookingDateStart!))} - ${DateFormat("MMM dd").format(DateTime.parse(bookingRequest.bookingDateEnd!))}';
     }
     return date;
+  }
+
+  Future<void> getActivityAvailableDates() async {
+
+    final List<ActivityHourAvailability> data = await APIServices()
+        .getActivityHours(bookingRequest.bookingDateStart!,
+            bookingRequest.bookingDateEnd!, bookingRequest.activityPackageId!);
+
+    if (data.isNotEmpty) {
+      data.forEach((element) {
+        setState(() {
+          dateSlot = element.activityAvailabilityHours!.firstWhere(
+              (h) => h.availabilityDateHour == bookingRequest.bookingDateStart!,
+              orElse: () => ActivityAvailabilityHours());
+        });
+      });
+    }
+  }
+
+  Future<void> updateSlot() async {
+    if (dateSlot.id != null) {
+      final int availableSlot =
+          dateSlot.slots! - bookingRequest.numberOfPerson!;
+      await APIServices().updateAvailabilitySlot(dateSlot.id!, availableSlot);
+    }
   }
 }

@@ -11,6 +11,7 @@ import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/ui/snackbars.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 
@@ -113,14 +114,17 @@ class _UpdatePhoneNumberState extends State<UpdatePhoneNumber> {
                         isLoading: isSaving,
                         title: 'Update',
                         onpressed: _phoneController.text !=
-                            _profileDetailsController.userProfileDetails.phoneNumber ? () {
-                          final FormState? form =
-                              _updatePhoneFormKey.currentState;
-                          if (form!.validate()) {
-                            form.save();
-                            updatePhoneNumber();
-                          }
-                        } : null),
+                                _profileDetailsController
+                                    .userProfileDetails.phoneNumber
+                            ? () {
+                                final FormState? form =
+                                    _updatePhoneFormKey.currentState;
+                                if (form!.validate()) {
+                                  form.save();
+                                  updatePhoneNumber();
+                                }
+                              }
+                            : null),
                     SizedBox(height: 20.h)
                   ],
                 ),
@@ -155,10 +159,8 @@ class _UpdatePhoneNumberState extends State<UpdatePhoneNumber> {
         isSaving = false;
       });
 
-      const AdvanceSnackBar(
-              bgColor: Colors.green,
-              message: 'Mobile Number Updated Successfully!')
-          .show(context);
+      AppSnackbars().success(
+          context: context, message: 'Mobile Number Updated');
     } else {
       final errors = jsonDecode(res.errorResponse);
       debugPrint('Error Response ${res.errorResponse}');

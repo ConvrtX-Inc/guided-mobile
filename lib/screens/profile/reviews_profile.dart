@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/screens/profile/profile_widgets.dart';
 
-import '../../constants/app_colors.dart';
-
-// ignore: public_member_api_docs
+/// Reviews profile screen
 class ReviewsProfileScreen extends StatelessWidget {
+  ///Constructor
   const ReviewsProfileScreen({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

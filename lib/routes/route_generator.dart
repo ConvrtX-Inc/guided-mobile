@@ -283,7 +283,7 @@ class RouteGenerator {
                 RequestFilterScreen(selectedFilter: args! as String));
       case '/request_view':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const RequestViewScreen(), settings: settings);
+            builder: (_) =>   RequestViewScreen(params: args));
       case '/discovery':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const DiscoveryScreen(), settings: settings);

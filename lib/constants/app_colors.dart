@@ -149,4 +149,7 @@ class AppColors {
 
  ///Certificate first aid tag
  static HexColor firstAidTag = HexColor('#979B9B');
+
+ ///Color for CapeCod
+ static HexColor capeCod = HexColor('##3E4242');
 }
