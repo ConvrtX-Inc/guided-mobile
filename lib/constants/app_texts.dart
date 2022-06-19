@@ -1224,6 +1224,9 @@ class AppTextConstants {
   ///Returns become a guide intro text
   static String becomeAGuideIntro =
       'Are you Passionate about the Great Outdoors? Do you love a good Adventure? Is Conservation of our Natural Spaces important to you? Do you want to share your Knowledge and Skills with others? If you answered YES to all of these questions we want you to join our team. We would love to get to know you some more and help you get started Guiding your first Adventure!';
+
+  ///Returns change password text
+  static String changePassword = 'Change Password';
 }
 
 /// Class for error messages text

@@ -545,9 +545,11 @@ class APIServices {
 
   /// API service for advertisement model
   Future<PackageModelData> getPackageData() async {
+    final String userId =
+  await SecureStorage.readValue(key: AppTextConstants.userId);
     final http.Response response = await http.get(
         Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"user_id": \"${UserSingleton.instance.user.user!.id}\"}'),
+            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"user_id": \"$userId\"}'),
         headers: {
           HttpHeaders.authorizationHeader:
           'Bearer ${UserSingleton.instance.user.token}',
@@ -1782,7 +1784,9 @@ class APIServices {
   }
 
   ///Api service to get chat messages
-  Future<List<ChatModel>> getChatMessages(String userId, String filter) async {
+  Future<List<ChatModel>> getChatMessages(String filter) async {
+    final String? userId =
+    await SecureStorage.readValue(key: AppTextConstants.userId);
     final String? token = UserSingleton.instance.user.token;
 
     final http.Response response = await http.get(
@@ -2198,6 +2202,8 @@ class APIServices {
   Future<List<NotificationModel>> getNotifications() async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint('User od $userId}');
     final Map<String, String> queryParameters = {
       'filter': 'to_user_id||eq||"$userId"',
     };
@@ -2601,4 +2607,24 @@ class APIServices {
     final PaginatedData data = PaginatedData.fromJson(jsonData);
     return data;
   }
+
+  ///Api Service for update availability slot
+  Future<APIStandardReturnFormat> updateAvailabilitySlot(String id, int slots) async {
+    final String? token = UserSingleton.instance.user.token;
+
+    final http.Response response = await http.patch(
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/api/v1/activity-availability-hours/$id'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          'content-type': 'application/json'
+        },
+        body: jsonEncode({
+          'slots': slots,
+        }));
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+
 }

@@ -118,7 +118,6 @@ class ActivityPackage {
             json['activity_package_destination'])
         : null;
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = id;

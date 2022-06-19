@@ -121,7 +121,6 @@ class _HomeScreenState extends State<MainNavigationScreen>
     await _creditCardController.initCards(cards);
 
     if (cards.isNotEmpty) {
-      debugPrint('cards $cards');
       final CardModel card = cards.firstWhere(
           (CardModel c) => c.isDefault == true,
           orElse: () => CardModel());

@@ -111,7 +111,6 @@ class _AdvertisementEditState extends State<AdvertisementEdit> {
 
       final List<CountryModel> resCountries =
           await APIServices().getCountries();
-
       final String removedDollar =
           screenArguments['price'].toString().substring(0);
 

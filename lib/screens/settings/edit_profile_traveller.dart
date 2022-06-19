@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:advance_notification/advance_notification.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:extended_image/extended_image.dart';
@@ -30,6 +31,7 @@ import 'package:guided/screens/widgets/reusable_widgets/image_picker_bottom_shee
 import 'package:guided/utils/mixins/validator_mixin.dart';
 import 'package:guided/utils/services/firebase_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/ui/snackbars.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
@@ -308,9 +310,7 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
                 controller: _fullNameController,
                 labelText: AppTextConstants.fullName,
                 hintText: AppTextConstants.fullName,
-                inputFormatters: [
-                  AppInputFormatters.name
-                ],
+                inputFormatters: [AppInputFormatters.name],
                 onValidate: (String val) {
                   if (val.trim().isEmpty) {
                     return '${AppTextConstants.fullName} is required';
@@ -470,14 +470,20 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
     final APIStandardReturnFormat res =
         await APIServices().updateProfile(editProfileParams);
 
-    if (res.status == 'success') {
+    if (res.status == 'success' && res.statusCode == 200) {
       final ProfileDetailsModel updatedProfile =
           ProfileDetailsModel.fromJson(json.decode(res.successResponse));
       _profileDetailsController.setUserProfileDetails(updatedProfile);
 
+      AppSnackbars()
+          .success(context: context, message: 'Profile Picture Updated');
+
       setState(() {
         profilePicture = profileUrl;
       });
+    }else{
+      AppSnackbars()
+          .error(context: context, message: 'Unable to Update Profile Picture');
     }
   }
 
@@ -504,13 +510,23 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
     final APIStandardReturnFormat res =
         await APIServices().updateProfile(editProfileParams);
 
-    if (res.status == 'success') {
+
+    if (res.status == 'success' && res.statusCode == 200) {
       final ProfileDetailsModel updatedProfile =
           ProfileDetailsModel.fromJson(json.decode(res.successResponse));
       _profileDetailsController.setUserProfileDetails(updatedProfile);
+
+      AppSnackbars().success(context: context, message: 'Profile Updated');
+
       setState(() {
         isSaving = false;
       });
+    }else{
+      setState(() {
+        isSaving = false;
+      });
+      AppSnackbars()
+          .error(context: context, message: 'Unable to Update Profile');
     }
   }
 
@@ -567,7 +583,7 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
 
   Future<void> updateEmailOrPassword() async {
     /// Update email
-    if (_profileDetailsController.userProfileDetails.email !=
+  /*  if (_profileDetailsController.userProfileDetails.email !=
         _emailController.text) {
       setState(() {
         isSaving = true;
@@ -597,22 +613,27 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
             title: 'Unable to Update Email',
             message: message);
       }
-    }
+    }*/
 
     if (_passwordController.text != '') {
+      setState(() {
+        isSaving = true;
+      });
       final dynamic updatePasswordParams = {
         'password': _passwordController.text,
       };
 
       final APIStandardReturnFormat res =
           await APIServices().updatePassword(updatePasswordParams);
-      debugPrint(
-          'Response:: update password ${res.statusCode} ${res.status} ${res.errorResponse}${_passwordController.text}');
 
       if (res.status == 'success') {
         setState(() {
           isSaving = false;
         });
+        AppSnackbars().success(context: context, message: 'Password Updated');
+      } else {
+        AppSnackbars()
+            .error(context: context, message: 'Unable to Update Password');
       }
     }
   }

@@ -7,6 +7,7 @@ import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/activity_availability_hours.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/user_model.dart';
@@ -41,6 +42,8 @@ class _TravellerBookingDetailsScreenState
 
   int numberOfTraveller = 0;
 
+  ActivityAvailabilityHours activityDate = ActivityAvailabilityHours();
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +52,11 @@ class _TravellerBookingDetailsScreenState
     tourGuideDetails = widget.params['tourGuideDetails'];
     bookingDate = widget.params['selectedDate'];
     numberOfTraveller = widget.params['numberOfTraveller'];
+
+    activityDate = widget.params['activityDateDetails'];
+
+    debugPrint('DATE ${activityDate.activityAvailabilityId}  ${bookingDate} ${activityDate.availabilityDateHour}');
+
   }
 
   @override
@@ -419,6 +427,7 @@ class _TravellerBookingDetailsScreenState
       'selectedDate': selectedDate,
       'numberOfTraveller': numberOfTraveller,
       'tourGuide': tourGuide,
+      'activityDateDetails': activityDate
     };
     if (selectedDate != null) {
       await Navigator.pushNamed(context, '/requestToBookScreen',

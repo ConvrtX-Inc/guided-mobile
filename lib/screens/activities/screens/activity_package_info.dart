@@ -540,7 +540,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
 
   Future<void> getMessageHistory() async {
     final List<ChatModel> res = await APIServices()
-        .getChatMessages(UserSingleton.instance.user.user!.id!, 'all');
+        .getChatMessages('all');
 
     final ChatModel chat = res.firstWhere(
         (ChatModel element) => element.receiver!.id! == userGuideDetails.id,
