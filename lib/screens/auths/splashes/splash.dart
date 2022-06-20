@@ -48,7 +48,7 @@ class _SplashState extends State<Splash> {
   Widget getNextScreen() => FutureBuilder(
       future: SecureStorage.readValue(key: AppTextConstants.userToken),
       builder: (BuildContext context, AsyncSnapshot<String> userToken) {
-        if (userToken.data != null) {
+        if (userToken.data != null && userToken.data != '') {
           UserSingleton.instance.user.token = userToken.data;
           return getScreenByType();
         } else {

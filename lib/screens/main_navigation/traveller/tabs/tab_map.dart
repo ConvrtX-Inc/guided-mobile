@@ -14,6 +14,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_place/google_place.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/asset_path.dart';
@@ -77,6 +78,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
   final UserSubscriptionController _userSubscriptionController =
       Get.put(UserSubscriptionController());
   TextEditingController _placeName = new TextEditingController();
+
+  GooglePlace googlePlace =
+      GooglePlace('AIzaSyDhlx9ZqFGUgyhlvPFxGMm3qCVglblq6dE');
+  List<AutocompletePrediction> predictions = [];
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
@@ -176,6 +181,32 @@ class _TabMapScreenState extends State<TabMapScreen> {
       _isloading = false;
       _markers.addAll(marks);
     });
+  }
+
+  void autoCompleteSearch(String value) async {
+    var result = await googlePlace.autocomplete.get(value);
+    if (result != null && result.predictions != null && mounted) {
+      setState(() {
+        predictions = result.predictions!;
+      });
+      debugPrint('Results: ${result.predictions!.length}');
+    }
+  }
+
+
+  void getPlaceDetails(String placeId) async {
+    var result = await this.googlePlace.details.get(placeId);
+    if (result != null && result.result != null && mounted) {
+      debugPrint('Result ${result.result!.geometry!.location!.lat} ${result.result!.geometry!.location!.lng}');
+
+      await mapController?.animateCamera(
+          CameraUpdate.newCameraPosition(
+              CameraPosition(
+                  target: LatLng(result.result!.geometry!.location!.lat!,result.result!.geometry!.location!.lng!),
+                  zoom: 5)
+            //17 is new zoom level
+          ));
+    }
   }
 
   @override
@@ -289,6 +320,17 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                             ));
                                   }
                                 });
+                              }
+                            },
+                            onChanged: (value) {
+                              if (value.isNotEmpty) {
+                                autoCompleteSearch(value);
+                              } else {
+                                if (predictions.length > 0 && mounted) {
+                                  setState(() {
+                                    predictions = [];
+                                  });
+                                }
                               }
                             },
                             controller: _placeName,
@@ -588,7 +630,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                                   .activityPackageDestinationLongitude!);
                                                           mapController?.animateCamera(
                                                               CameraUpdate.newCameraPosition(
-                                                                  CameraPosition(target: LatLng(
+                                                                  CameraPosition(
+                                                                      target: LatLng(
                                                                           lat,
                                                                           long),
                                                                       zoom: 17)
@@ -635,9 +678,23 @@ class _TabMapScreenState extends State<TabMapScreen> {
                           ),
                         ),
                       ),
+
                     ],
                   ),
-
+                  Column(
+                    children: [
+                      Container(
+                        child: Text('Search Results:'),
+                      ),
+                      for(int i= 0 ; i < predictions.length ; i++)
+                        GestureDetector(
+                          onTap: (){
+                            getPlaceDetails(predictions[i].placeId!);
+                          },
+                          child: Text('${predictions[i].description} '),
+                        )
+                    ],
+                  ),
                   FutureBuilder<List<Placemark>>(
                     future: _determinePosition(),
                     builder: (BuildContext context,
