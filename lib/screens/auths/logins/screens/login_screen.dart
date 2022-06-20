@@ -19,6 +19,7 @@ import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/ui/snackbars.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -57,9 +58,11 @@ class _LoginScreenState extends State<LoginScreen> {
             .loginFacebook(googleKey.accessToken!)
             .then((APIStandardReturnFormat response) async {
           if (response.status == 'error') {
-            AdvanceSnackBar(
+         /*   AdvanceSnackBar(
                 message: ErrorMessageConstants.loginWrongEmailorPassword)
-                .show(context);
+                .show(context);*/
+            AppSnackbars().error(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword );
+
             setState(() => buttonIsLoading = false);
           } else {
             final UserModel user =
@@ -101,16 +104,22 @@ class _LoginScreenState extends State<LoginScreen> {
     // debugPrint('User Type ${userType}');
     if (!EmailValidator.validate(_emailController.text)) {
       _emailFocus.requestFocus();
-      AdvanceSnackBar(message: ErrorMessageConstants.emailInvalidorEmpty)
-          .show(context);
+  /*    AdvanceSnackBar(message: ErrorMessageConstants.emailInvalidorEmpty)
+          .show(context);*/
+
+      AppSnackbars().error(context: context, message: ErrorMessageConstants.emailInvalidorEmpty );
+
       setState(() => buttonIsLoading = false);
       return;
     }
 
     if (_passwordController.text.isEmpty) {
       _passwordFocus.requestFocus();
-      AdvanceSnackBar(message: ErrorMessageConstants.emptyPassword)
-          .show(context);
+   /*   AdvanceSnackBar(message: ErrorMessageConstants.emptyPassword)
+          .show(context);*/
+
+      AppSnackbars().error(context: context, message: ErrorMessageConstants.emptyPassword );
+
       setState(() => buttonIsLoading = false);
       return;
     }
@@ -146,9 +155,11 @@ class _LoginScreenState extends State<LoginScreen> {
         .then((APIStandardReturnFormat response) async {
       setState(() => buttonIsLoading = false);
       if (response.status == 'error') {
-        AdvanceSnackBar(
+    /*    AdvanceSnackBar(
             message: ErrorMessageConstants.loginWrongEmailorPassword)
-            .show(context);
+            .show(context);*/
+        AppSnackbars().error(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword );
+
         setState(() => buttonIsLoading = false);
       } else {
         setRoles(response);
@@ -270,10 +281,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               .loginFacebook(accessToken!.token)
                               .then((APIStandardReturnFormat response) async {
                             if (response.status == 'error') {
-                              AdvanceSnackBar(
-                                  message: ErrorMessageConstants
-                                      .loginWrongEmailorPassword)
-                                  .show(context);
+
+                              AppSnackbars().error(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword );
+
+
                               setState(() => buttonIsLoading = false);
                             } else {
                               final UserModel user = UserModel.fromJson(
@@ -637,9 +648,10 @@ class _LoginScreenState extends State<LoginScreen> {
           .loginFacebook(credential.identityToken!)
           .then((APIStandardReturnFormat response) async {
         if (response.status == 'error') {
-          AdvanceSnackBar(
+        /*  AdvanceSnackBar(
               message: ErrorMessageConstants.loginWrongEmailorPassword)
-              .show(context);
+              .show(context);*/
+          AppSnackbars().error(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword );
           setState(() => appleLoading = false);
         } else {
           final UserModel user =

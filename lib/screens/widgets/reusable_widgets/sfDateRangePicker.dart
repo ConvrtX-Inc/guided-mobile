@@ -28,8 +28,11 @@ Widget Sfcalendar(
         todayTextStyle:
             TextStyle(fontWeight: FontWeight.bold, color: HexColor('#3E4242')),
           specialDatesDecoration: BoxDecoration(
-              border: Border.all(color: AppColors.dirtyWhite, width: 2.5),
+              color: AppColors.lightningYellow,
               shape: BoxShape.circle),
+          /*specialDatesDecoration: BoxDecoration(
+              border: Border.all(color: AppColors.dirtyWhite, width: 2.5),
+              shape: BoxShape.circle),*/
           blackoutDateTextStyle: TextStyle(color: Colors.white, decoration: TextDecoration.lineThrough)
       ),
       selectionTextStyle: const TextStyle(

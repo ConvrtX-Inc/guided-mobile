@@ -24,6 +24,7 @@ import 'package:guided/screens/main_navigation/traveller/tabs/tab_wishlist.dart'
 
 import 'package:guided/screens/widgets/reusable_widgets/traveller_bottom_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/services/user_subscription_service.dart';
 
 ///TravellerTabScreen
 class TravellerTabScreen extends StatefulWidget {
@@ -39,8 +40,6 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
   final CardController _creditCardController = Get.put(CardController());
   final UserSubscriptionController _userSubscriptionController =
       Get.put(UserSubscriptionController());
-  final UserProfileDetailsController _profileDetailsController =
-      Get.put(UserProfileDetailsController());
 
   @override
   void initState() {
@@ -49,7 +48,7 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     );
     super.initState();
 
-    getProfileDetails();
+
 
     // getUserSubscription();
     if (_creditCardController.cards.isEmpty) {
@@ -119,35 +118,6 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     });
   }
 
-  Future<void> getProfileDetails() async {
-    final ProfileDetailsModel res = await APIServices().getProfileData();
-
-    final UserSubscription subscription =
-        await APIServices().getUserSubscription();
-
-    bool hasPremiumSubscription = false;
-    if (subscription.id.isNotEmpty) {
-      final DateTime currentDate = DateTime.now();
-      final DateTime endDate = DateTime.parse(subscription.endDate);
-
-      final bool isExpired = endDate.isBefore(currentDate);
-
-      if (!isExpired) {
-        hasPremiumSubscription = true;
-      }
-      _userSubscriptionController.setSubscription(subscription);
-    }
-
-    UserSingleton.instance.user.user = User(
-        id: res.id,
-        email: res.email,
-        fullName: res.fullName,
-        hasPremiumSubscription: hasPremiumSubscription);
-
-    debugPrint(
-        'Has Subscription ${UserSingleton.instance.user.user?.hasPremiumSubscription}');
-    _profileDetailsController.setUserProfileDetails(res);
-  }
 
   Future<void> getUserCards() async {
     final List<CardModel> cards = await APIServices().getCards();

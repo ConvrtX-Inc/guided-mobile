@@ -33,186 +33,188 @@ class _TabDiscoveryHubState extends State<TabDiscoveryHub> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        physics: const ScrollPhysics(),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const TravellerTabScreen()));
-                      },
-                      child: Container(
-                        height: 60.h,
-                        width: 58.w,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(15.r),
-                          ),
-                        ),
-                        child: Center(
-                          child: Container(
-                            height: 20.h,
-                            width: 20.w,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(
-                                    'assets/images/png/green_house_outlined.png'),
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 0.h),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const TravellerTabScreen()));
+              },
+              child: Container(
+                height: 60.h,
+                width: 58.w,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(15.r),
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    height: 20.h,
+                    width: 20.w,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(
+                            'assets/images/png/green_house_outlined.png'),
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            ),
+          ),
+          Expanded(
+              child: SingleChildScrollView(
+            physics: const ScrollPhysics(),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/discovery_hub_events');
-                    },
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 8.h,
-                        ),
-                        Container(
-                          height: 80.h,
-                          width: 80.w,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15.r),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/discovery_hub_events');
+                        },
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: 8.h,
                             ),
-                          ),
-                          child: Center(
-                            child: Container(
+                            Container(
                               height: 80.h,
                               width: 80.w,
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/png/green_flag.png'),
-                                  fit: BoxFit.contain,
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(15.r),
+                                ),
+                              ),
+                              child: Center(
+                                child: Container(
+                                  height: 80.h,
+                                  width: 80.w,
+                                  decoration: const BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                          'assets/images/png/green_flag.png'),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                            Text(
+                              'Events',
+                              style: TextStyle(
+                                color: AppColors.primaryGreen,
+                                fontFamily: 'Gilroy',
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16.sp,
+                              ),
+                            )
+                          ],
                         ),
-                        Text(
-                          'Events',
-                          style: TextStyle(
-                            color: AppColors.primaryGreen,
-                            fontFamily: 'Gilroy',
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16.sp,
-                          ),
-                        )
-                      ],
+                      ),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     Navigator.pushNamed(
+                      //         context, '/discovery_hub_outfitter');
+                      //   },
+                      //   child: Column(
+                      //     children: <Widget>[
+                      //       SizedBox(
+                      //         height: 9.h,
+                      //       ),
+                      //       Container(
+                      //         height: 70.h,
+                      //         width: 70.w,
+                      //         padding: const EdgeInsets.all(10),
+                      //         decoration: BoxDecoration(
+                      //           color: Colors.transparent,
+                      //           borderRadius: BorderRadius.all(
+                      //             Radius.circular(15.r),
+                      //           ),
+                      //         ),
+                      //         child: Center(
+                      //           child: Container(
+                      //             height: 70.h,
+                      //             width: 70.w,
+                      //             decoration: const BoxDecoration(
+                      //               image: DecorationImage(
+                      //                 image: AssetImage(
+                      //                     'assets/images/png/red_shirt.png'),
+                      //                 fit: BoxFit.contain,
+                      //               ),
+                      //             ),
+                      //           ),
+                      //         ),
+                      //       ),
+                      //       SizedBox(
+                      //         height: 9.h,
+                      //       ),
+                      //       Text(
+                      //         'Outfitter',
+                      //         style: TextStyle(
+                      //           color: AppColors.lightRed,
+                      //           fontFamily: 'Gilroy',
+                      //           fontWeight: FontWeight.w400,
+                      //           fontSize: 16.sp,
+                      //         ),
+                      //       )
+                      //     ],
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 20.w, top: 10.h),
+                    child: Text(
+                      'Discovery Hub',
+                      style: TextStyle(
+                          fontFamily: 'Gilroy',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 24.sp),
                     ),
                   ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     Navigator.pushNamed(
-                  //         context, '/discovery_hub_outfitter');
-                  //   },
-                  //   child: Column(
-                  //     children: <Widget>[
-                  //       SizedBox(
-                  //         height: 9.h,
-                  //       ),
-                  //       Container(
-                  //         height: 70.h,
-                  //         width: 70.w,
-                  //         padding: const EdgeInsets.all(10),
-                  //         decoration: BoxDecoration(
-                  //           color: Colors.transparent,
-                  //           borderRadius: BorderRadius.all(
-                  //             Radius.circular(15.r),
-                  //           ),
-                  //         ),
-                  //         child: Center(
-                  //           child: Container(
-                  //             height: 70.h,
-                  //             width: 70.w,
-                  //             decoration: const BoxDecoration(
-                  //               image: DecorationImage(
-                  //                 image: AssetImage(
-                  //                     'assets/images/png/red_shirt.png'),
-                  //                 fit: BoxFit.contain,
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       SizedBox(
-                  //         height: 9.h,
-                  //       ),
-                  //       Text(
-                  //         'Outfitter',
-                  //         style: TextStyle(
-                  //           color: AppColors.lightRed,
-                  //           fontFamily: 'Gilroy',
-                  //           fontWeight: FontWeight.w400,
-                  //           fontSize: 16.sp,
-                  //         ),
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 20.w, top: 10.h),
-                child: Text(
-                  'Discovery Hub',
-                  style: TextStyle(
-                      fontFamily: 'Gilroy',
-                      fontWeight: FontWeight.w700,
-                      fontSize: 24.sp),
-                ),
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              FutureBuilder<NewsFeedModel>(
-                future: _loadingData,
-                builder: (BuildContext context,
-                    AsyncSnapshot<dynamic> snapshot) {
-                  Widget _displayWidget;
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      _displayWidget = const MainContentSkeleton();
-                      break;
-                    // ignore: no_default_cases
-                    default:
-                      if (snapshot.hasError) {
-                        _displayWidget = Center(
-                            child: APIMessageDisplay(
-                          message: 'Result: ${snapshot.error}',
-                        ));
-                      } else {
-                        _displayWidget = buildResult(snapshot.data!);
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  FutureBuilder<NewsFeedModel>(
+                    future: _loadingData,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      Widget _displayWidget;
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                          _displayWidget = const MainContentSkeleton();
+                          break;
+                        // ignore: no_default_cases
+                        default:
+                          if (snapshot.hasError) {
+                            _displayWidget = Center(
+                                child: APIMessageDisplay(
+                              message: 'Result: ${snapshot.error}',
+                            ));
+                          } else {
+                            _displayWidget = buildResult(snapshot.data!);
+                          }
                       }
-                  }
-                  return _displayWidget;
-                },
-              )
-            ]),
+                      return _displayWidget;
+                    },
+                  )
+                ]),
+          ))
+        ],
       ),
     );
   }

@@ -430,7 +430,7 @@ class AppTextConstants {
 
   /// Returns footer description 1
   static String footerDescr1 =
-      'Become and guide and list your outdoor adventure. How about, fishing, kayaking, wild life viewing, photography, hiking, birdwatching, foraging, biking, camping, boat tours, your unique property tour or wilderness retreats....... With GuidED the possibilities are endless and in your hands!';
+      'Become a guide and list your outdoor adventure. How about, fishing, kayaking, wild life viewing, photography, hiking, birdwatching, foraging, biking, camping, boat tours, your unique property tour or wilderness retreats....... With GuidED the possibilities are endless and in your hands!';
 
   /// Returns footer description 2
   static String footerDescr2 =
@@ -1219,7 +1219,14 @@ class AppTextConstants {
   static String exploreNearbyActivities = 'Explore Nearby Activities/Packages';
 
   ///Returns see all
-  static String seeAll ='See All';
+  static String seeAll = 'See All';
+
+  ///Returns become a guide intro text
+  static String becomeAGuideIntro =
+      'Are you Passionate about the Great Outdoors? Do you love a good Adventure? Is Conservation of our Natural Spaces important to you? Do you want to share your Knowledge and Skills with others? If you answered YES to all of these questions we want you to join our team. We would love to get to know you some more and help you get started Guiding your first Adventure!';
+
+  ///Returns change password text
+  static String changePassword = 'Change Password';
 }
 
 /// Class for error messages text

@@ -150,7 +150,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: buildProfilePicture(),
           ),
           /* TextField(
-                  controller: _fullNameController,
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.fromLTRB(30.w, 20.h, 20.w, 20.h),
                     hintText: AppTextConstants.fullName,

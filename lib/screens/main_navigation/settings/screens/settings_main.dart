@@ -16,6 +16,7 @@ import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/utils/secure_storage.dart';
+import 'package:guided/utils/services/auth_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/settings.dart';
 import 'package:guided/utils/secure_storage.dart';
@@ -36,7 +37,6 @@ class _SettingsMainState extends State<SettingsMain>
   bool get wantKeepAlive => true;
   final storage = new FlutterSecureStorage();
 
-
   /// Get settings items mocked data
   final List<SettingsModel> settingsItems =
       SettingsUtils.getMockedDataSettings();
@@ -44,7 +44,7 @@ class _SettingsMainState extends State<SettingsMain>
   late Future<ProfileDetailsModel> _loadingData;
 
   final UserProfileDetailsController _profileDetailsController =
-  Get.put(UserProfileDetailsController());
+      Get.put(UserProfileDetailsController());
 
   bool isLoading = false;
 
@@ -87,74 +87,6 @@ class _SettingsMainState extends State<SettingsMain>
             ),
             Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-                /* child: Row(
-                children: <Widget>[
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 3.w,
-                      ),
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: const <BoxShadow>[
-                        BoxShadow(
-                            blurRadius: 5, color: Colors.grey, spreadRadius: 2)
-                      ],
-                    ),
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 35.r,
-                      backgroundImage: const AssetImage(
-                          '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 24,
-                  ),
-                  Expanded(
-                    child: FutureBuilder<ProfileDetailsModel>(
-                        future: _loadingData,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<dynamic> snapshot) {
-                          Widget _displayWidget;
-                          switch (snapshot.connectionState) {
-                            case ConnectionState.waiting:
-                              _displayWidget = Column(
-                                children: <Widget>[
-                                  SizedBox(
-                                    height: 20.h,
-                                  ),
-                                  const Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ],
-                              );
-                              break;
-                            default:
-                              if (snapshot.hasError) {
-                                _displayWidget = Center(
-                                    child: APIMessageDisplay(
-                                  message: 'Result: ${snapshot.error}',
-                                ));
-                              } else {
-                                _displayWidget =
-                                    buildProfileData(snapshot.data!);
-                              }
-                          }
-                          return _displayWidget;
-                        }),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.navigate_next),
-                    iconSize: 36,
-                    color: Colors.black,
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/profile');
-                    },
-                  ),
-                ],
-              ),*/
                 child: GetBuilder<UserProfileDetailsController>(
                     builder: (UserProfileDetailsController _controller) {
                   return Row(
@@ -174,16 +106,20 @@ class _SettingsMainState extends State<SettingsMain>
                                 spreadRadius: 2)
                           ],
                         ),
-                        child: _controller.userProfileDetails.firebaseProfilePicUrl.isEmpty ?  CircleAvatar(
-                          backgroundColor: Colors.white,
-                          radius: 35.r,
-                          backgroundImage: const AssetImage(
-                              '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
-                        ) :CircleAvatar(
-                          backgroundColor: Colors.white,
-                          radius: 35.r,
-                          backgroundImage: NetworkImage(_controller.userProfileDetails.firebaseProfilePicUrl),
-                        ),
+                        child: _controller.userProfileDetails
+                                .firebaseProfilePicUrl.isEmpty
+                            ? CircleAvatar(
+                                backgroundColor: Colors.white,
+                                radius: 35.r,
+                                backgroundImage: const AssetImage(
+                                    '${AssetsPath.assetsPNGPath}/default_profile_pic.png'),
+                              )
+                            : CircleAvatar(
+                                backgroundColor: Colors.white,
+                                radius: 35.r,
+                                backgroundImage: NetworkImage(_controller
+                                    .userProfileDetails.firebaseProfilePicUrl),
+                              ),
                       ),
                       const SizedBox(
                         width: 24,
@@ -233,11 +169,8 @@ class _SettingsMainState extends State<SettingsMain>
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          onPressed: () async {
-
-                            await SecureStorage.clearAll();
-                            await Navigator.of(context)
-                                .pushNamedAndRemoveUntil('/user_type', (Route<dynamic> route) => false);
+                          onPressed: () {
+                            AuthServices().logout(context);
                           },
                         ),
                       );
@@ -282,7 +215,6 @@ class _SettingsMainState extends State<SettingsMain>
 
   Future<void> getProfileDetails() async {
     final ProfileDetailsModel res = await APIServices().getProfileData();
-    debugPrint('Profile:: ${res.id}');
     setState(() {
       isLoading = false;
     });

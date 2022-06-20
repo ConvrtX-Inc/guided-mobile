@@ -1,34 +1,30 @@
 // ignore_for_file: public_member_api_docs, use_named_constants
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
-import 'package:badges/badges.dart';
+
 import 'package:card_swiper/card_swiper.dart';
+import 'package:collection/collection.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart';
-import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
-import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/controller/user_subscription_controller.dart';
-import 'dart:async';
-
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/models/activity_availability_hours.dart';
+import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/guide.dart';
@@ -41,15 +37,13 @@ import 'package:guided/screens/payments/payment_successful.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_payment_details.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
+import 'package:guided/screens/widgets/reusable_widgets/reviews_count.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-
-import '../../../../models/activity_package.dart';
-import 'package:collection/collection.dart';
 
 /// PopularGuides
 class TabMapScreen extends StatefulWidget {
@@ -92,6 +86,11 @@ class _TabMapScreenState extends State<TabMapScreen> {
   }
 
   bool hasPremiumSubscription = false;
+  ActivityPackage selectedPackage = ActivityPackage();
+
+  bool showSelectedPackage = false;
+
+  List<DateTime> activityAvailableDates = [];
 
   @override
   void initState() {
@@ -133,7 +132,22 @@ class _TabMapScreenState extends State<TabMapScreen> {
             Marker(
               onTap: () {
                 debugPrint('Activity ${element.name}');
-                showActivityDetails(element);
+                // showActivityDetails(element);
+
+                activityAvailableDates.clear();
+
+                if (showBottomScroll) {
+                  setState(() {
+                    showBottomScroll = false;
+                  });
+                }
+
+                setState(() {
+                  selectedPackage = element;
+                  showSelectedPackage = true;
+                });
+
+                getActivityAvailableDates();
               },
               markerId: MarkerId(element.id!),
               icon: await MarkerIcon.pictureAsset(
@@ -574,8 +588,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                                                   .activityPackageDestinationLongitude!);
                                                           mapController?.animateCamera(
                                                               CameraUpdate.newCameraPosition(
-                                                                  CameraPosition(
-                                                                      target: LatLng(
+                                                                  CameraPosition(target: LatLng(
                                                                           lat,
                                                                           long),
                                                                       zoom: 17)
@@ -886,6 +899,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                 child: _isloading
                     ? const CircularProgressIndicator()
                     : Container()),
+            if (showSelectedPackage) buildBasicPackageInfo()
           ],
         ),
       ),
@@ -1404,4 +1418,120 @@ class _TabMapScreenState extends State<TabMapScreen> {
           return Text('Package ${activityPackage.name} ');
         });
   }
+
+  Future<void> getActivityAvailableDates() async {
+    final DateTime currentDate = DateTime.now();
+
+    final List<ActivityHourAvailability> data = await APIServices()
+        .getActivityHours(
+            DateTime.now().toString(),
+            DateTime(currentDate.year, currentDate.month + 1, 0).toString(),
+            selectedPackage.id!);
+
+    debugPrint('DATES: ${data.length}');
+
+    if (data.isNotEmpty) {
+      data.forEach((element) {
+        setState(() {
+          final DateTime _date = DateTime.parse(element.availabilityDate!);
+          if (_date.month == DateTime.now().month) {
+            activityAvailableDates.add(_date);
+          }
+        });
+      });
+    }
+  }
+
+  //BASIC PACKAGE INFO
+  Widget buildBasicPackageInfo() => Positioned(
+      bottom: 75,
+      right: 0,
+      left: 0,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed('/activity_package_info', arguments: selectedPackage);
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 14.w),
+          // padding: EdgeInsets.all(10.w),
+          height: 120.h,
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(12.r)),
+          child: Row(
+            children: <Widget>[
+              Stack(
+                children: <Widget>[
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12.r),
+                          bottomLeft: Radius.circular(12.r)),
+                      image: DecorationImage(
+                          image:
+                              NetworkImage(selectedPackage.firebaseCoverImg!),
+                          fit: BoxFit.cover),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        showSelectedPackage = false;
+                        selectedPackage = ActivityPackage();
+                      });
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(4.w),
+                      padding: EdgeInsets.all(2.w),
+                      decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          shape: BoxShape.circle),
+                      child: Icon(Icons.close, color: Colors.white),
+                    ),
+                  )
+                ],
+              ),
+              Expanded(
+                  child: Container(
+                padding: EdgeInsets.all(8.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                        child: Text(
+                      selectedPackage.name!,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 16.sp),
+                    )),
+                    if (activityAvailableDates.isNotEmpty)
+                      Text(activityAvailableDates.length > 1
+                          ? '${DateFormat("MMM dd -").format(activityAvailableDates[0])} ${activityAvailableDates[activityAvailableDates.length - 1].day}'
+                          : DateFormat("MMM dd")
+                              .format(activityAvailableDates[0])),
+                    SizedBox(height: 5.h),
+                    Expanded(
+                        child: Row(
+                      children: <Widget>[
+                        Text.rich(TextSpan(children: [
+                          TextSpan(
+                              text: '\$ ${selectedPackage.basePrice}',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16.sp)),
+                          TextSpan(
+                              text: ' / person',
+                              style: TextStyle(fontSize: 16.sp)),
+                        ])),
+                        Expanded(child: ReviewsCount())
+                      ],
+                    ))
+                  ],
+                ),
+              ))
+            ],
+          ),
+        ),
+      ));
 }

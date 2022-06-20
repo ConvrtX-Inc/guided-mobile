@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:guided/common/widgets/borderless_textfield.dart';
 import 'package:guided/common/widgets/country_dropdown.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
+import 'package:guided/constants/app_input_formatter.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
@@ -140,6 +141,7 @@ class _PaymentAddCardState extends State<PaymentAddCard> {
         ),
         BorderlessTextField(
           title: AppTextConstants.fullName,
+
           hint: 'Aycan Doganlar',
           onValidate: (String val) {
             if (val.trim().isEmpty) {
@@ -150,6 +152,7 @@ class _PaymentAddCardState extends State<PaymentAddCard> {
           onSaved: (String val) {
             _fullName = val.trim();
           },
+          inputFormatters: [AppInputFormatters.name],
         ),
         const SizedBox(
           height: 20,
@@ -241,6 +244,7 @@ class _PaymentAddCardState extends State<PaymentAddCard> {
           onSaved: (String val) {
             _nameOnCard = val.trim();
           },
+          inputFormatters: [AppInputFormatters.name],
         ),
         const SizedBox(
           height: 20,

@@ -6,6 +6,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/common/widgets/custom_rounded_button_with_border.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
@@ -92,7 +93,7 @@ Future<dynamic> confirmPaymentModal(
                     ),
                     if(onConfirmPaymentPressed != null)
                       CustomRoundedButton(
-                        title: 'Pay $price USD',
+                        title: 'Pay ${price.toStringAsFixed(2)} ${PaymentConfig.currencyCode}',
                         isLoading: isPaymentProcessing,
                         onpressed: () {
                           setState(() {
@@ -103,7 +104,7 @@ Future<dynamic> confirmPaymentModal(
                       )
                     else
                       CustomRoundedButton(
-                      title: 'Pay $price USD',
+                      title: 'Pay ${price.toStringAsFixed(2)} ${PaymentConfig.currencyCode}',
                       isLoading: isPaymentProcessing,
                       onpressed: () {
                         setState(() {

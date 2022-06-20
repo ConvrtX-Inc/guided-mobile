@@ -11,11 +11,23 @@ class UserSubscriptionController extends GetxController {
   /// isUserSubscribed
   bool isUserSubscribed = false;
 
+  ///is subscribeButtonClicked
+  bool isSubscribeButtonClicked = false;
+
   /// Set User Subscription function
   void setSubscription(UserSubscription data) {
     debugPrint('Data $data');
     userSubscription = data;
     update();
   }
+
+
+  /// Set Subscribe button clicked function
+  void setSubscribeButtonClicked({bool data = false}) {
+    debugPrint('Subscribe button cliked $data');
+    isSubscribeButtonClicked = data;
+    update();
+  }
+
 
 }

@@ -247,6 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           trailing: Icon(Icons.arrow_forward_ios, size: 17.sp)),
       ListTile(
+        onTap: () => Navigator.of(context).pushNamed('/change_phone_number'),
           leading: Container(
               width: 38.w,
               height: 38.w,

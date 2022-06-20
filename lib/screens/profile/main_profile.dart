@@ -139,7 +139,6 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
                     ),
                     Padding(padding: EdgeInsets.only(right: 6.w),
                         child: ReviewsCount(),)
-
                   ],
                 )
               ],
@@ -508,7 +507,7 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
               borderRadius: BorderRadius.circular(8.0),
               child: GoogleMap(
                 initialCameraPosition: CameraPosition(
-                  //innital position in map
+                  //initial position in map
                   target: showLocation, //initial position
                   zoom: 10, //initial zoom level
                 ),
@@ -579,7 +578,6 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
     final List<Certificate> res =
     await APIServices().getCertificates(widget.userId);
 
-    debugPrint('Certificate ${res[0].certificateName}');
     setState(() {
       certificates = res;
       isLoadingCertificates = false;
@@ -587,10 +585,8 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
   }
 
   Future<void> getPackages() async {
-    debugPrint('USer id ${widget.userId}');
-    final List<ActivityPackage> res =
+     final List<ActivityPackage> res =
     await APIServices().getGuidePackages(widget.userId);
-    debugPrint('Res: ${res.length}');
 
     setState(() {
       packages = res;

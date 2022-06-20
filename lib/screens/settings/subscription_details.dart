@@ -25,60 +25,70 @@ class _SubscriptionDetailsState extends State<SubscriptionDetails> {
   @override
   void initState() {
     super.initState();
-    userSubscriptionDetails = _userSubscriptionController.userSubscription;
+    // userSubscriptionDetails = _userSubscriptionController.userSubscription;
+
+    debugPrint('subscription details ${userSubscriptionDetails.endDate}');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-          child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            IconButton(
-              icon: SvgPicture.asset(
-                  'assets/images/svg/arrow_back_with_tail.svg',
-                  height: 40.h,
-                  width: 40.w),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            SizedBox(
-              height: 15.h,
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 8.w),
-              child: const Text(
-                'Premium Subscription',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 24,
+      body: GetBuilder<UserSubscriptionController>(
+          builder: (UserSubscriptionController controller) {
+        userSubscriptionDetails = controller.userSubscription;
+        debugPrint('subscription details ${userSubscriptionDetails.endDate}');
+        return SafeArea(
+            child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              IconButton(
+                icon: SvgPicture.asset(
+                    'assets/images/svg/arrow_back_with_tail.svg',
+                    height: 40.h,
+                    width: 40.w),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              SizedBox(
+                height: 15.h,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 8.w),
+                child: const Text(
+                  'Premium Subscription',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 24,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 15.h,
-            ),
-
-            Card(
-              shadowColor: Colors.grey,
-                child: ListTile(
-                  leading: Image.asset(AssetsPath.discoveryTree),
-              title: Text('You are Subscribed',
-                  style:
-                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
-              subtitle: Text(
-                'Your subscription is valid until ${DateFormat("MMM dd , yyy").format(DateTime.parse(userSubscriptionDetails.endDate))}',
-                style: TextStyle(fontSize: 14.sp),
+              SizedBox(
+                height: 15.h,
               ),
-            ))
-            // Expanded(child: buildNotificationList())
-          ],
-        ),
-      )),
+
+              if (userSubscriptionDetails.id.isNotEmpty)
+                Card(
+                    shadowColor: Colors.grey,
+                    child: ListTile(
+                      leading: Image.asset(AssetsPath.discoveryTree),
+                      title: Text('You are Subscribed',
+                          style: TextStyle(
+                              fontSize: 16.sp, fontWeight: FontWeight.w600)),
+                      subtitle: Text(
+                        'Your subscription is valid until ${DateFormat("MMM dd yyyy").format(DateTime.parse(userSubscriptionDetails.endDate))}',
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
+                    ))
+              else
+                Container()
+              // Expanded(child: buildNotificationList())
+            ],
+          ),
+        ));
+      }),
     );
   }
 }

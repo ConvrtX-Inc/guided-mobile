@@ -16,6 +16,7 @@ import 'package:guided/constants/asset_path.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
+import 'package:guided/models/activity_availability_hours.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/notification_model.dart';
@@ -83,6 +84,8 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
   String cancellationPolicyId = '';
   int travelerCount = 0;
 
+  ActivityAvailabilityHours activityDate = ActivityAvailabilityHours();
+
   @override
   void initState() {
     super.initState();
@@ -100,6 +103,11 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     selectedDate = screenArguments['selectedDate'] as String;
     travelerCount = numberOfTraveller;
     price = double.parse(activityPackage.basePrice!) * travelerCount;
+    activityDate = screenArguments['activityDateDetails'];
+
+    debugPrint('DATE ${activityDate.availabilityDateHour} ${activityDate.id}');
+
+    updateAvailableSlot();
 
     return Scaffold(
       backgroundColor: HexColor('#ECEFF0'),
@@ -472,7 +480,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
               ),
               const Spacer(),
               Text(
-                '\$$price',
+                '\$${price.toStringAsFixed(2)}',
                 style: TextStyle(
                   color: HexColor('#696D6D'),
                   fontSize: 12.sp,
@@ -544,7 +552,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
               ),
               const Spacer(),
               Text(
-                '\$${price}',
+                '\$${price.toStringAsFixed(2)}',
                 style: TextStyle(
                   color: HexColor('#3E4242'),
                   fontSize: 14.sp,
@@ -608,87 +616,36 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
             height: 10.h,
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              /*     GestureDetector(
-                  onTap: selectPaymentMethod,
-                  child: Container(
-                    height: 36.h,
-                    width: 84.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10.r),
-                      ),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/png/card1.png'),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  )),*/
               GestureDetector(
                   onTap: selectPaymentMethod,
                   child: buildPaymentMethodBtn(
                     isSelected: paymentMode == 'Credit Card',
                     iconUrl: '${AssetsPath.assetsPNGPath}/credit_card_icon.png',
                   )),
-              GestureDetector(
-                  onTap: () => Platform.isAndroid
-                      ? selectPaymentMethod(selectedPaymentMode: 1)
-                      : null,
-                  child: buildPaymentMethodBtn(
-                    isSelected: paymentMode == 'Google Pay',
-                    isEnabled: Platform.isAndroid,
-                    iconUrl:
-                        '${AssetsPath.assetsPNGPath}/google_wallet_icon.png',
-                  )),
-              GestureDetector(
-                  onTap: () => Platform.isIOS
-                      ? selectPaymentMethod(selectedPaymentMode: 2)
-                      : null,
-                  child: buildPaymentMethodBtn(
-                    isSelected: paymentMode == 'Apple Pay',
-                    isEnabled: Platform.isIOS,
-                    iconUrl:
-                        '${AssetsPath.assetsPNGPath}/apple_wallet_icon.png',
-                  )),
-              /*   GestureDetector(
-                  onTap: Platform.isAndroid
-                      ? () {
-                          selectPaymentMethod(selectedPaymentMode: 1);
-                        }
-                      : null,
-                  child: Container(
-                    height: 36.h,
-                    width: 84.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10.r),
-                      ),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/png/card2.png'),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  )),
-              GestureDetector(
-                  onTap: Platform.isIOS
-                      ? () {
-                          selectPaymentMethod(selectedPaymentMode: 2);
-                        }
-                      : null,
-                  child: Container(
-                    height: 36.h,
-                    width: 84.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10.r),
-                      ),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/png/card3.png'),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  )),*/
+              if (Platform.isAndroid)
+                GestureDetector(
+                    onTap: () => Platform.isAndroid
+                        ? selectPaymentMethod(selectedPaymentMode: 1)
+                        : null,
+                    child: buildPaymentMethodBtn(
+                      isSelected: paymentMode == 'Google Pay',
+                      isEnabled: Platform.isAndroid,
+                      iconUrl:
+                          '${AssetsPath.assetsPNGPath}/google_wallet_icon.png',
+                    )),
+              if (Platform.isIOS)
+                GestureDetector(
+                    onTap: () => Platform.isIOS
+                        ? selectPaymentMethod(selectedPaymentMode: 2)
+                        : null,
+                    child: buildPaymentMethodBtn(
+                      isSelected: paymentMode == 'Apple Pay',
+                      isEnabled: Platform.isIOS,
+                      iconUrl:
+                          '${AssetsPath.assetsPNGPath}/apple_wallet_icon.png',
+                    )),
             ],
           ),
           SizedBox(
@@ -805,7 +762,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                   alignment: Alignment.topRight,
                   child: SizedBox(
                       height: 40.h,
-                      width: 66.w,
+                      width: MediaQuery.of(context).size.width * 0.22,
                       child: CustomRoundedButton(
                           title: 'Done',
                           onpressed: () {
@@ -1231,7 +1188,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 paymentMethod: paymentMode,
                 onBtnPressed: () {
                   // show transaction details
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => RequestRefund(
@@ -1482,5 +1439,12 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
 
   double getTotal(double hours) {
     return price * hours;
+  }
+
+  // UPDATE SLOT IF BOOKING REQUEST IS SUCCESSFUL
+  Future<void> updateAvailableSlot() async {
+    int availableSlot = activityDate.slots! - travelerCount;
+
+    debugPrint('Available SLot $availableSlot');
   }
 }

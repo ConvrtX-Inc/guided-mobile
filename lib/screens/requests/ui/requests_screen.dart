@@ -45,7 +45,6 @@ class _RequestsScreenState extends State<RequestsScreen> {
     _filterType = widget.filterType.toLowerCase();
     getBookingRequestList();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -208,7 +207,14 @@ class _RequestsScreenState extends State<RequestsScreen> {
       'bookingRequest': request,
       'traveller': traveller,
     };
-    await Navigator.pushNamed(context, '/request_view', arguments: details);
+    final dynamic result = await Navigator.pushNamed(context, '/request_view', arguments: details);
+    debugPrint('RESULT $result');
+    if(result != ''){
+      setState(() {
+        _filterType = 'pending';
+        getBookingRequestList();
+      });
+    }
   }
 
   // FILTER BOOKING REQUEST

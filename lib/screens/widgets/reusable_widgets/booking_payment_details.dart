@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_texts.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/screens/widgets/reusable_widgets/payment_detail.dart';
 
 ///Booking Payment Details
@@ -57,7 +58,7 @@ class BookingPaymentDetails extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(bottom: 8.h),
                 child: Text(
-                  '.${price.split('.')[1]}USD',
+                  '.${price.split('.')[1]}${PaymentConfig.currencyCode}',
                   style: TextStyle(
                     fontSize: 26.sp,
                     fontWeight: FontWeight.w600,

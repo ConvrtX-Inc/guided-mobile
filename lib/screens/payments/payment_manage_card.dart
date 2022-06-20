@@ -272,7 +272,7 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               if (!selectedCard.isDefault)
-                InkWell(
+                Expanded(child: InkWell(
                   onTap: setCardAsDefault,
                   child: Container(
                     height: 45.h,
@@ -291,7 +291,7 @@ class _PaymentManageCardState extends State<PaymentManageCard> {
                       ),
                     ),
                   ),
-                ),
+                )),
               SizedBox(width: 7.w),
               InkWell(
                 onTap: _showRemoveDialog,

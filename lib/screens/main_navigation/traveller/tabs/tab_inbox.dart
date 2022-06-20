@@ -477,7 +477,7 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
 
   Future<void> getMessages() async {
     final List<ChatModel> res = await APIServices()
-        .getChatMessages(UserSingleton.instance.user.user!.id!, 'all');
+        .getChatMessages('all');
 
     if (res.isNotEmpty) {
       setState(() {

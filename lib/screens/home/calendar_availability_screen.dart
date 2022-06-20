@@ -56,7 +56,6 @@ class _CalendarAvailabilityScreenState
 
       DateTime currentDate =
           DateTime.parse(travellerMonthController.currentDate);
-
       final DateTime defaultDate = DateTime(currentDate.year, currentDate.month,
           1, currentDate.hour, currentDate.minute);
 

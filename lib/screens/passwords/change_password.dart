@@ -1,11 +1,13 @@
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/ui/snackbars.dart';
 
 ///Change Password Screen
 class ChangePasswordScreen extends StatefulWidget {
@@ -17,12 +19,16 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  TextEditingController newPassword = TextEditingController();
-  TextEditingController confirmPassword = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
 
   bool isPasswordMatch = false;
   String code = '';
   String phoneNumber = '';
+  bool isLoading = false;
+
+  String _newPassword = '';
+  String _confirmPassword = '';
 
   @override
   Widget build(BuildContext context) {
@@ -46,88 +52,109 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         child: SizedBox(
           width: width,
           height: height,
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
+          child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 16.h),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    AppTextConstants.createNewPassword,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25,
+                  Expanded(
+                      child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          AppTextConstants.changePassword,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                          ),
+                        ),
+                        SizedBox(height: 20.h),
+                        /*  Text(
+                          AppTextConstants.yourPasswordMustBeDifferent,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'Gilroy',
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                          ),
+                        ),*/
+                        SizedBox(height: 40.h),
+                        Text(
+                          AppTextConstants.newPassword,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 15),
+                        ),
+                        SizedBox(height: 20.h),
+                        TextField(
+                          controller: newPasswordController,
+                          onChanged: (val) {
+                            setState(() {
+                              _newPassword = val.trim();
+                            });
+                          },
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: AppTextConstants.passwordHint,
+                            hintStyle: TextStyle(
+                              color: AppColors.grey,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14.r),
+                              borderSide:
+                                  BorderSide(color: Colors.grey, width: 0.2.w),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20.h),
+                        Text(
+                          AppTextConstants.confirmPassword,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 15),
+                        ),
+                        SizedBox(
+                          height: 15.h,
+                        ),
+                        TextField(
+                          controller: confirmPasswordController,
+                          obscureText: true,
+                          onChanged: (val) {
+                            setState(() {
+                              _confirmPassword = val.trim();
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: AppTextConstants.passwordHint,
+                            hintStyle: TextStyle(
+                              color: AppColors.grey,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14.r),
+                              borderSide:
+                                  BorderSide(color: Colors.grey, width: 0.2.w),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 20.h),
-                  Text(
-                    AppTextConstants.yourPasswordMustBeDifferent,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'Gilroy',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(height: 40.h),
-                  Text(
-                    AppTextConstants.newPassword,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 15),
-                  ),
-                  SizedBox(height: 20.h),
-                  TextField(
-                    controller: newPassword,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: AppTextConstants.passwordHint,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                        BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  Text(
-                    AppTextConstants.confirmPassword,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 15),
-                  ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                  TextField(
-                    controller: confirmPassword,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: AppTextConstants.passwordHint,
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                        BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
-                    ),
-                  ),
+                  )),
+                  CustomRoundedButton(
+                      title: 'Save',
+                      isLoading: isLoading,
+                      onpressed: _newPassword.isNotEmpty &&
+                              _confirmPassword.trim().isNotEmpty
+                          ? updatePassword
+                          : null)
                 ],
-              ),
-            ),
-          ),
+              )),
         ),
       ),
-      bottomNavigationBar: Padding(
+      /*   bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(20),
         child: SizedBox(
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed:updatePassword,
+            onPressed: updatePassword,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -144,7 +171,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
           ),
         ),
-      ),
+      ),*/
     );
   }
 
@@ -180,24 +207,34 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }*/
 
   Future<void> updatePassword() async {
-    if (newPassword.text == confirmPassword.text) {
-      final dynamic updatePasswordParams = {
-        'password': newPassword.text,
-      };
+    if (_newPassword == _confirmPassword) {
+      setState(() {
+        isLoading = true;
+      });
 
+      final dynamic updatePasswordParams = {
+        'password': _newPassword,
+      };
       final APIStandardReturnFormat res =
-      await APIServices().updatePassword(updatePasswordParams);
-      debugPrint(
-          'Response:: update password ${res.statusCode} ${res.status} ${res.errorResponse}${newPassword.text}');
+          await APIServices().updatePassword(updatePasswordParams);
 
       if (res.status == 'success') {
-        const AdvanceSnackBar(message: 'Password Updated!')
-            .show(context);
-        Navigator.of(context).pop();
-      }else{
-        AdvanceSnackBar(message: ErrorMessageConstants.passwordDoesNotMatch)
-            .show(context);
+        AppSnackbars().success(context: context, message: 'Password Updated!');
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        AppSnackbars().error(
+            context: context,
+            message: 'Unable to Update Password. Please try again');
       }
+    } else {
+      AppSnackbars().error(
+          context: context,
+          message: ErrorMessageConstants.passwordDoesNotMatch);
     }
   }
 }

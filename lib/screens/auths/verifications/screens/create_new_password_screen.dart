@@ -31,8 +31,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     final double width = MediaQuery.of(context).size.width;
 
     final Map<String, dynamic> screenArguments =
-        // ignore: cast_nullable_to_non_nullable
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    // ignore: cast_nullable_to_non_nullable
+    ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
       appBar: AppBar(
@@ -93,7 +93,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
+                        BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -117,7 +117,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
+                        BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
