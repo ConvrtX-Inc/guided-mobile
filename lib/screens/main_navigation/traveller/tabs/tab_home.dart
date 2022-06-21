@@ -18,6 +18,7 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/popular_guides_controller.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/controller/user_profile_controller.dart';
@@ -74,6 +75,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   int selectedmonth = 0;
   final ScrollToIndexController _scrollController = ScrollToIndexController();
   final travellerMonthController = Get.put(TravellerMonthController());
+  final popularGuidesController = Get.put(PopularGuidesController());
   final SwiperController _cardController = SwiperController();
   double latitude = 0.0;
   double longitude = 0.0;
