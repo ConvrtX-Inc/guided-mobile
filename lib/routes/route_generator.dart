@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:google_place/google_place.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/certificate.dart';
@@ -50,6 +51,7 @@ import 'package:guided/screens/main_navigation/traveller/tabs/tab_inbox.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_map.dart';
 
 import 'package:guided/screens/main_navigation/traveller/traveller_tabbar.dart';
+import 'package:guided/screens/maps/activity_map.dart';
 
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_individual_screen.dart';
@@ -106,6 +108,7 @@ import 'package:guided/screens/refunds/traveler/request_refund.dart';
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
+import 'package:guided/screens/search/place_search.dart';
 import 'package:guided/screens/settings/edit_profile.dart';
 import 'package:guided/screens/settings/edit_profile_traveller.dart';
 import 'package:guided/screens/settings/profile_screen.dart';
@@ -283,7 +286,7 @@ class RouteGenerator {
                 RequestFilterScreen(selectedFilter: args! as String));
       case '/request_view':
         return MaterialPageRoute<dynamic>(
-            builder: (_) =>   RequestViewScreen(params: args));
+            builder: (_) => RequestViewScreen(params: args));
       case '/discovery':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const DiscoveryScreen(), settings: settings);
@@ -471,9 +474,13 @@ class RouteGenerator {
             builder: (_) => CertificateView(certificate: args! as Certificate));
       case '/change_phone_number':
         return MaterialPageRoute<dynamic>(builder: (_) => UpdatePhoneNumber());
-      /*case '/booking_history':
-        return MaterialPageRoute<dynamic>(
-            builder: (_) => MyBookingDates());*/
+
+      case '/search_place':
+        return MaterialPageRoute<dynamic>(builder: (_) => SearchPlace());
+
+      case '/activity_map':
+        return MaterialPageRoute<dynamic>(builder: (_) => ActivityFindMap(params: args));
+
       default:
         return _errorRoute();
     }
