@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:advance_notification/advance_notification.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/ui/dialogs.dart';
 import 'package:guided/utils/ui/snackbars.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -58,15 +60,17 @@ class _LoginScreenState extends State<LoginScreen> {
             .loginFacebook(googleKey.accessToken!)
             .then((APIStandardReturnFormat response) async {
           if (response.status == 'error') {
-         /*   AdvanceSnackBar(
+            /*   AdvanceSnackBar(
                 message: ErrorMessageConstants.loginWrongEmailorPassword)
                 .show(context);*/
-            AppSnackbars().error(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword );
+            AppSnackbars().error(
+                context: context,
+                message: ErrorMessageConstants.loginWrongEmailorPassword);
 
             setState(() => buttonIsLoading = false);
           } else {
             final UserModel user =
-            UserModel.fromJson(json.decode(response.successResponse));
+                UserModel.fromJson(json.decode(response.successResponse));
             UserSingleton.instance.user = user;
             if (user.user?.isTraveller != true) {
               await SecureStorage.saveValue(
@@ -99,15 +103,16 @@ class _LoginScreenState extends State<LoginScreen> {
     };
 
     final String userType =
-    await SecureStorage.readValue(key: AppTextConstants.userType);
+        await SecureStorage.readValue(key: AppTextConstants.userType);
 
     // debugPrint('User Type ${userType}');
     if (!EmailValidator.validate(_emailController.text)) {
       _emailFocus.requestFocus();
-  /*    AdvanceSnackBar(message: ErrorMessageConstants.emailInvalidorEmpty)
+      /*    AdvanceSnackBar(message: ErrorMessageConstants.emailInvalidorEmpty)
           .show(context);*/
 
-      AppSnackbars().error(context: context, message: ErrorMessageConstants.emailInvalidorEmpty );
+      AppSnackbars().error(
+          context: context, message: ErrorMessageConstants.emailInvalidorEmpty);
 
       setState(() => buttonIsLoading = false);
       return;
@@ -115,10 +120,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (_passwordController.text.isEmpty) {
       _passwordFocus.requestFocus();
-   /*   AdvanceSnackBar(message: ErrorMessageConstants.emptyPassword)
+      /*   AdvanceSnackBar(message: ErrorMessageConstants.emptyPassword)
           .show(context);*/
 
-      AppSnackbars().error(context: context, message: ErrorMessageConstants.emptyPassword );
+      AppSnackbars().error(
+          context: context, message: ErrorMessageConstants.emptyPassword);
 
       setState(() => buttonIsLoading = false);
       return;
@@ -155,10 +161,13 @@ class _LoginScreenState extends State<LoginScreen> {
         .then((APIStandardReturnFormat response) async {
       setState(() => buttonIsLoading = false);
       if (response.status == 'error') {
-    /*    AdvanceSnackBar(
+        /*    AdvanceSnackBar(
             message: ErrorMessageConstants.loginWrongEmailorPassword)
             .show(context);*/
-        AppSnackbars().error(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword );
+        // AppSnackbars().error(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword );
+
+
+        AppDialogs().showError(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword, title: 'Login Failed');
 
         setState(() => buttonIsLoading = false);
       } else {
@@ -169,11 +178,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> setRoles(APIStandardReturnFormat response) async {
     final UserModel user =
-    UserModel.fromJson(json.decode(response.successResponse));
+        UserModel.fromJson(json.decode(response.successResponse));
     UserSingleton.instance.user = user;
 
     final String userType =
-    await SecureStorage.readValue(key: AppTextConstants.userType);
+        await SecureStorage.readValue(key: AppTextConstants.userType);
     if (userType == 'traveller') {
       await saveTokenAndId(user.token!, user.user!.id!);
       Navigator.of(context).pushNamedAndRemoveUntil(
@@ -217,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: <Widget>[
                   Container(
                     margin:
-                    EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+                        EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
                     width: 40.w,
                     height: 40.h,
                     padding: EdgeInsets.zero,
@@ -263,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                       final fb = FacebookLogin();
                       final res =
-                      await fb.logIn(permissions: <FacebookPermission>[
+                          await fb.logIn(permissions: <FacebookPermission>[
                         FacebookPermission.publicProfile,
                         FacebookPermission.email,
                       ]);
@@ -281,9 +290,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               .loginFacebook(accessToken!.token)
                               .then((APIStandardReturnFormat response) async {
                             if (response.status == 'error') {
-
-                              AppSnackbars().error(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword );
-
+                              AppSnackbars().error(
+                                  context: context,
+                                  message: ErrorMessageConstants
+                                      .loginWrongEmailorPassword);
 
                               setState(() => buttonIsLoading = false);
                             } else {
@@ -504,7 +514,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                        BorderSide(color: Colors.grey, width: 0.2.w),
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -533,7 +543,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),
                         borderSide:
-                        BorderSide(color: Colors.grey, width: 0.2.w),
+                            BorderSide(color: Colors.grey, width: 0.2.w),
                       ),
                     ),
                   ),
@@ -566,7 +576,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: AppColors.silver,
                           ),
                           borderRadius:
-                          BorderRadius.circular(18.r), // <-- Radius
+                              BorderRadius.circular(18.r), // <-- Radius
                         ),
                         primary: AppColors.primaryGreen,
                         onPrimary: Colors.white, // <-- Splash color
@@ -648,14 +658,16 @@ class _LoginScreenState extends State<LoginScreen> {
           .loginFacebook(credential.identityToken!)
           .then((APIStandardReturnFormat response) async {
         if (response.status == 'error') {
-        /*  AdvanceSnackBar(
+          /*  AdvanceSnackBar(
               message: ErrorMessageConstants.loginWrongEmailorPassword)
               .show(context);*/
-          AppSnackbars().error(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword );
+          AppSnackbars().error(
+              context: context,
+              message: ErrorMessageConstants.loginWrongEmailorPassword);
           setState(() => appleLoading = false);
         } else {
           final UserModel user =
-          UserModel.fromJson(json.decode(response.successResponse));
+              UserModel.fromJson(json.decode(response.successResponse));
           UserSingleton.instance.user = user;
           if (user.user?.isTraveller != true) {
             await SecureStorage.saveValue(

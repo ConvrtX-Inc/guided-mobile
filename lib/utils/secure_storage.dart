@@ -10,6 +10,10 @@ class SecureStorage {
 
   ///Returns user_id key;
   static const String userIdKey = 'user_id';
+
+  ///Returns preferred activities key
+  static const String preferredActivitiesKey = 'preferred_activities';
+
   /// For saving secure string
   static Future<void> saveValue(
       {required String key, required String value}) async {

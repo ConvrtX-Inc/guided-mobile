@@ -10,10 +10,11 @@ import 'package:collection/collection.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_place/google_place.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/asset_path.dart';
@@ -26,6 +27,7 @@ import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/activity_availability_hours.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/available_date_model.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/guide.dart';
 import 'package:guided/models/user_model.dart';
@@ -34,16 +36,20 @@ import 'package:guided/screens/payments/confirm_payment.dart';
 import 'package:guided/screens/payments/payment_failed.dart';
 import 'package:guided/screens/payments/payment_method.dart';
 import 'package:guided/screens/payments/payment_successful.dart';
+import 'package:guided/screens/widgets/reusable_widgets/activity_package_basic_info.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_bottom_sheet.dart';
 import 'package:guided/screens/widgets/reusable_widgets/discovery_payment_details.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
-import 'package:guided/screens/widgets/reusable_widgets/reviews_count.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
+import 'package:guided/utils/map_utils.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:guided/utils/services/geolocation_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
+import 'package:in_date_utils/in_date_utils.dart' as Indate;
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 /// PopularGuides
 class TabMapScreen extends StatefulWidget {
@@ -64,9 +70,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
   final List<Guide> guides = StaticDataService.getGuideList();
   final List<Activity> activities =
       StaticDataService.getActivityForNearybyGuides();
-  final List<Activity> tourList = StaticDataService.getTourList();
+
+  // final List<Activity> tourList = StaticDataService.getTourList();
   bool hideActivities = false;
-  bool showBottomScroll = true;
+  bool showBottomScroll = false;
   double activitiesContainer = 70;
   bool _isloading = true;
   List<int> _selectedActivity = [];
@@ -76,7 +83,17 @@ class _TabMapScreenState extends State<TabMapScreen> {
   final CardController _creditCardController = Get.put(CardController());
   final UserSubscriptionController _userSubscriptionController =
       Get.put(UserSubscriptionController());
-  TextEditingController _placeName = new TextEditingController();
+  TextEditingController _searchController = TextEditingController();
+
+  Activity selectedActivityFilter = Activity();
+
+  DetailsResponse _selectedPlace = DetailsResponse();
+
+  String startDate = '';
+
+  String endDate = '';
+
+  final List<AvailableDateModel> dates = AppListConstants().availableDates;
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
@@ -92,28 +109,39 @@ class _TabMapScreenState extends State<TabMapScreen> {
 
   List<DateTime> activityAvailableDates = [];
 
+  String currentAddress = '';
+
+  final int currentMonth = DateTime.now().month;
+
+  DateTime selectedDate = DateTime.now();
+
   @override
   void initState() {
-    APIServices().getActivityPackages().then((List<ActivityPackage> value) {
-      print(value.length);
-      addMarker(value);
-    });
-
-    // WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker(context));
     super.initState();
-
-/*    if (_creditCardController.cards.isEmpty) {
-      getUserCards();
-    }*/
 
     hasPremiumSubscription =
         UserSingleton.instance.user.user!.hasPremiumSubscription!;
+
+    getActivityPackages();
+
+    getCurrentAddress();
   }
 
   @override
   void dispose() {
     _searchFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<void> getActivityPackages() async {
+    final List<ActivityPackage> res = await APIServices().getActivityPackages();
+
+    await addMarker(res);
+
+    setState(() {
+      _loadingData = res;
+      _isloading = false;
+    });
   }
 
   Future<void> addMarker(List<ActivityPackage> activityPackages) async {
@@ -132,7 +160,6 @@ class _TabMapScreenState extends State<TabMapScreen> {
             Marker(
               onTap: () {
                 debugPrint('Activity ${element.name}');
-                // showActivityDetails(element);
 
                 activityAvailableDates.clear();
 
@@ -172,16 +199,24 @@ class _TabMapScreenState extends State<TabMapScreen> {
     //     ));
     setState(() {
       currentMapLatLong = LatLng(lat, long);
-      _loadingData = activityPackages;
-      _isloading = false;
+
       _markers.addAll(marks);
     });
+  }
+
+  Future<void> goToPlace(DetailsResponse result) async {
+    await mapController?.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+            target: LatLng(result.result!.geometry!.location!.lat!,
+                result.result!.geometry!.location!.lng!),
+            zoom: 5)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        elevation: 23,
         backgroundColor: Colors.white,
         onPressed: () async {
           final Position location = await _userCurrentPosition();
@@ -199,711 +234,273 @@ class _TabMapScreenState extends State<TabMapScreen> {
       ),
       body: SafeArea(
         bottom: false,
-        child: Stack(
-          children: <Widget>[
-            GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: currentMapLatLong,
-                zoom: 12,
-              ),
-              markers: Set<Marker>.of(_markers),
-              onMapCreated: _onMapCreated,
-              zoomControlsEnabled: false,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(const Radius.circular(10)),
-                color: HexColor('#F8F7F6'),
-              ),
-              height: hideActivities
-                  ? MediaQuery.of(context).size.height * 0.24
-                  : MediaQuery.of(context).size.height * 0.35,
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 10.h),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/traveller_tab');
-                          },
-                          child: Container(
-                            transform: Matrix4.translationValues(0, -5.h, 0),
-                            height: 60.h,
-                            width: 58.w,
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(15.r),
-                              ),
-                            ),
-                            child: Center(
-                              child: Container(
-                                height: 20.h,
-                                width: 20.w,
-                                decoration: const BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/png/green_house_outlined.png'),
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
-                          child: TextField(
-                            textInputAction: TextInputAction.search,
-                            onSubmitted: (String search) {
-                              if (search.isNotEmpty) {
-                                APIServices()
-                                    .searchActivity(search)
-                                    .then((List<ActivityPackage> value) {
-                                  final ActivityPackage? activity =
-                                      value.firstOrNull;
-
-                                  if (activity != null) {
-                                    addMarker(value);
-                                    double lat = double.parse(activity
-                                        .activityPackageDestination!
-                                        .activityPackageDestinationLatitude!);
-                                    double long = double.parse(activity
-                                        .activityPackageDestination!
-                                        .activityPackageDestinationLongitude!);
-                                    mapController?.animateCamera(
-                                        CameraUpdate.newCameraPosition(
-                                            CameraPosition(
-                                                target: LatLng(lat, long),
-                                                zoom: 17)
-                                            //17 is new zoom level
-                                            ));
-                                  }
-                                });
-                              }
-                            },
-                            controller: _placeName,
-                            textAlign: TextAlign.left,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              hintText: 'Search...',
-                              hintStyle: TextStyle(fontSize: 16.sp),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16.r),
-                                borderSide: const BorderSide(
-                                  width: 0,
-                                  style: BorderStyle.none,
-                                ),
-                              ),
-                              filled: true,
-                              contentPadding: const EdgeInsets.all(22),
-                              fillColor: Colors.white,
-                              prefixIcon: IconButton(
-                                icon: Image.asset(
-                                  'assets/images/png/search_icon.png',
-                                  width: 20.w,
-                                  height: 20.h,
-                                ),
-                                onPressed: null,
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Image.asset(
-                                  'assets/images/png/calendar_icon.png',
-                                  width: 20.w,
-                                  height: 20.h,
-                                ),
-                                // onPressed: null,
-                                onPressed: () {
-                                  showMaterialModalBottomSheet(
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(20),
-                                      ),
-                                    ),
-                                    expand: false,
-                                    context: context,
-                                    backgroundColor: Colors.white,
-                                    builder: (BuildContext context) => SafeArea(
-                                      top: false,
-                                      child: Container(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.72,
-                                        decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(20),
-                                                topRight: Radius.circular(20))),
-                                        child: Column(
-                                          children: <Widget>[
-                                            SizedBox(
-                                              height: 15.h,
-                                            ),
-                                            Align(
-                                              child: Image.asset(
-                                                AssetsPath.horizontalLine,
-                                                width: 60.w,
-                                                height: 5.h,
-                                              ),
-                                            ),
-                                            // SizedBox(
-                                            //   height: 15.h,
-                                            // ),
-                                            Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  20.w, 20.h, 20.w, 20.h),
-                                              child: Align(
-                                                alignment: Alignment.topLeft,
-                                                child: Text(
-                                                  'Select date',
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 24.sp,
-                                                      fontWeight:
-                                                          FontWeight.w700),
-                                                ),
-                                              ),
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: <Widget>[
-                                                Icon(
-                                                  Icons.chevron_left,
-                                                  color: HexColor('#898A8D'),
-                                                ),
-                                                Container(
-                                                    color: Colors.transparent,
-                                                    height: 80.h,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.7,
-                                                    child: EasyScrollToIndex(
-                                                      controller:
-                                                          _scrollController,
-                                                      // ScrollToIndexController
-                                                      scrollDirection:
-                                                          Axis.horizontal,
-                                                      // default Axis.vertical
-                                                      itemCount:
-                                                          AppListConstants
-                                                              .calendarMonths
-                                                              .length,
-                                                      // itemCount
-                                                      itemWidth: 95,
-                                                      itemHeight: 70,
-                                                      itemBuilder:
-                                                          (BuildContext context,
-                                                              int index) {
-                                                        return InkWell(
-                                                          onTap: () {
-                                                            _scrollController
-                                                                .easyScrollToIndex(
-                                                                    index:
-                                                                        index);
-                                                            travellerMonthController
-                                                                .setSelectedDate(
-                                                                    index + 1);
-                                                            DateTime dt =
-                                                                DateTime.parse(
-                                                                    travellerMonthController
-                                                                        .currentDate);
-
-                                                            final DateTime
-                                                                plustMonth =
-                                                                DateTime(
-                                                                    dt.year,
-                                                                    index + 1,
-                                                                    dt.day,
-                                                                    dt.hour,
-                                                                    dt.minute);
-
-                                                            final DateTime
-                                                                setLastday =
-                                                                DateTime(
-                                                                    plustMonth
-                                                                        .year,
-                                                                    plustMonth
-                                                                        .month,
-                                                                    1,
-                                                                    plustMonth
-                                                                        .hour,
-                                                                    plustMonth
-                                                                        .minute);
-
-                                                            travellerMonthController
-                                                                .setCurrentMonth(
-                                                              setLastday
-                                                                  .toString(),
-                                                            );
-                                                          },
-                                                          child: Obx(
-                                                            () => Stack(
-                                                              children: <
-                                                                  Widget>[
-                                                                Align(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child:
-                                                                      Container(
-                                                                    margin: EdgeInsets.fromLTRB(
-                                                                        index ==
-                                                                                0
-                                                                            ? 0.w
-                                                                            : 0.w,
-                                                                        0.h,
-                                                                        10.w,
-                                                                        0.h),
-                                                                    width: 89,
-                                                                    height: 45,
-                                                                    decoration: BoxDecoration(
-                                                                        borderRadius: const BorderRadius.all(
-                                                                          Radius.circular(
-                                                                              10),
-                                                                        ),
-                                                                        border: Border.all(color: index == travellerMonthController.selectedDate - 1 ? HexColor('#FFC74A') : HexColor('#C4C4C4'), width: 1),
-                                                                        color: index == travellerMonthController.selectedDate - 1 ? HexColor('#FFC74A') : Colors.white),
-                                                                    child: Center(
-                                                                        child: Text(
-                                                                            AppListConstants.calendarMonths[index])),
-                                                                  ),
-                                                                ),
-                                                                // Positioned(
-                                                                //     right: 2,
-                                                                //     top: 2,
-                                                                //     child: index
-                                                                //             .isOdd
-                                                                //         ? Badge(
-                                                                //             padding:
-                                                                //                 const EdgeInsets.all(8),
-                                                                //             badgeColor:
-                                                                //                 AppColors.deepGreen,
-                                                                //             badgeContent:
-                                                                //                 Text(
-                                                                //               '2',
-                                                                //               style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.w800, fontFamily: AppTextConstants.fontPoppins),
-                                                                //             ),
-                                                                //           )
-                                                                //         : Container()),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                    )),
-                                                Icon(
-                                                  Icons.chevron_right,
-                                                  color: HexColor('#898A8D'),
-                                                ),
-                                              ],
-                                            ),
-                                            GetBuilder<
-                                                    TravellerMonthController>(
-                                                id: 'calendar',
-                                                builder:
-                                                    (TravellerMonthController
-                                                        controller) {
-                                                  print(
-                                                      controller.selectedDates);
-                                                  return Container(
-                                                      padding:
-                                                          EdgeInsets.fromLTRB(
-                                                              20.w,
-                                                              0.h,
-                                                              20.w,
-                                                              0.h),
-                                                      height:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .height *
-                                                              0.4,
-                                                      child: Sfcalendar(
-                                                          context,
-                                                          travellerMonthController
-                                                              .currentDate,
-                                                          (List<DateTime>
-                                                              value) {
-                                                        travellerMonthController
-                                                            .selectedDates
-                                                            .clear();
-                                                        travellerMonthController
-                                                            .setSelectedDates(
-                                                                value);
-                                                      }, []));
-                                                }),
-                                            // SizedBox(
-                                            //   height: 20.h,
-                                            // ),
-                                            SizedBox(
-                                              width: 153.w,
-                                              height: 54.h,
-                                              child: ElevatedButton(
-                                                onPressed: () {
-                                                  if (travellerMonthController
-                                                      .selectedDates
-                                                      .isNotEmpty) {
-                                                    Navigator.of(context).pop();
-                                                    travellerMonthController
-                                                        .selectedDates
-                                                        .sort((DateTime a,
-                                                                DateTime b) =>
-                                                            a.compareTo(b));
-
-                                                    APIServices()
-                                                        .getActivityByDateRange(
-                                                            formatDate(
-                                                                travellerMonthController
-                                                                    .selectedDates
-                                                                    .first),
-                                                            formatDate(
-                                                                travellerMonthController
-                                                                    .selectedDates
-                                                                    .last))
-                                                        .then((value) {
-                                                      if (value.isNotEmpty) {
-                                                        final ActivityPackage?
-                                                            activity =
-                                                            value.firstOrNull;
-                                                        if (activity != null) {
-                                                          addMarker(value);
-                                                          double lat = double
-                                                              .parse(activity
-                                                                  .activityPackageDestination!
-                                                                  .activityPackageDestinationLatitude!);
-                                                          double long = double
-                                                              .parse(activity
-                                                                  .activityPackageDestination!
-                                                                  .activityPackageDestinationLongitude!);
-                                                          mapController?.animateCamera(
-                                                              CameraUpdate.newCameraPosition(
-                                                                  CameraPosition(target: LatLng(
-                                                                          lat,
-                                                                          long),
-                                                                      zoom: 17)
-                                                                  //17 is new zoom level
-                                                                  ));
-                                                        }
-                                                      }
-                                                    });
-                                                  }
-                                                },
-                                                style: AppTextStyle.activeGreen,
-                                                child: const Text(
-                                                  'Set Filter Date',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 12),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ).whenComplete(() {
-                                    _scrollController.easyScrollToIndex(
-                                        index: 0);
-                                  });
-                                  Future.delayed(const Duration(seconds: 1),
-                                      () {
-                                    _scrollController.easyScrollToIndex(
-                                        index: travellerMonthController
-                                                .selectedDate -
-                                            1);
-
-                                    // setState(() {
-                                    //   selectedmonth = 7;
-                                    // });
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  FutureBuilder<List<Placemark>>(
-                    future: _determinePosition(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<Placemark>> snapshot) {
-                      if (snapshot.hasData) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                            Flexible(
-                              flex: 6,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  color: Colors.white,
-                                ),
-                                height: 44.h,
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      margin: EdgeInsets.only(
-                                          left: 10.w, right: 8.w),
-                                      height: 15.h,
-                                      width: 15.w,
-                                      decoration: const BoxDecoration(
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                              'assets/images/png/marker.png'),
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                    ),
-                                    if (snapshot.data!.isNotEmpty)
-                                      Text(
-                                          '${snapshot.data?.first.street} ${snapshot.data?.first.subLocality} ${snapshot.data?.first.locality}')
-                                    else
-                                      const Text(
-                                        "St. John's, Newfo...",
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            // SizedBox(
-                            //   width: 10.w,
-                            // ),
-                            // Flexible(
-                            //   flex: 3,
-                            //   child: Container(
-                            //     decoration: const BoxDecoration(
-                            //       borderRadius: BorderRadius.all(Radius.circular(10)),
-                            //       color: Colors.white,
-                            //     ),
-                            //     height: 44.h,
-                            //     child: const Center(child: Text('Radius : 05')),
-                            //   ),
-                            // ),
-                            SizedBox(
-                              width: 15.w,
-                            ),
-                          ],
-                        );
-                      }
-                      if (snapshot.connectionState != ConnectionState.done) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      return Container();
-                    },
-                  ),
-
-                  // SizedBox(
-                  //   height: hideActivities ? 20 : 40.h,
-                  // ),
-
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    // height: activitiesContainer,
-                    child: hideActivities
-                        ? Container(margin: EdgeInsets.only(top: 20.h))
-                        : Container(
-                            margin: EdgeInsets.only(top: 40.h),
-                            child: overlapped(activities),
-                          ),
-                  ),
-                  // const Spacer(),
-                  Align(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (hideActivities) {
-                            hideActivities = false;
-                            activitiesContainer = 70;
-                          } else {
-                            hideActivities = true;
-                            activitiesContainer = 0;
-                          }
-                        });
-                      },
-                      child: Icon(
-                        hideActivities ? Icons.expand_more : Icons.expand_less,
-                        // color: HexColor('#979B9B'),
-                        size: 30,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              child: Container(
-                  color: Colors.white,
-                  width: MediaQuery.of(context).size.width,
-                  height: showBottomScroll
-                      ? MediaQuery.of(context).size.height * 0.24
-                      : 40,
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: 5.h,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (showBottomScroll) {
-                              showBottomScroll = false;
-                            } else {
-                              showBottomScroll = true;
-                            }
-                          });
-                        },
-                        child: Icon(
-                          showBottomScroll
-                              ? Icons.expand_more
-                              : Icons.expand_less,
-                          color: HexColor('#979B9B'),
-                          size: 30,
-                        ),
-                      ),
-                      if (showBottomScroll)
-                        Expanded(
-                          child: ListView(
-                            // shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: List<Widget>.generate(
-                                _filteredActivity.length, (int i) {
-                              final Activity? icon = activities
-                                  .firstWhereOrNull((Activity element) =>
-                                      element.id ==
-                                      _filteredActivity[i].mainBadgeId);
-                              // final ActivityPackage? enable = _filteredActivity
-                              //     .firstWhereOrNull((ActivityPackage element) =>
-                              //         element.id == _loadingData[i].id);
-                              if (icon != null) {
-                                return InkWell(
-                                    onTap: () {
-                                      // Navigator.of(context)
-                                      //     .pushNamed('/discovery_map');
-                                      if (!hasPremiumSubscription &&
-                                          PaymentConfig.isPaymentEnabled &&
-                                          _filteredActivity[i].premiumUser!) {
-                                        _showDiscoveryBottomSheet(
-                                            _filteredActivity[i]
-                                                .firebaseCoverImg!);
-                                      } else {
-                                        Navigator.of(context).pushNamed(
-                                            '/activity_package_info',
-                                            arguments: _filteredActivity[i]);
-                                      }
-                                    },
-                                    child: Container(
-                                      margin: EdgeInsets.symmetric(
-                                          horizontal: 15.w, vertical: 20.h),
-                                      height: 180.h,
-                                      width: 135.w,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.transparent,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            _filteredActivity[i].name!,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 12.sp,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 10.h,
-                                          ),
-                                          Container(
-                                            height: 90.h,
-                                            width: 135.w,
-                                            decoration: BoxDecoration(
-                                              color: Colors.transparent,
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(15.r),
-                                              ),
-                                              image: DecorationImage(
-                                                  image: NetworkImage(
-                                                    _filteredActivity[i]
-                                                        .firebaseCoverImg!,
-                                                  ),
-                                                  fit: BoxFit.cover),
-                                              // image: DecorationImage(
-                                              //     image: Image.memory(
-                                              //   base64.decode(
-                                              //       _filteredActivity[i]
-                                              //           .coverImg!
-                                              //           .split(',')
-                                              //           .last),
-                                              //   fit: BoxFit.cover,
-                                              //   gaplessPlayback: true,
-                                              // ).image),
-                                              // image: DecorationImage(
-                                              //   image: AssetImage(
-                                              //       tourList[0].featureImage),
-                                              //   fit: BoxFit.cover,
-                                              // ),
-                                            ),
-                                            child: Stack(
-                                              children: <Widget>[
-                                                Positioned(
-                                                  left: 5,
-                                                  bottom: 5,
-                                                  child: CircleAvatar(
-                                                    backgroundColor:
-                                                        Colors.transparent,
-                                                    radius: 12,
-                                                    backgroundImage:
-                                                        AssetImage(icon.path),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ));
-                              } else {
-                                return Container();
-                              }
-                            }),
-                          ),
-                        )
-                      else
-                        Container()
-                    ],
-                  )),
-            ),
-            Align(
-                child: _isloading
-                    ? const CircularProgressIndicator()
-                    : Container()),
-            if (showSelectedPackage) buildBasicPackageInfo()
-          ],
-        ),
+        child: buildMapTabUI(),
       ),
     );
+  }
+
+  Widget buildMapTabUI() => Stack(
+        children: <Widget>[
+          SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: currentMapLatLong,
+                    zoom: 12,
+                  ),
+                  markers: Set<Marker>.of(_markers),
+                  onMapCreated: _onMapCreated,
+                  zoomControlsEnabled: false,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
+                ),
+              )),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(const Radius.circular(10)),
+              color: HexColor('#F8F7F6'),
+            ),
+            height: hideActivities
+                ? MediaQuery.of(context).size.height * 0.24
+                : MediaQuery.of(context).size.height * 0.35,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 10.h),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/traveller_tab');
+                        },
+                        child: Container(
+                          transform: Matrix4.translationValues(0, -5.h, 0),
+                          height: 60.h,
+                          width: 58.w,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
+                            ),
+                          ),
+                          child: Center(
+                            child: Container(
+                              height: 20.h,
+                              width: 20.w,
+                              decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                      'assets/images/png/green_house_outlined.png'),
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    buildSearchbar()
+                  ],
+                ),
+                buildCurrentLocationDetails(),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  // height: activitiesContainer,
+                  child: hideActivities
+                      ? Container(margin: EdgeInsets.only(top: 20.h))
+                      : Container(
+                          margin: EdgeInsets.only(top: 40.h),
+                          child: overlapped(activities),
+                        ),
+                ),
+                // const Spacer(),
+                Align(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (hideActivities) {
+                          hideActivities = false;
+                          activitiesContainer = 70;
+                        } else {
+                          hideActivities = true;
+                          activitiesContainer = 0;
+                        }
+                      });
+                    },
+                    child: Icon(
+                      hideActivities ? Icons.expand_more : Icons.expand_less,
+                      // color: HexColor('#979B9B'),
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          buildFilteredActivities(),
+          if (_isloading)
+            Align(child: CircularProgressIndicator(color: AppColors.deepGreen)),
+          if (showSelectedPackage)
+            Positioned(
+                bottom: 68,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: ActivityPackageBasicInfo(
+                    activityPackage: selectedPackage,
+                    activityAvailableDates: activityAvailableDates,
+                    onCloseButtonPressed: () {
+                      setState(() {
+                        showSelectedPackage = false;
+                        selectedPackage = ActivityPackage();
+                      });
+                    },
+                  ),
+                ))
+        ],
+      );
+
+  //FILTERED ACTIVITIES / SUGGESTIONS
+  Widget buildFilteredActivities() => Positioned(
+        bottom: 0,
+        child: Container(
+            color: Colors.white,
+            width: MediaQuery.of(context).size.width,
+            height: showBottomScroll
+                ? MediaQuery.of(context).size.height * 0.24
+                : 40,
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: 5.h,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (showBottomScroll) {
+                        showBottomScroll = false;
+                      } else {
+                        showBottomScroll = true;
+                      }
+                    });
+                  },
+                  child: Icon(
+                    showBottomScroll ? Icons.expand_more : Icons.expand_less,
+                    color: HexColor('#979B9B'),
+                    size: 30,
+                  ),
+                ),
+                if (showBottomScroll)
+                  Expanded(
+                    child: ListView(
+                      // shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      children: List<Widget>.generate(_filteredActivity.length,
+                          (int i) {
+                        // final Activity? icon = activities.firstWhereOrNull(
+                        //     (Activity element) =>
+                        //         element.id == _filteredActivity[i].mainBadgeId);
+                        // // final ActivityPackage? enable = _filteredActivity
+                        // //     .firstWhereOrNull((ActivityPackage element) =>
+                        // //         element.id == _loadingData[i].id);
+                        // if (icon != null) {
+                        //
+                        // } else {
+                        //   return Container();
+                        // }
+                        return InkWell(
+                            onTap: () {
+                              // Navigator.of(context)
+                              //     .pushNamed('/discovery_map');
+                              if (!hasPremiumSubscription &&
+                                  PaymentConfig.isPaymentEnabled &&
+                                  _filteredActivity[i].premiumUser!) {
+                                _showDiscoveryBottomSheet(
+                                    _filteredActivity[i].firebaseCoverImg!);
+                              } else {
+                                Navigator.of(context).pushNamed(
+                                    '/activity_package_info',
+                                    arguments: _filteredActivity[i]);
+                              }
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 15.w, vertical: 20.h),
+                              height: 180.h,
+                              width: 135.w,
+                              decoration: const BoxDecoration(
+                                color: Colors.transparent,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    _filteredActivity[i].name!,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12.sp,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10.h,
+                                  ),
+                                  Container(
+                                    height: 90.h,
+                                    width: 135.w,
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(15.r),
+                                      ),
+                                      image: DecorationImage(
+                                          image: NetworkImage(
+                                            _filteredActivity[i]
+                                                .firebaseCoverImg!,
+                                          ),
+                                          fit: BoxFit.cover),
+                                    ),
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Positioned(
+                                          left: 5,
+                                          bottom: 5,
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.transparent,
+                                            radius: 12,
+                                            backgroundImage: AssetImage(
+                                                selectedActivityFilter.path),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ));
+                      }),
+                    ),
+                  )
+                else
+                  Container()
+              ],
+            )),
+      );
+
+  // GET CURRENT ADDRESS / LOCATION
+  Future<void> getCurrentAddress() async {
+    final Position coordinates = await GeoLocationServices().getCoordinates();
+    final String address = await GeoLocationServices()
+        .getAddressFromCoordinates(coordinates.latitude, coordinates.longitude);
+    setState(() {
+      currentAddress = address;
+    });
   }
 
   String formatDate(DateTime date) {
@@ -951,46 +548,29 @@ class _TabMapScreenState extends State<TabMapScreen> {
         desiredAccuracy: LocationAccuracy.high);
   }
 
-  Future<List<Placemark>> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-    List<Placemark> places = [];
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
-    }
+  void filterActivities(Activity activity) {
+    debugPrint('Activity Selected: ${activity.name}');
+    _markers.clear();
+    setState(() {
+      _filteredActivity = _loadingData
+          .where((ActivityPackage element) =>
+              element.mainBadge!.badgeName!.toLowerCase() ==
+              activity.name.toLowerCase())
+          .toList();
+      selectedActivityFilter = activity;
+    });
+    if (_filteredActivity.isNotEmpty) {
+      addMarker(_filteredActivity);
+      debugPrint('Filtered ${_filteredActivity[0].mainBadge!.badgeName!}');
 
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
+      if (_searchController.text.isEmpty) {
+        Future.delayed(
+            Duration(milliseconds: 200),
+            () => mapController?.animateCamera(CameraUpdate.newLatLngBounds(
+                MapUtils.boundsFromLatLngList(
+                    _markers.map((loc) => loc.position).toList()),
+                1)));
       }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    final Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-    try {
-      return await placemarkFromCoordinates(
-          position.latitude, position.longitude);
-    } catch (e) {
-      return places;
     }
   }
 
@@ -1004,7 +584,13 @@ class _TabMapScreenState extends State<TabMapScreen> {
         items.add(
           GestureDetector(
             onTap: () {
-              final List<ActivityPackage> filteredActivity = _loadingData
+              filterActivities(activities[i]);
+
+              // setState(() {
+              //   selectedActivityFilter = activities[i];
+              // });
+
+              /*   final List<ActivityPackage> filteredActivity = _loadingData
                   .where((ActivityPackage a) =>
                       a.mainBadge!.id == activities[i].id)
                   .toList();
@@ -1041,7 +627,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     CameraPosition(target: LatLng(lat, long), zoom: 17)
                     //17 is new zoom level
                     ));
-              }
+              }*/
             },
             child: Container(
               decoration: BoxDecoration(
@@ -1060,7 +646,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: _selectedActivity.contains(i)
+                        color: selectedActivityFilter.name == activities[i].name
                             ? Colors.black
                             : Colors.transparent,
                         width: 2,
@@ -1076,7 +662,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   Positioned(
                       top: 2,
                       right: 8,
-                      child: _selectedActivity.contains(i)
+                      child: selectedActivityFilter.name == activities[i].name
                           ? Container(
                               padding: const EdgeInsets.all(1),
                               decoration: BoxDecoration(
@@ -1104,7 +690,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
         items.add(
           GestureDetector(
             onTap: () {
-              final List<ActivityPackage> filteredActivity = _loadingData
+              filterActivities(activities[i]);
+              /*  final List<ActivityPackage> filteredActivity = _loadingData
                   .where((ActivityPackage a) =>
                       a.mainBadge!.id == activities[i].id)
                   .toList();
@@ -1140,21 +727,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     CameraPosition(target: LatLng(lat, long), zoom: 17)
                     //17 is new zoom level
                     ));
-              }
-              // mapController?.animateCamera(CameraUpdate.newCameraPosition(
-              //     CameraPosition(
-              //         target: LatLng(
-              //             double.parse(_filteredActivity
-              //                 .first
-              //                 .activityPackageDestination!
-              //                 .activitypackagedestinationLatitude!),
-              //             double.parse(_filteredActivity
-              //                 .first
-              //                 .activityPackageDestination!
-              //                 .activitypackagedestinationLongitude!)),
-              //         zoom: 17)
-              //     //17 is new zoom level
-              //     ));
+              }*/
             },
             child: Container(
               decoration: BoxDecoration(
@@ -1173,7 +746,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: _selectedActivity.contains(i)
+                        color: selectedActivityFilter.name == activities[i].name
                             ? Colors.black
                             : Colors.transparent,
                         width: 2,
@@ -1191,7 +764,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   Positioned(
                     top: 2,
                     right: 8,
-                    child: _selectedActivity.contains(i)
+                    child: selectedActivityFilter.name == activities[i].name
                         ? Container(
                             padding: const EdgeInsets.all(1),
                             decoration: BoxDecoration(
@@ -1263,6 +836,410 @@ class _TabMapScreenState extends State<TabMapScreen> {
     );
   }
 
+  //SEARCH BAR WIDGET
+  Widget buildSearchbar() => Expanded(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
+          child: TextField(
+            readOnly: true,
+            textInputAction: TextInputAction.search,
+            onSubmitted: (String search) {
+              if (search.isNotEmpty) {
+                APIServices()
+                    .searchActivity(search)
+                    .then((List<ActivityPackage> value) {
+                  final ActivityPackage? activity = value.firstOrNull;
+
+                  if (activity != null) {
+                    addMarker(value);
+                    double lat = double.parse(activity
+                        .activityPackageDestination!
+                        .activityPackageDestinationLatitude!);
+                    double long = double.parse(activity
+                        .activityPackageDestination!
+                        .activityPackageDestinationLongitude!);
+                    mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                        CameraPosition(target: LatLng(lat, long), zoom: 17)
+                        //17 is new zoom level
+                        ));
+                  }
+                });
+              }
+            },
+            onTap: () async {
+              final dynamic result =
+                  await Navigator.of(context).pushNamed('/search_place');
+
+              if (result != null && result is DetailsResponse) {
+                setState(() {
+                  _searchController = TextEditingController(
+                      text: result.result!.formattedAddress);
+                  _selectedPlace = result;
+                });
+                await goToPlace(result);
+              }
+            },
+            controller: _searchController,
+            textAlign: TextAlign.left,
+            style: TextStyle(overflow: TextOverflow.ellipsis),
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              hintText: 'Search...',
+              hintStyle: TextStyle(fontSize: 16.sp),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16.r),
+                borderSide: const BorderSide(
+                  width: 0,
+                  style: BorderStyle.none,
+                ),
+              ),
+              filled: true,
+              contentPadding: EdgeInsets.zero,
+              fillColor: Colors.white,
+              prefixIcon: IconButton(
+                icon: Image.asset(
+                  'assets/images/png/search_icon.png',
+                  width: 20.w,
+                  height: 20.h,
+                ),
+                onPressed: null,
+              ),
+              suffixIcon: IconButton(
+                icon: Image.asset(
+                  'assets/images/png/calendar_icon.png',
+                  width: 20.w,
+                  height: 20.h,
+                ),
+                // onPressed: null,
+                onPressed: () {
+                  showDatePickerBottomSheet();
+                 /* showMaterialModalBottomSheet(
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                    expand: false,
+                    context: context,
+                    backgroundColor: Colors.white,
+                    builder: (BuildContext context) => SafeArea(
+                      top: false,
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.72,
+                        decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20))),
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: 15.h,
+                            ),
+                            Align(
+                              child: Image.asset(
+                                AssetsPath.horizontalLine,
+                                width: 60.w,
+                                height: 5.h,
+                              ),
+                            ),
+                            // SizedBox(
+                            //   height: 15.h,
+                            // ),
+                            Padding(
+                              padding:
+                                  EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 20.h),
+                              child: Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  'Select date',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 24.sp,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.chevron_left,
+                                  color: HexColor('#898A8D'),
+                                ),
+                                Container(
+                                    color: Colors.transparent,
+                                    height: 80.h,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.7,
+                                    child: EasyScrollToIndex(
+                                      controller: _scrollController,
+                                      // ScrollToIndexController
+                                      scrollDirection: Axis.horizontal,
+                                      // default Axis.vertical
+                                      itemCount: AppListConstants
+                                          .calendarMonths.length,
+                                      // itemCount
+                                      itemWidth: 95,
+                                      itemHeight: 70,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return InkWell(
+                                          onTap: () {
+                                            _scrollController.easyScrollToIndex(
+                                                index: index);
+                                            travellerMonthController
+                                                .setSelectedDate(index + 1);
+                                            DateTime dt = DateTime.parse(
+                                                travellerMonthController
+                                                    .currentDate);
+
+                                            final DateTime plustMonth =
+                                                DateTime(dt.year, index + 1,
+                                                    dt.day, dt.hour, dt.minute);
+
+                                            final DateTime setLastday =
+                                                DateTime(
+                                                    plustMonth.year,
+                                                    plustMonth.month,
+                                                    1,
+                                                    plustMonth.hour,
+                                                    plustMonth.minute);
+
+                                            travellerMonthController
+                                                .setCurrentMonth(
+                                              setLastday.toString(),
+                                            );
+                                          },
+                                          child: Obx(
+                                            () => Stack(
+                                              children: <Widget>[
+                                                Align(
+                                                  alignment: Alignment.center,
+                                                  child: Container(
+                                                    margin: EdgeInsets.fromLTRB(
+                                                        index == 0 ? 0.w : 0.w,
+                                                        0.h,
+                                                        10.w,
+                                                        0.h),
+                                                    width: 89,
+                                                    height: 45,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            const BorderRadius
+                                                                .all(
+                                                          Radius.circular(10),
+                                                        ),
+                                                        border: Border.all(
+                                                            color: index ==
+                                                                    travellerMonthController
+                                                                            .selectedDate -
+                                                                        1
+                                                                ? HexColor(
+                                                                    '#FFC74A')
+                                                                : HexColor(
+                                                                    '#C4C4C4'),
+                                                            width: 1),
+                                                        color: index ==
+                                                                travellerMonthController
+                                                                        .selectedDate -
+                                                                    1
+                                                            ? HexColor(
+                                                                '#FFC74A')
+                                                            : Colors.white),
+                                                    child: Center(
+                                                        child: Text(AppListConstants
+                                                                .calendarMonths[
+                                                            index])),
+                                                  ),
+                                                ),
+                                                // Positioned(
+                                                //     right: 2,
+                                                //     top: 2,
+                                                //     child: index
+                                                //             .isOdd
+                                                //         ? Badge(
+                                                //             padding:
+                                                //                 const EdgeInsets.all(8),
+                                                //             badgeColor:
+                                                //                 AppColors.deepGreen,
+                                                //             badgeContent:
+                                                //                 Text(
+                                                //               '2',
+                                                //               style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.w800, fontFamily: AppTextConstants.fontPoppins),
+                                                //             ),
+                                                //           )
+                                                //         : Container()),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )),
+                                Icon(
+                                  Icons.chevron_right,
+                                  color: HexColor('#898A8D'),
+                                ),
+                              ],
+                            ),
+                            GetBuilder<TravellerMonthController>(
+                                id: 'calendar',
+                                builder: (TravellerMonthController controller) {
+                                  print(controller.selectedDates);
+                                  return Container(
+                                      padding: EdgeInsets.fromLTRB(
+                                          20.w, 0.h, 20.w, 0.h),
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.4,
+                                      child: Sfcalendar(context,
+                                          travellerMonthController.currentDate,
+                                          (List<DateTime> value) {
+                                        travellerMonthController.selectedDates
+                                            .clear();
+                                        travellerMonthController
+                                            .setSelectedDates(value);
+                                      }, []));
+                                }),
+                            // SizedBox(
+                            //   height: 20.h,
+                            // ),
+                            SizedBox(
+                              width: 153.w,
+                              height: 54.h,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (travellerMonthController
+                                      .selectedDates.isNotEmpty) {
+                                    Navigator.of(context).pop();
+                                    travellerMonthController.selectedDates.sort(
+                                        (DateTime a, DateTime b) =>
+                                            a.compareTo(b));
+
+                                    APIServices()
+                                        .getActivityByDateRange(
+                                            formatDate(travellerMonthController
+                                                .selectedDates.first),
+                                            formatDate(travellerMonthController
+                                                .selectedDates.last))
+                                        .then((value) {
+                                      if (value.isNotEmpty) {
+                                        final ActivityPackage? activity =
+                                            value.firstOrNull;
+                                        if (activity != null) {
+                                          addMarker(value);
+                                          double lat = double.parse(activity
+                                              .activityPackageDestination!
+                                              .activityPackageDestinationLatitude!);
+                                          double long = double.parse(activity
+                                              .activityPackageDestination!
+                                              .activityPackageDestinationLongitude!);
+                                          mapController?.animateCamera(
+                                              CameraUpdate.newCameraPosition(
+                                                  CameraPosition(
+                                                      target: LatLng(lat, long),
+                                                      zoom: 17)
+                                                  //17 is new zoom level
+                                                  ));
+                                        }
+                                      }
+                                    });
+                                  }
+                                },
+                                style: AppTextStyle.activeGreen,
+                                child: const Text(
+                                  'Set Filter Date',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ).whenComplete(() {
+                    _scrollController.easyScrollToIndex(index: 0);
+                  });
+                  Future.delayed(const Duration(seconds: 1), () {
+                    _scrollController.easyScrollToIndex(
+                        index: travellerMonthController.selectedDate - 1);*/
+
+                    // setState(() {
+                    //   selectedmonth = 7;
+                    // });
+                  // });
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+  // CURRENT LOCATION
+  Widget buildCurrentLocationDetails() => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          SizedBox(
+            width: 20.w,
+          ),
+          Flexible(
+            flex: 6,
+            child: Container(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                color: Colors.white,
+              ),
+              height: 44.h,
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(left: 10.w, right: 8.w),
+                    height: 15.h,
+                    width: 15.w,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/png/marker.png'),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      currentAddress,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5.w,
+                  )
+                ],
+              ),
+            ),
+          ),
+          // SizedBox(
+          //   width: 10.w,
+          // ),
+          // Flexible(
+          //   flex: 3,
+          //   child: Container(
+          //     decoration: const BoxDecoration(
+          //       borderRadius: BorderRadius.all(Radius.circular(10)),
+          //       color: Colors.white,
+          //     ),
+          //     height: 44.h,
+          //     child: const Center(child: Text('Radius : 05')),
+          //   ),
+          // ),
+          SizedBox(
+            width: 15.w,
+          ),
+        ],
+      );
+
+  // DISCOVERY BOTTOM SHEET
   void _showDiscoveryBottomSheet(String backgroundImage) {
     showCupertinoModalBottomSheet(
         context: context,
@@ -1349,28 +1326,6 @@ class _TabMapScreenState extends State<TabMapScreen> {
             ));
   }
 
-/*  Future<void> saveSubscription(String transactionNumber,
-      String subscriptionName, String price, String paymentMethod) async {
-    final DateTime startDate = DateTime.now();
-
-    final DateTime endDate = GlobalMixin().getEndDate(startDate);
-
-    final UserSubscription subscriptionParams = UserSubscription(
-        paymentReferenceNo: transactionNumber,
-        name: subscriptionName,
-        startDate: startDate.toString(),
-        endDate: endDate.toString(),
-        price: price);
-
-    final APIStandardReturnFormat result = await APIServices()
-        .addUserSubscription(subscriptionParams, paymentMethod);
-
-    UserSingleton.instance.user.user?.hasPremiumSubscription = true;
-    setState(() {
-      hasPremiumSubscription = true;
-    });
-  }*/
-
   Future<void> saveSubscription(String transactionNumber,
       String subscriptionName, String price, String paymentMethod) async {
     String actionType = 'add';
@@ -1428,8 +1383,6 @@ class _TabMapScreenState extends State<TabMapScreen> {
             DateTime(currentDate.year, currentDate.month + 1, 0).toString(),
             selectedPackage.id!);
 
-    debugPrint('DATES: ${data.length}');
-
     if (data.isNotEmpty) {
       data.forEach((element) {
         setState(() {
@@ -1442,96 +1395,219 @@ class _TabMapScreenState extends State<TabMapScreen> {
     }
   }
 
-  //BASIC PACKAGE INFO
-  Widget buildBasicPackageInfo() => Positioned(
-      bottom: 75,
-      right: 0,
-      left: 0,
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context)
-              .pushNamed('/activity_package_info', arguments: selectedPackage);
-        },
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 14.w),
-          // padding: EdgeInsets.all(10.w),
-          height: 120.h,
-          decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(12.r)),
-          child: Row(
-            children: <Widget>[
-              Stack(
+  void showDatePickerBottomSheet() {
+    showMaterialModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      expand: false,
+      context: context,
+      backgroundColor: Colors.white,
+      builder: (BuildContext context) => SafeArea(
+        top: false,
+        child: StatefulBuilder(
+          builder: (BuildContext context, updateState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.72,
+              decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20))),
+              child: Column(
                 children: <Widget>[
-                  Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: 120,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12.r),
-                          bottomLeft: Radius.circular(12.r)),
-                      image: DecorationImage(
-                          image:
-                              NetworkImage(selectedPackage.firebaseCoverImg!),
-                          fit: BoxFit.cover),
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                  Align(
+                    child: Image.asset(
+                      AssetsPath.horizontalLine,
+                      width: 60.w,
+                      height: 5.h,
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        showSelectedPackage = false;
-                        selectedPackage = ActivityPackage();
-                      });
-                    },
-                    child: Container(
-                      margin: EdgeInsets.all(4.w),
-                      padding: EdgeInsets.all(2.w),
-                      decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                          shape: BoxShape.circle),
-                      child: Icon(Icons.close, color: Colors.white),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 20.h),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Select date',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w700),
+                      ),
                     ),
-                  )
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Icon(
+                        Icons.chevron_left,
+                        color: HexColor('#898A8D'),
+                      ),
+                      Container(
+                          color: Colors.transparent,
+                          height: 80.h,
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: EasyScrollToIndex(
+                            controller: _scrollController,
+                            // ScrollToIndexController
+                            scrollDirection: Axis.horizontal,
+                            // default Axis.vertical
+                            itemCount: dates.length,
+                            // itemCount
+                            itemWidth: 95,
+                            itemHeight: 70,
+                            itemBuilder: (BuildContext context, int index) {
+                              return dates[index].month >= currentMonth
+                                  ? InkWell(
+                                      onTap: () {
+                                        updateState(() {
+                                          selectedDate = DateTime(
+                                              selectedDate.year,
+                                              dates[index].month);
+                                          // _selectedDate =  DateTime(selectedDate.year, dates[index].month);
+                                        });
+
+                                        debugPrint(
+                                            'Select Month ${selectedDate.toString()}');
+                                      },
+                                      child: Stack(
+                                        children: <Widget>[
+                                          Align(
+                                            alignment: Alignment.center,
+                                            child: Container(
+                                              margin: EdgeInsets.fromLTRB(
+                                                  index == 0 ? 0.w : 0.w,
+                                                  0.h,
+                                                  10.w,
+                                                  0.h),
+                                              width: 89,
+                                              height: 45,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(10),
+                                                  ),
+                                                  border: Border.all(
+                                                      color: dates[index]
+                                                                  .month ==
+                                                              selectedDate.month
+                                                          ? HexColor('#FFC74A')
+                                                          : HexColor('#C4C4C4'),
+                                                      width: 1),
+                                                  color: dates[index].month ==
+                                                          selectedDate.month
+                                                      ? HexColor('#FFC74A')
+                                                      : Colors.white),
+                                              child: Center(
+                                                  child: Text(
+                                                      dates[index].monthName)),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : Container();
+                            },
+                          )),
+                      Icon(
+                        Icons.chevron_right,
+                        color: HexColor('#898A8D'),
+                      ),
+                    ],
+                  ),
+                  SfDateRangePicker(
+                    enablePastDates: false,
+                    minDate: selectedDate,
+                    maxDate: Indate.DateUtils.lastDayOfMonth(selectedDate),
+                    onSelectionChanged:
+                        (DateRangePickerSelectionChangedArgs args) {
+                      if (args.value.startDate != null &&
+                          args.value.endDate != null) {
+                        debugPrint('Start Date ${args.value.startDate}');
+                        debugPrint('End Date ${args.value}');
+
+                        setState(() {
+                          startDate = args.value.startDate.toString();
+                          endDate = args.value.startDate.toString();
+                        });
+                      }
+                    },
+                    selectionMode: DateRangePickerSelectionMode.range,
+                    navigationMode: DateRangePickerNavigationMode.none,
+                    monthViewSettings: const DateRangePickerMonthViewSettings(
+                      dayFormat: 'E',
+                    ),
+                    headerHeight: 0,
+                    monthCellStyle: DateRangePickerMonthCellStyle(
+                      textStyle: TextStyle(color: HexColor('#3E4242')),
+                      todayTextStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: HexColor('#3E4242')),
+                    ),
+                    selectionShape: DateRangePickerSelectionShape.circle,
+                    selectionTextStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    rangeSelectionColor: HexColor('#FFF2CE'),
+                    todayHighlightColor: HexColor('#FFC74A'),
+                    startRangeSelectionColor: HexColor('#FFC31A'),
+                    endRangeSelectionColor: HexColor('#FFC31A'),
+                  ),
+                  SizedBox(
+                    width: 153.w,
+                    height: 54.h,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        getPackagesByDateRange();
+                      },
+                      style: AppTextStyle.activeGreen,
+                      child: const Text(
+                        'Set Filter Date',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              Expanded(
-                  child: Container(
-                padding: EdgeInsets.all(8.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                        child: Text(
-                      selectedPackage.name!,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700, fontSize: 16.sp),
-                    )),
-                    if (activityAvailableDates.isNotEmpty)
-                      Text(activityAvailableDates.length > 1
-                          ? '${DateFormat("MMM dd -").format(activityAvailableDates[0])} ${activityAvailableDates[activityAvailableDates.length - 1].day}'
-                          : DateFormat("MMM dd")
-                              .format(activityAvailableDates[0])),
-                    SizedBox(height: 5.h),
-                    Expanded(
-                        child: Row(
-                      children: <Widget>[
-                        Text.rich(TextSpan(children: [
-                          TextSpan(
-                              text: '\$ ${selectedPackage.basePrice}',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 16.sp)),
-                          TextSpan(
-                              text: ' / person',
-                              style: TextStyle(fontSize: 16.sp)),
-                        ])),
-                        Expanded(child: ReviewsCount())
-                      ],
-                    ))
-                  ],
-                ),
-              ))
-            ],
-          ),
+            );
+          },
         ),
-      ));
+      ),
+    ).whenComplete(() {
+      _scrollController.easyScrollToIndex(index: 0);
+    });
+  }
+
+  Future<void> getPackagesByDateRange() async {
+    final List<ActivityPackage> res =
+        await APIServices().getActivityByDateRange(startDate, endDate);
+
+    if (res.isNotEmpty) {
+      _markers.clear();
+      await addMarker(res);
+
+      setState(() {
+        selectedDate = DateTime.now();
+        startDate = '';
+        endDate ='';
+      });
+
+      Future.delayed(
+          Duration(milliseconds: 200),
+          () => mapController?.animateCamera(CameraUpdate.newLatLngBounds(
+              MapUtils.boundsFromLatLngList(
+                  _markers.map((loc) => loc.position).toList()),
+              1)));
+    }
+  }
 }

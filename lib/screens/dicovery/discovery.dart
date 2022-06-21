@@ -181,7 +181,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
                         Navigator.of(context).pushNamed('/activities');
                       },
                       child: Text(
-                        'Next',
+                        'Skip',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,

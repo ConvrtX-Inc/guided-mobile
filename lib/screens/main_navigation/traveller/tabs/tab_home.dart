@@ -11,6 +11,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:google_place/google_place.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
@@ -26,6 +27,7 @@ import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/available_date_model.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/guide.dart';
@@ -46,11 +48,14 @@ import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.da
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:guided/utils/services/geolocation_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:guided/utils/services/user_subscription_service.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:in_date_utils/in_date_utils.dart' as Indate;
 
 /// TabHomeScreen
 class TabHomeScreen extends StatefulWidget {
@@ -86,7 +91,13 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
       Get.put(UserSubscriptionController());
 
   final UserProfileDetailsController _profileDetailsController =
-  Get.put(UserProfileDetailsController());
+      Get.put(UserProfileDetailsController());
+
+  String startDate = '';
+
+  String endDate = '';
+
+  DateTime selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -108,10 +119,10 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
 
       await getProfileDetails();
 
-        if (_subscriptionController.isSubscribeButtonClicked) {
+      if (_subscriptionController.isSubscribeButtonClicked) {
         if (!UserSingleton.instance.user.user!.hasPremiumSubscription!) {
           showPaymentMethod();
-        }else{
+        } else {
           navigateToSubscriptionDetails();
         }
         _subscriptionController.setSubscribeButtonClicked();
@@ -125,51 +136,13 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   }
 
   Future<void> getCurrentLocation() async {
-    Position position = await _determinePosition();
+    Position position = await GeoLocationServices().getCoordinates();
 
     setState(() {
       latitude = position.latitude;
       longitude = position.longitude;
       _hasLocationPermission = true;
     });
-  }
-
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
   }
 
   void showPaymentMethod() {
@@ -263,8 +236,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         .setSubscription(UserSubscription.fromJson(jsonData));
 
     UserSingleton.instance.user.user?.hasPremiumSubscription = true;
-
   }
+
   void navigateToSubscriptionDetails() {
     Navigator.pushNamed(context, '/subscription_details');
   }
@@ -272,7 +245,8 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   Future<void> getProfileDetails() async {
     final ProfileDetailsModel res = await APIServices().getProfileData();
 
-    final bool hasPremiumSubscription = await UserSubscriptionServices().hasUserSubscription();
+    final bool hasPremiumSubscription =
+        await UserSubscriptionServices().hasUserSubscription();
 
     UserSingleton.instance.user.user = User(
         id: res.id,
@@ -282,7 +256,6 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
 
     _profileDetailsController.setUserProfileDetails(res);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -315,9 +288,24 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
                   child: TextField(
-                    onSubmitted: (value) {
+                    onSubmitted: (value) async {
                       debugPrint('Query $value');
-                      widget.onItemPressed('guides');
+                      // widget.onItemPressed('guides');
+                    },
+                    readOnly: true,
+                    onTap: () async {
+                      final dynamic result = await Navigator.of(context)
+                          .pushNamed('/search_place');
+
+                      if (result != null && result is DetailsResponse) {
+                        await Navigator.of(context).pushNamed('/activity_map',
+                            arguments: {
+                              'placeDetails': result,
+                              'initialActivityPackages': nearbyActivityPackages,
+                              'startDate': startDate,
+                              'endDate': endDate
+                            });
+                      }
                     },
                     textAlign: TextAlign.left,
                     keyboardType: TextInputType.text,
@@ -349,490 +337,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                           height: 20.h,
                         ),
                         // onPressed: null,
-                        onPressed: () async {
-                          result = showMaterialModalBottomSheet(
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(20),
-                              ),
-                            ),
-                            expand: false,
-                            context: context,
-                            backgroundColor: Colors.white,
-                            builder: (BuildContext context) => SafeArea(
-                              top: false,
-                              child: Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.72,
-                                decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(20),
-                                        topRight: Radius.circular(20))),
-                                child: Column(
-                                  children: <Widget>[
-                                    SizedBox(
-                                      height: 15.h,
-                                    ),
-                                    Align(
-                                      child: Image.asset(
-                                        AssetsPath.horizontalLine,
-                                        width: 60.w,
-                                        height: 5.h,
-                                      ),
-                                    ),
-                                    // SizedBox(
-                                    //   height: 15.h,
-                                    // ),
-                                    Padding(
-                                      padding: EdgeInsets.fromLTRB(
-                                          20.w, 20.h, 20.w, 20.h),
-                                      child: Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Text(
-                                          'Select date',
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 24.sp,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.chevron_left,
-                                          color: HexColor('#898A8D'),
-                                        ),
-                                        Container(
-                                            color: Colors.transparent,
-                                            height: 80.h,
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.7,
-                                            child: EasyScrollToIndex(
-                                              controller: _scrollController,
-                                              // ScrollToIndexController
-                                              scrollDirection: Axis.horizontal,
-                                              // default Axis.vertical
-                                              itemCount: AppListConstants
-                                                  .calendarMonths.length,
-                                              // itemCount
-                                              itemWidth: 95,
-                                              itemHeight: 70,
-                                              itemBuilder:
-                                                  (BuildContext context,
-                                                      int index) {
-                                                return InkWell(
-                                                  onTap: () {
-                                                    _scrollController
-                                                        .easyScrollToIndex(
-                                                            index: index);
-                                                    travellerMonthController
-                                                        .setSelectedDate(
-                                                            index + 1);
-                                                    DateTime dt = DateTime.parse(
-                                                        travellerMonthController
-                                                            .currentDate);
-
-                                                    final DateTime plustMonth =
-                                                        DateTime(
-                                                            dt.year,
-                                                            index + 1,
-                                                            dt.day,
-                                                            dt.hour,
-                                                            dt.minute);
-
-                                                    final DateTime setLastday =
-                                                        DateTime(
-                                                            plustMonth.year,
-                                                            plustMonth.month,
-                                                            1,
-                                                            plustMonth.hour,
-                                                            plustMonth.minute);
-                                                    print(setLastday);
-                                                    travellerMonthController
-                                                        .setCurrentMonth(
-                                                      setLastday.toString(),
-                                                    );
-                                                  },
-                                                  child: Obx(
-                                                    () => Stack(
-                                                      children: <Widget>[
-                                                        Align(
-                                                          alignment:
-                                                              Alignment.center,
-                                                          child: Container(
-                                                            margin: EdgeInsets
-                                                                .fromLTRB(
-                                                                    index == 0
-                                                                        ? 0.w
-                                                                        : 0.w,
-                                                                    0.h,
-                                                                    10.w,
-                                                                    0.h),
-                                                            width: 89,
-                                                            height: 45,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                                    borderRadius:
-                                                                        const BorderRadius
-                                                                            .all(
-                                                                      Radius.circular(
-                                                                          10),
-                                                                    ),
-                                                                    border: Border.all(
-                                                                        color: index == travellerMonthController.selectedDate - 1
-                                                                            ? HexColor(
-                                                                                '#FFC74A')
-                                                                            : HexColor(
-                                                                                '#C4C4C4'),
-                                                                        width:
-                                                                            1),
-                                                                    color: index ==
-                                                                            travellerMonthController.selectedDate -
-                                                                                1
-                                                                        ? HexColor(
-                                                                            '#FFC74A')
-                                                                        : Colors
-                                                                            .white),
-                                                            child: Center(
-                                                                child: Text(
-                                                                    AppListConstants
-                                                                            .calendarMonths[
-                                                                        index])),
-                                                          ),
-                                                        ),
-                                                        Positioned(
-                                                            right: 2,
-                                                            top: 2,
-                                                            child: index.isOdd
-                                                                ? Badge(
-                                                                    padding:
-                                                                        const EdgeInsets
-                                                                            .all(8),
-                                                                    badgeColor:
-                                                                        AppColors
-                                                                            .deepGreen,
-                                                                    badgeContent:
-                                                                        Text(
-                                                                      '2',
-                                                                      style: TextStyle(
-                                                                          color: Colors
-                                                                              .white,
-                                                                          fontSize: 12
-                                                                              .sp,
-                                                                          fontWeight: FontWeight
-                                                                              .w800,
-                                                                          fontFamily:
-                                                                              AppTextConstants.fontPoppins),
-                                                                    ),
-                                                                  )
-                                                                : Container()),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            )),
-                                        Icon(
-                                          Icons.chevron_right,
-                                          color: HexColor('#898A8D'),
-                                        ),
-                                      ],
-                                    ),
-                                    GetBuilder<TravellerMonthController>(
-                                        id: 'calendar',
-                                        builder: (TravellerMonthController
-                                            controller) {
-                                          print(controller.currentDate);
-                                          return Container(
-                                            padding: EdgeInsets.fromLTRB(
-                                                20.w, 0.h, 20.w, 0.h),
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.4,
-                                            child: Sfcalendar(
-                                                context,
-                                                travellerMonthController
-                                                    .currentDate, ((value) {
-                                              print(value);
-                                            }), []),
-                                          );
-                                        }),
-                                    // SizedBox(
-                                    //   height: 20.h,
-                                    // ),
-                                    SizedBox(
-                                      width: 153.w,
-                                      height: 54.h,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          showMaterialModalBottomSheet(
-                                              shape:
-                                                  const RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.vertical(
-                                                  top: Radius.circular(20),
-                                                ),
-                                              ),
-                                              expand: false,
-                                              context: context,
-                                              backgroundColor: Colors.white,
-                                              builder: (BuildContext context) {
-                                                return SafeArea(
-                                                  top: false,
-                                                  child: Container(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.5,
-                                                    child: Column(
-                                                      children: <Widget>[
-                                                        SizedBox(
-                                                          height: 15.h,
-                                                        ),
-                                                        Align(
-                                                          child: Image.asset(
-                                                            AssetsPath
-                                                                .horizontalLine,
-                                                            width: 60.w,
-                                                            height: 5.h,
-                                                          ),
-                                                        ),
-                                                        Padding(
-                                                          padding: EdgeInsets
-                                                              .fromLTRB(
-                                                                  20.w,
-                                                                  20.h,
-                                                                  20.w,
-                                                                  20.h),
-                                                          child: Align(
-                                                            alignment: Alignment
-                                                                .topCenter,
-                                                            child: Text(
-                                                              '16 nearby guides',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontSize:
-                                                                      16.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Expanded(
-                                                            child: Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  left: 20.w,
-                                                                  right: 20.w),
-                                                          child: Swiper(
-                                                            controller:
-                                                                _cardController,
-                                                            itemBuilder:
-                                                                (BuildContext
-                                                                        context,
-                                                                    int index) {
-                                                              return Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: <
-                                                                    Widget>[
-                                                                  Container(
-                                                                    height:
-                                                                        200.h,
-                                                                    // width:
-                                                                    //     315.w,
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      color: Colors
-                                                                          .transparent,
-                                                                      borderRadius:
-                                                                          BorderRadius
-                                                                              .all(
-                                                                        Radius.circular(
-                                                                            15.r),
-                                                                      ),
-                                                                      image:
-                                                                          DecorationImage(
-                                                                        image: AssetImage(
-                                                                            guides[index].featureImage),
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                      ),
-                                                                    ),
-                                                                    child:
-                                                                        Stack(
-                                                                      children: <
-                                                                          Widget>[
-                                                                        Positioned(
-                                                                          top:
-                                                                              0,
-                                                                          right:
-                                                                              0,
-                                                                          child:
-                                                                              IconButton(
-                                                                            icon:
-                                                                                const Icon(Icons.favorite_border),
-                                                                            onPressed:
-                                                                                () {},
-                                                                            color:
-                                                                                HexColor('#ffffff'),
-                                                                          ),
-                                                                        ),
-                                                                        Align(
-                                                                          alignment:
-                                                                              Alignment.centerLeft,
-                                                                          child:
-                                                                              Container(
-                                                                            transform: Matrix4.translationValues(
-                                                                                -15,
-                                                                                0,
-                                                                                0),
-                                                                            child:
-                                                                                IconButton(
-                                                                              onPressed: () async {
-                                                                                await _cardController.previous();
-                                                                              },
-                                                                              icon: const Icon(
-                                                                                Icons.chevron_left,
-                                                                                size: 50,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        Align(
-                                                                          alignment:
-                                                                              Alignment.centerRight,
-                                                                          child:
-                                                                              IconButton(
-                                                                            onPressed:
-                                                                                () async {
-                                                                              await _cardController.next();
-                                                                            },
-                                                                            icon:
-                                                                                const Icon(
-                                                                              Icons.chevron_right,
-                                                                              size: 50,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    height: 4.h,
-                                                                  ),
-                                                                  Padding(
-                                                                    padding:
-                                                                        const EdgeInsets.all(
-                                                                            8.0),
-                                                                    child: Row(
-                                                                      children: <
-                                                                          Widget>[
-                                                                        Icon(
-                                                                          Icons
-                                                                              .star,
-                                                                          color:
-                                                                              HexColor('#066028'),
-                                                                          size:
-                                                                              10,
-                                                                        ),
-                                                                        Text(
-                                                                          '16 review',
-                                                                          style: TextStyle(
-                                                                              color: HexColor('#979B9B'),
-                                                                              fontSize: 12.sp,
-                                                                              fontWeight: FontWeight.normal),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                  Text(
-                                                                    "St. John's, Newfoundland",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize: 16
-                                                                            .sp,
-                                                                        fontWeight:
-                                                                            FontWeight.w700),
-                                                                  ),
-                                                                  Text(
-                                                                    '\$50/ Person',
-                                                                    style: TextStyle(
-                                                                        color: HexColor(
-                                                                            '#3E4242'),
-                                                                        fontSize: 16
-                                                                            .sp,
-                                                                        fontWeight:
-                                                                            FontWeight.normal),
-                                                                  ),
-                                                                ],
-                                                              );
-                                                            },
-                                                            autoplay: true,
-                                                            itemCount:
-                                                                guides.length,
-                                                            // pagination: const SwiperPagination(
-                                                            //     builder:
-                                                            //         SwiperPagination
-                                                            //             .fraction),
-                                                            // pagination: SwiperCustomPagination(builder:
-                                                            //     (BuildContext
-                                                            //             context,
-                                                            //         SwiperPluginConfig
-                                                            //             config) {
-                                                            //   return Container();
-                                                            // }),
-                                                            // control: const SwiperControl(
-                                                            //     color: Colors
-                                                            //         .black),
-                                                          ),
-                                                        )),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              });
-                                        },
-                                        style: AppTextStyle.activeGreen,
-                                        child: const Text(
-                                          'Set Filter Date',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ).whenComplete(() {
-                            _scrollController.easyScrollToIndex(index: 0);
-                          });
-                          Future.delayed(const Duration(seconds: 1), () {
-                            _scrollController.easyScrollToIndex(
-                                index:
-                                    travellerMonthController.selectedDate - 1);
-
-                            // setState(() {
-                            //   selectedmonth = 7;
-                            // });
-                          });
-                        },
+                        onPressed: showDatePickerBottomSheet,
                       ),
                     ),
                   ),
@@ -1529,5 +1034,218 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
       backgroundColor: Colors.white,
       builder: (BuildContext context) => const PopularGuidesList(),
     );
+  }
+
+  void showDatePickerBottomSheet() {
+    showMaterialModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      expand: false,
+      context: context,
+      backgroundColor: Colors.white,
+      builder: (BuildContext context) => SafeArea(
+        top: false,
+        child: StatefulBuilder(
+          builder: (BuildContext context, updateState) {
+            final List<AvailableDateModel> dates =
+                AppListConstants().availableDates;
+
+            final int currentMonth = DateTime.now().month;
+
+
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.72,
+              decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20))),
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                  Align(
+                    child: Image.asset(
+                      AssetsPath.horizontalLine,
+                      width: 60.w,
+                      height: 5.h,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 20.h),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Select date',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Icon(
+                        Icons.chevron_left,
+                        color: HexColor('#898A8D'),
+                      ),
+                      Container(
+                          color: Colors.transparent,
+                          height: 80.h,
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: EasyScrollToIndex(
+                            controller: _scrollController,
+                            // ScrollToIndexController
+                            scrollDirection: Axis.horizontal,
+                            // default Axis.vertical
+                            itemCount: dates.length,
+                            // itemCount
+                            itemWidth: 95,
+                            itemHeight: 70,
+                            itemBuilder: (BuildContext context, int index) {
+                              return dates[index].month >= currentMonth
+                                  ? InkWell(
+                                      onTap: () {
+                                        updateState(() {
+                                          selectedDate = DateTime(
+                                              selectedDate.year,
+                                              dates[index].month);
+
+                                        });
+
+                                        debugPrint(
+                                            'Select Month ${selectedDate.toString()}');
+                                      },
+                                      child: Stack(
+                                        children: <Widget>[
+                                          Align(
+                                            alignment: Alignment.center,
+                                            child: Container(
+                                              margin: EdgeInsets.fromLTRB(
+                                                  index == 0 ? 0.w : 0.w,
+                                                  0.h,
+                                                  10.w,
+                                                  0.h),
+                                              width: 89,
+                                              height: 45,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(10),
+                                                  ),
+                                                  border: Border.all(
+                                                      color: dates[index]
+                                                                  .month ==
+                                                              selectedDate.month
+                                                          ? HexColor('#FFC74A')
+                                                          : HexColor('#C4C4C4'),
+                                                      width: 1),
+                                                  color: dates[index].month ==
+                                                          selectedDate.month
+                                                      ? HexColor('#FFC74A')
+                                                      : Colors.white),
+                                              child: Center(
+                                                  child: Text(
+                                                      dates[index].monthName)),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : Container();
+                            },
+                          )),
+                      Icon(
+                        Icons.chevron_right,
+                        color: HexColor('#898A8D'),
+                      ),
+                    ],
+                  ),
+                  SfDateRangePicker(
+                    enablePastDates: false,
+                    // initialDisplayDate: selectedDate,
+                    minDate: selectedDate,
+                    maxDate: Indate.DateUtils.lastDayOfMonth(selectedDate),
+                    onSelectionChanged:
+                        (DateRangePickerSelectionChangedArgs args) {
+                      if (args.value.startDate != null &&
+                          args.value.endDate != null) {
+                        debugPrint('Start Date ${args.value.startDate}');
+                        debugPrint('End Date ${args.value}');
+                        //
+                        setState(() {
+                          startDate = args.value.startDate.toString();
+                          endDate = args.value.startDate.toString();
+                        });
+                      }
+                    },
+                    selectionMode: DateRangePickerSelectionMode.range,
+                    navigationMode: DateRangePickerNavigationMode.none,
+                    monthViewSettings: const DateRangePickerMonthViewSettings(
+                      dayFormat: 'E',
+                    ),
+                    headerHeight: 0,
+                    monthCellStyle: DateRangePickerMonthCellStyle(
+                      textStyle: TextStyle(color: HexColor('#3E4242')),
+                      todayTextStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: HexColor('#3E4242')),
+                    ),
+                    selectionShape: DateRangePickerSelectionShape.circle,
+                    selectionTextStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    rangeSelectionColor: HexColor('#FFF2CE'),
+                    todayHighlightColor: HexColor('#FFC74A'),
+                    startRangeSelectionColor: HexColor('#FFC31A'),
+                    endRangeSelectionColor: HexColor('#FFC31A'),
+                  ),
+                  SizedBox(
+                    width: 153.w,
+                    height: 54.h,
+                    child: ElevatedButton(
+                      onPressed: () {
+                          Navigator.of(context).popAndPushNamed('/activity_map',
+                            arguments: {
+                              'placeDetails': '',
+                              'initialActivityPackages': nearbyActivityPackages,
+                              'startDate': startDate,
+                              'endDate': endDate
+                            });
+                      },
+                      style: AppTextStyle.activeGreen,
+                      child: const Text(
+                        'Set Filter Date',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    ).whenComplete(() {
+      _scrollController.easyScrollToIndex(index: 0);
+    });
+    /* Future.delayed(const Duration(seconds: 1), () {
+      _scrollController.easyScrollToIndex(
+          index: travellerMonthController.selectedDate - 1);
+
+      // setState(() {
+      //   selectedmonth = 7;
+      // });
+    });*/
   }
 }
