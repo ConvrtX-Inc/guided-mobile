@@ -15,7 +15,6 @@ class ActivityPackageBasicInfo extends StatelessWidget {
       this.blurRadius = 10,
       Key? key})
       : super(key: key);
-
   final ActivityPackage activityPackage;
 
   final double height;
@@ -25,7 +24,6 @@ class ActivityPackageBasicInfo extends StatelessWidget {
   final  Function? onCloseButtonPressed;
 
   final List<DateTime> activityAvailableDates;
-
   @override
   Widget build(BuildContext context) {
     return    InkWell(
@@ -96,7 +94,7 @@ class ActivityPackageBasicInfo extends StatelessWidget {
                   Expanded(
                       child: Row(
                     children: <Widget>[
-                      Text.rich(TextSpan(children: [
+                      Expanded(child: Text.rich(TextSpan(children: [
                         TextSpan(
                             text: '\$ ${activityPackage.basePrice}',
                             style: TextStyle(
@@ -104,8 +102,8 @@ class ActivityPackageBasicInfo extends StatelessWidget {
                         TextSpan(
                             text: ' / person',
                             style: TextStyle(fontSize: 16.sp)),
-                      ])),
-                      Expanded(child: ReviewsCount())
+                      ]))),
+                       ReviewsCount()
                     ],
                   ))
                 ],

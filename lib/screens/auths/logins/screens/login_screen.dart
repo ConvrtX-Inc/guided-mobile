@@ -19,6 +19,7 @@ import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
 import 'package:guided/utils/secure_storage.dart';
+import 'package:guided/utils/services/auth_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/ui/dialogs.dart';
 import 'package:guided/utils/ui/snackbars.dart';
@@ -55,43 +56,17 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController = TextEditingController(text: '');
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       account?.authentication.then((GoogleSignInAuthentication googleKey) {
-        print(googleKey.accessToken);
-        APIServices()
-            .loginFacebook(googleKey.accessToken!)
-            .then((APIStandardReturnFormat response) async {
-          if (response.status == 'error') {
-            /*   AdvanceSnackBar(
-                message: ErrorMessageConstants.loginWrongEmailorPassword)
-                .show(context);*/
-            AppSnackbars().error(
-                context: context,
-                message: ErrorMessageConstants.loginWrongEmailorPassword);
-
-            setState(() => buttonIsLoading = false);
-          } else {
-            final UserModel user =
-                UserModel.fromJson(json.decode(response.successResponse));
-            UserSingleton.instance.user = user;
-            if (user.user?.isTraveller != true) {
-              await SecureStorage.saveValue(
-                  key: AppTextConstants.userType, value: 'guide');
-              await Navigator.pushReplacementNamed(context, '/main_navigation');
-            } else {
-              await Navigator.pushReplacementNamed(context, '/traveller_tab');
-              await SecureStorage.saveValue(
-                  key: AppTextConstants.userType, value: 'traveller');
-            }
-          }
-        });
         setState(() {
           _signInAuthentication = googleKey;
           googleLoading = false;
+          buttonIsLoading = false;
         });
+        AuthServices().loginWithGoogle(googleKey.idToken!, context);
+
       }).catchError((err) {
         print('inner error');
       });
     });
-    // _googleSignIn.signInSilently();
     super.initState();
   }
 
@@ -130,50 +105,32 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     setState(() => buttonIsLoading = true);
-    // final dynamic response = await APIServices()
-    //     .request(AppAPIPath.loginUrl, RequestType.POST, data: credentials);
 
-    // if (response is Map) {
-    //   if (response.containsKey('status')) {
-    //     if (response['status'] == 422) {
-    //       AdvanceSnackBar(
-    //               message: ErrorMessageConstants.loginWrongEmailorPassword)
-    //           .show(context);
-    //     }
-    //   } else {
-    //     final UserModel user =
-    //         UserModel.fromJson(json.decode(response.toString()));
-    //     UserSingleton.instance.user = user;
-    //     print(user.user?.isTraveller);
-    //     await SecureStorage.saveValue(
-    //         key: AppTextConstants.userToken, value: response['token']);
-    //     // ignore: avoid_dynamic_calls
-    //     await SecureStorage.saveValue(
-    //         // ignore: avoid_dynamic_calls
-    //         key: SecureStorage.userIdKey,
-    //         value: response['user']['id']);
-    //     await Navigator.of(context).pushNamed('/main_navigation');
-    //   }
-    // }
 
-    await APIServices()
+    AuthServices().loginWithEmailAndPassword(credentials, context).then((value) {
+      setState(() => buttonIsLoading = false);
+
+    });
+
+  /*  await APIServices()
         .login(credentials)
         .then((APIStandardReturnFormat response) async {
       setState(() => buttonIsLoading = false);
       if (response.status == 'error') {
-        /*    AdvanceSnackBar(
-            message: ErrorMessageConstants.loginWrongEmailorPassword)
-            .show(context);*/
-        // AppSnackbars().error(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword );
-
-
-        AppDialogs().showError(context: context, message: ErrorMessageConstants.loginWrongEmailorPassword, title: 'Login Failed');
+        AppDialogs().showError(
+            context: context,
+            message: ErrorMessageConstants.loginWrongEmailorPassword,
+            title: 'Login Failed');
 
         setState(() => buttonIsLoading = false);
       } else {
         setRoles(response);
       }
+
+
     });
+*/
+
   }
 
   Future<void> setRoles(APIStandardReturnFormat response) async {
@@ -193,10 +150,10 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.of(context).pushNamedAndRemoveUntil(
             '/main_navigation', (Route<dynamic> route) => false);
       } else {
-        ErrorDialog().showErrorDialog(
+        AppDialogs().showError(
             context: context,
             title: 'Login Failed',
-            message: "You don't have any Guide Access");
+            message: "You don't have any Guide Access yet.");
       }
     }
   }
@@ -277,6 +234,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         FacebookPermission.email,
                       ]);
 
+
+                      debugPrint('Facebook Login result ${res}');
+
+                      return;
                       switch (res.status) {
                         case FacebookLoginStatus.success:
                           setState(() {

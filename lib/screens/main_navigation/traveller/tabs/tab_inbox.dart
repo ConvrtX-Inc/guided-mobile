@@ -44,7 +44,6 @@ class _TabInboxScreenState extends State<TabInboxScreen> {
     isLoading = true;
     getMessages();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -127,7 +127,7 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                    const ReviewsProfileScreen()));
+                                      ReviewsProfileScreen(profileDetails: userGuideDetails)));
                           },
                           child: Text(
                             AppTextConstants.reviews,
@@ -263,7 +263,6 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
           const SizedBox(height: 20),
         ],
       );
-
   //ABOUT SECTION
   Widget buildAbout() =>
       Column(

@@ -11,6 +11,7 @@ import 'package:geolocator_platform_interface/src/models/position.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
+import 'package:guided/common/widgets/custom_date_range_picker.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/asset_path.dart';
@@ -228,7 +229,6 @@ class _ActivityFindMapState extends State<ActivityFindMap> {
               MapUtils.boundsFromLatLngList(
                   _markers.map((loc) => loc.position).toList()),
               1)));
-
     }
     setState(() {
       filteredActivityPackages = res;
@@ -624,154 +624,23 @@ class _ActivityFindMapState extends State<ActivityFindMap> {
                       height: 5.h,
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 20.h),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Select date',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Icon(
-                        Icons.chevron_left,
-                        color: HexColor('#898A8D'),
-                      ),
-                      Container(
-                          color: Colors.transparent,
-                          height: 80.h,
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          child: EasyScrollToIndex(
-                            controller: _scrollController,
-                            // ScrollToIndexController
-                            scrollDirection: Axis.horizontal,
-                            // default Axis.vertical
-                            itemCount: dates.length,
-                            // itemCount
-                            itemWidth: 95,
-                            itemHeight: 70,
-                            itemBuilder: (BuildContext context, int index) {
-                              return dates[index].month >= currentMonth
-                                  ? InkWell(
-                                      onTap: () {
-                                        updateState(() {
-                                          selectedDate = DateTime(
-                                              selectedDate.year,
-                                              dates[index].month);
-                                          // _selectedDate =  DateTime(selectedDate.year, dates[index].month);
-                                        });
-
-                                        debugPrint(
-                                            'Select Month ${selectedDate.toString()}');
-                                      },
-                                      child: Stack(
-                                        children: <Widget>[
-                                          Align(
-                                            alignment: Alignment.center,
-                                            child: Container(
-                                              margin: EdgeInsets.fromLTRB(
-                                                  index == 0 ? 0.w : 0.w,
-                                                  0.h,
-                                                  10.w,
-                                                  0.h),
-                                              width: 89,
-                                              height: 45,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                    Radius.circular(10),
-                                                  ),
-                                                  border: Border.all(
-                                                      color: dates[index]
-                                                                  .month ==
-                                                              selectedDate.month
-                                                          ? HexColor('#FFC74A')
-                                                          : HexColor('#C4C4C4'),
-                                                      width: 1),
-                                                  color: dates[index].month ==
-                                                          selectedDate.month
-                                                      ? HexColor('#FFC74A')
-                                                      : Colors.white),
-                                              child: Center(
-                                                  child: Text(
-                                                      dates[index].monthName)),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  : Container();
-                            },
-                          )),
-                      Icon(
-                        Icons.chevron_right,
-                        color: HexColor('#898A8D'),
-                      ),
-                    ],
-                  ),
-                  SfDateRangePicker(
-                    enablePastDates: false,
-                    minDate: selectedDate,
-                    maxDate: Indate.DateUtils.lastDayOfMonth(selectedDate),
-                    onSelectionChanged:
+                  CustomDateRangePicker(
+                    onDatesSelected:
                         (DateRangePickerSelectionChangedArgs args) {
-                      if (args.value.startDate != null &&
-                          args.value.endDate != null) {
-                        debugPrint('Start Date ${args.value.startDate}');
-                        debugPrint('End Date ${args.value}');
+                      debugPrint('Start Date ${args.value.startDate}');
+                      debugPrint('End Date ${args.value}');
 
-                        setState(() {
-                          startDate = args.value.startDate.toString();
-                          endDate = args.value.startDate.toString();
-                        });
-                      }
+                      updateState(() {
+                        startDate = args.value.startDate.toString();
+                        endDate = args.value.startDate.toString();
+                      });
                     },
-                    selectionMode: DateRangePickerSelectionMode.range,
-                    navigationMode: DateRangePickerNavigationMode.none,
-                    monthViewSettings: const DateRangePickerMonthViewSettings(
-                      dayFormat: 'E',
-                    ),
-                    headerHeight: 0,
-                    monthCellStyle: DateRangePickerMonthCellStyle(
-                      textStyle: TextStyle(color: HexColor('#3E4242')),
-                      todayTextStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: HexColor('#3E4242')),
-                    ),
-                    selectionShape: DateRangePickerSelectionShape.circle,
-                    selectionTextStyle: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    rangeSelectionColor: HexColor('#FFF2CE'),
-                    todayHighlightColor: HexColor('#FFC74A'),
-                    startRangeSelectionColor: HexColor('#FFC31A'),
-                    endRangeSelectionColor: HexColor('#FFC31A'),
-                  ),
-                  SizedBox(
-                    width: 153.w,
-                    height: 54.h,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        getPackagesByDateRange();
-                      },
-                      style: AppTextStyle.activeGreen,
-                      child: const Text(
-                        'Set Filter Date',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12),
-                      ),
-                    ),
+                    onSubmitted: startDate.isNotEmpty && endDate.isNotEmpty
+                        ? () {
+                            Navigator.of(context).pop();
+                            getPackagesByDateRange();
+                          }
+                        : null,
                   ),
                 ],
               ),
@@ -817,7 +686,7 @@ class _ActivityFindMapState extends State<ActivityFindMap> {
                       ),
                     ),
                   ),
-                  if(filteredActivityPackages.isNotEmpty )
+                  if (filteredActivityPackages.isNotEmpty)
                     Padding(
                       padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 20.h),
                       child: Align(
@@ -832,17 +701,19 @@ class _ActivityFindMapState extends State<ActivityFindMap> {
                       ),
                     ),
                   Expanded(
-                      child: filteredActivityPackages.isNotEmpty ? ListView.builder(
-                    shrinkWrap: true,
-                    controller: scrollController,
-                    itemCount: filteredActivityPackages.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return buildActivityPackageListItem(
-                          filteredActivityPackages[index]);
-                    },
-                  ) : const Center(
-                        child: Text('No Nearby Activities Found'),
-                      ))
+                      child: filteredActivityPackages.isNotEmpty
+                          ? ListView.builder(
+                              shrinkWrap: true,
+                              controller: scrollController,
+                              itemCount: filteredActivityPackages.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return buildActivityPackageListItem(
+                                    filteredActivityPackages[index]);
+                              },
+                            )
+                          : const Center(
+                              child: Text('No Nearby Activities Found'),
+                            ))
                 ],
               ),
             );

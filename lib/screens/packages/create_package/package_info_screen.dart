@@ -29,7 +29,6 @@ class _PackageInfoScreenState extends State<PackageInfoScreen> {
   void initState() {
     super.initState();
   }
-
   File? image1;
 
   final TextEditingController _packageName = TextEditingController();

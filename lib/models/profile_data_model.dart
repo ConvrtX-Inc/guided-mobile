@@ -45,7 +45,7 @@ class ProfileDetailsModel {
   /// mapping
   ProfileDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
-        fullName = parseJson['full_name'] ?? '',
+        fullName = parseJson['full_name'] ?? '${parseJson['first_name']} ${parseJson['last_name']}',
         firstName = parseJson['first_name'] ?? '',
         lastName = parseJson['last_name'] ?? '',
         email = parseJson['email'] ?? '',

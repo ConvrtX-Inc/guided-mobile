@@ -13,6 +13,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_place/google_place.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
+import 'package:guided/common/widgets/custom_date_range_picker.dart';
+import 'package:guided/common/widgets/month_selector.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -74,8 +76,10 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
 
   int selectedmonth = 0;
   final ScrollToIndexController _scrollController = ScrollToIndexController();
-  final travellerMonthController = Get.put(TravellerMonthController());
-  final popularGuidesController = Get.put(PopularGuidesController());
+  final TravellerMonthController travellerMonthController =
+      Get.put(TravellerMonthController());
+  final PopularGuidesController popularGuidesController =
+      Get.put(PopularGuidesController());
   final SwiperController _cardController = SwiperController();
   double latitude = 0.0;
   double longitude = 0.0;
@@ -288,7 +292,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.w, 0.h, 15.w, 0.h),
                   child: TextField(
-                    onSubmitted: (value) async {
+                    onSubmitted: (String value) async {
                       debugPrint('Query $value');
                       // widget.onItemPressed('guides');
                     },
@@ -298,13 +302,13 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                           .pushNamed('/search_place');
 
                       if (result != null && result is DetailsResponse) {
-                        await Navigator.of(context).pushNamed('/activity_map',
-                            arguments: {
-                              'placeDetails': result,
-                              'initialActivityPackages': nearbyActivityPackages,
-                              'startDate': startDate,
-                              'endDate': endDate
-                            });
+                        await Navigator.of(context)
+                            .pushNamed('/activity_map', arguments: {
+                          'placeDetails': result,
+                          'initialActivityPackages': nearbyActivityPackages,
+                          'startDate': startDate,
+                          'endDate': endDate
+                        });
                       }
                     },
                     textAlign: TextAlign.left,
@@ -1050,12 +1054,6 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         top: false,
         child: StatefulBuilder(
           builder: (BuildContext context, updateState) {
-            final List<AvailableDateModel> dates =
-                AppListConstants().availableDates;
-
-            final int currentMonth = DateTime.now().month;
-
-
             return Container(
               height: MediaQuery.of(context).size.height * 0.72,
               decoration: const BoxDecoration(
@@ -1075,160 +1073,26 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                       height: 5.h,
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 20.h),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Select date',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Icon(
-                        Icons.chevron_left,
-                        color: HexColor('#898A8D'),
-                      ),
-                      Container(
-                          color: Colors.transparent,
-                          height: 80.h,
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          child: EasyScrollToIndex(
-                            controller: _scrollController,
-                            // ScrollToIndexController
-                            scrollDirection: Axis.horizontal,
-                            // default Axis.vertical
-                            itemCount: dates.length,
-                            // itemCount
-                            itemWidth: 95,
-                            itemHeight: 70,
-                            itemBuilder: (BuildContext context, int index) {
-                              return dates[index].month >= currentMonth
-                                  ? InkWell(
-                                      onTap: () {
-                                        updateState(() {
-                                          selectedDate = DateTime(
-                                              selectedDate.year,
-                                              dates[index].month);
-
-                                        });
-
-                                        debugPrint(
-                                            'Select Month ${selectedDate.toString()}');
-                                      },
-                                      child: Stack(
-                                        children: <Widget>[
-                                          Align(
-                                            alignment: Alignment.center,
-                                            child: Container(
-                                              margin: EdgeInsets.fromLTRB(
-                                                  index == 0 ? 0.w : 0.w,
-                                                  0.h,
-                                                  10.w,
-                                                  0.h),
-                                              width: 89,
-                                              height: 45,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                    Radius.circular(10),
-                                                  ),
-                                                  border: Border.all(
-                                                      color: dates[index]
-                                                                  .month ==
-                                                              selectedDate.month
-                                                          ? HexColor('#FFC74A')
-                                                          : HexColor('#C4C4C4'),
-                                                      width: 1),
-                                                  color: dates[index].month ==
-                                                          selectedDate.month
-                                                      ? HexColor('#FFC74A')
-                                                      : Colors.white),
-                                              child: Center(
-                                                  child: Text(
-                                                      dates[index].monthName)),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  : Container();
-                            },
-                          )),
-                      Icon(
-                        Icons.chevron_right,
-                        color: HexColor('#898A8D'),
-                      ),
-                    ],
-                  ),
-                  SfDateRangePicker(
-                    enablePastDates: false,
-                    // initialDisplayDate: selectedDate,
-                    minDate: selectedDate,
-                    maxDate: Indate.DateUtils.lastDayOfMonth(selectedDate),
-                    onSelectionChanged:
+                  CustomDateRangePicker(
+                    onDatesSelected:
                         (DateRangePickerSelectionChangedArgs args) {
-                      if (args.value.startDate != null &&
-                          args.value.endDate != null) {
-                        debugPrint('Start Date ${args.value.startDate}');
-                        debugPrint('End Date ${args.value}');
-                        //
-                        setState(() {
-                          startDate = args.value.startDate.toString();
-                          endDate = args.value.startDate.toString();
-                        });
-                      }
+                      debugPrint('Start Date ${args.value.startDate}');
+                      debugPrint('End Date ${args.value}');
+
+                      setState(() {
+                        startDate = args.value.startDate.toString();
+                        endDate = args.value.startDate.toString();
+                      });
                     },
-                    selectionMode: DateRangePickerSelectionMode.range,
-                    navigationMode: DateRangePickerNavigationMode.none,
-                    monthViewSettings: const DateRangePickerMonthViewSettings(
-                      dayFormat: 'E',
-                    ),
-                    headerHeight: 0,
-                    monthCellStyle: DateRangePickerMonthCellStyle(
-                      textStyle: TextStyle(color: HexColor('#3E4242')),
-                      todayTextStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: HexColor('#3E4242')),
-                    ),
-                    selectionShape: DateRangePickerSelectionShape.circle,
-                    selectionTextStyle: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    rangeSelectionColor: HexColor('#FFF2CE'),
-                    todayHighlightColor: HexColor('#FFC74A'),
-                    startRangeSelectionColor: HexColor('#FFC31A'),
-                    endRangeSelectionColor: HexColor('#FFC31A'),
-                  ),
-                  SizedBox(
-                    width: 153.w,
-                    height: 54.h,
-                    child: ElevatedButton(
-                      onPressed: () {
-                          Navigator.of(context).popAndPushNamed('/activity_map',
-                            arguments: {
-                              'placeDetails': '',
-                              'initialActivityPackages': nearbyActivityPackages,
-                              'startDate': startDate,
-                              'endDate': endDate
-                            });
-                      },
-                      style: AppTextStyle.activeGreen,
-                      child: const Text(
-                        'Set Filter Date',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12),
-                      ),
-                    ),
+                    onSubmitted: () {
+                      Navigator.of(context)
+                          .popAndPushNamed('/activity_map', arguments: {
+                        'placeDetails': '',
+                        'initialActivityPackages': nearbyActivityPackages,
+                        'startDate': startDate,
+                        'endDate': endDate
+                      });
+                    },
                   ),
                 ],
               ),
@@ -1239,13 +1103,6 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
     ).whenComplete(() {
       _scrollController.easyScrollToIndex(index: 0);
     });
-    /* Future.delayed(const Duration(seconds: 1), () {
-      _scrollController.easyScrollToIndex(
-          index: travellerMonthController.selectedDate - 1);
 
-      // setState(() {
-      //   selectedmonth = 7;
-      // });
-    });*/
   }
 }

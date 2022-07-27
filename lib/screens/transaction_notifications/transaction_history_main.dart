@@ -249,7 +249,6 @@ class _TransactionHistoryMainState extends State<TransactionHistoryMain>
       ],
     );
   }
-
   Widget getMainTabBar()
   {
     return  TabBar(

@@ -18,7 +18,6 @@ class MapUtils {
     }
     return LatLngBounds(northeast: LatLng(x1, y1), southwest: LatLng(x0, y0));
   }
-
   static LatLngBounds computeBounds(List<LatLng> list) {
     assert(list.isNotEmpty);
     var firstLatLng = list.first;

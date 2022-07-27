@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -38,7 +39,7 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
   List<Message> chatMessages = [];
 
   late IO.Socket socket;
-  String message = 'test';
+  String message = '';
   TextEditingController _textMessageController = TextEditingController();
 
   ChatModel chat = ChatModel();
@@ -80,11 +81,12 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
       keyboardSubscription =
           keyboardVisibilityController.onChange.listen((bool visible) {
         if (visible) {
-          if (showEmojiPicker) {
-            setState(() {
-              showEmojiPicker = false;
-            });
-          }
+          // if (showEmojiPicker) {
+          //   setState(() {
+          //     showEmojiPicker = false;
+          //   });
+          // }
+
           if (chatMessages.isNotEmpty) {
             scrollToBottom();
           }
@@ -167,9 +169,13 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
                               Expanded(
                                 child: TextFormField(
                                   focusNode: _textMessageFocusNode,
-                                  keyboardType: TextInputType.multiline,
+                                  // keyboardType: TextInputType.multiline,
                                   minLines: 1,
                                   maxLines: 3,
+                                  // keyboardType: TextInputType.none,
+                                  keyboardType: !showEmojiPicker
+                                      ? TextInputType.multiline
+                                      : TextInputType.multiline,
                                   controller: _textMessageController,
                                   onChanged: (val) {
                                     setState(() {
@@ -187,12 +193,23 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
                                           fit: BoxFit.scaleDown),
                                       onPressed: () {
                                         // FocusScope.of(context).unfocus();
-                                        FocusScope.of(context).requestFocus(
-                                            _textMessageFocusNode);
-                                        _textMessageFocusNode.unfocus();
-                                        setState(() {
-                                          showEmojiPicker = !showEmojiPicker;
-                                        });
+                                        // FocusScope.of(context).requestFocus(
+                                        //     _textMessageFocusNode);
+                                        // _textMessageFocusNode.unfocus();
+
+
+                                        _textMessageFocusNode.requestFocus();
+
+                                        Future.delayed(
+                                          Duration(),
+                                          () {
+                                            SystemChannels.textInput.invokeMethod('TextInput.hide');
+                                            setState(() {
+                                              showEmojiPicker = !showEmojiPicker;
+                                            });
+
+                                          },
+                                        );
                                       },
                                     ),
                                     suffixIcon: IconButton(
@@ -239,7 +256,39 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
                           )),
                     ])),
               ),
-            Offstage(
+            if(showEmojiPicker)
+              SizedBox(
+              height: 250.h,
+              child: EmojiPicker(
+                  onEmojiSelected: (Category category, Emoji emoji) {
+                    _onEmojiSelected(emoji);
+                  },
+                  onBackspacePressed: _onBackspacePressed,
+                  config: Config(
+                      columns: 7,
+                      emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                      verticalSpacing: 0,
+                      horizontalSpacing: 0,
+                      initCategory: Category.RECENT,
+                      bgColor: const Color(0xFFF2F2F2),
+                      indicatorColor: Colors.blue,
+                      iconColor: Colors.grey,
+                      iconColorSelected: Colors.blue,
+                      progressIndicatorColor: Colors.blue,
+                      backspaceColor: Colors.blue,
+                      skinToneDialogBgColor: Colors.white,
+                      skinToneIndicatorColor: Colors.grey,
+                      enableSkinTones: true,
+                      showRecentsTab: true,
+                      recentsLimit: 28,
+                      noRecentsText: 'No Recents',
+                      noRecentsStyle: const TextStyle(
+                          fontSize: 20, color: Colors.black26),
+                      tabIndicatorAnimDuration: kTabScrollDuration,
+                      categoryIcons: const CategoryIcons(),
+                      buttonMode: ButtonMode.MATERIAL)),
+            ),
+           /* Offstage(
               offstage: !showEmojiPicker,
               child: SizedBox(
                 height: 250.h,
@@ -272,7 +321,7 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
                         categoryIcons: const CategoryIcons(),
                         buttonMode: ButtonMode.MATERIAL)),
               ),
-            ),
+            ),*/
           ],
         ),
       ),
@@ -413,14 +462,20 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
           )));
 
   void sendMessageToServer() {
+    debugPrint('MESSAGe $message');
+
     socket.emit('msgToServer', {
       'receiver_id': chat.receiver!.id!,
       'sender_id': UserSingleton.instance.user.user?.id,
-      'text': _textMessageController.text,
+      // 'text': _textMessageController.text,
+      'text': message,
       'type': 'text'
     });
     print('success');
-    _textMessageController.clear();
+    setState(() {
+      message = '';
+      _textMessageController = TextEditingController(text: '');
+    });
   }
 
   handleMessage(payload) {
@@ -548,6 +603,8 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
   _onEmojiSelected(Emoji emoji) {
     final text = _textMessageController.text;
     final selection = _textMessageController.selection;
+
+    debugPrint('Selection ${selection.start} ${selection.end}');
     final newText =
         text.replaceRange(selection.start, selection.end, emoji.emoji);
     final emojiLength = emoji.emoji.length;
@@ -556,6 +613,12 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
       selection:
           TextSelection.collapsed(offset: selection.baseOffset + emojiLength),
     );
+
+    setState(() {
+      message = newText;
+    });
+
+    debugPrint('text ${_textMessageController.value}');
   }
 
   _onBackspacePressed() {

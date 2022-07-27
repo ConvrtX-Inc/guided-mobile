@@ -82,7 +82,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colors.white,
     );
   }
-
   /// Body of profile screen
   Widget getBody(BuildContext context) {
     return SingleChildScrollView(

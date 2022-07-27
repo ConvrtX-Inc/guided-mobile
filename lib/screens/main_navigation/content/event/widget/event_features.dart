@@ -116,7 +116,6 @@ class _EventFeaturesState extends State<EventFeatures> {
                     if (snapshot.connectionState != ConnectionState.done) {
                       return const Center(child: CircularProgressIndicator());
                     }
-
                     for (EventImageDetailsModel imageDetails
                         in eventImage.eventImageDetails) {
                       return Stack(

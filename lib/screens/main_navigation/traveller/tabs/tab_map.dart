@@ -14,6 +14,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
+import 'package:guided/common/widgets/custom_date_range_picker.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -77,7 +78,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
   double activitiesContainer = 70;
   bool _isloading = true;
   List<int> _selectedActivity = [];
-  LatLng currentMapLatLong = const LatLng(53.59, -113.60);
+  late LatLng currentMapLatLong = LatLng(53.59, -113.60);
   List<ActivityPackage> _loadingData = [];
   List<ActivityPackage> _filteredActivity = [];
   final CardController _creditCardController = Get.put(CardController());
@@ -94,6 +95,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
   String endDate = '';
 
   final List<AvailableDateModel> dates = AppListConstants().availableDates;
+
+  int currentMonthScrollIndex = 0;
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
@@ -122,9 +125,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
     hasPremiumSubscription =
         UserSingleton.instance.user.user!.hasPremiumSubscription!;
 
-    getActivityPackages();
-
     getCurrentAddress();
+    getActivityPackages();
   }
 
   @override
@@ -193,12 +195,13 @@ class _TabMapScreenState extends State<TabMapScreen> {
         .first.activityPackageDestination!.activityPackageDestinationLatitude!);
     print(activityPackages.first.activityPackageDestination!
         .activityPackageDestinationLongitude!);
-    // mapController?.animateCamera(CameraUpdate.newCameraPosition(
-    //     CameraPosition(target: LatLng(lat, long), zoom: 17)
-    //     //17 is new zoom level
-    //     ));
+    /* mapController?.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(target: LatLng(lat, long), zoom: 17)
+        //17 is new zoom level
+        ));*/
+
     setState(() {
-      currentMapLatLong = LatLng(lat, long);
+      // currentMapLatLong = LatLng(lat, long);
 
       _markers.addAll(marks);
     });
@@ -219,13 +222,14 @@ class _TabMapScreenState extends State<TabMapScreen> {
         elevation: 23,
         backgroundColor: Colors.white,
         onPressed: () async {
-          final Position location = await _userCurrentPosition();
+          /* final Position location = await _userCurrentPosition();
           await mapController?.animateCamera(CameraUpdate.newCameraPosition(
               CameraPosition(
                   target: LatLng(location.latitude, location.longitude),
                   zoom: 17)
               //17 is new zoom level
-              ));
+              ));*/
+          await getCurrentAddress();
         },
         child: const Icon(
           Icons.my_location,
@@ -500,7 +504,13 @@ class _TabMapScreenState extends State<TabMapScreen> {
         .getAddressFromCoordinates(coordinates.latitude, coordinates.longitude);
     setState(() {
       currentAddress = address;
+      currentMapLatLong = LatLng(coordinates.latitude, coordinates.longitude);
     });
+
+    await mapController?.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(target: currentMapLatLong, zoom: 17)
+        //17 is new zoom level
+        ));
   }
 
   String formatDate(DateTime date) {
@@ -561,15 +571,34 @@ class _TabMapScreenState extends State<TabMapScreen> {
     });
     if (_filteredActivity.isNotEmpty) {
       addMarker(_filteredActivity);
-      debugPrint('Filtered ${_filteredActivity[0].mainBadge!.badgeName!}');
+      debugPrint('Filtered ${_filteredActivity.length}');
 
       if (_searchController.text.isEmpty) {
         Future.delayed(
             Duration(milliseconds: 200),
-            () => mapController?.animateCamera(CameraUpdate.newLatLngBounds(
+            () =>
+            mapController?.moveCamera(CameraUpdate.newLatLngBounds(
+                  MapUtils.boundsFromLatLngList(_filteredActivity.map((e) => LatLng(
+                      double.parse(e
+                          .activityPackageDestination!.activityPackageDestinationLatitude!),double.parse(e
+                      .activityPackageDestination!.activityPackageDestinationLongitude!)
+
+
+
+                  )).toList()),
+                  4.0,
+                ),
+                )
+
+
+                /*mapController?.moveCamera(CameraUpdate.newLatLngBounds(
                 MapUtils.boundsFromLatLngList(
                     _markers.map((loc) => loc.position).toList()),
-                1)));
+                1))*/
+
+
+
+        );
       }
     }
   }
@@ -911,267 +940,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   height: 20.h,
                 ),
                 // onPressed: null,
-                onPressed: () {
-                  showDatePickerBottomSheet();
-                 /* showMaterialModalBottomSheet(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
-                    ),
-                    expand: false,
-                    context: context,
-                    backgroundColor: Colors.white,
-                    builder: (BuildContext context) => SafeArea(
-                      top: false,
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.72,
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20))),
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: 15.h,
-                            ),
-                            Align(
-                              child: Image.asset(
-                                AssetsPath.horizontalLine,
-                                width: 60.w,
-                                height: 5.h,
-                              ),
-                            ),
-                            // SizedBox(
-                            //   height: 15.h,
-                            // ),
-                            Padding(
-                              padding:
-                                  EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 20.h),
-                              child: Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  'Select date',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 24.sp,
-                                      fontWeight: FontWeight.w700),
-                                ),
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Icon(
-                                  Icons.chevron_left,
-                                  color: HexColor('#898A8D'),
-                                ),
-                                Container(
-                                    color: Colors.transparent,
-                                    height: 80.h,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.7,
-                                    child: EasyScrollToIndex(
-                                      controller: _scrollController,
-                                      // ScrollToIndexController
-                                      scrollDirection: Axis.horizontal,
-                                      // default Axis.vertical
-                                      itemCount: AppListConstants
-                                          .calendarMonths.length,
-                                      // itemCount
-                                      itemWidth: 95,
-                                      itemHeight: 70,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return InkWell(
-                                          onTap: () {
-                                            _scrollController.easyScrollToIndex(
-                                                index: index);
-                                            travellerMonthController
-                                                .setSelectedDate(index + 1);
-                                            DateTime dt = DateTime.parse(
-                                                travellerMonthController
-                                                    .currentDate);
-
-                                            final DateTime plustMonth =
-                                                DateTime(dt.year, index + 1,
-                                                    dt.day, dt.hour, dt.minute);
-
-                                            final DateTime setLastday =
-                                                DateTime(
-                                                    plustMonth.year,
-                                                    plustMonth.month,
-                                                    1,
-                                                    plustMonth.hour,
-                                                    plustMonth.minute);
-
-                                            travellerMonthController
-                                                .setCurrentMonth(
-                                              setLastday.toString(),
-                                            );
-                                          },
-                                          child: Obx(
-                                            () => Stack(
-                                              children: <Widget>[
-                                                Align(
-                                                  alignment: Alignment.center,
-                                                  child: Container(
-                                                    margin: EdgeInsets.fromLTRB(
-                                                        index == 0 ? 0.w : 0.w,
-                                                        0.h,
-                                                        10.w,
-                                                        0.h),
-                                                    width: 89,
-                                                    height: 45,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            const BorderRadius
-                                                                .all(
-                                                          Radius.circular(10),
-                                                        ),
-                                                        border: Border.all(
-                                                            color: index ==
-                                                                    travellerMonthController
-                                                                            .selectedDate -
-                                                                        1
-                                                                ? HexColor(
-                                                                    '#FFC74A')
-                                                                : HexColor(
-                                                                    '#C4C4C4'),
-                                                            width: 1),
-                                                        color: index ==
-                                                                travellerMonthController
-                                                                        .selectedDate -
-                                                                    1
-                                                            ? HexColor(
-                                                                '#FFC74A')
-                                                            : Colors.white),
-                                                    child: Center(
-                                                        child: Text(AppListConstants
-                                                                .calendarMonths[
-                                                            index])),
-                                                  ),
-                                                ),
-                                                // Positioned(
-                                                //     right: 2,
-                                                //     top: 2,
-                                                //     child: index
-                                                //             .isOdd
-                                                //         ? Badge(
-                                                //             padding:
-                                                //                 const EdgeInsets.all(8),
-                                                //             badgeColor:
-                                                //                 AppColors.deepGreen,
-                                                //             badgeContent:
-                                                //                 Text(
-                                                //               '2',
-                                                //               style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.w800, fontFamily: AppTextConstants.fontPoppins),
-                                                //             ),
-                                                //           )
-                                                //         : Container()),
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    )),
-                                Icon(
-                                  Icons.chevron_right,
-                                  color: HexColor('#898A8D'),
-                                ),
-                              ],
-                            ),
-                            GetBuilder<TravellerMonthController>(
-                                id: 'calendar',
-                                builder: (TravellerMonthController controller) {
-                                  print(controller.selectedDates);
-                                  return Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          20.w, 0.h, 20.w, 0.h),
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.4,
-                                      child: Sfcalendar(context,
-                                          travellerMonthController.currentDate,
-                                          (List<DateTime> value) {
-                                        travellerMonthController.selectedDates
-                                            .clear();
-                                        travellerMonthController
-                                            .setSelectedDates(value);
-                                      }, []));
-                                }),
-                            // SizedBox(
-                            //   height: 20.h,
-                            // ),
-                            SizedBox(
-                              width: 153.w,
-                              height: 54.h,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (travellerMonthController
-                                      .selectedDates.isNotEmpty) {
-                                    Navigator.of(context).pop();
-                                    travellerMonthController.selectedDates.sort(
-                                        (DateTime a, DateTime b) =>
-                                            a.compareTo(b));
-
-                                    APIServices()
-                                        .getActivityByDateRange(
-                                            formatDate(travellerMonthController
-                                                .selectedDates.first),
-                                            formatDate(travellerMonthController
-                                                .selectedDates.last))
-                                        .then((value) {
-                                      if (value.isNotEmpty) {
-                                        final ActivityPackage? activity =
-                                            value.firstOrNull;
-                                        if (activity != null) {
-                                          addMarker(value);
-                                          double lat = double.parse(activity
-                                              .activityPackageDestination!
-                                              .activityPackageDestinationLatitude!);
-                                          double long = double.parse(activity
-                                              .activityPackageDestination!
-                                              .activityPackageDestinationLongitude!);
-                                          mapController?.animateCamera(
-                                              CameraUpdate.newCameraPosition(
-                                                  CameraPosition(
-                                                      target: LatLng(lat, long),
-                                                      zoom: 17)
-                                                  //17 is new zoom level
-                                                  ));
-                                        }
-                                      }
-                                    });
-                                  }
-                                },
-                                style: AppTextStyle.activeGreen,
-                                child: const Text(
-                                  'Set Filter Date',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ).whenComplete(() {
-                    _scrollController.easyScrollToIndex(index: 0);
-                  });
-                  Future.delayed(const Duration(seconds: 1), () {
-                    _scrollController.easyScrollToIndex(
-                        index: travellerMonthController.selectedDate - 1);*/
-
-                    // setState(() {
-                    //   selectedmonth = 7;
-                    // });
-                  // });
-                },
+                onPressed: showDatePickerBottomSheet,
               ),
             ),
           ),
@@ -1409,6 +1178,8 @@ class _TabMapScreenState extends State<TabMapScreen> {
         top: false,
         child: StatefulBuilder(
           builder: (BuildContext context, updateState) {
+            String _startDate = '';
+            String _endDate = '';
             return Container(
               height: MediaQuery.of(context).size.height * 0.72,
               decoration: const BoxDecoration(
@@ -1428,7 +1199,27 @@ class _TabMapScreenState extends State<TabMapScreen> {
                       height: 5.h,
                     ),
                   ),
-                  Padding(
+                  CustomDateRangePicker(
+                    onDatesSelected:
+                        (DateRangePickerSelectionChangedArgs args) {
+                      debugPrint('Start Date ${args.value.startDate}');
+                      debugPrint('End Date ${args.value}');
+
+                      updateState(() {
+                        startDate = args.value.startDate.toString();
+                        endDate = args.value.startDate.toString();
+                        _startDate = args.value.startDate.toString();
+                        _endDate = args.value.startDate.toString();
+                      });
+                    },
+                    onSubmitted: startDate.isNotEmpty && endDate.isNotEmpty
+                        ? () {
+                            Navigator.of(context).pop();
+                            getPackagesByDateRange();
+                          }
+                        : null,
+                  ),
+                  /* Padding(
                     padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 20.h),
                     child: Align(
                       alignment: Alignment.topLeft,
@@ -1444,10 +1235,19 @@ class _TabMapScreenState extends State<TabMapScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      Icon(
-                        Icons.chevron_left,
-                        color: HexColor('#898A8D'),
-                      ),
+                      IconButton(
+                          onPressed: () {
+                            if(currentMonthScrollIndex > 0){
+                              setState(() {
+                                currentMonthScrollIndex --;
+                              });
+                            }
+                            _scrollController.easyScrollToIndex(index: currentMonthScrollIndex);
+                          },
+                          icon: Icon(
+                            Icons.chevron_left,
+                            color: HexColor('#898A8D'),
+                          )),
                       Container(
                           color: Colors.transparent,
                           height: 80.h,
@@ -1514,10 +1314,20 @@ class _TabMapScreenState extends State<TabMapScreen> {
                                   : Container();
                             },
                           )),
-                      Icon(
-                        Icons.chevron_right,
-                        color: HexColor('#898A8D'),
-                      ),
+
+                      IconButton(
+                          onPressed: () {
+                            if(currentMonthScrollIndex < dates.length){
+                              setState(() {
+                                currentMonthScrollIndex ++;
+                              });
+                            }
+                            _scrollController.easyScrollToIndex(index: currentMonthScrollIndex);
+                          },
+                          icon: Icon(
+                            Icons.chevron_right,
+                            color: HexColor('#898A8D'),
+                          )),
                     ],
                   ),
                   SfDateRangePicker(
@@ -1531,9 +1341,11 @@ class _TabMapScreenState extends State<TabMapScreen> {
                         debugPrint('Start Date ${args.value.startDate}');
                         debugPrint('End Date ${args.value}');
 
-                        setState(() {
+                        updateState(() {
                           startDate = args.value.startDate.toString();
                           endDate = args.value.startDate.toString();
+                          _startDate = args.value.startDate.toString();
+                          _endDate = args.value.startDate.toString();
                         });
                       }
                     },
@@ -1563,10 +1375,10 @@ class _TabMapScreenState extends State<TabMapScreen> {
                     width: 153.w,
                     height: 54.h,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: _startDate.isNotEmpty && _endDate.isNotEmpty ? () {
                         Navigator.of(context).pop();
                         getPackagesByDateRange();
-                      },
+                      } : null,
                       style: AppTextStyle.activeGreen,
                       child: const Text(
                         'Set Filter Date',
@@ -1576,7 +1388,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
                             fontSize: 12),
                       ),
                     ),
-                  ),
+                  ),*/
                 ],
               ),
             );
@@ -1599,7 +1411,7 @@ class _TabMapScreenState extends State<TabMapScreen> {
       setState(() {
         selectedDate = DateTime.now();
         startDate = '';
-        endDate ='';
+        endDate = '';
       });
 
       Future.delayed(

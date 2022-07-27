@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
+import 'package:guided/common/widgets/month_selector.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -45,7 +46,8 @@ class _CheckActivityAvailabityScreenState
   final List<Activity> activities = StaticDataService.getActivityList();
   final PageController page_indicator_controller = PageController();
   final ScrollToIndexController _scrollController = ScrollToIndexController();
-  final travellerMonthController = Get.put(TravellerMonthController());
+  final TravellerMonthController travellerMonthController =
+      Get.put(TravellerMonthController());
   final DateTime now = DateTime.now();
 
   List<AvailableDateModel> dates = [];
@@ -56,13 +58,19 @@ class _CheckActivityAvailabityScreenState
 
   ActivityPackage activityPackage = ActivityPackage();
 
+  final ScrollController _monthsScrollController = ScrollController();
+
+  int currentScrollIndex = 0;
+
+  DateTime selectedDate = DateTime.now();
+
   @override
   void initState() {
     initializeDateFormatting('en', null);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      Future.delayed(const Duration(seconds: 1), () {
+      /*Future.delayed(const Duration(seconds: 1), () {
         _scrollController.easyScrollToIndex(index: 0);
-      });
+      });*/
       final DateTime dt = DateTime.parse(travellerMonthController.currentDate);
       final int mon = dt.month;
       travellerMonthController.setSelectedDate(mon);
@@ -179,7 +187,7 @@ class _CheckActivityAvailabityScreenState
                     shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(14))),
                   ),
-                  onPressed:null,
+                  onPressed: null,
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
                     child: Obx(
@@ -205,12 +213,53 @@ class _CheckActivityAvailabityScreenState
             SizedBox(
               height: 20.h,
             ),
-            Row(
+            MonthSelector(
+              onMonthSelected: (date) {
+                travellerMonthController
+                    .setSelectedDate(date.month);
+                DateTime dt = DateTime.parse(
+                    travellerMonthController.currentDate);
+
+                final DateTime plustMonth = DateTime(dt.year,
+                    date.month, dt.day, dt.hour, dt.minute);
+
+                final DateTime setLastday = DateTime(
+                    plustMonth.year,
+                    plustMonth.month,
+                    1,
+                    plustMonth.hour,
+                    plustMonth.minute);
+
+                travellerMonthController.setCurrentMonth(
+                  setLastday.toString(),
+                );
+
+                setState(() {
+                  selectedDate = date;
+                });
+
+              },
+
+              selectedDate: selectedDate,
+
+            ),
+
+            /* Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                Icon(
-                  Icons.chevron_left,
-                  color: HexColor('#898A8D'),
+                IconButton(
+                  onPressed: () {
+                    if(currentScrollIndex > 0){
+                      setState(() {
+                        currentScrollIndex --;
+                      });
+                    }
+                    _scrollController.easyScrollToIndex(index: currentScrollIndex);
+                  },
+                  icon: Icon(
+                    Icons.chevron_left,
+                    color: HexColor('#898A8D'),
+                  ),
                 ),
                 Container(
                     color: Colors.transparent,
@@ -305,12 +354,24 @@ class _CheckActivityAvailabityScreenState
                         );
                       },
                     )),
-                Icon(
-                  Icons.chevron_right,
-                  color: HexColor('#898A8D'),
+
+                IconButton(
+                  onPressed: () {
+                    if(currentScrollIndex < dates.length){
+                      setState(() {
+                        currentScrollIndex++;
+                      });
+                    }
+                    _scrollController.easyScrollToIndex(index: currentScrollIndex);
+                  },
+                  icon: Icon(
+                    Icons.chevron_right,
+                    color: HexColor('#898A8D'),
+                  ),
                 ),
+
               ],
-            ),
+            ),*/
             SizedBox(
               height: 20.h,
             ),
@@ -362,11 +423,11 @@ class _CheckActivityAvailabityScreenState
   }
 
   Future<void> getAvailableSlots() async {
-    availableHours.forEach((e) {
+    availableHours.forEach((ActivityHourAvailability e) {
       final int monthNumber = DateTime.parse(e.availabilityDate!).month;
 
-      AvailableDateModel slot =
-          dates.firstWhere((item) => item.month == monthNumber);
+      AvailableDateModel slot = dates
+          .firstWhere((AvailableDateModel item) => item.month == monthNumber);
 
       final List<DateTime> availableDates =
           List.from(slot.availableDates, growable: true)
@@ -392,7 +453,7 @@ class _CheckActivityAvailabityScreenState
 
   Future<void> checkAvailability(BuildContext context, ActivityPackage package,
       List<DateTime> selectedDates) async {
-    selectedDates.sort((a, b) => a.compareTo(b));
+    selectedDates.sort((DateTime a, DateTime b) => a.compareTo(b));
     final Map<String, dynamic> details = {
       'package': package,
       'selectedDates': selectedDates,
