@@ -426,7 +426,7 @@ class APIServices {
       'Accept': '*/*'
     };
     final http.Response response = await http.post(
-      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.facebookLogin}'),
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.googleLoginUrl}'),
       body: jsonEncode({'idToken': idToken}),
       headers: headers,
     );
@@ -1437,6 +1437,8 @@ class APIServices {
     /// seeding for data summary
     final PackageModelData dataSummary =
         PackageModelData.fromJson(json.decode(response.body));
+
+    debugPrint('data ${dataSummary.packageDetails}');
 
     return PackageModelData(packageDetails: dataSummary.packageDetails);
   }

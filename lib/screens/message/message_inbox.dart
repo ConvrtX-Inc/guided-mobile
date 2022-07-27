@@ -354,7 +354,7 @@ class _MessageInboxState extends State<MessageInbox> {
                         ? DecorationImage(
                             image:
                                 NetworkImage(messages[index].receiver!.avatar!),
-                            fit: BoxFit.contain,
+                            fit: BoxFit.cover,
                           )
                         : DecorationImage(
                             image: AssetImage(AssetsPath.defaultProfilePic),

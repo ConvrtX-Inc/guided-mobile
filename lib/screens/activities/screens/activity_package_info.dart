@@ -7,6 +7,7 @@ import 'package:flutter_animarker/flutter_map_marker_animation.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -17,6 +18,7 @@ import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/available_date_model.dart';
 import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/user_model.dart';
+import 'package:guided/models/wishlist_activity_model.dart';
 import 'package:guided/screens/activities/widgets/activity_description.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/tabs/popular_guides_traveler_limit_schedules.dart';
 import 'package:guided/screens/message/message_screen_traveler.dart';
@@ -53,7 +55,6 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   ChatModel chatHistory = ChatModel();
   List<Message> messages = [];
   bool isFavorite = false;
-
   List<DateTime> availableDates = [];
 
   void _onMapCreated(GoogleMapController controller) {
@@ -69,6 +70,10 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
 
   List<ActivityHourAvailability> availableDateSlots = [];
 
+  String wishlistId = '';
+
+  bool isWishlisted = false;
+
   @override
   void initState() {
     super.initState();
@@ -81,6 +86,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
     getPackages();
     getGuideUserDetails();
     getAvailableDates(_activityPackage.id!);
+    checkWishlistData(widget.package.id!);
   }
 
   Future<void> addMarker() async {
@@ -115,21 +121,25 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                   children: <Widget>[
                     /// Share Icon
 
-                    Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: AppColors.harp,
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.share_outlined,
-                          color: Colors.black,
-                          size: 25.h,
-                        ),
-                      ),
-                    ),
+                    GestureDetector(
+                        onTap: () {
+                          Share.share('${widget.package.name!} \n  ${widget.package.firebaseCoverImg!} ${widget.package.description!}');
+                        },
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: AppColors.harp,
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.share_outlined,
+                              color: Colors.black,
+                              size: 25.h,
+                            ),
+                          ),
+                        )),
 
                     SizedBox(
                       width: 8.w,
@@ -137,9 +147,21 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
 
                     GestureDetector(
                       onTap: () {
-                        setState(() {
-                          isFavorite = !isFavorite;
-                        });
+                        // setState(() {
+                        //   isFavorite = !isFavorite;
+                        // });
+
+                        if(isWishlisted){
+                          setState(() {
+                            isWishlisted = false;
+                          });
+                          removeWishlist(wishlistId);
+                        }else{
+                          setState(() {
+                            isWishlisted = true;
+                          });
+                          addWishlist(widget.package.id!);
+                        }
                       },
                       child: Container(
                         height: 40,
@@ -150,10 +172,10 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                         ),
                         child: Center(
                           child: Icon(
-                            isFavorite
+                            isWishlisted
                                 ? Icons.favorite
                                 : Icons.favorite_border_outlined,
-                            color: isFavorite ? Colors.red : Colors.black,
+                            color: isWishlisted ? Colors.red : Colors.black,
                             size: 25.h,
                           ),
                         ),
@@ -510,7 +532,6 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
     final User result =
         await APIServices().getUserDetails(_activityPackage.userId!);
     debugPrint('user details: ${_activityPackage.userId}');
-
     setState(() {
       userGuideDetails = result;
       isGettingProfileDetail = false;
@@ -539,8 +560,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   }
 
   Future<void> getMessageHistory() async {
-    final List<ChatModel> res = await APIServices()
-        .getChatMessages('all');
+    final List<ChatModel> res = await APIServices().getChatMessages('all');
 
     final ChatModel chat = res.firstWhere(
         (ChatModel element) => element.receiver!.id! == userGuideDetails.id,
@@ -593,5 +613,55 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
         });
       });
     }
+  }
+
+
+  Future<void> checkWishlistData(String id) async {
+    final WishlistActivityModel res =
+    await APIServices().getWishlistActivityByPackageId(id);
+
+    if (res.wishlistActivityDetails.isNotEmpty) {
+      wishlistId = res.wishlistActivityDetails[0].id;
+      debugPrint('Wishlist id ${wishlistId}');
+      setState(() {
+        isWishlisted = true;
+      });
+    } else {
+      setState(() {
+        isWishlisted = false;
+      });
+    }
+  }
+
+
+  /// Removed wishlist
+  Future<void> removeWishlist(String id) async {
+    final dynamic response = await APIServices().request(
+        '${AppAPIPath.wishlistUrl}/$id', RequestType.DELETE,
+        needAccessToken: true);
+
+    debugPrint('Response: ${response}');
+    setState(() {
+      isWishlisted = false;
+    });
+  }
+
+  /// Returns add wishlist
+  Future<void> addWishlist(String packageId) async {
+    final String? userId = UserSingleton.instance.user.user!.id;
+
+    final Map<String, dynamic> advertisementDetails = {
+      'user_id': userId,
+      'activity_package_id': packageId
+    };
+
+    final dynamic response = await APIServices().request(
+        AppAPIPath.wishlistUrl, RequestType.POST,
+        needAccessToken: true, data: advertisementDetails);
+
+    setState(() {
+      wishlistId = response['id'];
+      // isWishlisted = true;
+    });
   }
 }

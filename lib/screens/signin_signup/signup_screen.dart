@@ -89,7 +89,7 @@ class _SignupScreenState extends State<SignupScreen> {
       account?.authentication.then((GoogleSignInAuthentication googleKey) {
         print(googleKey.accessToken);
         APIServices()
-            .loginFacebook(googleKey.accessToken!)
+            .loginGoogle(googleKey.idToken!)
             .then((APIStandardReturnFormat response) async {
           if (response.status == 'error') {
             AdvanceSnackBar(

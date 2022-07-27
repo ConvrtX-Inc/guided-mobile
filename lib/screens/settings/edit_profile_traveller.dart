@@ -87,7 +87,6 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
         text: _profileDetailsController.userProfileDetails.about);
     _fullNameController = TextEditingController(
         text: _profileDetailsController.userProfileDetails.fullName);
-
     _emailController = TextEditingController(
         text: _profileDetailsController.userProfileDetails.email);
     profilePicture =
@@ -374,8 +373,11 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
               const Text('Phone Number'),
               SizedBox(height: 10.h),
               IntlPhoneField(
-                initialValue:
-                    '+$_dialCode${_profileDetailsController.userProfileDetails.phoneNumber}',
+                initialValue: _profileDetailsController
+                            .userProfileDetails.phoneNumber !=
+                        ''
+                    ? '+$_dialCode${_profileDetailsController.userProfileDetails.phoneNumber}'
+                    : '',
                 controller: phoneController,
                 dropdownIcon: const Icon(
                   Icons.arrow_drop_down,
@@ -481,7 +483,7 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
       setState(() {
         profilePicture = profileUrl;
       });
-    }else{
+    } else {
       AppSnackbars()
           .error(context: context, message: 'Unable to Update Profile Picture');
     }
@@ -510,7 +512,6 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
     final APIStandardReturnFormat res =
         await APIServices().updateProfile(editProfileParams);
 
-
     if (res.status == 'success' && res.statusCode == 200) {
       final ProfileDetailsModel updatedProfile =
           ProfileDetailsModel.fromJson(json.decode(res.successResponse));
@@ -521,7 +522,7 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
       setState(() {
         isSaving = false;
       });
-    }else{
+    } else {
       setState(() {
         isSaving = false;
       });
@@ -558,9 +559,13 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
   Future<void> _showDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate != null ? _selectedDate! : DateTime.now(),
-      firstDate: DateTime(1930),
-      lastDate: DateTime(2100),
+      initialDate: _selectedDate != null
+          ? _selectedDate!
+          : DateTime(DateTime.now().year - 18),
+      firstDate: DateTime(1950),
+      lastDate: DateTime(DateTime.now().year - 18),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData(
@@ -583,7 +588,7 @@ class _EditProfileTravelerState extends State<EditProfileTraveler> {
 
   Future<void> updateEmailOrPassword() async {
     /// Update email
-  /*  if (_profileDetailsController.userProfileDetails.email !=
+    /*  if (_profileDetailsController.userProfileDetails.email !=
         _emailController.text) {
       setState(() {
         isSaving = true;

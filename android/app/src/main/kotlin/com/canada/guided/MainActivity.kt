@@ -1,4 +1,4 @@
-package com.canada.guided
+package com.convrtx.guided
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterFragmentActivity

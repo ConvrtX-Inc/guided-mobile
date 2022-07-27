@@ -159,8 +159,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14.r),
-                      borderSide: BorderSide(color: Colors.grey, width: 0.2.w),
-                    ),
                   ))*/
           BorderedTextField(
               controller: _fullNameController,
@@ -271,7 +269,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ))),
     );
   }
-
   Widget buildProfilePicture() => Container(
       margin: EdgeInsets.only(top: 55.h, bottom: 65.h),
       child: Stack(

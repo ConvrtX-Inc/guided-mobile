@@ -5,6 +5,7 @@ import 'package:google_place/google_place.dart';
 import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/certificate.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/activities/screens/activities.dart';
 import 'package:guided/screens/activities/screens/activity_package_info.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
@@ -338,7 +339,7 @@ class RouteGenerator {
             builder: (_) => MainProfileScreen(userId: args as String));
       case '/reviews_profile':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const ReviewsProfileScreen());
+            builder: (_) =>  ReviewsProfileScreen(profileDetails:  args! as User));
       case '/payment':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TabMapScreen(), settings: settings);

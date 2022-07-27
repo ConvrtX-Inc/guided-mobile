@@ -65,52 +65,66 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
   late Future<PackageModelData> _loadingData;
   String wishlistId = '';
   bool hasData = false;
+  bool isWishlisted = false;
+
+  PackageModelData packageDetails = PackageModelData(packageDetails: []);
+
   @override
   void initState() {
     super.initState();
 
-    _loadingData = APIServices().getPopularGuidePackage(widget._id);
+    // _loadingData = APIServices().getPopularGuidePackage(widget._id);
+
+    // checkWishlistData();
+
+    getPackageDetails();
   }
 
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    return Column(
-      children: <Widget>[
-        FutureBuilder<PackageModelData>(
-          future: _loadingData,
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            Widget _displayWidget;
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                _displayWidget = const SkeletonText(
-                  height: 200,
-                  width: 900,
-                  radius: 10,
-                );
-                break;
-              default:
-                if (snapshot.hasError) {
-                  _displayWidget = Center(
-                      child: APIMessageDisplay(
-                        message: 'Result: ${snapshot.error}',
-                      ));
-                } else {
-                  if (snapshot.hasData) {
-                    _displayWidget = buildPackageResult(snapshot.data!);
-                  } else {
-                    return Container();
-                  }
-                }
-            }
-            return _displayWidget;
-          },
-        ),
-        SizedBox(
-          height: 20.h,
-        )
-      ],
-    );
+
+    // return Column(
+    //   children: <Widget>[
+    //     FutureBuilder<PackageModelData>(
+    //       future: _loadingData,
+    //       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+    //         Widget _displayWidget;
+    //         switch (snapshot.connectionState) {
+    //           case ConnectionState.waiting:
+    //             _displayWidget = const SkeletonText(
+    //               height: 200,
+    //               width: 900,
+    //               radius: 10,
+    //             );
+    //             break;
+    //           default:
+    //             if (snapshot.hasError) {
+    //               _displayWidget = Center(
+    //                   child: APIMessageDisplay(
+    //                     message: 'Result: ${snapshot.error}',
+    //                   ));
+    //             } else {
+    //               if (snapshot.hasData) {
+    //                 debugPrint('Data Package:: ${snapshot.data!.packageDetails[0].id}');
+    //
+    //                 // checkWishlistData(snapshot.data!.packageDetails[0].id);
+    //                 _displayWidget = buildPackageResult(snapshot.data!);
+    //               } else {
+    //                 return Container();
+    //               }
+    //             }
+    //         }
+    //         return _displayWidget;
+    //       },
+    //     ),
+    //     SizedBox(
+    //       height: 20.h,
+    //     )
+    //   ],
+    // );
+
+    return buildPackageResult(packageDetails);
   }
 
   Widget buildPackageResult(PackageModelData packageData) =>
@@ -118,16 +132,16 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
         child: Column(
           children: <Widget>[
             if (packageData.packageDetails.isEmpty)
-            // Padding(
-            //   padding: EdgeInsets.only(
-            //       top: (MediaQuery.of(context).size.height / 3) - 40),
-            //   child: APIMessageDisplay(
-            //     message: '${widget._name} has no Activity Package',
-            //   ),
-            // )
+              // Padding(
+              //   padding: EdgeInsets.only(
+              //       top: (MediaQuery.of(context).size.height / 3) - 40),
+              //   child: APIMessageDisplay(
+              //     message: '${widget._name} has no Activity Package',
+              //   ),
+              // )
               Container()
             else
-            // for (PackageDetailsModel detail in packageData.packageDetails)
+              // for (PackageDetailsModel detail in packageData.packageDetails)
               buildPackageInfo(packageData.packageDetails[0])
             // buildPackageInfo(detail)
           ],
@@ -136,267 +150,297 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
 
   Widget buildPackageInfo(PackageDetailsModel details) => details.isPublished
       ? Column(
-    children: <Widget>[
-      buildGestureDetector(details),
-      Column(
-        children: <Widget>[
-          Container(
-            decoration: const BoxDecoration(
-              // color: Colors.white,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(5),
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    height: 15.h,
-                    width: 15.w,
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15.r),
+          children: <Widget>[
+            buildGestureDetector(details),
+            Column(
+              children: <Widget>[
+                Container(
+                  decoration: const BoxDecoration(
+                      // color: Colors.white,
                       ),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/png/marker.png'),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 2.w,
-                  ),
-                  Expanded(
-                    child: Text(
-                      widget._address,
-                      style: TextStyle(
-                          fontFamily: 'Gilroy',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 11.sp,
-                          color: AppColors.doveGrey),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(right: 10.w, top: 4.h),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
                     child: Row(
                       children: <Widget>[
-                        Icon(
-                          Icons.star_rate,
-                          size: 18,
-                          color: Colors.green.shade900,
+                        Container(
+                          height: 15.h,
+                          width: 15.w,
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
+                            ),
+                            image: const DecorationImage(
+                              image: AssetImage('assets/images/png/marker.png'),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
                         ),
-                        Text('${widget._starRating} review'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              navigatePackageDetails(
-                  context,
-                  details.coverImg,
-                  details.description,
-                  details.id,
-                  details.maxTraveller,
-                  details.basePrice,
-                  details.mainBadgeId,
-                  details.address,
-                  details.name,
-                  details.firebaseCoverImg);
-            },
-            child: Padding(
-              padding:
-              EdgeInsets.only(left: 10.w, right: 10.w, bottom: 5.h),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(child: Text(
-                          widget._name!,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 20.sp),
-                        ),),
+                        SizedBox(
+                          width: 2.w,
+                        ),
+                        Expanded(
+                          child: Text(
+                            widget._address,
+                            style: TextStyle(
+                                fontFamily: 'Gilroy',
+                                fontWeight: FontWeight.w400,
+                                fontSize: 11.sp,
+                                color: AppColors.doveGrey),
+                          ),
+                        ),
                         Padding(
-                          padding: EdgeInsets.only(top: 7.h),
-                          child: FutureBuilder<BadgeModelData>(
-                            future: APIServices()
-                                .getBadgesModelById(details.mainBadgeId),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<dynamic> snapshot) {
-                              if (snapshot.hasData) {
-                                final BadgeModelData badgeData =
-                                    snapshot.data;
-                                final int length =
-                                    badgeData.badgeDetails.length;
-                                return Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Row(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        width: 10.w,
-                                      ),
-                                      Image.memory(
-                                        base64.decode(badgeData
-                                            .badgeDetails[0].imgIcon
-                                            .split(',')
-                                            .last),
-                                        gaplessPlayback: true,
-                                      )
-                                    ],
-                                  ),
-                                );
-                              }
-                              if (snapshot.connectionState !=
-                                  ConnectionState.done) {
-                                return Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Row(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        width: 10.w,
-                                      ),
-                                      const SkeletonText(
-                                        width: 30,
-                                        height: 30,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
-                              return Container();
-                            },
+                          padding: EdgeInsets.only(right: 10.w, top: 4.h),
+                          child: Row(
+                            children: <Widget>[
+                              Icon(
+                                Icons.star_rate,
+                                size: 18,
+                                color: Colors.green.shade900,
+                              ),
+                              Text('${widget._starRating} review'),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(width: 12.w,),
-                  if (widget._isFirstAid!)
-                    Container(
-                      decoration: BoxDecoration(
-                          color: AppColors.mintGreen,
-                          border: Border.all(color: AppColors.mintGreen),
-                          borderRadius:
-                          BorderRadius.all(Radius.circular(8.r))),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Text(AppTextConstants.firstaid,
-                            style: TextStyle(
-                                color: AppColors.deepGreen,
-                                fontFamily: 'Gilroy',
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w400)),
-                      ),
-                    )
-                  else
-                    Container(),
-                ],
-              ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    navigatePackageDetails(
+                        context,
+                        details.coverImg,
+                        details.description,
+                        details.id,
+                        details.maxTraveller,
+                        details.basePrice,
+                        details.mainBadgeId,
+                        details.address,
+                        details.name,
+                        details.firebaseCoverImg);
+                  },
+                  child: Padding(
+                    padding:
+                        EdgeInsets.only(left: 10.w, right: 10.w, bottom: 5.h),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Text(
+                                  widget._name!,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 20.sp),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 7.h),
+                                child: FutureBuilder<BadgeModelData>(
+                                  future: APIServices()
+                                      .getBadgesModelById(details.mainBadgeId),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<dynamic> snapshot) {
+                                    if (snapshot.hasData) {
+                                      final BadgeModelData badgeData =
+                                          snapshot.data;
+                                      final int length =
+                                          badgeData.badgeDetails.length;
+                                      return Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Row(
+                                          children: <Widget>[
+                                            SizedBox(
+                                              width: 10.w,
+                                            ),
+                                            Image.memory(
+                                              base64.decode(badgeData
+                                                  .badgeDetails[0].imgIcon
+                                                  .split(',')
+                                                  .last),
+                                              gaplessPlayback: true,
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                    if (snapshot.connectionState !=
+                                        ConnectionState.done) {
+                                      return Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Row(
+                                          children: <Widget>[
+                                            SizedBox(
+                                              width: 10.w,
+                                            ),
+                                            const SkeletonText(
+                                              width: 30,
+                                              height: 30,
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                    return Container();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: 12.w,
+                        ),
+                        if (widget._isFirstAid!)
+                          Container(
+                            decoration: BoxDecoration(
+                                color: AppColors.mintGreen,
+                                border: Border.all(color: AppColors.mintGreen),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8.r))),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(AppTextConstants.firstaid,
+                                  style: TextStyle(
+                                      color: AppColors.deepGreen,
+                                      fontFamily: 'Gilroy',
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w400)),
+                            ),
+                          )
+                        else
+                          Container(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    ],
-  )
+          ],
+        )
       : Container();
 
-  Widget buildGestureDetector(PackageDetailsModel details) =>   Container(
-    decoration: BoxDecoration(
-        color: Colors.green
-    ),
+  Widget buildGestureDetector(PackageDetailsModel details) => Container(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/main_profile',
+                arguments: widget._id);
+          },
+          child: Stack(children: <Widget>[
+            if (details.firebaseCoverImg.isNotEmpty)
+              SizedBox(
+                height: 280.h,
+                width: MediaQuery.of(context).size.width,
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.r),
+                    child: ExtendedImage.network(
+                      details.firebaseCoverImg,
+                      fit: BoxFit.cover,
+                      gaplessPlayback: true,
+                    )),
+              )
+            else
+              SizedBox(
+                height: 280.h,
+                width: MediaQuery.of(context).size.width,
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.r),
+                    child: Image.asset(
+                      'assets/images/png/activity3.png',
+                    )),
+              ),
+            // checkData(details.id),
 
-    child:   GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, '/main_profile',
-            arguments: widget._id );
-
-      },
-      child: Stack(children: <Widget>[
-        if (details.firebaseCoverImg.isNotEmpty)
-          SizedBox(
-            height: 280.h,
-            width: MediaQuery.of(context).size.width,
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(10.r),
-                child: ExtendedImage.network(
-                  details.firebaseCoverImg,
-                  fit: BoxFit.cover,
-                  gaplessPlayback: true,
-                )),
-          )
-        else
-          SizedBox(
-            height: 280.h,
-            width: MediaQuery.of(context).size.width,
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(10.r),
-                child: Image.asset(
-                  'assets/images/png/activity3.png',
-                )),
-          ),
-        checkData(details.id),
-        Positioned(
-          top:  10,
-          right: 0,
-          left: 0,
-          child: GestureDetector(
-            onTap: () {
-              navigatePackageDetails(
-                  context,
-                  details.coverImg,
-                  details.description,
-                  details.id,
-                  details.maxTraveller,
-                  details.basePrice,
-                  details.mainBadgeId,
-                  details.address,
-                  details.name,
-                  details.firebaseCoverImg);
-            },
-            child: widget._profileImg == ''
-                ? Container(
-              height: 100.h,
-              width: 100.w,
-              decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  shape: BoxShape.circle,
-                  image:   DecorationImage(
-                      image: AssetImage(
-                        AssetsPath.defaultProfilePic,
-                      )),
-                  border:
-                  Border.all(color: Colors.white, width: 4.w)),
-            )
-                : Container(
-              height: 100.h,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  image: DecorationImage(
-                      image: ExtendedImage.network(
-                        widget._profileImg.toString(),
-                        fit: BoxFit.cover,
-                        gaplessPlayback: true,
-                      ).image),
-                  border:
-                  Border.all(color: Colors.white, width: 4.w)),
+            Positioned(
+              right: 10,
+              top: 10,
+              child: GestureDetector(
+                onTap: () {
+                  if (isWishlisted) {
+                    setState(() {
+                      isWishlisted = false;
+                      removeWishlist(wishlistId);
+                    });
+                  } else {
+                    setState(() {
+                      isWishlisted = true;
+                      addWishlist(packageDetails.packageDetails[0].id);
+                    });
+                  }
+                },
+                child: isWishlisted
+                    ? Image.asset(
+                        AssetsPath.heart,
+                        width: 30.w,
+                        height: 30.h,
+                      )
+                    : Image.asset(
+                        AssetsPath.heartOutlined,
+                        width: 30.w,
+                        height: 30.h,
+                      ),
+              ),
             ),
-          ),
-        )
-      ]),
-    ),
-  );
+            Positioned(
+              top: 10,
+              right: 0,
+              left: 0,
+              child: GestureDetector(
+                onTap: () {
+                  navigatePackageDetails(
+                      context,
+                      details.coverImg,
+                      details.description,
+                      details.id,
+                      details.maxTraveller,
+                      details.basePrice,
+                      details.mainBadgeId,
+                      details.address,
+                      details.name,
+                      details.firebaseCoverImg);
+                },
+                child: widget._profileImg == ''
+                    ? Container(
+                        height: 100.h,
+                        width: 100.w,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                                image: AssetImage(
+                              AssetsPath.defaultProfilePic,
+                            )),
+                            border:
+                                Border.all(color: Colors.white, width: 4.w)),
+                      )
+                    : Container(
+                        height: 100.h,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            image: DecorationImage(
+                                image: ExtendedImage.network(
+                              widget._profileImg.toString(),
+                              fit: BoxFit.cover,
+                              gaplessPlayback: true,
+                            ).image),
+                            border:
+                                Border.all(color: Colors.white, width: 4.w)),
+                      ),
+              ),
+            )
+          ]),
+        ),
+      );
 
   Widget checkData(String id) => FutureBuilder<WishlistActivityModel>(
-    future: APIServices().getWishlistActivityByPackageId(id),
-    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-      Widget _displayWidget;
-      switch (snapshot.connectionState) {
+        future: APIServices().getWishlistActivityByPackageId(id),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          Widget _displayWidget;
+          /*switch (snapshot.connectionState) {
         case ConnectionState.waiting:
           _displayWidget = Container();
           break;
@@ -465,10 +509,76 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
                   ),
                 ));
           }
-      }
-      return _displayWidget;
-    },
-  );
+      }*/
+
+          WishlistActivityModel data = snapshot.data!;
+          if (data.wishlistActivityDetails.isNotEmpty) {
+            hasData = true;
+            _displayWidget = Positioned(
+                top: 10,
+                right: 10,
+                child: GestureDetector(
+                  onTap: () {
+                    if (hasData) {
+                      setState(() {
+                        hasData = false;
+                        removeWishlist(data.wishlistActivityDetails[0].id);
+                      });
+                    } else {
+                      setState(() {
+                        hasData = true;
+                        addWishlist(id);
+                      });
+                    }
+                  },
+                  child: hasData
+                      ? Image.asset(
+                          AssetsPath.heart,
+                          width: 30.w,
+                          height: 30.h,
+                        )
+                      : Image.asset(
+                          AssetsPath.heartOutlined,
+                          width: 30.w,
+                          height: 30.h,
+                        ),
+                ));
+          } else {
+            hasData = false;
+            _displayWidget = Positioned(
+                top: 10,
+                right: 10,
+                child: GestureDetector(
+                  onTap: () {
+                    if (hasData) {
+                      setState(() {
+                        hasData = false;
+                        removeWishlist(data.wishlistActivityDetails[0].id);
+                      });
+                    } else {
+                      setState(() {
+                        hasData = true;
+                        addWishlist(id);
+                      });
+                    }
+                  },
+                  child: hasData
+                      ? Image.asset(
+                          AssetsPath.heart,
+                          width: 30.w,
+                          height: 30.h,
+                        )
+                      : Image.asset(
+                          AssetsPath.heartOutlined,
+                          width: 30.w,
+                          height: 30.h,
+                        ),
+                ));
+          }
+
+          return _displayWidget;
+        },
+      );
 
   /// Navigate to Advertisement View
   Future<void> navigatePackageDetails(
@@ -532,6 +642,36 @@ class _PopularGuideFeaturesState extends State<PopularGuideFeatures> {
 
     setState(() {
       wishlistId = response['id'];
+      // isWishlisted = true;
     });
+  }
+
+  Future<void> checkWishlistData(String id) async {
+    final WishlistActivityModel res =
+        await APIServices().getWishlistActivityByPackageId(id);
+
+    if (res.wishlistActivityDetails.isNotEmpty) {
+      debugPrint('Has Data');
+      wishlistId = res.wishlistActivityDetails[0].id;
+      setState(() {
+        isWishlisted = true;
+      });
+    } else {
+      setState(() {
+        isWishlisted = false;
+      });
+    }
+  }
+
+  Future<void> getPackageDetails() async {
+    final PackageModelData res =
+        await APIServices().getPopularGuidePackage(widget._id);
+    debugPrint('Data ${res.packageDetails[0].id}');
+
+    setState(() {
+      packageDetails = res;
+    });
+
+    await checkWishlistData(res.packageDetails[0].id);
   }
 }

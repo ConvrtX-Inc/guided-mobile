@@ -1,19 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/asset_path.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/profile/profile_widgets.dart';
+import 'package:guided/screens/widgets/reusable_widgets/reviews_count.dart';
 
-/// Reviews profile screen
-class ReviewsProfileScreen extends StatelessWidget {
+// /// Reviews profile screen
+// class ReviewsProfileScreen extends StatelessWidget {
+//   ///Constructor
+//   const ReviewsProfileScreen({Key? key ,required this.profileDetails }) : super(key: key);
+//
+//   final User profileDetails;
+//
+//
+//   @override
+//   Widget build(BuildContext context) {
+//
+//   }
+// }
+
+/// Review Profile Screen
+class ReviewsProfileScreen extends StatefulWidget {
   ///Constructor
-  const ReviewsProfileScreen({Key? key}) : super(key: key);
+  const ReviewsProfileScreen({required this.profileDetails, Key? key})
+      : super(key: key);
+
+  final User profileDetails;
+
+  @override
+  _ReviewsProfileScreenState createState() => _ReviewsProfileScreenState();
+}
+
+class _ReviewsProfileScreenState extends State<ReviewsProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
+          child: Column(
           children: [
             backButton(context),
             const SizedBox(
@@ -33,87 +58,45 @@ class ReviewsProfileScreen extends StatelessWidget {
                           spreadRadius: 2)
                     ],
                   ),
-                  child: const CircleAvatar(
+                  child:  CircleAvatar(
                     radius: 42,
                     backgroundColor: Colors.white,
                     child: CircleAvatar(
                       radius: 40,
                       backgroundImage:
-                          AssetImage('assets/images/profile-photos-2.png'),
+                        widget.profileDetails.firebaseProfilePicUrl != ''? NetworkImage(widget.profileDetails.firebaseProfilePicUrl!) : AssetImage(AssetsPath.defaultProfilePic) as ImageProvider,
                     ),
                   ),
                 ),
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const Padding(
-                      padding: EdgeInsets.only(left: 20),
-                      child: Text(
-                        'Ethan Hunt',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w700),
-                      ),
+                    Text(
+                      widget.profileDetails.fullName!,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w700),
                     ),
-                    Row(
-                      children: const [
-                        Icon(
-                          Icons.star,
-                          color: Color(0xff056028),
-                          size: 14,
-                        ),
-                        Text(
-                          '19 Reviews',
-                          style: TextStyle(fontSize: 12),
-                        )
-                      ],
-                    ),
+                   ReviewsCount()
                   ],
                 )
               ],
             ),
+
+
             const SizedBox(
               height: 20,
             ),
             divider(),
+
+           Expanded(child:  Container(
+             alignment: Alignment.center,
+             child: Text('Nothing To  Display.'),
+           ),),
             const SizedBox(
               height: 10,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  const Text(
-                    'Reviews',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                  ),
-                  Row(
-                    children: const <Widget>[
-                      Icon(
-                        Icons.star,
-                        color: Color(0xff056028),
-                        size: 14,
-                      ),
-                      Text(
-                        '19 Reviews',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xff056028),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            buildReviewContent(),
-            buildReviewContent(),
-            buildReviewContent(),
-            buildReviewContent(),
-            buildReviewContent(),
-            Container(
+
+           /* Container(
               padding: const EdgeInsets.only(left: 20, right: 20),
               width: MediaQuery.of(context).size.width,
               height: 60,
@@ -138,12 +121,13 @@ class ReviewsProfileScreen extends StatelessWidget {
                   print('Pressed');
                 },
               ),
-            ),
+            ),*/
+
             const SizedBox(
               height: 30,
             )
           ],
-        ),
+
       )),
     );
   }

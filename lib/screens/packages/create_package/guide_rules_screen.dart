@@ -20,7 +20,6 @@ class GuideRulesScreen extends StatefulWidget {
 class _GuideRulesScreenState extends State<GuideRulesScreen> {
   bool isChecked = false;
   bool _isEnabledEdit = false;
-
   TextEditingController _guideRules = TextEditingController();
   final FocusNode _guideRulesFocus = FocusNode();
 
@@ -198,7 +197,6 @@ class _GuideRulesScreenState extends State<GuideRulesScreen> {
           .show(context);
     }
   }
-
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);

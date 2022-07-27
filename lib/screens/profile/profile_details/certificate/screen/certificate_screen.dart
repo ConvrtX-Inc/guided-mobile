@@ -92,7 +92,6 @@ class _CertificateScreenState extends State<CertificateScreen> {
       final ProfileDetailsModel updatedProfile =
       ProfileDetailsModel.fromJson(json.decode(res.successResponse));
       _profileDetailsController.setUserProfileDetails(updatedProfile);
-
       setState(() {
 
       });
