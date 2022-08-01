@@ -91,6 +91,7 @@ import 'package:guided/screens/packages/create_package/package_price_screen.dart
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
 import 'package:guided/screens/passwords/change_password.dart';
+import 'package:guided/screens/payment/payment_method.dart';
 import 'package:guided/screens/payments/payment_add_card.dart';
 
 import 'package:guided/screens/profile/main_profile.dart';
@@ -339,7 +340,8 @@ class RouteGenerator {
             builder: (_) => MainProfileScreen(userId: args as String));
       case '/reviews_profile':
         return MaterialPageRoute<dynamic>(
-            builder: (_) =>  ReviewsProfileScreen(profileDetails:  args! as User));
+            builder: (_) =>
+                ReviewsProfileScreen(profileDetails: args! as User));
       case '/payment':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TabMapScreen(), settings: settings);
@@ -480,7 +482,11 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(builder: (_) => SearchPlace());
 
       case '/activity_map':
-        return MaterialPageRoute<dynamic>(builder: (_) => ActivityFindMap(params: args));
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => ActivityFindMap(params: args));
+      case '/manage_payment_method':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const PaymentMethodScreen());
 
       default:
         return _errorRoute();

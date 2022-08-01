@@ -122,7 +122,7 @@ class _SettingsItemsState extends State<SettingsItems> {
             Navigator.pushNamed(context, '/become_a_guide');
             break;
           case 'manage_cards':
-            Navigator.pushNamed(context, '/manage_cards');
+            Navigator.pushNamed(context, '/manage_payment_method');
             break;
           case 'notification_traveler':
             Navigator.pushNamed(context, '/notification_traveler');
