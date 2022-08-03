@@ -5,11 +5,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:guided/common/widgets/app_scaffold.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/card_controller.dart';
+import 'package:guided/controller/payment_method_controller.dart';
+import 'package:guided/controller/stripe_card_controller.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 import '../../constants/app_colors.dart';
 
 ///Payment Method Screen
@@ -22,76 +26,70 @@ class PaymentMethodScreen extends StatefulWidget {
 }
 
 class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
-  String selectedMethod = PaymentConfig.bankCard;
+  String selectedMethod = '';
 
-  final CardController _cardController = Get.put(CardController());
+  final StripeCardController _cardController = Get.put(StripeCardController());
+
+  final PaymentMethodController _paymentMethodController =
+      Get.put(PaymentMethodController());
 
   @override
   void initState() {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.chevron_left,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text(
-          AppTextConstants.paymentMethod,
-          style: TextStyle(
-              color: Colors.black,
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w700),
-        ),
-      ),
-      backgroundColor: Colors.white,
-      body: buildPaymentMethodUI(),
-    );
+  Future<void> setDefaultPaymentMethod(String paymentMethod) async {
+    final dynamic res =
+        await APIServices().setUserDefaultPaymentMethod(paymentMethod);
+
+    debugPrint('Response: $res');
+
+    // if(res.statusCode == 200){
+    //   _paymentMethodController.setDefaultPaymentMethod(paymentMethod);
+    //
+    // }
   }
 
-  Widget buildPaymentMethodUI() => Container(
-        padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 30.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  @override
+  Widget build(BuildContext context) {
+    return AppScaffold(
+        appBarLeadingCallback: () => Navigator.pop(context),
+        appBarTitle: AppTextConstants.paymentMethod,
+        centerAppBarTitle: true,
+        body: buildPaymentMethodUI());
+  }
+
+  Widget buildPaymentMethodUI() => GetBuilder<PaymentMethodController>(
+          builder: (PaymentMethodController _controller) {
+        selectedMethod = _controller.paymentMethod;
+        return ListView(
           children: <Widget>[
             Text(
               AppTextConstants.selectDefaultMethod,
               style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w400),
             ),
             if (_cardController.cards.isNotEmpty &&
-                _cardController.defaultCard.id.isNotEmpty)
+                _cardController.defaultCard.id != null)
               buildPaymentMethodItem(
                   '${AssetsPath.assetsPNGPath}/credit_icon.png',
                   'Bank Card',
-                  '${GlobalMixin().getFormattedCardNumber(cardNumber: _cardController.defaultCard.cardNo, startingNumber: 0)} ${_cardController.defaultCard.cardType}',
+                  '************${_cardController.defaultCard.last4!} ${_cardController.defaultCard.brand!}',
                   PaymentConfig.bankCard),
             if (Platform.isIOS)
               buildPaymentMethodItem(
                   '${AssetsPath.assetsPNGPath}/apple_pay.png',
                   'Apple Pay',
-                  'testemail.com',
+                  '',
                   PaymentConfig.applePay),
             if (Platform.isAndroid)
               buildPaymentMethodItem(
                   '${AssetsPath.assetsPNGPath}/google_pay.png',
                   'Google Pay',
-                  'testemail.com',
+                  '',
                   PaymentConfig.googlePay),
           ],
-        ),
-      );
+        );
+      });
 
   Widget buildPaymentMethodItem(String iconPath, String paymentMethodName,
           String paymentMethodValue, String value) =>
@@ -104,7 +102,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             boxShadow: const <BoxShadow>[
               BoxShadow(
                 color: Colors.grey,
-                offset: Offset(2.0, 2.0),
+                offset: Offset(2, 2),
                 blurRadius: 0.2,
                 spreadRadius: 0.2,
               )
@@ -133,7 +131,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               ],
             ),
             trailing: CustomCheckBox(
-              value: selectedMethod == value,
+              value: selectedMethod.toLowerCase() == value.toLowerCase(),
               shouldShowBorder: true,
               borderColor: AppColors.grey,
               checkedFillColor: AppColors.primaryGreen,
@@ -141,9 +139,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               borderWidth: 1.w,
               checkBoxSize: 22,
               onChanged: (bool val) {
-                setState(() {
-                  selectedMethod = value;
-                });
+                _paymentMethodController.setDefaultPaymentMethod(value);
+                setDefaultPaymentMethod(value);
               },
             ),
           ));

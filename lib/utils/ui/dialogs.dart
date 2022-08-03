@@ -6,8 +6,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class AppDialogs{
 
   ///Dialog for Success
-  void showSuccess(){
-
+  void showSuccess({required BuildContext context, required String message, required String title, Function? onOkPressed}){
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.SUCCES,
+      title: title,
+      titleTextStyle:
+      TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
+      headerAnimationLoop: false,
+      desc: message,
+      btnOkOnPress:(){
+        onOkPressed!();
+      },
+    ).show();
   }
 
   ///Dialog for Error

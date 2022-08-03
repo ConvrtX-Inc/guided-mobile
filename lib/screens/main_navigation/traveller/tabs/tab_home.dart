@@ -20,6 +20,7 @@ import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/payment_method_controller.dart';
 import 'package:guided/controller/popular_guides_controller.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/traveller_controller.dart';
@@ -102,6 +103,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   String endDate = '';
 
   DateTime selectedDate = DateTime.now();
+
+  final PaymentMethodController _paymentMethodController =
+      Get.put(PaymentMethodController());
 
   @override
   void initState() {
@@ -252,13 +256,21 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
     final bool hasPremiumSubscription =
         await UserSubscriptionServices().hasUserSubscription();
 
+    String paymentMethod = res.defaultPaymentMethod != ''
+        ? res.defaultPaymentMethod
+        : PaymentConfig.bankCard;
+
     UserSingleton.instance.user.user = User(
         id: res.id,
         email: res.email,
         fullName: res.fullName,
+        stripeCustomerId: res.stripeCustomerId,
+        defaultPaymentMethod: paymentMethod,
         hasPremiumSubscription: hasPremiumSubscription);
 
     _profileDetailsController.setUserProfileDetails(res);
+
+    _paymentMethodController.setDefaultPaymentMethod(paymentMethod);
   }
 
   @override
@@ -1103,6 +1115,5 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
     ).whenComplete(() {
       _scrollController.easyScrollToIndex(index: 0);
     });
-
   }
 }

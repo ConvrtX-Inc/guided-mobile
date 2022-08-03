@@ -23,6 +23,7 @@ import 'package:guided/models/notification_model.dart';
 import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
+import 'package:guided/screens/payment/payment_confirm.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
 import 'package:guided/screens/payments/payment_failed.dart';
 import 'package:guided/screens/payments/payment_manage_card.dart';
@@ -1003,7 +1004,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           SizedBox(
             height: 20.h,
           ),
-          if (PaymentConfig.isPaymentEnabled && paymentMode.isEmpty)
+/*          if (PaymentConfig.isPaymentEnabled && paymentMode.isEmpty)
             SizedBox(
               height: 60.h,
               width: MediaQuery.of(context).size.width * 0.9,
@@ -1031,12 +1032,54 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 ),
               ),
             )
-          else
-            SizedBox(
+          else*/
+            /*SizedBox(
               height: 60.h,
               child: CustomRoundedButton(
                 isLoading: isLoading,
                 title: AppTextConstants.requestToBook,
+                onpressed: () async {
+                  if (PaymentConfig.isPaymentEnabled) {
+                    *//*  dynamic paymentClicked = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => PaymentManageCard(
+                                price: '$price',
+                              )),
+                    );*//*
+
+                    // if (paymentClicked != null) {
+
+                    // }
+
+                    if (_donationTextController.text.isEmpty) {
+                      setState(() {
+                        isDonationEmpty = true;
+                      });
+                      donationFocusNode.requestFocus();
+                    } else {
+                      if (int.parse(_donationTextController.text) < 1) {
+                        isDonationEmpty = true;
+                        donationFocusNode.requestFocus();
+                        return;
+                      } else {
+                        handleConfirmPayment(screenArguments);
+                      }
+                    }
+                  } else {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await goToPaymentMethod(context, screenArguments);
+                  }
+                },
+              ),
+            )*/
+            SizedBox(
+              height: 60.h,
+              child: CustomRoundedButton(
+                isLoading: isLoading,
+                title: 'Proceed To Payment',
                 onpressed: () async {
                   if (PaymentConfig.isPaymentEnabled) {
                     /*  dynamic paymentClicked = await Navigator.push(
@@ -1356,7 +1399,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           numberOfPeople: numberOfTraveller);
     });
 
-    confirmPaymentModal(
+    paymentConfirmModal(
         context: context,
         paymentDetails: bookingPaymentDetails,
         serviceName: serviceName,

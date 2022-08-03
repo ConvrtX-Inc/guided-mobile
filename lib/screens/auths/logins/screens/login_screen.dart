@@ -136,6 +136,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> setRoles(APIStandardReturnFormat response) async {
     final UserModel user =
         UserModel.fromJson(json.decode(response.successResponse));
+
+    debugPrint('USER stripe id ${user.user!.stripeCustomerId!}');
     UserSingleton.instance.user = user;
 
     final String userType =

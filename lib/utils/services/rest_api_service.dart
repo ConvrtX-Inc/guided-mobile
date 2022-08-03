@@ -1053,6 +1053,8 @@ class APIServices {
 
     final jsonData = json.decode(response.body);
 
+    debugPrint('DATA $jsonData');
+
     if (response.statusCode == 201) {
       return CardModel.fromJson(jsonData);
     } else {
@@ -2628,6 +2630,35 @@ class APIServices {
         }));
 
     return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+
+  /// Api for setting user's default payment method
+  Future<http.Response> setUserDefaultPaymentMethod(String paymentMethod) async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId = UserSingleton.instance.user.user?.id;
+
+    debugPrint(
+        'Params: $paymentMethod URL ${ Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/users/payment-method/$userId')}');
+
+    final http.Response response = await http.post(
+        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/users/payment-method/$userId'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'default_payment_method': paymentMethod,
+        }));
+
+    // final jsonData = jsonDecode(response.body);
+
+    debugPrint('DATA payment method $response ${response.statusCode}');
+
+
+    return response;
+
+
   }
 
 

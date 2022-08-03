@@ -54,6 +54,8 @@ class User {
   bool? hasPremiumSubscription;
   String? latitude;
   String? longitude;
+  String? stripeCustomerId;
+  String? defaultPaymentMethod;
 
   User(
       {this.id,
@@ -86,7 +88,8 @@ class User {
       this.hasPremiumSubscription = false,
       this.firebaseProfilePicUrl ='',
       this.latitude = '',
-      this.longitude = ''});
+      this.longitude = '',
+      this.stripeCustomerId ='' , this.defaultPaymentMethod = ''});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -119,6 +122,8 @@ class User {
     firebaseProfilePicUrl = json['profile_photo_firebase_url'] ?? '';
     latitude = json['latitude'] ?? '';
     longitude = json['longitude'] ?? '';
+    stripeCustomerId = json['stripe_customer_id'];
+    defaultPaymentMethod =json['default_payment_method'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
@@ -150,6 +155,7 @@ class User {
     data['status'] = status;
     data['__entity'] = sEntity;
     data['profile_photo'] = profilePhoto;
+    data['default_payment_method'] = defaultPaymentMethod;
     return data;
   }
 }

@@ -91,7 +91,9 @@ import 'package:guided/screens/packages/create_package/package_price_screen.dart
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
 import 'package:guided/screens/passwords/change_password.dart';
-import 'package:guided/screens/payment/payment_method.dart';
+import 'package:guided/screens/payment_cards/add_new_card.dart';
+import 'package:guided/screens/payment_cards/card_management.dart';
+import 'package:guided/screens/payment_methods/payment_method.dart';
 import 'package:guided/screens/payments/payment_add_card.dart';
 
 import 'package:guided/screens/profile/main_profile.dart';
@@ -487,6 +489,12 @@ class RouteGenerator {
       case '/manage_payment_method':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const PaymentMethodScreen());
+      case '/card_management':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const CardManagementScreen());
+      case '/add_new_card':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AddNewCard());
 
       default:
         return _errorRoute();

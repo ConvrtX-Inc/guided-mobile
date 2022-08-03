@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:guided/models/bank_account_model.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/stripe_bank_account_model.dart';
+import 'package:guided/models/stripe_card.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -139,10 +140,10 @@ class StripeServices {
 
     final dynamic jsonData = jsonDecode(response.body);
     final List<StripeBankAccountModel> bankAccounts =
-    <StripeBankAccountModel>[];
+        <StripeBankAccountModel>[];
     for (final dynamic res in jsonData['data']) {
       final StripeBankAccountModel bankAccount =
-      StripeBankAccountModel.fromJson(res);
+          StripeBankAccountModel.fromJson(res);
       bankAccounts.add(bankAccount);
     }
     // debugPrint('BANK ACCOUNT ${bankAccounts[0].accountHolderName}');
@@ -150,9 +151,8 @@ class StripeServices {
   }
 
   /// API service for Bank account update metadata
-  Future<StripeBankAccountModel> updateAccount(StripeBankAccountModel params,String accountId) async {
-
-
+  Future<StripeBankAccountModel> updateAccount(
+      StripeBankAccountModel params, String accountId) async {
     Map<String, String> bankDetails = {
       'metadata[bank_name]': params.bankName,
       'metadata[account_number]': params.accountNumber
@@ -164,13 +164,15 @@ class StripeServices {
     };
 
     final http.Response response = await http.post(
-        Uri.parse('$stripeApiUrl/accounts/$accountId/external_accounts/${params.id}'),
+        Uri.parse(
+            '$stripeApiUrl/accounts/$accountId/external_accounts/${params.id}'),
         body: bankDetails,
         headers: headers);
 
     final Map<String, dynamic> jsonData = jsonDecode(response.body);
     debugPrint('Stripe Bank ID ${jsonData}');
-    final StripeBankAccountModel updatedData = StripeBankAccountModel.fromJson(jsonData);
+    final StripeBankAccountModel updatedData =
+        StripeBankAccountModel.fromJson(jsonData);
 
     return updatedData;
   }
@@ -186,9 +188,118 @@ class StripeServices {
     };
 
     final http.Response response = await http.delete(
-        Uri.parse('$stripeApiUrl/accounts/$stripeAccountId/external_accounts/${id}'),
+        Uri.parse(
+            '$stripeApiUrl/accounts/$stripeAccountId/external_accounts/${id}'),
         headers: headers);
     final Map<String, dynamic> jsonData = jsonDecode(response.body);
+    return response;
+  }
+
+  ///Add card
+  Future<StripeCardModel> addCard(
+      String token, String customerId, String nameOnCard) async {
+    Map<String, String> cardDetails = {
+      'source': token,
+    };
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Bearer $apiKey'
+    };
+
+    final http.Response response = await http.post(
+        Uri.parse('$stripeApiUrl/customers/$customerId/sources'),
+        body: cardDetails,
+        headers: headers);
+
+    StripeCardModel card = StripeCardModel();
+
+    debugPrint('Status Code ${response.statusCode} ${response.body}');
+
+    final Map<String, dynamic> jsonData = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      card = StripeCardModel.fromJson(jsonData);
+    }
+
+    return card;
+  }
+
+  /// Get Card List
+  Future<List<StripeCardModel>> getCardList(String customerId) async {
+    Map<String, String> headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Bearer ${apiKey}'
+    };
+
+    debugPrint('customer id $customerId');
+    final http.Response response = await http.get(
+        Uri.parse('$stripeApiUrl/customers/$customerId/sources'),
+        headers: headers);
+
+    final dynamic jsonData = jsonDecode(response.body);
+    final List<StripeCardModel> cards = <StripeCardModel>[];
+    for (final dynamic res in jsonData['data']) {
+      final StripeCardModel card = StripeCardModel.fromJson(res);
+      cards.add(card);
+    }
+    return cards;
+  }
+
+  ///Remove bank account
+  Future<http.Response> removeCard(String id, String customerId) async {
+    Map<String, String> headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Bearer ${apiKey}'
+    };
+
+    final http.Response response = await http.delete(
+        Uri.parse('$stripeApiUrl/customers/$customerId/sources/$id'),
+        headers: headers);
+    final Map<String, dynamic> jsonData = jsonDecode(response.body);
+    return response;
+  }
+
+  /// Get Default Card
+  Future<String> getDefaultCard(String customerId) async {
+    Map<String, String> headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Bearer ${apiKey}'
+    };
+
+    final http.Response response = await http.get(
+        Uri.parse('$stripeApiUrl/customers/$customerId'),
+        headers: headers);
+
+    final dynamic jsonData = jsonDecode(response.body);
+    String defaultCardId = '';
+
+    if (response.statusCode == 200) {
+      defaultCardId = jsonData['default_source'];
+    }
+
+    return defaultCardId;
+  }
+
+  ///Set Default card
+  Future<http.Response> setDefaultCard(String cardId, String customerId) async {
+    Map<String, String> cardDetails = {
+      'default_source': cardId,
+    };
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Bearer $apiKey'
+    };
+
+    final http.Response response = await http.post(
+        Uri.parse('$stripeApiUrl/customers/$customerId'),
+        body: cardDetails,
+        headers: headers);
+
+    final Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+    debugPrint('Status Code ${response.statusCode} ${response.body} $jsonData');
+
     return response;
   }
 }

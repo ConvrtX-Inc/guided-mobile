@@ -233,8 +233,10 @@ class AppAPIPath {
   ///Returns user type
   static String userTypeUrl = 'api/v1/users/type';
 
-  /// Returns facebook url
+  /// Returns google url
   static String googleLoginUrl = 'api/v1/auth/google/login';
+
+
 }
 
 ///Get Api Base Url

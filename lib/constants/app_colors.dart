@@ -152,4 +152,7 @@ class AppColors {
 
  ///Color for CapeCod
  static HexColor capeCod = HexColor('##3E4242');
+
+ ///Color for Concrete
+ static HexColor concrete = HexColor('#F3F3F3');
 }

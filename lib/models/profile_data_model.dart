@@ -20,7 +20,9 @@ class ProfileDetailsModel {
       this.birthDate = '',
       this.addressLine1 = '',
       this.addressLine2 = '',
-      this.country  =''});
+      this.stripeCustomerId = '',
+      this.country = '',
+      this.defaultPaymentMethod = ''});
 
   /// String initialization
   String id,
@@ -35,7 +37,10 @@ class ProfileDetailsModel {
       stripeAccountId,
       birthDate,
       addressLine1,
-      addressLine2,country;
+      addressLine2,
+      country,
+      stripeCustomerId,
+      defaultPaymentMethod;
 
   ///bool initialization
   bool? isForThePlanet, isFirstAidTrained;
@@ -45,7 +50,8 @@ class ProfileDetailsModel {
   /// mapping
   ProfileDetailsModel.fromJson(Map<String, dynamic> parseJson)
       : id = parseJson['id'],
-        fullName = parseJson['full_name'] ?? '${parseJson['first_name']} ${parseJson['last_name']}',
+        fullName = parseJson['full_name'] ??
+            '${parseJson['first_name']} ${parseJson['last_name']}',
         firstName = parseJson['first_name'] ?? '',
         lastName = parseJson['last_name'] ?? '',
         email = parseJson['email'] ?? '',
@@ -60,5 +66,7 @@ class ProfileDetailsModel {
         addressLine1 = parseJson['address_line1'] ?? '',
         addressLine2 = parseJson['address_line2'] ?? '',
         birthDate = parseJson['birth_date'] ?? '',
-        country = parseJson['country'] ?? '';
+        country = parseJson['country'] ?? '',
+        stripeCustomerId = parseJson['stripe_customer_id'],
+        defaultPaymentMethod = parseJson['default_payment_method'] ?? '';
 }
