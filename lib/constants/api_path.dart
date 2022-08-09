@@ -236,14 +236,15 @@ class AppAPIPath {
   /// Returns google url
   static String googleLoginUrl = 'api/v1/auth/google/login';
 
-
+  /// Returns  send firebase notification url
+  static String fcmUrl = 'api/v1/fcm/sendNotification';
 }
 
 ///Get Api Base Url
 getBaseUrl(String mode) {
   switch (mode) {
     case 'local':
-      return '192.168.100.55:3000';
+      return '192.168.100.55:8000';
     case 'dev':
       return 'guided-api-dev.herokuapp.com';
     case 'staging':

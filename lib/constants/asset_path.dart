@@ -244,4 +244,7 @@ class AssetsPath {
 
   ///returns amico picture
   static String amico = 'assets/images/png/amico.png';
+
+  /// returns green check
+  static String greenCheck = 'assets/images/png/green_checkmark.png';
 }

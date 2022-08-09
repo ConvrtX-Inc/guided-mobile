@@ -546,7 +546,7 @@ class APIServices {
   /// API service for advertisement model
   Future<PackageModelData> getPackageData() async {
     final String userId =
-  await SecureStorage.readValue(key: AppTextConstants.userId);
+        await SecureStorage.readValue(key: AppTextConstants.userId);
     final http.Response response = await http.get(
         Uri.parse(
             '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrl}?s={"user_id": \"$userId\"}'),
@@ -1202,6 +1202,8 @@ class APIServices {
   Future<APIStandardReturnFormat> pay(
       int amount, String paymentMethodID) async {
     final String? token = UserSingleton.instance.user.token;
+    final String? customerId =
+        UserSingleton.instance.user.user!.stripeCustomerId;
     final http.Response response = await http.post(
         Uri.parse('$apiBaseMode$apiBaseUrl${AppAPIPath.paymentUrl}'),
         headers: {
@@ -1211,6 +1213,7 @@ class APIServices {
         body: jsonEncode({
           'payment_method_id': paymentMethodID,
           'amount': amount,
+          'customer_id': customerId
         }));
 
     debugPrint('payment response:: ${response.body}');
@@ -1790,7 +1793,7 @@ class APIServices {
   ///Api service to get chat messages
   Future<List<ChatModel>> getChatMessages(String filter) async {
     final String? userId =
-    await SecureStorage.readValue(key: AppTextConstants.userId);
+        await SecureStorage.readValue(key: AppTextConstants.userId);
     final String? token = UserSingleton.instance.user.token;
 
     final http.Response response = await http.get(
@@ -2591,14 +2594,6 @@ class APIServices {
       'limit': '$limit'
     };
 
-    /*final http.Response response = await http.get(
-        Uri.parse(
-            '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.activityPackagesUrlDescOrder}'),
-        headers: {
-          HttpHeaders.authorizationHeader:
-          'Bearer ${UserSingleton.instance.user.token}'
-        });*/
-
     final http.Response response = await http.get(
         Uri.http(apiBaseUrl, '/api/v1/activity-packages', queryParameters),
         headers: {
@@ -2615,7 +2610,8 @@ class APIServices {
   }
 
   ///Api Service for update availability slot
-  Future<APIStandardReturnFormat> updateAvailabilitySlot(String id, int slots) async {
+  Future<APIStandardReturnFormat> updateAvailabilitySlot(
+      String id, int slots) async {
     final String? token = UserSingleton.instance.user.token;
 
     final http.Response response = await http.patch(
@@ -2632,17 +2628,18 @@ class APIServices {
     return GlobalAPIServices().formatResponseToStandardFormat(response);
   }
 
-
   /// Api for setting user's default payment method
-  Future<http.Response> setUserDefaultPaymentMethod(String paymentMethod) async {
+  Future<http.Response> setUserDefaultPaymentMethod(
+      String paymentMethod) async {
     final String? token = UserSingleton.instance.user.token;
     final String? userId = UserSingleton.instance.user.user?.id;
 
     debugPrint(
-        'Params: $paymentMethod URL ${ Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/users/payment-method/$userId')}');
+        'Params: $paymentMethod URL ${Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/users/payment-method/$userId')}');
 
     final http.Response response = await http.post(
-        Uri.parse('$apiBaseMode$apiBaseUrl/api/v1/users/payment-method/$userId'),
+        Uri.parse(
+            '$apiBaseMode$apiBaseUrl/api/v1/users/payment-method/$userId'),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $token',
           HttpHeaders.contentTypeHeader: 'application/json',
@@ -2655,11 +2652,70 @@ class APIServices {
 
     debugPrint('DATA payment method $response ${response.statusCode}');
 
-
     return response;
-
-
   }
 
+  /// API service for send message to guide
+  Future<APIStandardReturnFormat> sendMessageToGuide(
+      String id, String requestMsg) async {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': '*/*',
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+    };
+    final http.Response response = await http.patch(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.requestBooking}/$id'),
+        body: jsonEncode({'request_msg': requestMsg}),
+        headers: headers);
 
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
+
+  /// Api service for approved booking request with pending payment
+  Future<BookingRequest> getApproveRequestWithPendingPayment() async {
+    final String? token = UserSingleton.instance.user.token;
+    final String? userId =
+        await SecureStorage.readValue(key: AppTextConstants.userId);
+
+    final Map<String, String> queryParameters = {
+      'filter[0]': 'from_user_id||eq||"$userId"',
+      'filter[1]': 'is_approved||eq||true',
+      'filter[2]': 'payment_status||eq||pending'
+    };
+
+    debugPrint(
+        'URL: ${Uri.http(apiBaseUrl, '/${AppAPIPath.getBookingRequest}', queryParameters)}');
+
+    final http.Response response = await http.get(
+        Uri.http(
+            apiBaseUrl, '/${AppAPIPath.getBookingRequest}', queryParameters),
+        headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
+
+    BookingRequest bookingRequest = BookingRequest();
+    final dynamic jsonData = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      // debugPrint('pending payment: $jsonData');
+      bookingRequest = BookingRequest.fromJson(jsonData[0]);
+    }
+    return bookingRequest;
+  }
+
+  /// API service for  update booking payment status
+  Future<APIStandardReturnFormat> updateBookingPaymentStatus(
+      String id, String paymentStatus) async {
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': '*/*',
+      HttpHeaders.authorizationHeader:
+          'Bearer ${UserSingleton.instance.user.token}',
+    };
+    final http.Response response = await http.patch(
+        Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.requestBooking}/$id'),
+        body: jsonEncode({'payment_status': paymentStatus}),
+        headers: headers);
+
+    return GlobalAPIServices().formatResponseToStandardFormat(response);
+  }
 }

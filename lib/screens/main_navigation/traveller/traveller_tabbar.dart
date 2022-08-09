@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/card_controller.dart';
 import 'package:guided/controller/stripe_card_controller.dart';
 import 'package:guided/controller/user_profile_controller.dart';
@@ -47,6 +48,9 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
   final StripeCardController _stripeCardController =
       Get.put(StripeCardController());
 
+  final UserProfileDetailsController _profileDetailsController =
+  Get.put(UserProfileDetailsController());
+
   @override
   void initState() {
     _selectedWidget = TabHomeScreen(
@@ -58,9 +62,9 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     /*if (_creditCardController.cards.isEmpty) {
       getUserCards();
     }*/
-    if(_stripeCardController.cards.isEmpty){
-      getCards();
-    }
+
+    getProfileDetails();
+
   }
 
   @override
@@ -125,23 +129,33 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     });
   }
 
-/*  Future<void> getUserCards() async {
-    final List<CardModel> cards = await APIServices().getCards();
-    await _creditCardController.initCards(cards);
 
-    if (cards.isNotEmpty) {
-      debugPrint('cards $cards');
-      final CardModel card = cards.firstWhere(
-          (CardModel c) => c.isDefault == true,
-          orElse: () => CardModel());
 
-      if (card.id != '') {
-        _creditCardController.setDefaultCard(card);
-      } else {
-        _creditCardController.setDefaultCard(cards[0]);
-      }
+  Future<void> getProfileDetails() async {
+    final ProfileDetailsModel res = await APIServices().getProfileData();
+
+    final bool hasPremiumSubscription =
+    await UserSubscriptionServices().hasUserSubscription();
+
+    String paymentMethod = res.defaultPaymentMethod != ''
+        ? res.defaultPaymentMethod
+        : PaymentConfig.bankCard;
+
+    UserSingleton.instance.user.user = User(
+        id: res.id,
+        email: res.email,
+        fullName: res.fullName,
+        stripeCustomerId: res.stripeCustomerId,
+        firebaseProfilePicUrl: res.firebaseProfilePicUrl,
+        defaultPaymentMethod: paymentMethod,
+        hasPremiumSubscription: hasPremiumSubscription);
+
+    _profileDetailsController.setUserProfileDetails(res);
+    if(_stripeCardController.cards.isEmpty){
+      await getCards();
     }
-  }*/
+
+  }
 
   Future<void> getCards() async {
     final String customerId =

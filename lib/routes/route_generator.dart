@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_place/google_place.dart';
 import 'package:guided/models/activity_package.dart';
+import 'package:guided/models/booking_request.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/certificate.dart';
 import 'package:guided/models/user_model.dart';
@@ -11,6 +12,9 @@ import 'package:guided/screens/activities/screens/activity_package_info.dart';
 import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/bank_accounts/add_bank_account.dart';
 import 'package:guided/screens/bank_accounts/manage_payment.dart';
+import 'package:guided/screens/booking_requests/booking_request_view.dart';
+import 'package:guided/screens/bookings/screens/book_request.dart';
+import 'package:guided/screens/bookings/screens/booking_request_package_details.dart';
 import 'package:guided/screens/bookings/screens/my_booking_date.dart';
 
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
@@ -493,9 +497,20 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => const CardManagementScreen());
       case '/add_new_card':
+        return MaterialPageRoute<dynamic>(builder: (_) => const AddNewCard());
+      case '/book_request':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const AddNewCard());
-
+            builder: (_) => BookRequest(
+                  params: args,
+                ));
+      case '/booking_request_package_details':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => BookingRequestPackageDetails(
+                bookingRequest: args! as BookingRequest));
+      case '/booking_request_view':
+        return MaterialPageRoute<dynamic>(
+            builder: (_) =>
+                BookingRequestView(bookingRequest: args! as BookingRequest));
       default:
         return _errorRoute();
     }

@@ -119,7 +119,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                           height: 40.h,
                           width: 40.w),
                       onPressed: () {
-                        Navigator.pop(context,'Pending');
+                        Navigator.pop(context, 'Pending');
                       },
                     ),
                     SizedBox(
@@ -158,8 +158,7 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                         height: 30.h,
                         padding: EdgeInsets.all(4.w),
                         decoration: BoxDecoration(
-                            color: GlobalMixin().getStatusColor(
-                                requestStatus),
+                            color: GlobalMixin().getStatusColor(requestStatus),
                             borderRadius: BorderRadius.circular(7.r)),
                         child: Center(
                           child: Text(
@@ -292,12 +291,12 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                                             ),
                                           ),*/
                                           const ReviewsCount(),
-                                          Text(
+                                          /*Text(
                                             '\$${double.parse(snapshot.data!.basePrice!) * bookingRequest.numberOfPerson!}',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 14.sp),
-                                          ),
+                                          ),*/
                                         ],
                                       ),
                                     ),
@@ -406,7 +405,6 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
                               title: AppTextConstants.acceptRequest,
                               onpressed: () {
                                 chargePayment();
-
                               },
                               isLoading: isLoading,
                               isEnabled: isAccepted ? false : true),
@@ -929,7 +927,6 @@ class _RequestViewScreenState extends State<RequestViewScreen> {
   }
 
   Future<void> getActivityAvailableDates() async {
-
     final List<ActivityHourAvailability> data = await APIServices()
         .getActivityHours(bookingRequest.bookingDateStart!,
             bookingRequest.bookingDateEnd!, bookingRequest.activityPackageId!);

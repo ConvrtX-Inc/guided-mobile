@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:extended_image/extended_image.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -19,8 +20,11 @@ import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_earnings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_features.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/payment/payment_success_traveller.dart';
+import 'package:guided/screens/widgets/reusable_widgets/booking_payment_details.dart';
 import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/utils/home.dart';
+import 'package:guided/utils/services/fcm_services.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Screen for home
@@ -65,6 +69,13 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      handleFirebaseCloudMessagingEvents();
+      String? token = await FirebaseMessaging.instance.getToken();
+      debugPrint('Guide token $token');
+    });
+
     _loadingData = APIServices().getPackageData();
 
     getData();
@@ -90,6 +101,53 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  void handleFirebaseCloudMessagingEvents() {
+    FirebaseMessaging.onMessage.listen((message) async {
+      if (message.data['role'] == 'guide') {
+        // Handle Notification for Payment Success
+        handlePaymentSuccessNotification(message);
+
+        // Handle Notification for booking request
+        handleBookingRequestNotification(message);
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      if (message.data['role'] == 'guide') {
+        // Handle Notification for Payment Success
+        handlePaymentSuccessNotification(message);
+
+        // Handle Notification for booking request
+        handleBookingRequestNotification(message);
+      }
+    });
+  }
+
+  void handlePaymentSuccessNotification(dynamic message) {
+    if (message.notification != null) {
+      if (message.data['type'] == 'payment') {
+        showPaymentSuccessFromTraveller(
+            context: context,
+            data: message.data,
+            onBtnPressed: () {
+              Navigator.of(context).pop();
+            });
+      }
+    }
+  }
+
+  void handleBookingRequestNotification(dynamic message) {
+    if (message.notification != null) {
+      if (message.data['type'] == 'booking_request' &&
+          message.data['status'] == 'pending') {
+        final BookingRequest bookingRequest = BookingRequest.fromJson(
+            jsonDecode(message.data['booking_request']));
+        Navigator.of(context)
+            .pushNamed('/booking_request_view', arguments: bookingRequest);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,6 +168,73 @@ class _HomeScreenState extends State<HomeScreen>
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            TextButton(
+                onPressed: () {
+                  BookingRequest bookingRequest = BookingRequest(
+                      activityPackageName: 'Grassland Hunting',
+                      numberOfPerson: 5,
+                      bookingDateStart: 'June 03, 1998',
+                      fromUserFullName: 'James Anderson',
+                      fromUserFirebaseProfilePic:
+                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsaWzmm-J213YN3R9IvOIfChuLnPxo8apsGmTa2jAVDCLD9RfO69uMMBhlnpvZSZ-wedg&usqp=CAU');
+
+                  // showPaymentSuccessFromTraveller(
+                  //     context: context, bookingRequest: bookingRequest);
+
+                  final data = {
+                    "type": "booking_request",
+                    "status": "approved",
+                    "role": "traveler",
+                    "booking_request": {
+                      "id": "6e2ab260-a2ca-43d8-b1bf-c32805f62fc6",
+                      "user_id": "38b88db6-82cd-45bd-b36a-723b79236a41",
+                      "from_user_id": "9fa7fb2d-32df-4c0c-b62f-d7244509a4be",
+                      "request_msg": "test",
+                      "activity_package_id":
+                          "7a72de9a-029e-46c8-8855-c503f75b8b4d",
+                      "profile_photo_firebase_url": "",
+                      "status_id": "136f93a3-8868-4bc4-b38e-380d114898d0",
+                      "booking_date_start": "2022-08-09T04:00:00.000Z",
+                      "booking_date_end": "2022-08-09T05:00:00.000Z",
+                      "number_of_person": 3,
+                      "is_approved": true,
+                      "payment_status": "pending",
+                      "created_date": "2022-08-08T07:48:23.989Z",
+                      "updated_date": "2022-08-09T08:18:11.055Z",
+                      "deleted_date": null,
+                      "status": {
+                        "id": "136f93a3-8868-4bc4-b38e-380d114898d0",
+                        "status_name": "Completed",
+                        "is_active": true,
+                        "created_date": "2022-05-13T17:22:54.166Z",
+                        "updated_date": "2022-05-13T17:22:54.166Z",
+                        "deletedAt": null,
+                        "__entity": "Status"
+                      },
+                      "from_user": {
+                        "id": "9fa7fb2d-32df-4c0c-b62f-d7244509a4be",
+                        "full_name": "Edna Mae Garcia",
+                        "email": "ednamae@convrtx.com",
+                        "profile_photo_firebase_url":
+                            "https://firebasestorage.googleapis.com/v0/b/guided-convrtx.appspot.com/o/profilePictures%2F2022-08-08%2020%3A45%3A58.372736-scaled_8eade646-3318-4e64-a913-e2602f64b3252566011000475835412.jpg?alt=media&token=345dfc92-4037-42ac-b8cd-ea9610e4b122",
+                        "__entity": "User"
+                      },
+                      "package": {
+                        "id": "7a72de9a-029e-46c8-8855-c503f75b8b4d",
+                        "name": "Whale Shark Watching",
+                        "__entity": "ActivityPackage"
+                      }
+                    },
+                    "organization": "Guidedd"
+                  };
+
+                  FCMServices().sendNotification(
+                      'ezleuw9rRvCodQykBPpKHK:APA91bHvRzwNRmDG76IGy9HLiIajvpQwdCIbbcg2-p_P7x1ICJbDhtoSELs2TxWXENPsqLHkKOUHLmZrdI9sfnirBB1pE-S7OYAavxWKmTBspIDcEDe7LU-3WyjoOAJ3WZflRS7qpReP',
+                      'Booking Request Approved',
+                      'Ethan Hunt Approved your Booking Request. Please click to proceed payment',
+                      data);
+                },
+                child: Text('Send Notification')),
             Padding(
               padding: EdgeInsets.only(left: 25.w, right: 25.w, top: 20.h),
               child: Container(
@@ -317,10 +442,14 @@ class _HomeScreenState extends State<HomeScreen>
                           children: <Widget>[
                             Row(
                               children: [
-                                for (int i = 0; i < pendingRequestDisplayLimit; i++)
+                                for (int i = 0;
+                                    i < pendingRequestDisplayLimit;
+                                    i++)
                                   oneCustomerRequest(pendingRequests[i]),
                                 SizedBox(width: 15.w),
-                                for (int r = 0; r < pendingRequestDisplayLimit  ; r++)
+                                for (int r = 0;
+                                    r < pendingRequestDisplayLimit;
+                                    r++)
                                   Text(
                                     r != pendingRequests.length - 1
                                         ? '${pendingRequests[r].fromUserFullName!.split(' ')[0]}, '

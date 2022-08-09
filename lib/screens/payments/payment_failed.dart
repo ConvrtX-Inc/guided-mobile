@@ -22,9 +22,8 @@ Future<dynamic> paymentFailed(
       builder: (BuildContext context) {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-          return ScreenUtilInit(
-            builder: () => Container(
-              height: 726.h,
+          return  Container(
+              height: MediaQuery.of(context).size.height -30,
               padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 42.h),
               child: SingleChildScrollView(
                 child: Column(
@@ -57,7 +56,7 @@ Future<dynamic> paymentFailed(
                       ),
                     ]),
                     SizedBox(
-                      height: 40.h,
+                      height: 20.h,
                     ),
                     Center(
                         child: Container(
@@ -86,7 +85,7 @@ Future<dynamic> paymentFailed(
                     Center(
                       child: Container(
                           width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height / 1.5,
+                          // height: MediaQuery.of(context).size.height / 1.5,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
@@ -118,7 +117,7 @@ Future<dynamic> paymentFailed(
                           )),
                     ),
                     SizedBox(
-                      height: 40.h,
+                      height: 20.h,
                     ),
                     CustomRoundedButton(
                         title: AppTextConstants.ok,
@@ -128,15 +127,13 @@ Future<dynamic> paymentFailed(
                             return count++ == 2;
                           });
                         }),
-                    SizedBox(
-                      height: 40.h,
-                    ),
+
                   ],
                 ),
               ),
-            ),
-            designSize: const Size(375, 812),
-          );
+            );
+
+
         });
       });
 }

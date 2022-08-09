@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:guided/common/widgets/app_scaffold.dart';
+import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/constants/payment_config.dart';
@@ -62,31 +63,42 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   Widget buildPaymentMethodUI() => GetBuilder<PaymentMethodController>(
           builder: (PaymentMethodController _controller) {
         selectedMethod = _controller.paymentMethod;
-        return ListView(
+        return Column(
           children: <Widget>[
-            Text(
-              AppTextConstants.selectDefaultMethod,
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w400),
-            ),
-            if (_cardController.cards.isNotEmpty &&
-                _cardController.defaultCard.id != null)
-              buildPaymentMethodItem(
-                  '${AssetsPath.assetsPNGPath}/credit_icon.png',
-                  'Bank Card',
-                  '************${_cardController.defaultCard.last4!} ${_cardController.defaultCard.brand!}',
-                  PaymentConfig.bankCard),
-            if (Platform.isIOS)
-              buildPaymentMethodItem(
-                  '${AssetsPath.assetsPNGPath}/apple_pay.png',
-                  'Apple Pay',
-                  '',
-                  PaymentConfig.applePay),
-            if (Platform.isAndroid)
-              buildPaymentMethodItem(
-                  '${AssetsPath.assetsPNGPath}/google_pay.png',
-                  'Google Pay',
-                  '',
-                  PaymentConfig.googlePay),
+            Expanded(
+                child: ListView(
+              children: <Widget>[
+                Text(
+                  AppTextConstants.selectDefaultMethod,
+                  style:
+                      TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w400),
+                ),
+                if (_cardController.cards.isNotEmpty &&
+                    _cardController.defaultCard.id != null)
+                  buildPaymentMethodItem(
+                      '${AssetsPath.assetsPNGPath}/credit_icon.png',
+                      'Bank Card',
+                      '************${_cardController.defaultCard.last4!} ${_cardController.defaultCard.brand!}',
+                      PaymentConfig.bankCard),
+                if (Platform.isIOS)
+                  buildPaymentMethodItem(
+                      '${AssetsPath.assetsPNGPath}/apple_pay.png',
+                      'Apple Pay',
+                      '',
+                      PaymentConfig.applePay),
+                if (Platform.isAndroid)
+                  buildPaymentMethodItem(
+                      '${AssetsPath.assetsPNGPath}/google_pay.png',
+                      'Google Pay',
+                      '',
+                      PaymentConfig.googlePay),
+              ],
+            )),
+            CustomRoundedButton(
+                title: AppTextConstants.continueText,
+                onpressed: selectedMethod.isNotEmpty
+                    ? () => Navigator.pop(context, selectedMethod)
+                    : null)
           ],
         );
       });

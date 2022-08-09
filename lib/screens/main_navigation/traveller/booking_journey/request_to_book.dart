@@ -24,6 +24,8 @@ import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
 import 'package:guided/screens/payment/payment_confirm.dart';
+import 'package:guided/screens/payment/payment_receipt.dart';
+import 'package:guided/screens/payment/payment_success.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
 import 'package:guided/screens/payments/payment_failed.dart';
 import 'package:guided/screens/payments/payment_manage_card.dart';
@@ -1081,14 +1083,14 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 isLoading: isLoading,
                 title: 'Proceed To Payment',
                 onpressed: () async {
-                  if (PaymentConfig.isPaymentEnabled) {
-                    /*  dynamic paymentClicked = await Navigator.push(
+               /*   if (PaymentConfig.isPaymentEnabled) {
+                    *//*  dynamic paymentClicked = await Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (BuildContext context) => PaymentManageCard(
                                 price: '$price',
                               )),
-                    );*/
+                    );*//*
 
                     // if (paymentClicked != null) {
 
@@ -1113,7 +1115,9 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                       isLoading = true;
                     });
                     await goToPaymentMethod(context, screenArguments);
-                  }
+                  }*/
+
+                  handleConfirmPayment(screenArguments);
                 },
               ),
             )
@@ -1388,8 +1392,14 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     final int numberOfTraveller = screenArgs['numberOfTraveller'] as int;
     final String tourGuide = screenArgs['tourGuide'] as String;
 
+    // showPaymentReceipt(context);
+    //
+    // return;
+
+
     setState(() {
       bookingPaymentDetails = BookingPaymentDetails(
+
           transactionNumber: transactionNumber,
           price: price.toStringAsFixed(2),
           serviceName: serviceName,
@@ -1399,14 +1409,37 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           numberOfPeople: numberOfTraveller);
     });
 
+
     paymentConfirmModal(
         context: context,
+        guideStripeAccountId: '',
+        bookingRequestId: '',
+        adventureFee: 12,
         paymentDetails: bookingPaymentDetails,
         serviceName: serviceName,
         paymentMode: paymentMode,
         paymentMethod: paymentMethod,
         onPaymentSuccessful: () {
-          /// Book Request
+          showPaymentSuccess(
+              context: context,
+              btnText: 'View Receipt',
+              paymentDetails: BookingPaymentDetails(
+                backgroundColor: AppColors.concrete,
+                  showPrice: false,
+                  transactionNumber: transactionNumber,
+                  price: price.toStringAsFixed(2),
+                  serviceName: serviceName,
+                  tour: activityPackage.name!,
+
+                  tourGuide: tourGuide,
+                  bookingDate: getTime(selectedDate),
+                  numberOfPeople: numberOfTraveller),
+              paymentMethod: paymentMode,
+              onBtnPressed: () {
+            // show transaction details
+               debugPrint('Payment Receipt Show');
+
+          });
         },
         onConfirmPaymentPressed: () {
           goToPaymentMethod(context, screenArgs);

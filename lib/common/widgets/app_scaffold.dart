@@ -19,6 +19,10 @@ class AppScaffold extends StatelessWidget {
       this.appBarTitleColor = Colors.black,
       this.bodyPaddingHorizontal = 26,
       this.bodyPaddingVertical = 16,
+      this.showAppBar = true,
+      this.showFooter = false,
+      this.footer,
+      this.appBarLeadingButton,
       Key? key})
       : super(key: key);
 
@@ -61,40 +65,55 @@ class AppScaffold extends StatelessWidget {
   ///  horizontal padding of body
   final double bodyPaddingHorizontal;
 
+  /// show/hide appbar
+  final bool showAppBar;
+
+  ///show/ hide footer
+  final bool showFooter;
+
+  /// Footer
+  final Widget? footer;
+
+  /// App bar leading widget
+  final Widget? appBarLeadingButton;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: scaffoldBgColor,
-      appBar: AppBar(
-        centerTitle: centerAppBarTitle,
-        automaticallyImplyLeading: false,
-
-        leading: IconButton(
-
-          icon: Icon(
-            appbarLeadingIcon,
-            color: appBarLeadingIconColor,
-          ),
-          onPressed: () {
-            appBarLeadingCallback!();
-          },
-        ),
-        backgroundColor: appBarColor,
-        elevation: 0,
-        actions: appBarActions,
-        title: Text(
-          appBarTitle,
-          style: TextStyle(
-              color: appBarTitleColor,
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w700),
-        ),
-      ),
+      appBar: showAppBar
+          ? AppBar(
+              centerTitle: centerAppBarTitle,
+              automaticallyImplyLeading: false,
+              leading: appBarLeadingButton ?? IconButton(
+                icon: Icon(
+                  appbarLeadingIcon,
+                  color: appBarLeadingIconColor,
+                ),
+                onPressed: () {
+                  appBarLeadingCallback != null
+                      ? appBarLeadingCallback!()
+                      : Navigator.of(context).pop();
+                },
+              ),
+              backgroundColor: appBarColor,
+              elevation: 0,
+              actions: appBarActions,
+              title: Text(
+                appBarTitle,
+                style: TextStyle(
+                    color: appBarTitleColor,
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w700),
+              ),
+            )
+          : null,
       body: Container(
         padding: EdgeInsets.symmetric(
             horizontal: bodyPaddingHorizontal, vertical: bodyPaddingVertical),
         child: body,
       ),
+      bottomNavigationBar: showFooter ? footer : null,
     );
   }
 
@@ -116,6 +135,8 @@ class AppScaffold extends StatelessWidget {
       ..add(ColorProperty('scaffoldBgColor', scaffoldBgColor))
       ..add(ColorProperty('appBarTitleColor', appBarTitleColor))
       ..add(DoubleProperty('bodyPaddingVertical', bodyPaddingVertical))
-      ..add(DoubleProperty('bodyPaddingHorizontal', bodyPaddingHorizontal));
+      ..add(DoubleProperty('bodyPaddingHorizontal', bodyPaddingHorizontal))
+      ..add(DiagnosticsProperty<bool>('showAppBar', showAppBar))
+      ..add(DiagnosticsProperty<bool>('showFooter', showFooter));
   }
 }
