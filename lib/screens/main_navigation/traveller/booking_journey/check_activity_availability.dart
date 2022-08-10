@@ -1,15 +1,12 @@
 // ignore_for_file: sort_constructors_first, public_member_api_docs, diagnostic_describe_all_properties
 
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/common/widgets/month_selector.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
-import 'package:guided/constants/app_texts.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
@@ -18,13 +15,10 @@ import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/available_date_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
-import 'package:guided/utils/services/rest_api_service.dart';
-import 'package:guided/utils/services/static_data_services.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
 
 ///
 class CheckActivityAvailabityScreen extends StatefulWidget {
@@ -66,6 +60,8 @@ class _CheckActivityAvailabityScreenState
 
   @override
   void initState() {
+    debugPrint('Mars - Started check Availability: ${availableDates}');
+    debugPrint('Mars - Started check Availability: ${widget.params['availableDates']}');
     initializeDateFormatting('en', null);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       /*Future.delayed(const Duration(seconds: 1), () {
@@ -126,27 +122,6 @@ class _CheckActivityAvailabityScreenState
                   ),
                 ),
                 const Spacer(),
-                /*Padding(
-                  padding: EdgeInsets.fromLTRB(20.w, 20.h, 10.w, 0.h),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      side: BorderSide(color: AppColors.tealGreen),
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(25))),
-                    ),
-                    onPressed: () {
-                      print('Pressed');
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 10.w, right: 10.w),
-                      child: Text('Booking History',
-                          style: TextStyle(
-                              color: AppColors.tealGreen,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700)),
-                    ),
-                  ),
-                ),*/
               ],
             ),
             Padding(
@@ -219,7 +194,6 @@ class _CheckActivityAvailabityScreenState
                     .setSelectedDate(date.month);
                 DateTime dt = DateTime.parse(
                     travellerMonthController.currentDate);
-
                 final DateTime plustMonth = DateTime(dt.year,
                     date.month, dt.day, dt.hour, dt.minute);
 
@@ -244,134 +218,6 @@ class _CheckActivityAvailabityScreenState
 
             ),
 
-            /* Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    if(currentScrollIndex > 0){
-                      setState(() {
-                        currentScrollIndex --;
-                      });
-                    }
-                    _scrollController.easyScrollToIndex(index: currentScrollIndex);
-                  },
-                  icon: Icon(
-                    Icons.chevron_left,
-                    color: HexColor('#898A8D'),
-                  ),
-                ),
-                Container(
-                    color: Colors.transparent,
-                    height: 80.h,
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    child: EasyScrollToIndex(
-                      controller: _scrollController,
-                      // ScrollToIndexController
-                      scrollDirection: Axis.horizontal,
-                      // default Axis.vertical
-                      itemCount: dates.length,
-                      // itemCount
-                      itemWidth: 95,
-                      itemHeight: 70,
-                      itemBuilder: (BuildContext context, int index) {
-                        return InkWell(
-                          onTap: () {
-                            _scrollController.easyScrollToIndex(index: index);
-                            travellerMonthController
-                                .setSelectedDate(dates[index].month);
-                            DateTime dt = DateTime.parse(
-                                travellerMonthController.currentDate);
-
-                            final DateTime plustMonth = DateTime(dt.year,
-                                dates[index].month, dt.day, dt.hour, dt.minute);
-
-                            final DateTime setLastday = DateTime(
-                                plustMonth.year,
-                                plustMonth.month,
-                                1,
-                                plustMonth.hour,
-                                plustMonth.minute);
-
-                            travellerMonthController.setCurrentMonth(
-                              setLastday.toString(),
-                            );
-
-                            setState(() {
-                              availableDates = dates[index].availableDates;
-                            });
-                          },
-                          child: Obx(
-                            () => Stack(
-                              children: <Widget>[
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Container(
-                                    margin: EdgeInsets.fromLTRB(
-                                        index == 0 ? 0.w : 0.w, 0.h, 10.w, 0.h),
-                                    width: 89,
-                                    height: 45,
-                                    decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(10),
-                                        ),
-                                        border: Border.all(
-                                            color: dates[index].month ==
-                                                    travellerMonthController
-                                                        .selectedDate
-                                                ? HexColor('#FFC74A')
-                                                : HexColor('#C4C4C4'),
-                                            width: 1),
-                                        color: dates[index].month ==
-                                                travellerMonthController
-                                                    .selectedDate
-                                            ? HexColor('#FFC74A')
-                                            : Colors.white),
-                                    child: Center(
-                                        child: Text(dates[index].monthName)),
-                                  ),
-                                ),
-                                if (dates[index].availableDates.isNotEmpty)
-                                  Positioned(
-                                      right: 2,
-                                      top: 2,
-                                      child: Badge(
-                                        padding: const EdgeInsets.all(8),
-                                        badgeColor: AppColors.deepGreen,
-                                        badgeContent: Text(
-                                          '${dates[index].availableDates.length}',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.w800,
-                                              fontFamily:
-                                                  AppTextConstants.fontPoppins),
-                                        ),
-                                      )),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    )),
-
-                IconButton(
-                  onPressed: () {
-                    if(currentScrollIndex < dates.length){
-                      setState(() {
-                        currentScrollIndex++;
-                      });
-                    }
-                    _scrollController.easyScrollToIndex(index: currentScrollIndex);
-                  },
-                  icon: Icon(
-                    Icons.chevron_right,
-                    color: HexColor('#898A8D'),
-                  ),
-                ),
-
-              ],
-            ),*/
             SizedBox(
               height: 20.h,
             ),
@@ -389,7 +235,9 @@ class _CheckActivityAvailabityScreenState
                       debugPrint(
                           'Selected Dates: ${travellerMonthController.selectedDates.length}');
                       travellerMonthController.setSelectedDates(value);
-                    }, availableDates),
+                    },
+                        // availableDates,
+                        widget.params['availableDates']),
                   );
                 }),
             SizedBox(
@@ -421,7 +269,7 @@ class _CheckActivityAvailabityScreenState
       ),
     );
   }
-
+//fd11c3aa-3230-4dd4-babb-96b3a68728d4
   Future<void> getAvailableSlots() async {
     availableHours.forEach((ActivityHourAvailability e) {
       final int monthNumber = DateTime.parse(e.availabilityDate!).month;
