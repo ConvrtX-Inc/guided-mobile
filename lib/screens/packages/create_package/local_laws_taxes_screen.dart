@@ -1,6 +1,4 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable
-import 'dart:ffi';
-
 import 'package:advance_notification/advance_notification.dart';
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:flutter/foundation.dart';
