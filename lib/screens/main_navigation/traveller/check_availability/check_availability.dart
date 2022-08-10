@@ -577,12 +577,6 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
             BookingRequest.fromJson(jsonDecode(res.successResponse));
       });
 
-      String notificationTitle ='New Booking Request';
-
-      String notificationStatus = 'pending';
-
-      String notificationBody = '${UserSingleton.instance.user.user!.fullName!} requested a new booking for Whale Shark Watching';
-      sendPushNotification(notificationTitle, notificationStatus, notificationBody);
       debugPrint('my booking request: ${_bookingRequest.id}');
       await showMessageDialog();
     } else {
@@ -593,19 +587,22 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
     }
   }
 
-  void sendPushNotification(String title, String status, String body) {
-    final dynamic _request = _bookingRequest.toJson();
+  void sendPushNotification(
+      String title, String status, String body, String message) {
+    BookingRequest myRequest = _bookingRequest..requestMsg = message;
+
+    final dynamic _request = myRequest.toJson();
+
+    debugPrint('Booking request $_bookingRequest');
     final dynamic data = {
       'type': 'booking_request',
       'status': status,
       'role': 'guide',
-      'booking_request': _request
+      'booking_request': _request,
+      'traveler_id': UserSingleton.instance.user.user!.id!,
+      'traveler_name': UserSingleton.instance.user.user!.fullName!
     };
-    FCMServices().sendNotification(
-        'ezleuw9rRvCodQykBPpKHK:APA91bHvRzwNRmDG76IGy9HLiIajvpQwdCIbbcg2-p_P7x1ICJbDhtoSELs2TxWXENPsqLHkKOUHLmZrdI9sfnirBB1pE-S7OYAavxWKmTBspIDcEDe7LU-3WyjoOAJ3WZflRS7qpReP',
-        title,
-        body,
-        data);
+    FCMServices().sendNotification(_bookingRequest.userId!, title, body, data);
   }
 
   Future<void> showMessageDialog() async {
@@ -625,7 +622,17 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                     Align(
                       alignment: Alignment.topRight,
                       child: GestureDetector(
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          String notificationTitle = 'New Booking Request';
+
+                          String notificationStatus = 'pending';
+
+                          String notificationBody =
+                              '${UserSingleton.instance.user.user!.fullName!} requested a new booking for Whale Shark Watching';
+                          sendPushNotification(notificationTitle,
+                              notificationStatus, notificationBody, '');
+                          Navigator.pop(context);
+                        },
                         child: Image.asset(
                             '${AssetsPath.assetsPNGPath}/close_btn.png'),
                       ),
@@ -672,6 +679,17 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
         await APIServices().sendMessageToGuide(_bookingRequest.id!, message);
 
     debugPrint('Response:: ${res.statusCode}');
+
+    if (message.isNotEmpty) {
+      String notificationTitle = 'New Booking Request';
+
+      String notificationStatus = 'pending';
+
+      String notificationBody =
+          '${UserSingleton.instance.user.user!.fullName!} requested a new booking for Whale Shark Watching';
+      sendPushNotification(
+          notificationTitle, notificationStatus, notificationBody, message);
+    }
 
     if (res.statusCode == 200) {
       _messageToGuideController.clear();

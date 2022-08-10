@@ -54,6 +54,7 @@ import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.da
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:guided/utils/services/fcm_services.dart';
 import 'package:guided/utils/services/geolocation_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
@@ -141,11 +142,13 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
 
       // showApprovedBookingRequestDialog();
 
-      String? token = await FirebaseMessaging.instance.getToken();
 
-      debugPrint('firebase token $token');
+      await getFirebaseToken();
 
       await checkApprovedRequest();
+
+
+
     });
     getCurrentLocation();
     _loadingData = APIServices().getUserListData();
@@ -287,7 +290,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         message.data["status"] == 'approved') {
       final BookingRequest bookingRequest =
           BookingRequest.fromJson(jsonDecode(message.data["booking_request"]));
-      showApprovedBookingRequestDialog(bookingRequest);
+      showApprovedBookingRequestDialog(bookingRequest , message.data["guide_name"]);
     }
   }
 
@@ -1138,12 +1141,27 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
   Future<void> checkApprovedRequest() async {
     final BookingRequest res =
         await APIServices().getApproveRequestWithPendingPayment();
+
+    debugPrint('Show approved request');
+
     if (res.id != null) {
-      showApprovedBookingRequestDialog(res);
+      final   ProfileDetailsModel tourGuideDetails = await APIServices().getProfileDataById(res.userId!);
+
+      debugPrint('Show approved request ${tourGuideDetails.id}');
+      showApprovedBookingRequestDialog(res , tourGuideDetails.fullName);
     }
   }
 
-  void showApprovedBookingRequestDialog(BookingRequest bookingRequest) {
+  Future<void> getFirebaseToken() async {
+    String? token = await FirebaseMessaging.instance.getToken();
+
+    debugPrint('Firebase Token $token');
+
+    await FCMServices().addFCMToken(token!);
+  }
+
+
+  void showApprovedBookingRequestDialog(BookingRequest bookingRequest, String guideName) {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -1161,7 +1179,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
                         '${AssetsPath.assetsPNGPath}/green_checkmark.png'),
                     SizedBox(height: 14),
                     Text(
-                      'Your Request has been approved by Ethan Hunt',
+                      'Your Request has been approved by $guideName',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontWeight: FontWeight.w700, fontSize: 18.sp),

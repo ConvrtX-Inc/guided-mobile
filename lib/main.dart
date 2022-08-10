@@ -17,6 +17,7 @@ import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/main_navigation/home/screens/home_main.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
+import 'package:guided/utils/services/fcm_services.dart';
 import 'package:guided/utils/services/notification_service.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'firebase/firebase_options.dart';
@@ -52,7 +53,7 @@ void main() async {
 
 
 
-  getToken();
+  // getToken();
 
   initializeDateFormatting().then((_) => runApp(const MyApp()));
 }
@@ -70,11 +71,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-Future<void> getToken() async {
-  String? token = await FirebaseMessaging.instance.getToken();
-
-  debugPrint('Firebase Token $token');
-}
 
 /// My App Root
 class MyApp extends StatelessWidget {

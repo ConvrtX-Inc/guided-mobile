@@ -238,6 +238,9 @@ class AppAPIPath {
 
   /// Returns  send firebase notification url
   static String fcmUrl = 'api/v1/fcm/sendNotification';
+
+  /// Returns firebase device token url
+ static String fcmTokenUrl = 'api/v1/fcm-device-token';
 }
 
 ///Get Api Base Url

@@ -27,6 +27,7 @@ import 'package:guided/screens/payments/payment_failed.dart';
 import 'package:guided/screens/widgets/reusable_widgets/booking_payment_details.dart';
 import 'package:guided/screens/widgets/reusable_widgets/reviews_count.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:guided/utils/services/fcm_services.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/stripe_service.dart';
 import 'package:intl/intl.dart';
@@ -185,7 +186,7 @@ class _BookRequestState extends State<BookRequest> {
         transactionNumber: transactionNumber,
         price: grandTotal.toString(),
         serviceName: serviceName,
-        tour: bookingRequest.activityPackageName!,
+        tour: activityPackage.name!,
         tourGuide: guideDetails.fullName!,
         bookingDate: getStartAndEndDate(),
         numberOfPeople: bookingRequest.numberOfPerson!);
@@ -214,7 +215,7 @@ class _BookRequestState extends State<BookRequest> {
     final APIStandardReturnFormat res = await APIServices()
         .updateBookingPaymentStatus(bookingRequestId, paymentStatus);
 
-    debugPrint('Response ${res}');
+    debugPrint('Response Update Payment ${res}');
   }
 
   void onPaymentFailed() {
@@ -226,7 +227,9 @@ class _BookRequestState extends State<BookRequest> {
   }
 
   void onPaymentSuccessful() {
+
     updateBookingPaymentStatus(PaymentStatus.completed, bookingRequest.id!);
+    sendPushNotification();
     showPaymentSuccess(
         context: context,
         btnText: 'View Receipt',
@@ -236,7 +239,7 @@ class _BookRequestState extends State<BookRequest> {
             transactionNumber: transactionNumber,
             price: price.toStringAsFixed(2),
             serviceName: serviceName,
-            tour: bookingRequest.activityPackageName!,
+            tour: activityPackage.name!,
             tourGuide: guideDetails.fullName!,
             bookingDate: getStartAndEndDate(),
             numberOfPeople: bookingRequest.numberOfPerson!),
@@ -264,6 +267,28 @@ class _BookRequestState extends State<BookRequest> {
     });
 
     debugPrint('USER DATA ${res.stripeAccountId} ${res.fullName}');
+  }
+
+  void sendPushNotification() {
+    final dynamic _request = bookingRequest.toJson();
+    const String title = 'Payment Successful';
+    final String body =
+        '${UserSingleton.instance.user.user!.fullName!} purchased your "${activityPackage.name!}"';
+
+    final dynamic data = {
+      'type': 'payment',
+      'status': 'completed',
+      'role': 'guide',
+      'package_name': activityPackage.name!,
+      'transaction_number': transactionNumber,
+      'service': serviceName,
+      'booking_date': getStartAndEndDate(),
+      'number_of_people': bookingRequest.numberOfPerson,
+      'traveler_name': UserSingleton.instance.user.user!.fullName!,
+      'traveler_profile_picture':
+          UserSingleton.instance.user.user!.firebaseProfilePicUrl!,
+    };
+    FCMServices().sendNotification(bookingRequest.userId!, title, body, data);
   }
 
   String getStartAndEndDate() {
@@ -347,7 +372,7 @@ class _BookRequestState extends State<BookRequest> {
                 height: 10,
               ),
               Text(
-                bookingRequest.activityPackageName!,
+                activityPackage.name!,
                 style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
               ),
               const SizedBox(

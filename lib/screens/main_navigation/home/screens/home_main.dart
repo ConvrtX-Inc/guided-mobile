@@ -72,8 +72,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       handleFirebaseCloudMessagingEvents();
-      String? token = await FirebaseMessaging.instance.getToken();
-      debugPrint('Guide token $token');
+      await getFirebaseToken();
     });
 
     _loadingData = APIServices().getPackageData();
@@ -140,13 +139,26 @@ class _HomeScreenState extends State<HomeScreen>
     if (message.notification != null) {
       if (message.data['type'] == 'booking_request' &&
           message.data['status'] == 'pending') {
-        final BookingRequest bookingRequest = BookingRequest.fromJson(
-            jsonDecode(message.data['booking_request']));
+          BookingRequest bookingRequest = BookingRequest.fromJson(
+            jsonDecode(message.data['booking_request']))
+          ..fromUserFullName = message.data['traveler_name']
+          ..fromUserId = message.data['traveler_id'];
+
+
         Navigator.of(context)
             .pushNamed('/booking_request_view', arguments: bookingRequest);
       }
     }
   }
+
+  Future<void> getFirebaseToken() async {
+    String? token = await FirebaseMessaging.instance.getToken();
+
+    debugPrint('Firebase Token GUIDE $token');
+
+    await FCMServices().addFCMToken(token!);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -168,73 +180,7 @@ class _HomeScreenState extends State<HomeScreen>
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            TextButton(
-                onPressed: () {
-                  BookingRequest bookingRequest = BookingRequest(
-                      activityPackageName: 'Grassland Hunting',
-                      numberOfPerson: 5,
-                      bookingDateStart: 'June 03, 1998',
-                      fromUserFullName: 'James Anderson',
-                      fromUserFirebaseProfilePic:
-                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsaWzmm-J213YN3R9IvOIfChuLnPxo8apsGmTa2jAVDCLD9RfO69uMMBhlnpvZSZ-wedg&usqp=CAU');
 
-                  // showPaymentSuccessFromTraveller(
-                  //     context: context, bookingRequest: bookingRequest);
-
-                  final data = {
-                    "type": "booking_request",
-                    "status": "approved",
-                    "role": "traveler",
-                    "booking_request": {
-                      "id": "6e2ab260-a2ca-43d8-b1bf-c32805f62fc6",
-                      "user_id": "38b88db6-82cd-45bd-b36a-723b79236a41",
-                      "from_user_id": "9fa7fb2d-32df-4c0c-b62f-d7244509a4be",
-                      "request_msg": "test",
-                      "activity_package_id":
-                          "7a72de9a-029e-46c8-8855-c503f75b8b4d",
-                      "profile_photo_firebase_url": "",
-                      "status_id": "136f93a3-8868-4bc4-b38e-380d114898d0",
-                      "booking_date_start": "2022-08-09T04:00:00.000Z",
-                      "booking_date_end": "2022-08-09T05:00:00.000Z",
-                      "number_of_person": 3,
-                      "is_approved": true,
-                      "payment_status": "pending",
-                      "created_date": "2022-08-08T07:48:23.989Z",
-                      "updated_date": "2022-08-09T08:18:11.055Z",
-                      "deleted_date": null,
-                      "status": {
-                        "id": "136f93a3-8868-4bc4-b38e-380d114898d0",
-                        "status_name": "Completed",
-                        "is_active": true,
-                        "created_date": "2022-05-13T17:22:54.166Z",
-                        "updated_date": "2022-05-13T17:22:54.166Z",
-                        "deletedAt": null,
-                        "__entity": "Status"
-                      },
-                      "from_user": {
-                        "id": "9fa7fb2d-32df-4c0c-b62f-d7244509a4be",
-                        "full_name": "Edna Mae Garcia",
-                        "email": "ednamae@convrtx.com",
-                        "profile_photo_firebase_url":
-                            "https://firebasestorage.googleapis.com/v0/b/guided-convrtx.appspot.com/o/profilePictures%2F2022-08-08%2020%3A45%3A58.372736-scaled_8eade646-3318-4e64-a913-e2602f64b3252566011000475835412.jpg?alt=media&token=345dfc92-4037-42ac-b8cd-ea9610e4b122",
-                        "__entity": "User"
-                      },
-                      "package": {
-                        "id": "7a72de9a-029e-46c8-8855-c503f75b8b4d",
-                        "name": "Whale Shark Watching",
-                        "__entity": "ActivityPackage"
-                      }
-                    },
-                    "organization": "Guidedd"
-                  };
-
-                  FCMServices().sendNotification(
-                      'ezleuw9rRvCodQykBPpKHK:APA91bHvRzwNRmDG76IGy9HLiIajvpQwdCIbbcg2-p_P7x1ICJbDhtoSELs2TxWXENPsqLHkKOUHLmZrdI9sfnirBB1pE-S7OYAavxWKmTBspIDcEDe7LU-3WyjoOAJ3WZflRS7qpReP',
-                      'Booking Request Approved',
-                      'Ethan Hunt Approved your Booking Request. Please click to proceed payment',
-                      data);
-                },
-                child: Text('Send Notification')),
             Padding(
               padding: EdgeInsets.only(left: 25.w, right: 25.w, top: 20.h),
               child: Container(

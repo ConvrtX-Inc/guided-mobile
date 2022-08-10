@@ -58,6 +58,8 @@ class _BookingRequestPackageDetailsState
     final ActivityPackage res = await APIServices()
         .getActivityPackageDetails(bookingRequest.activityPackageId!);
 
+    debugPrint('Bookng request ${bookingRequest.activityPackageId!}');
+
     if (res.id!.isNotEmpty) {
       setState(() {
         activityPackage = res;
@@ -128,7 +130,7 @@ class _BookingRequestPackageDetailsState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              bookingRequest.activityPackageName!,
+              activityPackage.name!,
               style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 28,

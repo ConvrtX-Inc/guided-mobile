@@ -105,26 +105,24 @@ class _BookingRequestViewState extends State<BookingRequestView> {
     });
   }
 
-
   void sendPushNotification(String title, String status, String body) {
     final dynamic _request = _bookingRequest.toJson();
     final dynamic data = {
       'type': 'booking_request',
       'status': status,
       'role': 'traveler',
-      'booking_request': _request
+      'booking_request': _request,
+      'guide_name': UserSingleton.instance.user.user!.fullName
     };
-    FCMServices().sendNotification(
-        'ezleuw9rRvCodQykBPpKHK:APA91bHvRzwNRmDG76IGy9HLiIajvpQwdCIbbcg2-p_P7x1ICJbDhtoSELs2TxWXENPsqLHkKOUHLmZrdI9sfnirBB1pE-S7OYAavxWKmTBspIDcEDe7LU-3WyjoOAJ3WZflRS7qpReP',
-        title,
-        body,
-        data);
+    FCMServices()
+        .sendNotification(_bookingRequest.fromUserId!, title, body, data);
   }
+
   Future<void> rejectBookingRequest() async {
     final APIStandardReturnFormat res =
         await APIServices().rejectBookingRequest(_bookingRequest.id!);
 
-     Navigator.pop(context);
+    Navigator.pop(context);
     if (res.statusCode == 200) {
       const String notificationTitle = 'Booking Request Rejected';
       const String notificationStatus = 'rejected';
@@ -389,7 +387,7 @@ class _BookingRequestViewState extends State<BookingRequestView> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              _bookingRequest.activityPackageName!,
+                              packageDetails.name,
                               style: TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 15.sp),
                             ),
