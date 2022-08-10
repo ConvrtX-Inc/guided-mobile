@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,12 +15,14 @@ import 'package:get/get.dart';
 import 'package:google_place/google_place.dart';
 import 'package:guided/common/widgets/avatar_bottom_sheet.dart' as show_avatar;
 import 'package:guided/common/widgets/custom_date_range_picker.dart';
+import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/common/widgets/month_selector.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/controller/payment_method_controller.dart';
 import 'package:guided/controller/popular_guides_controller.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/traveller_controller.dart';
@@ -31,6 +34,7 @@ import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/available_date_model.dart';
 import 'package:guided/models/badge_model.dart';
+import 'package:guided/models/booking_request.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/guide.dart';
 import 'package:guided/models/paginated_data.dart';
@@ -50,6 +54,7 @@ import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.da
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
 import 'package:guided/screens/widgets/reusable_widgets/skeleton_text.dart';
 import 'package:guided/utils/mixins/global_mixin.dart';
+import 'package:guided/utils/services/fcm_services.dart';
 import 'package:guided/utils/services/geolocation_service.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/static_data_services.dart';
@@ -103,6 +108,9 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
 
   DateTime selectedDate = DateTime.now();
 
+  final PaymentMethodController _paymentMethodController =
+      Get.put(PaymentMethodController());
+
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -121,7 +129,7 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         defaultDate.toString(),
       );
 
-      await getProfileDetails();
+      // await getProfileDetails();
 
       if (_subscriptionController.isSubscribeButtonClicked) {
         if (!UserSingleton.instance.user.user!.hasPremiumSubscription!) {
@@ -131,12 +139,24 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
         }
         _subscriptionController.setSubscribeButtonClicked();
       }
+
+      // showApprovedBookingRequestDialog();
+
+
+      await getFirebaseToken();
+
+      await checkApprovedRequest();
+
+
+
     });
     getCurrentLocation();
     _loadingData = APIServices().getUserListData();
     super.initState();
 
     getNearbyActivities();
+
+    handleFirebaseCloudMessagingEvents();
   }
 
   Future<void> getCurrentLocation() async {
@@ -246,19 +266,32 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
     Navigator.pushNamed(context, '/subscription_details');
   }
 
-  Future<void> getProfileDetails() async {
-    final ProfileDetailsModel res = await APIServices().getProfileData();
+  void handleFirebaseCloudMessagingEvents() {
+    FirebaseMessaging.onMessage.listen((message) {
+      if (message.notification != null) {
+        if (message.data['role'] == 'traveler') {
+          // show dialog when app is running
+          showProceedPaymentDialog(message);
+        }
+      }
+    });
 
-    final bool hasPremiumSubscription =
-        await UserSubscriptionServices().hasUserSubscription();
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      if (message.notification != null) {
+        if (message.data['role'] == 'traveler') {
+          showProceedPaymentDialog(message);
+        }
+      }
+    });
+  }
 
-    UserSingleton.instance.user.user = User(
-        id: res.id,
-        email: res.email,
-        fullName: res.fullName,
-        hasPremiumSubscription: hasPremiumSubscription);
-
-    _profileDetailsController.setUserProfileDetails(res);
+  void showProceedPaymentDialog(dynamic message) {
+    if (message.data["type"] == 'booking_request' &&
+        message.data["status"] == 'approved') {
+      final BookingRequest bookingRequest =
+          BookingRequest.fromJson(jsonDecode(message.data["booking_request"]));
+      showApprovedBookingRequestDialog(bookingRequest , message.data["guide_name"]);
+    }
   }
 
   @override
@@ -1103,6 +1136,80 @@ class _TabHomeScreenState extends State<TabHomeScreen> {
     ).whenComplete(() {
       _scrollController.easyScrollToIndex(index: 0);
     });
+  }
 
+  Future<void> checkApprovedRequest() async {
+    final BookingRequest res =
+        await APIServices().getApproveRequestWithPendingPayment();
+
+    debugPrint('Show approved request');
+
+    if (res.id != null) {
+      final   ProfileDetailsModel tourGuideDetails = await APIServices().getProfileDataById(res.userId!);
+
+      debugPrint('Show approved request ${tourGuideDetails.id}');
+      showApprovedBookingRequestDialog(res , tourGuideDetails.fullName);
+    }
+  }
+
+  Future<void> getFirebaseToken() async {
+    String? token = await FirebaseMessaging.instance.getToken();
+
+    debugPrint('Firebase Token $token');
+
+    await FCMServices().addFCMToken(token!);
+  }
+
+
+  void showApprovedBookingRequestDialog(BookingRequest bookingRequest, String guideName) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(22.r))),
+            elevation: 12,
+            content: SizedBox(
+                height: 220.h,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Image.asset(
+                        '${AssetsPath.assetsPNGPath}/green_checkmark.png'),
+                    SizedBox(height: 14),
+                    Text(
+                      'Your Request has been approved by $guideName',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 18.sp),
+                    ),
+                    SizedBox(height: 18),
+                    SizedBox(
+                      width: 120,
+                      child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            side: BorderSide(
+                              color: AppColors.primaryGreen,
+                            ),
+                            primary: AppColors.primaryGreen,
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).popAndPushNamed(
+                                '/booking_request_package_details',
+                                arguments: bookingRequest);
+                          },
+                          child: Text(
+                            AppTextConstants.continueText,
+                          )),
+                    )
+                  ],
+                )),
+          );
+        });
   }
 }

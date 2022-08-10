@@ -1,6 +1,7 @@
 // ignore_for_file: always_specify_types
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -16,10 +17,13 @@ import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/main_navigation/home/screens/home_main.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
+import 'package:guided/utils/services/fcm_services.dart';
+import 'package:guided/utils/services/notification_service.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'firebase/firebase_options.dart';
 
 String _defaultHome = '/';
+// String _defaultHome = '/booking_request_package_details';
 //test
 void main() async {
   await dotenv.load(fileName: '.env');
@@ -30,13 +34,43 @@ void main() async {
   Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
   Stripe.instance.applySettings();
 
-  // INITIALIZE FIREBASE
+  await NotificationService().init(); //
+  NotificationService().requestIOSPermissions(); //
+
+  // // INITIALIZE FIREBASE
   await Firebase.initializeApp(
       name: 'Guided', options: DefaultFirebaseConfig.platformOptions);
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
   // runApp(const MyApp());
+
+
+
+  // getToken();
 
   initializeDateFormatting().then((_) => runApp(const MyApp()));
 }
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  debugPrint('Firebase Message: ${message.messageId}');
+
+  RemoteNotification notification = message.notification!;
+  AndroidNotification android = message.notification!.android!;
+
+  debugPrint('Android notification ${notification.body} ${android}');
+  if (notification != null && android != null) {
+    // await NotificationService().showAndroidNotification(
+    //     1, 'This is A Test', 'Sample Content');
+  }
+}
+
 
 /// My App Root
 class MyApp extends StatelessWidget {
@@ -46,6 +80,8 @@ class MyApp extends StatelessWidget {
   // This widgets is the root of your application.
   @override
   Widget build(BuildContext context) {
+
+
     return ScreenUtilInit(
       builder: () => KeyboardDismissOnTap(
         child: GetMaterialApp(

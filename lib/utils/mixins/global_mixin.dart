@@ -30,7 +30,7 @@ class GlobalMixin {
   getCardLogoUrl(String cardType) {
     switch (cardType.toLowerCase()) {
       case 'visa':
-        return '${AssetsPath.assetsPNGPath}/visa_colored.png';
+        return '${AssetsPath.assetsPNGPath}/visa.png';
       case 'mastercard':
         return '${AssetsPath.assetsPNGPath}/mastercard.png';
       case 'american express':

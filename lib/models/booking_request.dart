@@ -32,7 +32,7 @@ class BookingRequest {
       this.statusId,
       this.bookingDateStart,
       this.bookingDateEnd,
-      this.numberOfPerson,
+      this.numberOfPerson =0,
       this.isApproved,
       this.createdDate,
       this.updatedDate,
@@ -54,7 +54,7 @@ class BookingRequest {
     statusId = json['status_id'];
     bookingDateStart = json['booking_date_start'];
     bookingDateEnd = json['booking_date_end'];
-    numberOfPerson = json['number_of_person'];
+    numberOfPerson =  json['number_of_person'] is String ? int.parse(json['number_of_person']) : json['number_of_person'];
     isApproved = json['is_approved'];
     createdDate = json['created_date'];
     updatedDate = json['updated_date'];
@@ -83,6 +83,7 @@ class BookingRequest {
     data['created_date'] = createdDate;
     data['updated_date'] = updatedDate;
     data['deleted_date'] = deletedDate;
+    data['activity_package_name'] = activityPackageName;
     if (status != null) {
       data['status'] = status!.toJson();
     }

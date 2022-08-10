@@ -125,8 +125,15 @@ class SettingsUtils {
       //     imgUrl: 'assets/images/svg/settings_icon_person.svg',
       //     subSettings: []),
       SettingsModel(
-          keyName: 'manage_cards',
+          keyName: 'manage_payment_method',
           name: 'Payment',
+          icon: 'test',
+          color: Colors.black,
+          imgUrl: 'assets/images/svg/settings_icon_payment.svg',
+          subSettings: []),
+      SettingsModel(
+          keyName: 'card_management',
+          name: 'Manage Cards',
           icon: 'test',
           color: Colors.black,
           imgUrl: 'assets/images/svg/settings_icon_payment.svg',

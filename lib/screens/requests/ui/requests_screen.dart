@@ -207,8 +207,9 @@ class _RequestsScreenState extends State<RequestsScreen> {
       'bookingRequest': request,
       'traveller': traveller,
     };
-    final dynamic result = await Navigator.pushNamed(context, '/request_view', arguments: details);
-    debugPrint('RESULT $result');
+    // final dynamic result = await Navigator.pushNamed(context, '/request_view', arguments: details);
+
+    final dynamic result = await   Navigator.of(context).pushNamed('/booking_request_view',arguments: request);
     if(result != ''){
       setState(() {
         _filterType = 'pending';

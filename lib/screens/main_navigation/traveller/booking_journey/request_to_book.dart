@@ -23,6 +23,9 @@ import 'package:guided/models/notification_model.dart';
 import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_transaction_model.dart';
+import 'package:guided/screens/payment/payment_confirm.dart';
+import 'package:guided/screens/payment/payment_receipt.dart';
+import 'package:guided/screens/payment/payment_success.dart';
 import 'package:guided/screens/payments/confirm_payment.dart';
 import 'package:guided/screens/payments/payment_failed.dart';
 import 'package:guided/screens/payments/payment_manage_card.dart';
@@ -1003,7 +1006,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           SizedBox(
             height: 20.h,
           ),
-          if (PaymentConfig.isPaymentEnabled && paymentMode.isEmpty)
+/*          if (PaymentConfig.isPaymentEnabled && paymentMode.isEmpty)
             SizedBox(
               height: 60.h,
               width: MediaQuery.of(context).size.width * 0.9,
@@ -1031,21 +1034,21 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                 ),
               ),
             )
-          else
-            SizedBox(
+          else*/
+            /*SizedBox(
               height: 60.h,
               child: CustomRoundedButton(
                 isLoading: isLoading,
                 title: AppTextConstants.requestToBook,
                 onpressed: () async {
                   if (PaymentConfig.isPaymentEnabled) {
-                    /*  dynamic paymentClicked = await Navigator.push(
+                    *//*  dynamic paymentClicked = await Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (BuildContext context) => PaymentManageCard(
                                 price: '$price',
                               )),
-                    );*/
+                    );*//*
 
                     // if (paymentClicked != null) {
 
@@ -1071,6 +1074,50 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
                     });
                     await goToPaymentMethod(context, screenArguments);
                   }
+                },
+              ),
+            )*/
+            SizedBox(
+              height: 60.h,
+              child: CustomRoundedButton(
+                isLoading: isLoading,
+                title: 'Proceed To Payment',
+                onpressed: () async {
+               /*   if (PaymentConfig.isPaymentEnabled) {
+                    *//*  dynamic paymentClicked = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => PaymentManageCard(
+                                price: '$price',
+                              )),
+                    );*//*
+
+                    // if (paymentClicked != null) {
+
+                    // }
+
+                    if (_donationTextController.text.isEmpty) {
+                      setState(() {
+                        isDonationEmpty = true;
+                      });
+                      donationFocusNode.requestFocus();
+                    } else {
+                      if (int.parse(_donationTextController.text) < 1) {
+                        isDonationEmpty = true;
+                        donationFocusNode.requestFocus();
+                        return;
+                      } else {
+                        handleConfirmPayment(screenArguments);
+                      }
+                    }
+                  } else {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await goToPaymentMethod(context, screenArguments);
+                  }*/
+
+                  handleConfirmPayment(screenArguments);
                 },
               ),
             )
@@ -1345,8 +1392,14 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
     final int numberOfTraveller = screenArgs['numberOfTraveller'] as int;
     final String tourGuide = screenArgs['tourGuide'] as String;
 
+    // showPaymentReceipt(context);
+    //
+    // return;
+
+
     setState(() {
       bookingPaymentDetails = BookingPaymentDetails(
+
           transactionNumber: transactionNumber,
           price: price.toStringAsFixed(2),
           serviceName: serviceName,
@@ -1356,14 +1409,37 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
           numberOfPeople: numberOfTraveller);
     });
 
-    confirmPaymentModal(
+
+    paymentConfirmModal(
         context: context,
+        guideStripeAccountId: '',
+        bookingRequestId: '',
+        adventureFee: 12,
         paymentDetails: bookingPaymentDetails,
         serviceName: serviceName,
         paymentMode: paymentMode,
         paymentMethod: paymentMethod,
         onPaymentSuccessful: () {
-          /// Book Request
+          showPaymentSuccess(
+              context: context,
+              btnText: 'View Receipt',
+              paymentDetails: BookingPaymentDetails(
+                backgroundColor: AppColors.concrete,
+                  showPrice: false,
+                  transactionNumber: transactionNumber,
+                  price: price.toStringAsFixed(2),
+                  serviceName: serviceName,
+                  tour: activityPackage.name!,
+
+                  tourGuide: tourGuide,
+                  bookingDate: getTime(selectedDate),
+                  numberOfPeople: numberOfTraveller),
+              paymentMethod: paymentMode,
+              onBtnPressed: () {
+            // show transaction details
+               debugPrint('Payment Receipt Show');
+
+          });
         },
         onConfirmPaymentPressed: () {
           goToPaymentMethod(context, screenArgs);

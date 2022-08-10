@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/screens/widgets/reusable_widgets/payment_detail.dart';
@@ -15,6 +16,8 @@ class BookingPaymentDetails extends StatelessWidget {
       required this.tourGuide,
       required this.bookingDate,
       required this.numberOfPeople,
+      this.backgroundColor = Colors.white,
+      this.showPrice = true,
       Key? key})
       : super(key: key);
 
@@ -39,73 +42,120 @@ class BookingPaymentDetails extends StatelessWidget {
   ///Number of people
   final int numberOfPeople;
 
+  ///background color
+  final Color backgroundColor;
+
+  ///show price
+  final bool showPrice;
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-        child: Column(
+    return Container(
+
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      width: MediaQuery.of(context).size.width,
+      child:  Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Row(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
-              Text(
-                price.split('.')[0],
-                style: TextStyle(
-                  fontSize: 50.sp,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Poppins',
-                ),
+            if (showPrice)
+              Container(
+                decoration: BoxDecoration(
+                    color: AppColors.concrete,
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16))),
+                padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 30),
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      Text(
+                        'CAD',
+                        style: TextStyle(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      SizedBox(width: 10.w),
+                      Text(
+                        price.split('.')[0],
+                        style: TextStyle(
+                          fontSize: 48.sp,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      // Padding(
+                      //   padding: EdgeInsets.only(bottom: 8.h),
+                      //   child: Text(
+                      //     '.${price.split('.')[1]}${PaymentConfig.currencyCode}',
+                      //     style: TextStyle(
+                      //       fontSize: 26.sp,
+                      //       fontWeight: FontWeight.w600,
+                      //       fontFamily: 'Poppins',
+                      //     ),
+                      //   ),
+                      // ),
+                    ]),
               ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 8.h),
-                child: Text(
-                  '.${price.split('.')[1]}${PaymentConfig.currencyCode}',
-                  style: TextStyle(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-              ),
-            ]),
-            Divider(
-              thickness: 1.sp,
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            PaymentDetail(label: AppTextConstants.company, content: 'Guided'),
-            SizedBox(
-              height: 20.h,
-            ),
-            PaymentDetail(
-                label: AppTextConstants.transactionNumber,
-                content: transactionNumber),
-            SizedBox(
-              height: 20.h,
-            ),
-            PaymentDetail(
-                label: AppTextConstants.service, content: serviceName),
-            SizedBox(
-              height: 20.h,
-            ),
-            PaymentDetail(
-                label: AppTextConstants.tour, content: tour),
-            SizedBox(
-              height: 20.h,
-            ),
-            PaymentDetail(
-                label: AppTextConstants.tourGuide, content: tourGuide),
-            SizedBox(
-              height: 20.h,
-            ),
-            PaymentDetail(
-                label: AppTextConstants.bookingDate, content: bookingDate),
-            SizedBox(
-              height: 20.h,
-            ),
-            PaymentDetail(
-                label: AppTextConstants.numberOfPeople, content: '$numberOfPeople'),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w),
+
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    const Text('Tour Details', style: TextStyle(
+                      fontWeight: FontWeight.w600
+                    ),),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    PaymentDetail(
+                        label: AppTextConstants.company, content: 'Guided'),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    PaymentDetail(
+                        label: AppTextConstants.transactionNumber,
+                        content: transactionNumber),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    PaymentDetail(
+                        label: AppTextConstants.service, content: serviceName),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    PaymentDetail(label: AppTextConstants.tour, content: tour),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    PaymentDetail(
+                        label: AppTextConstants.tourGuide, content: tourGuide),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    PaymentDetail(
+                        label: AppTextConstants.bookingDate, content: bookingDate),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    PaymentDetail(
+                        label: AppTextConstants.numberOfPeople,
+                        content: '$numberOfPeople'),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                  ]),
+            )
           ],
-        ));
+        )
+    );
   }
 }

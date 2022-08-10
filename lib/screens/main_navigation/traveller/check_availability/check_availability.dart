@@ -1,14 +1,23 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/bordered_text_field.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_status.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activity_availability_hours.dart';
+import 'package:guided/models/api/api_standard_return.dart';
+import 'package:guided/models/booking_request.dart';
 import 'package:guided/models/chat_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/message/message_screen_traveler.dart';
+import 'package:guided/utils/services/fcm_services.dart';
+import 'package:guided/utils/ui/dialogs.dart';
 
 // import 'package:horizontal_center_date_picker/datepicker_controller.dart';
 // import 'package:horizontal_center_date_picker/horizontal_date_picker.dart';
@@ -50,7 +59,10 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
 
   ActivityPackage activityPackage = ActivityPackage();
 
+  final TextEditingController _messageToGuideController =
+      TextEditingController();
 
+  BookingRequest _bookingRequest = BookingRequest();
 
   @override
   void initState() {
@@ -309,8 +321,8 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                                                 _selectedScheduleIndex != index)
                                               GestureDetector(
                                                   onTap: () {
-
-                                                    debugPrint('SLOT: ${outputList.id} DATE: ${outputList.activityAvailabilityHours}');
+                                                    debugPrint(
+                                                        'SLOT: ${outputList.id} DATE: ${outputList.activityAvailabilityHours}');
 
                                                     setState(() {
                                                       _selectedScheduleIndex =
@@ -510,13 +522,17 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                   height: 53.h,
                   child: ElevatedButton(
                     onPressed: _numberOfTravellers > 0
-                        ? () async {
-                            await travellerBookingDetailsScreen(
+                        ? () => sendBookingRequest(_activityAvailabilityHours
+                            .availabilityDateHour!) /*() async {
+                            */ /* await travellerBookingDetailsScreen(
                                 context,
                                 activityPackage,
                                 _activityAvailabilityHours.availabilityDateHour,
-                                _numberOfTravellers);
-                          }
+                                _numberOfTravellers);*/ /*
+                            // await Navigator.of(context).pushNamed('/book_request');
+
+
+                          }*/
                         : null,
                     style: AppTextStyle.active,
                     child: const Text(
@@ -533,6 +549,169 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
         ),
       ),
     );
+  }
+
+  Future<void> sendBookingRequest(String selectedDate) async {
+    debugPrint('Send Booking Request...');
+
+    final Map<String, dynamic> details = {
+      'user_id': activityPackage.userId,
+      'from_user_id': UserSingleton.instance.user.user!.id,
+      'activity_package_id': activityPackage.id,
+      "request_msg": "",
+      'status_id': 'b0d8e728-e0f3-4db2-af0f-f90d124c482c',
+      'booking_date_start': bookingDateStart(selectedDate),
+      'booking_date_end': bookingDateEnd(selectedDate),
+      'number_of_person': _numberOfTravellers.toString(),
+      'payment_status': PaymentStatus.pending,
+      'is_approved': false,
+      'profile_photo_firebase_url': ''
+    };
+
+    final APIStandardReturnFormat res =
+        await APIServices().requestBooking(details);
+
+    if (res.statusCode == 201) {
+      setState(() {
+        _bookingRequest =
+            BookingRequest.fromJson(jsonDecode(res.successResponse));
+      });
+
+      debugPrint('my booking request: ${_bookingRequest.id}');
+      await showMessageDialog();
+    } else {
+      AppDialogs().showError(
+          context: context,
+          message: 'An Error Occurred. Please try again.',
+          title: 'Unable to Book Request');
+    }
+  }
+
+  void sendPushNotification(
+      String title, String status, String body, String message) {
+    BookingRequest myRequest = _bookingRequest..requestMsg = message;
+
+    final dynamic _request = myRequest.toJson();
+
+    debugPrint('Booking request $_bookingRequest');
+    final dynamic data = {
+      'type': 'booking_request',
+      'status': status,
+      'role': 'guide',
+      'booking_request': _request,
+      'traveler_id': UserSingleton.instance.user.user!.id!,
+      'traveler_name': UserSingleton.instance.user.user!.fullName!
+    };
+    FCMServices().sendNotification(_bookingRequest.userId!, title, body, data);
+  }
+
+  Future<void> showMessageDialog() async {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(22.r))),
+              elevation: 12,
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: GestureDetector(
+                        onTap: () {
+                          String notificationTitle = 'New Booking Request';
+
+                          String notificationStatus = 'pending';
+
+                          String notificationBody =
+                              '${UserSingleton.instance.user.user!.fullName!} requested a new booking for Whale Shark Watching';
+                          sendPushNotification(notificationTitle,
+                              notificationStatus, notificationBody, '');
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                            '${AssetsPath.assetsPNGPath}/close_btn.png'),
+                      ),
+                    ),
+                    Image.asset('${AssetsPath.logoSmall}'),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Anything you want to say to the Guide?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    BorderedTextField(
+                      controller: _messageToGuideController,
+                      labelText: '',
+                      hintText: 'Type Here...',
+                      minLines: 6,
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            side: BorderSide(
+                              color: AppColors.primaryGreen,
+                            ),
+                            primary: AppColors.primaryGreen,
+                          ),
+                          onPressed: sendMessageToGuide,
+                          child: Text('Send To Guide')),
+                    )
+                  ],
+                ),
+              ));
+        });
+  }
+
+  Future<void> sendMessageToGuide() async {
+    final String message = _messageToGuideController.text;
+
+    final APIStandardReturnFormat res =
+        await APIServices().sendMessageToGuide(_bookingRequest.id!, message);
+
+    debugPrint('Response:: ${res.statusCode}');
+
+    if (message.isNotEmpty) {
+      String notificationTitle = 'New Booking Request';
+
+      String notificationStatus = 'pending';
+
+      String notificationBody =
+          '${UserSingleton.instance.user.user!.fullName!} requested a new booking for Whale Shark Watching';
+      sendPushNotification(
+          notificationTitle, notificationStatus, notificationBody, message);
+    }
+
+    if (res.statusCode == 200) {
+      _messageToGuideController.clear();
+      AppDialogs().showSuccess(
+          context: context,
+          message: 'Message Sent to Guide',
+          title: 'Success',
+          onOkPressed: () {
+            int count = 0;
+            Navigator.popUntil(context, (route) {
+              return count++ == 4;
+            });
+          });
+    } else {
+      AppDialogs().showError(
+          context: context,
+          message: 'An Error Occurred',
+          title: 'Unable to Send Message',
+          onOkPressed: () {
+            Navigator.of(context).pop();
+          });
+    }
   }
 
   Future<void> travellerBookingDetailsScreen(
@@ -597,7 +776,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
     ActivityAvailabilityHours? result = availability.firstWhereOrNull(
         (ActivityAvailabilityHours a) =>
             removeSeconds(a.availabilityDateHour!) == dateTime);
-    if (result != null  ) {
+    if (result != null) {
       return '${result.slots} Traveler Limit Left';
     } else {
       return '';
@@ -707,5 +886,25 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
             avatar: guideDetails.firebaseProfilePicUrl),
         messages: messageHistory,
         isBlocked: chat.isBlocked);
+  }
+
+  String bookingDateStart(String date) {
+    final DateTime parseDate =
+        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+    final DateTime inputDate = DateTime.parse(parseDate.toString());
+
+    final DateFormat outputFormatDate = DateFormat('yyyy-MM-dd HH:mm:ss');
+    final String bookingDateStart = outputFormatDate.format(inputDate);
+    return bookingDateStart;
+  }
+
+  String bookingDateEnd(String date) {
+    final DateTime parseDate =
+        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+    final DateTime inputDate = DateTime.parse(parseDate.toString());
+    final DateTime addHour = inputDate.add(const Duration(hours: 1));
+    final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+    final String bookingDateEend = outputFormat.format(addHour);
+    return bookingDateEend;
   }
 }

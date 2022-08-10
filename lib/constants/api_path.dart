@@ -233,15 +233,21 @@ class AppAPIPath {
   ///Returns user type
   static String userTypeUrl = 'api/v1/users/type';
 
-  /// Returns facebook url
+  /// Returns google url
   static String googleLoginUrl = 'api/v1/auth/google/login';
+
+  /// Returns  send firebase notification url
+  static String fcmUrl = 'api/v1/fcm/sendNotification';
+
+  /// Returns firebase device token url
+ static String fcmTokenUrl = 'api/v1/fcm-device-token';
 }
 
 ///Get Api Base Url
 getBaseUrl(String mode) {
   switch (mode) {
     case 'local':
-      return '192.168.100.55:3000';
+      return '192.168.100.55:8000';
     case 'dev':
       return 'guided-api-dev.herokuapp.com';
     case 'staging':

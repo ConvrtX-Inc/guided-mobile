@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:extended_image/extended_image.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -19,8 +20,11 @@ import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_earnings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_features.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/payment/payment_success_traveller.dart';
+import 'package:guided/screens/widgets/reusable_widgets/booking_payment_details.dart';
 import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/utils/home.dart';
+import 'package:guided/utils/services/fcm_services.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Screen for home
@@ -65,6 +69,12 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      handleFirebaseCloudMessagingEvents();
+      await getFirebaseToken();
+    });
+
     _loadingData = APIServices().getPackageData();
 
     getData();
@@ -90,6 +100,66 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  void handleFirebaseCloudMessagingEvents() {
+    FirebaseMessaging.onMessage.listen((message) async {
+      if (message.data['role'] == 'guide') {
+        // Handle Notification for Payment Success
+        handlePaymentSuccessNotification(message);
+
+        // Handle Notification for booking request
+        handleBookingRequestNotification(message);
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      if (message.data['role'] == 'guide') {
+        // Handle Notification for Payment Success
+        handlePaymentSuccessNotification(message);
+
+        // Handle Notification for booking request
+        handleBookingRequestNotification(message);
+      }
+    });
+  }
+
+  void handlePaymentSuccessNotification(dynamic message) {
+    if (message.notification != null) {
+      if (message.data['type'] == 'payment') {
+        showPaymentSuccessFromTraveller(
+            context: context,
+            data: message.data,
+            onBtnPressed: () {
+              Navigator.of(context).pop();
+            });
+      }
+    }
+  }
+
+  void handleBookingRequestNotification(dynamic message) {
+    if (message.notification != null) {
+      if (message.data['type'] == 'booking_request' &&
+          message.data['status'] == 'pending') {
+          BookingRequest bookingRequest = BookingRequest.fromJson(
+            jsonDecode(message.data['booking_request']))
+          ..fromUserFullName = message.data['traveler_name']
+          ..fromUserId = message.data['traveler_id'];
+
+
+        Navigator.of(context)
+            .pushNamed('/booking_request_view', arguments: bookingRequest);
+      }
+    }
+  }
+
+  Future<void> getFirebaseToken() async {
+    String? token = await FirebaseMessaging.instance.getToken();
+
+    debugPrint('Firebase Token GUIDE $token');
+
+    await FCMServices().addFCMToken(token!);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,6 +180,7 @@ class _HomeScreenState extends State<HomeScreen>
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+
             Padding(
               padding: EdgeInsets.only(left: 25.w, right: 25.w, top: 20.h),
               child: Container(
@@ -317,10 +388,14 @@ class _HomeScreenState extends State<HomeScreen>
                           children: <Widget>[
                             Row(
                               children: [
-                                for (int i = 0; i < pendingRequestDisplayLimit; i++)
+                                for (int i = 0;
+                                    i < pendingRequestDisplayLimit;
+                                    i++)
                                   oneCustomerRequest(pendingRequests[i]),
                                 SizedBox(width: 15.w),
-                                for (int r = 0; r < pendingRequestDisplayLimit  ; r++)
+                                for (int r = 0;
+                                    r < pendingRequestDisplayLimit;
+                                    r++)
                                   Text(
                                     r != pendingRequests.length - 1
                                         ? '${pendingRequests[r].fromUserFullName!.split(' ')[0]}, '

@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:guided/constants/asset_path.dart';
+import 'package:guided/constants/payment_config.dart';
 import 'package:guided/controller/card_controller.dart';
+import 'package:guided/controller/stripe_card_controller.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/controller/user_subscription_controller.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/profile_data_model.dart';
+import 'package:guided/models/stripe_card.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/models/user_subscription.dart';
 import 'package:guided/screens/main_navigation/traveller/nearby_activities/nearby_activities.dart';
@@ -24,6 +27,7 @@ import 'package:guided/screens/main_navigation/traveller/tabs/tab_wishlist.dart'
 
 import 'package:guided/screens/widgets/reusable_widgets/traveller_bottom_navigation.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/services/stripe_service.dart';
 import 'package:guided/utils/services/user_subscription_service.dart';
 
 ///TravellerTabScreen
@@ -41,6 +45,12 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
   final UserSubscriptionController _userSubscriptionController =
       Get.put(UserSubscriptionController());
 
+  final StripeCardController _stripeCardController =
+      Get.put(StripeCardController());
+
+  final UserProfileDetailsController _profileDetailsController =
+  Get.put(UserProfileDetailsController());
+
   @override
   void initState() {
     _selectedWidget = TabHomeScreen(
@@ -48,12 +58,13 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
     );
     super.initState();
 
-
-
     // getUserSubscription();
-    if (_creditCardController.cards.isEmpty) {
+    /*if (_creditCardController.cards.isEmpty) {
       getUserCards();
-    }
+    }*/
+
+    getProfileDetails();
+
   }
 
   @override
@@ -119,22 +130,53 @@ class _TravellerTabScreenState extends State<TravellerTabScreen> {
   }
 
 
-  Future<void> getUserCards() async {
-    final List<CardModel> cards = await APIServices().getCards();
-    await _creditCardController.initCards(cards);
 
-    if (cards.isNotEmpty) {
-      debugPrint('cards $cards');
-      final CardModel card = cards.firstWhere(
-          (CardModel c) => c.isDefault == true,
-          orElse: () => CardModel());
+  Future<void> getProfileDetails() async {
+    final ProfileDetailsModel res = await APIServices().getProfileData();
 
-      if (card.id != '') {
-        _creditCardController.setDefaultCard(card);
-      } else {
-        _creditCardController.setDefaultCard(cards[0]);
-      }
+    final bool hasPremiumSubscription =
+    await UserSubscriptionServices().hasUserSubscription();
+
+    String paymentMethod = res.defaultPaymentMethod != ''
+        ? res.defaultPaymentMethod
+        : PaymentConfig.bankCard;
+
+    UserSingleton.instance.user.user = User(
+        id: res.id,
+        email: res.email,
+        fullName: res.fullName,
+        stripeCustomerId: res.stripeCustomerId,
+        firebaseProfilePicUrl: res.firebaseProfilePicUrl,
+        defaultPaymentMethod: paymentMethod,
+        hasPremiumSubscription: hasPremiumSubscription);
+
+    _profileDetailsController.setUserProfileDetails(res);
+    if(_stripeCardController.cards.isEmpty){
+      await getCards();
     }
+
+  }
+
+  Future<void> getCards() async {
+    final String customerId =
+        UserSingleton.instance.user.user!.stripeCustomerId!;
+    final List<StripeCardModel> result =
+        await StripeServices().getCardList(customerId);
+
+    await _stripeCardController.initCards(result);
+
+    await getDefaultCard(customerId, result);
+  }
+
+  Future<void> getDefaultCard(
+      String customerId, List<StripeCardModel> myCards) async {
+    final String res = await StripeServices().getDefaultCard(customerId);
+
+    final StripeCardModel card = myCards.firstWhere(
+        (element) => element.id! == res,
+        orElse: () => StripeCardModel());
+    debugPrint('default CArd ${card.id!}');
+    _stripeCardController.setDefaultCard(card);
   }
 }
 

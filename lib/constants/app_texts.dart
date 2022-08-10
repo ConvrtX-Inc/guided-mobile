@@ -1227,6 +1227,12 @@ class AppTextConstants {
 
   ///Returns change password text
   static String changePassword = 'Change Password';
+
+  ///Returns select default method text
+  static String selectDefaultMethod = 'Select Default Method';
+
+  ///Returns card details text
+ static String cardDetails = 'Card Details';
 }
 
 /// Class for error messages text
