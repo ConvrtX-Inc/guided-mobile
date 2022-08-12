@@ -78,6 +78,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) => addMarker());
+    debugPrint('Mars Acticity');
 
     debugPrint('Activity ${widget.package.id}');
     _activityPackage = widget.package;
@@ -336,8 +337,6 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () {
-                          // checkAvailability(
-                          //     context, snapshot.data![index]);
                           Navigator.of(context).pushNamed(
                               '/activity_package_info',
                               arguments: otherPackages[index]);
@@ -553,6 +552,8 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   }
 
   void checkAvailability() {
+    debugPrint('Mars - Check Availability: ${availableDates}');
+
     Navigator.pushNamed(context, '/checkActivityAvailabityScreen', arguments: {
       'activityPackage': _activityPackage,
       'availableDateSlots': availableDateSlots,
@@ -592,12 +593,23 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   }
 
   Future<void> getAvailableDates(String packageId) async {
+    debugPrint('Mars - Retrieving available dates');
+
     final DateTime currentDate = DateTime.now();
 
+
+    // debugPrint('Mars - Parameters from: ${DateTime.now().toString().toString().substring(0,10)}');
+    // debugPrint('Mars - Parameters to: ${DateTime(DateTime.now().year, 12, 31).toString().toString().substring(0,10)}');
+    // debugPrint('Mars - Parameters for: ${packageId}');
     final List<ActivityHourAvailability> data =
-        await APIServices().getActivityHours(
-            DateTime.now().toString(),
-            DateTime(DateTime.now().year, 12, 31).toString(),
+    // await APIServices().getActivityHours(
+    //     DateTime(DateTime.now().year, 5, 11).toString().substring(0,10),
+    //     DateTime(DateTime.now().year, 5, 12).toString().substring(0,10),
+    //     "195b4734-416b-4603-9235-3dd289ae0348");
+
+    await APIServices().getActivityHours(
+            DateTime.now().toString().toString().substring(0,10),
+            DateTime(DateTime.now().year, 12, 31).toString().toString().substring(0,10),
             // DateTime(currentDate.year, currentDate.month + 1, 0).toString(),
             packageId);
     // await APIServices().getActivityHours(
@@ -606,28 +618,22 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
     //     '195b4734-416b-4603-9235-3dd289ae0348');
 
     if (data.isNotEmpty) {
+      debugPrint('Mars - Check Availability data: ${data}');
+
       setState(() {
         availableDateSlots = data;
       });
       data.forEach((element) {
+        // element.availabilityDate=element.availabilityDate?.toString().replaceAll("05", "08");
+        debugPrint('Mars - Check Availability element: ${element.availabilityDate}');
         setState(() {
           final DateTime _date = DateTime.parse(element.availabilityDate!);
             availableDates.add(_date);
-
         });
       });
-      // // // data.forEach((element) {
-      // // //   setState(() {
-      // // //     final DateTime _date = DateTime.parse(element.availabilityDate!
-      // // //     .replaceAll("5", "9")
-      // // //     .replaceAll("11","20")
-      // // //     .replaceAll("12","21")
-      // // //     );
-      // //     // if (_date.month == DateTime.now().month) {
-      // //       availableDates.add(_date);
-      // //     // }
-      // //   });
-      // });
+
+    } else {
+      debugPrint('Mars - No dates retrieved');
     }
   }
 
