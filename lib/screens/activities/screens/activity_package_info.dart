@@ -555,7 +555,8 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   void checkAvailability() {
     Navigator.pushNamed(context, '/checkActivityAvailabityScreen', arguments: {
       'activityPackage': _activityPackage,
-      'availableDateSlots': availableDateSlots
+      'availableDateSlots': availableDateSlots,
+      'schedule':availableDates
     });
   }
 
@@ -599,6 +600,10 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
             DateTime(DateTime.now().year, 12, 31).toString(),
             // DateTime(currentDate.year, currentDate.month + 1, 0).toString(),
             packageId);
+    // await APIServices().getActivityHours(
+    //     DateTime(DateTime.now().year, 5, 1).toString().substring(0,10),
+    //     DateTime(DateTime.now().year, 12, 31).toString().substring(0,10),
+    //     '195b4734-416b-4603-9235-3dd289ae0348');
 
     if (data.isNotEmpty) {
       setState(() {
@@ -607,11 +612,22 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
       data.forEach((element) {
         setState(() {
           final DateTime _date = DateTime.parse(element.availabilityDate!);
-          if (_date.month == DateTime.now().month) {
             availableDates.add(_date);
-          }
+
         });
       });
+      // // // data.forEach((element) {
+      // // //   setState(() {
+      // // //     final DateTime _date = DateTime.parse(element.availabilityDate!
+      // // //     .replaceAll("5", "9")
+      // // //     .replaceAll("11","20")
+      // // //     .replaceAll("12","21")
+      // // //     );
+      // //     // if (_date.month == DateTime.now().month) {
+      // //       availableDates.add(_date);
+      // //     // }
+      // //   });
+      // });
     }
   }
 
