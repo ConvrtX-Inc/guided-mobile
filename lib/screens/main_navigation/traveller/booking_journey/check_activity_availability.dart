@@ -1,12 +1,15 @@
 // ignore_for_file: sort_constructors_first, public_member_api_docs, diagnostic_describe_all_properties
 
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/common/widgets/month_selector.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/constants/app_texts.dart';
 import 'package:guided/controller/traveller_controller.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/models/activities_model.dart';
@@ -15,10 +18,15 @@ import 'package:guided/models/activity_package.dart';
 import 'package:guided/models/available_date_model.dart';
 import 'package:guided/screens/widgets/reusable_widgets/easy_scroll_to_index.dart';
 import 'package:guided/screens/widgets/reusable_widgets/sfDateRangePicker.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
+import 'package:guided/utils/services/static_data_services.dart';
 import 'package:guided/utils/services/static_data_services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
+import '../../../widgets/reusable_widgets/booking_date_picker.dart';
 
 ///
 class CheckActivityAvailabityScreen extends StatefulWidget {
@@ -49,6 +57,7 @@ class _CheckActivityAvailabityScreenState
   List<ActivityHourAvailability> availableHours = [];
   List<DateTime> availableDates = [];
   List<String> availableDateSlots = [];
+  List<DateTime> schedule = [];
 
   ActivityPackage activityPackage = ActivityPackage();
 
@@ -60,8 +69,8 @@ class _CheckActivityAvailabityScreenState
 
   @override
   void initState() {
-    debugPrint('Mars - Started check Availability: ${availableDates}');
-    debugPrint('Mars - Started check Availability: ${widget.params['availableDates']}');
+    debugPrint("MARS-1102 initState CAA: ${widget.params['schedules']}");
+
     initializeDateFormatting('en', null);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       /*Future.delayed(const Duration(seconds: 1), () {
@@ -76,6 +85,7 @@ class _CheckActivityAvailabityScreenState
 
     activityPackage = widget.params['activityPackage'];
     availableHours = widget.params['availableDateSlots'];
+    schedule = widget.params['schedule'];
     dates = List.from(AppListConstants().availableDates, growable: true);
 
     getAvailableSlots();
@@ -85,6 +95,8 @@ class _CheckActivityAvailabityScreenState
 
   @override
   void dispose() {
+    debugPrint("MARS-1102 dispose");
+
     travellerMonthController.setSelectedDate(0);
     travellerMonthController.setCurrentMonth(DateTime.now().toString());
     travellerMonthController.selectedDates.clear();
@@ -190,23 +202,32 @@ class _CheckActivityAvailabityScreenState
             ),
             MonthSelector(
               onMonthSelected: (date) {
+                debugPrint("MARS-1102 dateSlected: ${date}");
+                debugPrint("MARS-1102 dateSlected: ${date.month}");
+
                 travellerMonthController
                     .setSelectedDate(date.month);
+                debugPrint("MARS-1102 travel cotroller current date: ${travellerMonthController.currentDate}");
+
                 DateTime dt = DateTime.parse(
                     travellerMonthController.currentDate);
+
                 final DateTime plustMonth = DateTime(dt.year,
                     date.month, dt.day, dt.hour, dt.minute);
-
+                debugPrint("MARS-1102 plusMonth: ${plustMonth}");
                 final DateTime setLastday = DateTime(
                     plustMonth.year,
                     plustMonth.month,
                     1,
                     plustMonth.hour,
                     plustMonth.minute);
+                debugPrint("MARS-1102 lastday: ${setLastday}");
 
                 travellerMonthController.setCurrentMonth(
                   setLastday.toString(),
                 );
+                debugPrint("MARS-1102 travel cotroller new current date: ${travellerMonthController.currentDate}");
+
 
                 setState(() {
                   selectedDate = date;
@@ -224,20 +245,52 @@ class _CheckActivityAvailabityScreenState
             GetBuilder<TravellerMonthController>(
                 id: 'calendar',
                 builder: (TravellerMonthController controller) {
+                  debugPrint("MARS-1102 Builder");
+
+                  List<DateTime> schedDate = [];
+                  schedule.forEach((element) {
+                    schedDate.add(element);
+                  });
+                  debugPrint("MARS-1102 Builder: - schedule ${schedule}");
+
+
+
+                  List<DateTime> days = [];
+                  var now = DateTime.now();
+                  var end = DateTime(now.year,12,31);
+                  for (int i = 0; i <= end.difference(now).inDays+1; i++) {
+                    debugPrint("MARS-1102 Builder: - i ${i}");
+
+                    now.add(Duration(days: i));
+                    var add = true;
+                      schedule.forEach((element) {
+                        if(element.day==now.add(Duration(days: i)).day&&element.month==now.add(Duration(days: i)).month){
+                          add=false;
+                        }
+                      });
+                      if (add){
+                        days.add(now.add(Duration(days: i)));
+                      }
+                  }
+                  debugPrint("MARS-1102 Builder: - days ${days}");
+
+
                   return Container(
                     padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
                     height: MediaQuery.of(context).size.height * 0.4,
-                    child: Sfcalendar(
+                    child: BookingDatePicker(
                         context, travellerMonthController.currentDate,
                         (List<DateTime> value) {
-                      travellerMonthController.selectedDates.clear();
+                          debugPrint("MARS-1102 Booking date Picker: ${value.toString()}");
+
+                          travellerMonthController.selectedDates.clear();
 
                       debugPrint(
                           'Selected Dates: ${travellerMonthController.selectedDates.length}');
                       travellerMonthController.setSelectedDates(value);
-                    },
-                        // availableDates,
-                        widget.params['availableDates']),
+                    }, availableDates
+                    ,schedDate
+                    ,days),
                   );
                 }),
             SizedBox(
@@ -251,7 +304,9 @@ class _CheckActivityAvailabityScreenState
                       onPressed:
                           travellerMonthController.selectedDates.isNotEmpty
                               ? () {
-                                  checkAvailability(context, activityPackage,
+                            debugPrint("MARS-1102 Submit");
+
+                            checkAvailability(context, activityPackage,
                                       travellerMonthController.selectedDates);
                                 }
                               : null,
@@ -269,17 +324,29 @@ class _CheckActivityAvailabityScreenState
       ),
     );
   }
-//fd11c3aa-3230-4dd4-babb-96b3a68728d4
+
+
+  List<DateTime> getDaysInBetween(DateTime startDate, DateTime endDate) {
+    List<DateTime> days = [];
+    for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
+      days.add(startDate.add(Duration(days: i)));
+    }
+    return days;
+  }
+
   Future<void> getAvailableSlots() async {
+    debugPrint("MARS-1102 getAvailableSlots");
     availableHours.forEach((ActivityHourAvailability e) {
       final int monthNumber = DateTime.parse(e.availabilityDate!).month;
 
       AvailableDateModel slot = dates
           .firstWhere((AvailableDateModel item) => item.month == monthNumber);
+      debugPrint("MARS-1102 slot: ${slot.availableDates.toString()}");
 
       final List<DateTime> availableDates =
           List.from(slot.availableDates, growable: true)
             ..add(DateTime.parse(e.availabilityDate!));
+      debugPrint("MARS-1102 availableDates: ${availableDates.toString()}");
 
       slot.availableDates = availableDates;
       final int index = dates.indexOf(slot);
@@ -301,6 +368,8 @@ class _CheckActivityAvailabityScreenState
 
   Future<void> checkAvailability(BuildContext context, ActivityPackage package,
       List<DateTime> selectedDates) async {
+    debugPrint("MARS-1102 checkAvailability");
+
     selectedDates.sort((DateTime a, DateTime b) => a.compareTo(b));
     final Map<String, dynamic> details = {
       'package': package,

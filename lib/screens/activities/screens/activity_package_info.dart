@@ -557,7 +557,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
     Navigator.pushNamed(context, '/checkActivityAvailabityScreen', arguments: {
       'activityPackage': _activityPackage,
       'availableDateSlots': availableDateSlots,
-      'availableDates':availableDates
+      'schedule':availableDates
     });
   }
 
@@ -612,6 +612,10 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
             DateTime(DateTime.now().year, 12, 31).toString().toString().substring(0,10),
             // DateTime(currentDate.year, currentDate.month + 1, 0).toString(),
             packageId);
+    // await APIServices().getActivityHours(
+    //     DateTime(DateTime.now().year, 5, 1).toString().substring(0,10),
+    //     DateTime(DateTime.now().year, 12, 31).toString().substring(0,10),
+    //     '195b4734-416b-4603-9235-3dd289ae0348');
 
     if (data.isNotEmpty) {
       debugPrint('Mars - Check Availability data: ${data}');
@@ -622,12 +626,12 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
       data.forEach((element) {
         // element.availabilityDate=element.availabilityDate?.toString().replaceAll("05", "08");
         debugPrint('Mars - Check Availability element: ${element.availabilityDate}');
-
         setState(() {
           final DateTime _date = DateTime.parse(element.availabilityDate!);
             availableDates.add(_date);
         });
       });
+
     } else {
       debugPrint('Mars - No dates retrieved');
     }
