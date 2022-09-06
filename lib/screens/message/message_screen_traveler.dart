@@ -249,28 +249,9 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
                     },
                     onBackspacePressed: _onBackspacePressed,
                     config: Config(
-                        columns: 7,
-                        emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-                        verticalSpacing: 0,
-                        horizontalSpacing: 0,
-                        initCategory: Category.RECENT,
-                        bgColor: const Color(0xFFF2F2F2),
-                        indicatorColor: Colors.blue,
-                        iconColor: Colors.grey,
-                        iconColorSelected: Colors.blue,
-                        progressIndicatorColor: Colors.blue,
-                        backspaceColor: Colors.blue,
-                        skinToneDialogBgColor: Colors.white,
-                        skinToneIndicatorColor: Colors.grey,
-                        enableSkinTones: true,
-                        showRecentsTab: true,
-                        recentsLimit: 28,
-                        noRecentsText: 'No Recents',
-                        noRecentsStyle: const TextStyle(
-                            fontSize: 20, color: Colors.black26),
-                        tabIndicatorAnimDuration: kTabScrollDuration,
-                        categoryIcons: const CategoryIcons(),
-                        buttonMode: ButtonMode.MATERIAL)),
+                      emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                      bgColor: const Color(0xFFF2F2F2),
+                    )),
               ),
             ),
           ],
@@ -413,16 +394,16 @@ class _MessageScreenTravelerState extends State<MessageScreenTraveler> {
           )));
 
   void sendMessageToServer() {
-   if(_textMessageController.text.trim().isNotEmpty){
-     socket.emit('msgToServer', {
-       'receiver_id': chat.receiver!.id!,
-       'sender_id': UserSingleton.instance.user.user?.id,
-       'text': _textMessageController.text,
-       'type': 'text'
-     });
-     print('success');
-     _textMessageController.clear();
-   }
+    if (_textMessageController.text.trim().isNotEmpty) {
+      socket.emit('msgToServer', {
+        'receiver_id': chat.receiver!.id!,
+        'sender_id': UserSingleton.instance.user.user?.id,
+        'text': _textMessageController.text,
+        'type': 'text'
+      });
+      print('success');
+      _textMessageController.clear();
+    }
   }
 
   handleMessage(payload) {

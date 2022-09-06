@@ -24,17 +24,17 @@ String _defaultHome = '/';
 void main() async {
   await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIOverlays(
-      [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+      overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
 
   Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'].toString();
-  Stripe.instance.applySettings();
+  await Stripe.instance.applySettings();
 
   await Firebase.initializeApp(
       name: 'Guided', options: DefaultFirebaseConfig.platformOptions);
   // runApp(const MyApp());
 
-  initializeDateFormatting().then((_) => runApp(const MyApp()));
+  await initializeDateFormatting().then((_) => runApp(const MyApp()));
 }
 
 /// My App Root
@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      builder: () => KeyboardDismissOnTap(
+      builder: (_, __) => KeyboardDismissOnTap(
         child: GetMaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData(

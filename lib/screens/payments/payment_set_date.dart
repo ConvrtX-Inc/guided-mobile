@@ -29,7 +29,7 @@ Future<dynamic> paymentSetDate(
         return Material(child: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return ScreenUtilInit(
-                builder: () => Container(
+                builder: (_, __) => Container(
                   height: 726.h,
                   padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 42.h),
                   child: SingleChildScrollView(
