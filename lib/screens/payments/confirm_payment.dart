@@ -8,7 +8,6 @@ import 'package:guided/common/widgets/custom_rounded_button_with_border.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/card_model.dart';
-import 'package:guided/screens/payments/payment_successful.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/stripe_service.dart';
 
@@ -22,8 +21,7 @@ Future<dynamic> confirmPaymentModal(
     required Function onPaymentSuccessful,
     required double price,
     Function? onPaymentFailed,
-    Function? onConfirmPaymentPressed
-    }) {
+    Function? onConfirmPaymentPressed}) {
   return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -90,7 +88,7 @@ Future<dynamic> confirmPaymentModal(
                     SizedBox(
                       height: 40.h,
                     ),
-                    if(onConfirmPaymentPressed != null)
+                    if (onConfirmPaymentPressed != null)
                       CustomRoundedButton(
                         title: 'Pay $price USD',
                         isLoading: isPaymentProcessing,
@@ -98,56 +96,61 @@ Future<dynamic> confirmPaymentModal(
                           setState(() {
                             isPaymentProcessing = true;
                           });
-                         return onConfirmPaymentPressed();
+                          return onConfirmPaymentPressed();
                         },
                       )
                     else
                       CustomRoundedButton(
-                      title: 'Pay $price USD',
-                      isLoading: isPaymentProcessing,
-                      onpressed: () {
-                        setState(() {
-                          isPaymentProcessing = true;
-                        });
-                        //Handle Payment for Credit Cards
-                        if (paymentMethod is CardModel) {
-                          handleCardPayment(context, paymentMethod,
-                              onPaymentSuccessful, price, onPaymentFailed!);
-                        }
+                        title: 'Pay $price USD',
+                        isLoading: isPaymentProcessing,
+                        onpressed: () {
+                          setState(() {
+                            isPaymentProcessing = true;
+                          });
+                          //Handle Payment for Credit Cards
+                          if (paymentMethod is CardModel) {
+                            handleCardPayment(context, paymentMethod,
+                                onPaymentSuccessful, price, onPaymentFailed!);
+                          }
 
-                        //handle payment for google pay
-                        if (paymentMode.toLowerCase() == 'google pay') {
-                          final PaymentMethodParams paymentMethodParams =
-                              PaymentMethodParams.cardFromToken(
-                            token: paymentMethod['id'],
-                          );
+                          //handle payment for google pay
+                          if (paymentMode.toLowerCase() == 'google pay') {
+                            final PaymentMethodParams paymentMethodParams =
+                                PaymentMethodParams.cardFromToken(
+                              paymentMethodData: PaymentMethodDataCardFromToken(
+                                token: paymentMethod['id'],
+                              ),
+                            );
 
-                          handleWalletPayment(
+                            handleWalletPayment(
+                                paymentMethodParams,
+                                onPaymentSuccessful,
+                                context,
+                                price,
+                                onPaymentFailed!);
+                          }
+
+                          //handle payment for apple pay
+                          if (paymentMode.toLowerCase() == 'apple pay') {
+                            final TokenData tokenData = paymentMethod;
+
+                            final PaymentMethodParams paymentMethodParams =
+                                PaymentMethodParams.cardFromToken(
+                              paymentMethodData: PaymentMethodDataCardFromToken(
+                                token: tokenData.id,
+                              ),
+                            );
+
+                            handleWalletPayment(
                               paymentMethodParams,
                               onPaymentSuccessful,
                               context,
                               price,
-                              onPaymentFailed!);
-                        }
-
-                        //handle payment for apple pay
-                        if (paymentMode.toLowerCase() == 'apple pay') {
-                          final TokenData tokenData = paymentMethod;
-
-                          final PaymentMethodParams paymentMethodParams =
-                              PaymentMethodParams.cardFromToken(
-                            token: tokenData.id,
-                          );
-
-                          handleWalletPayment(
-                              paymentMethodParams,
-                              onPaymentSuccessful,
-                              context,
-                              price,
-                              onPaymentFailed!);
-                        }
-                      },
-                    ),
+                              onPaymentFailed!,
+                            );
+                          }
+                        },
+                      ),
                     SizedBox(
                       height: 20.h,
                     ),
