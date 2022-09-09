@@ -46,7 +46,7 @@ dependencies:
   flutter_screenutil: ^5.0.0+2
   flutter_svg: ^1.0.3
   get: ^4.6.1  #this library is for state management
-  flutter_keyboard_visibility: ^5.1.0 #this library is for checking keyboard visibility 
+  flutter_keyboard_visibility: ^5.1.0 #this library is for checking keyboard visibility
   badges: ^2.0.1 #this library is for badges model
   twilio_flutter: ^0.0.9 #this library is for phone verification using twilio api
   flutter_image_slideshow: ^0.1.2 #this library is for slideshow
@@ -55,7 +55,7 @@ dependencies:
   flutter_secure_storage: ^5.0.2 #this library is for secure storage for token
   advance_notification: ^1.0.5 #this library is for notification
   pinput: ^1.2.2 #this library is for the 4-digit code
-  flutter_slidable: ^1.1.0 #this is for the slidable list item 
+  flutter_slidable: ^1.1.0 #this is for the slidable list item
   date_time_picker: ^2.1.0
   image_picker: ^0.8.5+3
   modal_bottom_sheet: ^2.1.2
@@ -91,14 +91,13 @@ dependencies:
   url_launcher: ^6.0.20
   share_plus: ^4.0.3
   screenshot: ^1.2.3
-  flutter_stripe: ^2.4.0 #for stripe payment integration
   pay: ^1.0.8
   dotted_border: ^2.0.0+2
 # flutter_expanded_tile: ^0.3.6
   awesome_dialog: ^2.2.0
   skeleton_text: ^3.0.0
-  firebase_core: ^1.13.1
-  firebase_storage: ^10.2.2
+  firebase_core: ^1.22.0
+  firebase_storage: ^10.3.8
   timeago_flutter: ^1.0.0
   sticky_grouped_list: ^2.1.0
   emoji_picker_flutter: ^1.1.2
@@ -107,6 +106,7 @@ dependencies:
   extended_image: ^4.0.0
   in_app_purchase: ^3.0.2
   flutter_animarker: ^3.2.0
+  flutter_stripe: ^5.0.0
 
 
   # flutter_expanded_tile: ^0.3.6
