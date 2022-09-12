@@ -42,7 +42,7 @@ class _TravellerBookingDetailsScreenState
 
     String getTime(String date) {
       final DateTime parseDate =
-          DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+          DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(date);
       final DateTime inputDate = DateTime.parse(parseDate.toString());
       final DateTime addHour = inputDate.add(const Duration(hours: 1));
       final DateFormat outputFormat = DateFormat('HH:mm');
@@ -435,7 +435,7 @@ class _TravellerBookingDetailsScreenState
                       ),
                       Text(
                         getTime(bookingDate),
-                        // '8 Jun 7:00-9:00',
+                        //TODO: EDA - '8 Jun 7:00-9:00',
                         style: TextStyle(
                             color: HexColor('#3E4242'),
                             fontSize: 14.sp,

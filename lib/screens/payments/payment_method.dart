@@ -301,6 +301,7 @@ Future<dynamic> paymentMethod(
                             // final TokenData token = await Stripe.instance
                             //     .createApplePayToken(result);
                             // debugPrint('Apple Token $token');
+                            // TODO: EDA
                             final jsonData = jsonDecode(result['token']);
                             print(jsonData['header']['transactionId']);
                             onContinueBtnPressed(
