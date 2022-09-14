@@ -249,8 +249,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
   }
 
   String getTime(String date) {
-    final DateTime parseDate =
-        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(date);
+    final DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
     final DateTime inputDate = DateTime.parse(parseDate.toString());
     final DateTime addHour = inputDate.add(const Duration(hours: 1));
     final DateFormat outputFormat = DateFormat('HH:mm');
@@ -1328,7 +1327,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
 
   String bookingDateStart(String date) {
     final DateTime parseDate =
-        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(date);
+    DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
     final DateTime inputDate = DateTime.parse(parseDate.toString());
 
     final DateFormat outputFormatDate = DateFormat('yyyy-MM-dd HH:mm:ss');
@@ -1338,7 +1337,7 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
 
   String bookingDateEend(String date) {
     final DateTime parseDate =
-        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(date);
+    DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
     final DateTime inputDate = DateTime.parse(parseDate.toString());
     final DateTime addHour = inputDate.add(const Duration(hours: 1));
     final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
@@ -1469,7 +1468,6 @@ class _RequestToBookScreenState extends State<RequestToBookScreen> {
         price: price);
   }
 
-  // TODO: EDA
   int getTotalHours(String selectedDate) {
     final DateTime startDate = DateTime.parse(bookingDateStart(selectedDate));
     final DateTime endDate = DateTime.parse(bookingDateEend(selectedDate));

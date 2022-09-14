@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -272,7 +275,8 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                                               outputList
                                                   .activityAvailabilityHours!,
                                               stringDateToDateTime(month,
-                                                  listTime[index].hour24format))
+                                                  listTime[index].hour24format)
+                                      )
                                           ? Text(
                                               getSlots(
                                                   outputList
@@ -514,7 +518,6 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                             context,
                             activityPackage,
                             _activityAvailabilityHours.availabilityDateHour,
-                            //TODO: EDA - DateTime.now().toIso8601String(),
                             _numberOfTravellers);
                       }
                     },
@@ -578,8 +581,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
     );
   }
 
-  bool checkDateIfAvailable(
-      List<ActivityAvailabilityHours> availability, String dateTime) {
+  bool checkDateIfAvailable(List<ActivityAvailabilityHours> availability, String dateTime) {
     ActivityAvailabilityHours? result = availability.firstWhereOrNull(
         (ActivityAvailabilityHours a) =>
             removeSeconds(a.availabilityDateHour!) == dateTime);
@@ -648,7 +650,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
 
   String getTime(String date) {
     final DateTime parseDate =
-        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(date);
+    DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
     final DateTime inputDate = DateTime.parse(parseDate.toString());
     final DateFormat outputFormat = DateFormat('HH:mm:ss');
     final String outputDate = outputFormat.format(inputDate);
@@ -657,7 +659,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
 
   String removeSeconds(String date) {
     final DateTime parseDate =
-        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(date);
+    DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
     final DateTime inputDate = DateTime.parse(parseDate.toString());
     final DateFormat outputFormat = DateFormat("yyy-MM-dd'T'HH:mm:ss");
     final String outputDate = outputFormat.format(inputDate);

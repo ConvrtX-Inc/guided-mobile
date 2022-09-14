@@ -41,8 +41,7 @@ class _TravellerBookingDetailsScreenState
     final int numberOfTraveller = screenArguments['numberOfTraveller'] as int;
 
     String getTime(String date) {
-      final DateTime parseDate =
-          DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(date);
+      final DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
       final DateTime inputDate = DateTime.parse(parseDate.toString());
       final DateTime addHour = inputDate.add(const Duration(hours: 1));
       final DateFormat outputFormat = DateFormat('HH:mm');

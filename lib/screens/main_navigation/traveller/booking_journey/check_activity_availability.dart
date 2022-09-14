@@ -309,11 +309,11 @@ class _CheckActivityAvailabityScreenState
                   );
                 }),
             SizedBox(
-              height: 20.h,
+              height: 10.h,
             ),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
-              height: 60.h,
+              height: 40.h,
               child: ElevatedButton(
                 onPressed: () {
                   checkAvailability(context, activityPackage,
