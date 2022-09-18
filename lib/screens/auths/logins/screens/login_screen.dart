@@ -665,8 +665,9 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     try {
       await _googleSignIn.signIn();
-    } catch (e) {
-      print('Error signing in $e');
+    } catch (e, s) {
+      print('--> E2 $e');
+      print('--> $s');
       setState(() {
         googleLoading = false;
       });

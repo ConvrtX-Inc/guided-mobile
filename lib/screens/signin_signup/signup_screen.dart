@@ -127,8 +127,9 @@ class _SignupScreenState extends State<SignupScreen> {
     });
     try {
       await _googleSignIn.signIn();
-    } catch (e) {
-      print('Error signing in $e');
+    } catch (e, s) {
+      print('--> E2 $e');
+      print('--> $s');
       setState(() {
         googleLoading = false;
       });
@@ -405,7 +406,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       isLoading: googleLoading,
                       onPressed: googleSignIn,
                       style: ElevatedButton.styleFrom(
-                        elevation: 0,
+                        elevation: 10,
                         primary: Colors.transparent,
                         padding: EdgeInsets.zero,
                       ),

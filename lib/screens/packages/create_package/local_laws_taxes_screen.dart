@@ -1,5 +1,4 @@
 // ignore_for_file: file_names, cast_nullable_to_non_nullable
-import 'dart:ffi';
 
 import 'package:advance_notification/advance_notification.dart';
 import 'package:custom_check_box/custom_check_box.dart';
@@ -30,6 +29,7 @@ class _LocalLawsTaxesScreenState extends State<LocalLawsTaxesScreen> {
   String _waiver_id = '';
   final FocusNode _localLawsTaxesFocus = FocusNode();
   bool _isSubmit = false;
+
   @override
   void initState() {
     super.initState();
