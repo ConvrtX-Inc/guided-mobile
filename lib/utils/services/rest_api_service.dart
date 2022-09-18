@@ -2475,6 +2475,23 @@ class APIServices {
         wishlistActivityDetails: dataSummary.wishlistActivityDetails);
   }
 
+  /// API for getting the wishlist data
+  Future<void> addActivityToWishlist(String activityPackageId) async {
+    final String? userId = UserSingleton.instance.user.user?.id;
+    final http.Response response = await http.post(
+      Uri.parse(
+          '${AppAPIPath.apiBaseMode}${AppAPIPath.apiBaseUrl}/${AppAPIPath.wishlistUrl}'),
+      headers: {
+        HttpHeaders.authorizationHeader:
+            'Bearer ${UserSingleton.instance.user.token}',
+      },
+      body: jsonEncode({
+        'user_id': userId,
+        'activity_package_id': activityPackageId
+      }),
+    );
+  }
+
   /// API service for advertisement model
   Future<PackageModelData> getPackageDataById(String activityPackageid) async {
     final http.Response response = await http.get(

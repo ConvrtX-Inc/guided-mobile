@@ -36,119 +36,121 @@ class _HubEventListState extends State<HubEventList>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      body: SingleChildScrollView(
-        physics: const ScrollPhysics(),
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 20.h),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const TravellerTabScreen()));
-                      },
-                      child: Container(
-                        height: 60.h,
-                        width: 58.w,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(15.r),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const ScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20.w, 20.h, 15.w, 20.h),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const TravellerTabScreen()));
+                        },
+                        child: Container(
+                          height: 60.h,
+                          width: 58.w,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
+                            ),
                           ),
-                        ),
-                        child: Center(
-                          child: Container(
-                            height: 20.h,
-                            width: 20.w,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(
-                                    'assets/images/png/green_house_outlined.png'),
-                                fit: BoxFit.contain,
+                          child: Center(
+                            child: Container(
+                              height: 20.h,
+                              width: 20.w,
+                              decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                      'assets/images/png/green_house_outlined.png'),
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 8.w),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Row(
+                      children: <Widget>[
+                        const Icon(
+                          Icons.arrow_back,
+                          size: 20,
+                        ),
+                        SizedBox(
+                          width: 5.w,
+                        ),
+                        Text(
+                          'Back To Category',
+                          style: TextStyle(
+                              fontFamily: 'Gilroy',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14.sp),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 8.w),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Row(
-                    children: <Widget>[
-                      const Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                      ),
-                      SizedBox(
-                        width: 5.w,
-                      ),
-                      Text(
-                        'Back To Category',
-                        style: TextStyle(
-                            fontFamily: 'Gilroy',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14.sp),
-                      ),
-                    ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 20.w, top: 30.h),
+                  child: Text(
+                    'My Events',
+                    style: TextStyle(
+                        fontFamily: 'Gilroy',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 24.sp),
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 20.w, top: 30.h),
-                child: Text(
-                  'My Events',
-                  style: TextStyle(
-                      fontFamily: 'Gilroy',
-                      fontWeight: FontWeight.w700,
-                      fontSize: 24.sp),
+                SizedBox(
+                  height: 20.h,
                 ),
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              Expanded(
-                child: FutureBuilder<EventModelData>(
-                  future: _loadingData,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                    Widget _displayWidget;
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        _displayWidget = const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                        break;
-                      default:
-                        if (snapshot.hasError) {
-                          _displayWidget = Center(
-                              child: APIMessageDisplay(
-                            message: 'Result: ${snapshot.error}',
-                          ));
-                        } else {
-                          _displayWidget = buildEventResult(snapshot.data!);
-                        }
-                    }
-                    return _displayWidget;
-                  },
+                Expanded(
+                  child: FutureBuilder<EventModelData>(
+                    future: _loadingData,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                      Widget _displayWidget;
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                          _displayWidget = const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                          break;
+                        default:
+                          if (snapshot.hasError) {
+                            _displayWidget = Center(
+                                child: APIMessageDisplay(
+                                  message: 'Result: ${snapshot.error}',
+                                ));
+                          } else {
+                            _displayWidget = buildEventResult(snapshot.data!);
+                          }
+                      }
+                      return _displayWidget;
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
