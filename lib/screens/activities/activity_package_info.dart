@@ -42,7 +42,7 @@ class ActivityPackageInfo extends StatefulWidget {
 class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
   ActivityPackage _activityPackage = ActivityPackage();
   String _selectedTab = 'Description';
-  late Marker mark;
+  Marker? mark;
   bool showMoreDescription = false;
 
   Completer<GoogleMapController> _controller = Completer();
@@ -393,7 +393,7 @@ class _ActivityPackageInfoState extends State<ActivityPackageInfo> {
                               rippleRadius: 0.1,
                               rippleColor:
                                   const Color.fromARGB(255, 6, 134, 49),
-                              markers: <Marker>{mark},
+                              markers: mark != null ? <Marker>{mark!} : {},
                               mapId: _controller.future.then<int>(
                                   (GoogleMapController value) => value.mapId),
                               child: GoogleMap(
