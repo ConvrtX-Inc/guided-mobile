@@ -169,11 +169,11 @@ class MainBadge {
   String? badgeName;
   String? badgeDescription;
   String? imgIcon;
-  Null? firebaseSnapshotImg;
-  Null? filename;
+  String? firebaseSnapshotImg;
+  String? filename;
   bool? isMainActivity;
   bool? isSubActivity;
-  Null? deletedAt;
+  String? deletedAt;
   String? sEntity;
 
   MainBadge(
