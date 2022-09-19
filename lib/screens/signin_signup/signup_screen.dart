@@ -406,7 +406,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       isLoading: googleLoading,
                       onPressed: googleSignIn,
                       style: ElevatedButton.styleFrom(
-                        elevation: 10,
+                        elevation: 0,
                         primary: Colors.transparent,
                         padding: EdgeInsets.zero,
                       ),
@@ -746,7 +746,6 @@ class _SignupScreenState extends State<SignupScreen> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      countries: const <String>['CA'],
                       initialCountryCode: 'CA',
                       onChanged: (PhoneNumber phone) {
                         setState(() {
