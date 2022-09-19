@@ -935,7 +935,7 @@ class _SignupScreenState extends State<SignupScreen> {
         'first_name': _formKey.currentState?.value['first_name'],
         'last_name': _formKey.currentState?.value['last_name'],
         'user_type': isTraveller ? 'Traveller' : 'Guide',
-        'phone_no': _phonenumber,
+        'phone_no': _countryCode + '0000' + _phonenumber,
         'country_code': _countryCode,
         'is_traveller': isTraveller,
         // 'user_type_id': isTraveller ? '1e16e10d-ec6f-4c32-b5eb-cdfcfe0563a5' : 'c40cca07-110c-473e-a0e7-6720fc3d42ff', /// Dev
@@ -956,6 +956,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
       if (result.status == 'error') {
         setState(() {
+          errorMessages = [];
           buttonIsLoading = false;
         });
         final Map<String, dynamic> decoded = jsonDecode(result.errorResponse);
