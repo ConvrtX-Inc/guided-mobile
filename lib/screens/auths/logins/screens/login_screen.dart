@@ -16,7 +16,7 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/models/api/api_standard_return.dart';
 import 'package:guided/models/user_model.dart';
-import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
+import 'package:guided/utils/auth.utils.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
@@ -94,9 +94,6 @@ class _LoginScreenState extends State<LoginScreen> {
       'password': _passwordController.text
     };
 
-    final String userType =
-        await SecureStorage.readValue(key: AppTextConstants.userType);
-
     // debugPrint('User Type ${userType}');
     if (!EmailValidator.validate(_emailController.text)) {
       _emailFocus.requestFocus();
@@ -114,31 +111,6 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     setState(() => buttonIsLoading = true);
-    // final dynamic response = await APIServices()
-    //     .request(AppAPIPath.loginUrl, RequestType.POST, data: credentials);
-
-    // if (response is Map) {
-    //   if (response.containsKey('status')) {
-    //     if (response['status'] == 422) {
-    //       AdvanceSnackBar(
-    //               message: ErrorMessageConstants.loginWrongEmailorPassword)
-    //           .show(context);
-    //     }
-    //   } else {
-    //     final UserModel user =
-    //         UserModel.fromJson(json.decode(response.toString()));
-    //     UserSingleton.instance.user = user;
-    //     print(user.user?.isTraveller);
-    //     await SecureStorage.saveValue(
-    //         key: AppTextConstants.userToken, value: response['token']);
-    //     // ignore: avoid_dynamic_calls
-    //     await SecureStorage.saveValue(
-    //         // ignore: avoid_dynamic_calls
-    //         key: SecureStorage.userIdKey,
-    //         value: response['user']['id']);
-    //     await Navigator.of(context).pushNamed('/main_navigation');
-    //   }
-    // }
 
     await APIServices()
         .login(credentials)
@@ -150,41 +122,9 @@ class _LoginScreenState extends State<LoginScreen> {
             .show(context);
         setState(() => buttonIsLoading = false);
       } else {
-        setRoles(response);
+        setRoles(context, response);
       }
     });
-  }
-
-  Future<void> setRoles(APIStandardReturnFormat response) async {
-    final UserModel user =
-        UserModel.fromJson(json.decode(response.successResponse));
-    UserSingleton.instance.user = user;
-
-    final String userType =
-        await SecureStorage.readValue(key: AppTextConstants.userType);
-    if (userType == 'traveller') {
-      await saveTokenAndId(user.token!, user.user!.id!);
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          '/traveller_tab', (Route<dynamic> route) => false);
-    } else {
-      if (user.user!.isGuide!) {
-        await saveTokenAndId(user.token!, user.user!.id!);
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            '/main_navigation', (Route<dynamic> route) => false);
-      } else {
-        ErrorDialog().showErrorDialog(
-            context: context,
-            title: 'Login Failed',
-            message: "You don't have any Guide Access");
-      }
-    }
-  }
-
-  Future<void> saveTokenAndId(String token, String userId) async {
-    debugPrint('Token $token , User id $userId');
-    await SecureStorage.saveValue(
-        key: AppTextConstants.userToken, value: token);
-    await SecureStorage.saveValue(key: AppTextConstants.userId, value: userId);
   }
 
   @override
@@ -560,7 +500,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPrimary: Colors.white, // <-- Splash color
                       ),
                       isLoading: buttonIsLoading,
-                      onPressed: () async => login(),
+                      onPressed: login,
                       loadingChild: const Text(
                         'Loading',
                         style: TextStyle(
