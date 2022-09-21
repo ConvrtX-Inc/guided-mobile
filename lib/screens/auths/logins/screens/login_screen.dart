@@ -8,9 +8,9 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/constants/api_path.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:guided/common/widgets/t-a-c.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
@@ -20,7 +20,6 @@ import 'package:guided/screens/widgets/reusable_widgets/error_dialog.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 /// Login Screen
@@ -164,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final String userType =
         await SecureStorage.readValue(key: AppTextConstants.userType);
     if (userType == 'traveller') {
-     await saveTokenAndId(user.token!, user.user!.id!);
+      await saveTokenAndId(user.token!, user.user!.id!);
       Navigator.of(context).pushNamedAndRemoveUntil(
           '/traveller_tab', (Route<dynamic> route) => false);
     } else {
@@ -601,6 +600,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 24),
+                  const TacWidget(),
                 ],
               ),
             ),

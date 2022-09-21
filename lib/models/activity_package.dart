@@ -173,7 +173,6 @@ class MainBadge {
   String? filename;
   bool? isMainActivity;
   bool? isSubActivity;
-  String? deletedAt;
   String? sEntity;
 
   MainBadge(
@@ -185,7 +184,6 @@ class MainBadge {
       this.filename,
       this.isMainActivity,
       this.isSubActivity,
-      this.deletedAt,
       this.sEntity});
 
   MainBadge.fromJson(Map<String, dynamic> json) {
@@ -197,7 +195,6 @@ class MainBadge {
     filename = json['filename'];
     isMainActivity = json['is_main_activity'];
     isSubActivity = json['is_sub_activity'];
-    deletedAt = json['deletedAt'];
     sEntity = json['__entity'];
   }
 
@@ -211,7 +208,6 @@ class MainBadge {
     data['filename'] = filename;
     data['is_main_activity'] = isMainActivity;
     data['is_sub_activity'] = isSubActivity;
-    data['deletedAt'] = deletedAt;
     data['__entity'] = sEntity;
     return data;
   }

@@ -11,6 +11,7 @@ import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:guided/common/widgets/t-a-c.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -812,12 +813,15 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     SizedBox(height: 20.h),
                     Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         for (String item in errorMessages)
                           TextHelper.errorTextDisplay(item)
                       ],
                     ),
+                    const SizedBox(height: 24),
+                    const TacWidget(),
                   ],
                 ),
               ),

@@ -46,44 +46,45 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      builder: (_, __) => KeyboardDismissOnTap(
-        child: GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            fontFamily: 'Gilroy',
-            backgroundColor: HexColor('#E5E5E5'),
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            textTheme: const TextTheme(
-              bodyText1: TextStyle(
-                color: Colors.black,
-              ),
-              bodyText2: TextStyle(
-                color: Colors.black,
-              ),
-            ).apply(
-                // fontFamily: 'Lora',
-                // bodyColor: Colors.white,
-                // displayColor: Colors.white,
-                ),
-          ),
-          initialRoute: _defaultHome,
-          onGenerateRoute: RouteGenerator.generateRoute,
-          localizationsDelegates: const [
-            FormBuilderLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en', ''),
-            Locale('es', ''),
-            Locale('fa', ''),
-            Locale('fr', ''),
-            Locale('ja', ''),
-            Locale('pt', ''),
-            Locale('sk', ''),
-            Locale('pl', ''),
-          ],
-        ),
+      builder: (c, child) => KeyboardDismissOnTap(
+        child: child!,
       ),
       designSize: const Size(375, 812),
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          fontFamily: 'Gilroy',
+          backgroundColor: HexColor('#E5E5E5'),
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          textTheme: const TextTheme(
+            bodyText1: TextStyle(
+              color: Colors.black,
+            ),
+            bodyText2: TextStyle(
+              color: Colors.black,
+            ),
+          ).apply(
+            // fontFamily: 'Lora',
+            // bodyColor: Colors.white,
+            // displayColor: Colors.white,
+          ),
+        ),
+        initialRoute: _defaultHome,
+        onGenerateRoute: RouteGenerator.generateRoute,
+        localizationsDelegates: const [
+          FormBuilderLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en', ''),
+          Locale('es', ''),
+          Locale('fa', ''),
+          Locale('fr', ''),
+          Locale('ja', ''),
+          Locale('pt', ''),
+          Locale('sk', ''),
+          Locale('pl', ''),
+        ],
+      ),
     );
   }
 }
