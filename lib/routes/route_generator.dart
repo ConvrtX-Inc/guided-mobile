@@ -86,6 +86,15 @@ import 'package:guided/screens/packages/create_package/package_photos_screen.dar
 import 'package:guided/screens/packages/create_package/package_price_screen.dart';
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/a_connection_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/describe_your_adventure_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/tell_travellers_and_us_more_about_you_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/tell_us_a_bit_more_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/the_perks_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/what_your_experience_focus_on_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/what_we_are_looking_for_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/where_should_travellers_meet_you_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/your_experience_screen.dart';
 import 'package:guided/screens/passwords/change_password.dart';
 import 'package:guided/screens/payments/payment_add_card.dart';
 
@@ -118,6 +127,7 @@ import 'package:guided/screens/terms_and_condition/terms_and_condition_screen.da
 import 'package:guided/screens/transaction_notifications/transaction_history_main.dart';
 import 'package:guided/screens/traveler_waiver_form/traveler_waiver_form_screen.dart';
 
+import '../constants/app_routes.dart';
 import '../screens/main_navigation/settings/screens/calendar_management/settings_calendar_management.dart';
 import '../screens/main_navigation/settings/screens/settings_main.dart';
 import '../screens/main_navigation/traveller/booking_journey/check_activity_availability.dart';
@@ -159,6 +169,35 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) =>
                 const MainNavigationScreen(navIndex: 0, contentIndex: 0));
+        //TODO: START OF: new figma create package
+      case AppRoutes.TELL_US_A_BIT_MORE:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TellUsABitMoreScreen());
+      case AppRoutes.WHAT_OUR_EXPERIENCE_FOCUS_ON:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const WhatYourExperienceFocusOnScreen());
+      case AppRoutes.WHAT_WE_ARE_LOOKING_FOR:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const WhatWeAreLookingForScreen());
+      case AppRoutes.YOUR_EXPERIENCE:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const YourExperienceScreen());
+      case AppRoutes.THE_PERKS:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ThePerksScreen());
+      case AppRoutes.A_CONNECTION:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AConnectionScreen());
+      case AppRoutes.DESCRIBE_YOUR_ADVENTURE:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const DescribeYourAdventureScreen());
+      case AppRoutes.TELL_TRAVELLERS_AND_US_MORE_ABOUT_YOU:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TellTravellersAndUsMoreAboutYouScreen());
+      case AppRoutes.WHERE_SHOULD_TRAVELLERS_MEET_YOU:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const WhereShouldTravellersMeetYouScreen());
+    //TODO: END OF: new figma create package
       case '/create_package':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const CreatePackageScreen());

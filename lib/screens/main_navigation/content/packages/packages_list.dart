@@ -3,11 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/activity_availability_model.dart';
 import 'package:guided/models/package_model.dart';
+import 'package:guided/routes/route_generator.dart';
 import 'package:guided/screens/main_navigation/content/packages/widget/package_features.dart';
 import 'package:guided/screens/packages/create_package/create_package_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/tell_us_a_bit_more_screen.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
@@ -70,11 +73,7 @@ class _PackageListState extends State<PackageList>
         heroTag: 'btn0',
         backgroundColor: AppColors.chateauGreen,
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute<dynamic>(
-                  builder: (BuildContext context) =>
-                      const CreatePackageScreen()));
+          Navigator.pushNamed(context, AppRoutes.TELL_US_A_BIT_MORE);
         },
         child: const Icon(Icons.add),
       ),
