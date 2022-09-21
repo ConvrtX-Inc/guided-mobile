@@ -2,10 +2,10 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/back_button.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/signin_signup/signup_verify_phone.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Continue w/ phone screen
@@ -27,24 +27,7 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
-    final Map<String, dynamic> screenArguments =
-        // ignore: cast_nullable_to_non_nullable
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.chevron_left,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-      ),
       body: SafeArea(
         child: SizedBox(
           width: width,
@@ -55,6 +38,10 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  const BackButtonWidget(),
+                  SizedBox(
+                    height: 20.h,
+                  ),
                   Text(
                     AppTextConstants.continueWithPhone,
                     style: const TextStyle(
@@ -92,7 +79,6 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
                         child: CountryCodePicker(
                           onChanged: _onCountryChange,
                           initialSelection: AppTextConstants.defaultCountry,
-                          favorite: ['+1', 'US'],
                         ),
                       ),
                       hintStyle: TextStyle(
@@ -117,7 +103,7 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
           width: width,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () async => sendVerification(screenArguments),
+            onPressed: () async => sendVerification(),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 side: BorderSide(
@@ -139,23 +125,27 @@ class _ContinueWithPhoneState extends State<ContinueWithPhone> {
   }
 
   /// Method for getting the country code
-  void _onCountryChange(CountryCode countryCode) =>
-      _dialCode = countryCode.dialCode.toString();
+  void _onCountryChange(CountryCode countryCode) => setState(() {
+    _dialCode = countryCode.dialCode.toString();
+  });
 
   /// Method for calling the API
-  Future<void> sendVerification(Map<String, dynamic> data) async {
+  Future<void> sendVerification() async {
     final Map<String, dynamic> phoneDetails = {
       'phone_number': _dialCode + phoneController.text,
     };
 
-    final Map<String, dynamic> signupDetails = Map<String, dynamic>.from(data);
+    final Map<String, dynamic> signupDetails =
+        (ModalRoute.of(context)?.settings.arguments ?? {})
+            as Map<String, dynamic>;
+
     signupDetails['phone_number'] = phoneController.text;
     signupDetails['country_code'] = _dialCode.substring(0);
-    
+
     await APIServices().request(
         AppAPIPath.sendVerificationCodeSignUpUrl, RequestType.POST,
         data: phoneDetails);
-        
+
     await Navigator.pushNamed(context, '/sign_up_verify',
         arguments: signupDetails);
   }

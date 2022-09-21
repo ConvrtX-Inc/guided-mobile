@@ -1,19 +1,20 @@
 // ignore_for_file: file_names
 
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/back_button.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Sign up form screen
 class SignupForm extends StatefulWidget {
   /// Constructor
-  const SignupForm({Key? key}) : super(key: key);
+  SignupForm({required this.screenArguments, Key? key}) : super(key: key);
+
+  Map<String, dynamic> screenArguments;
 
   @override
   _SignupFormState createState() => _SignupFormState();
@@ -22,54 +23,19 @@ class SignupForm extends StatefulWidget {
 class _SignupFormState extends State<SignupForm> {
   bool isAgree = false;
 
-  final TextEditingController firstName = TextEditingController();
-  final TextEditingController lastName = TextEditingController();
+  late final TextEditingController firstName = TextEditingController(text: widget.screenArguments['first_name'] ?? widget.screenArguments['name']);
+  late final TextEditingController lastName = TextEditingController(text: widget.screenArguments['last_name']);
   final TextEditingController birthday = TextEditingController();
-  final TextEditingController email = TextEditingController();
+  late final TextEditingController email = TextEditingController(text: widget.screenArguments['email']);
 
-  final FocusNode _firstName = FocusNode();
-  final FocusNode _lastName = FocusNode();
-  final FocusNode _birthday = FocusNode();
- final FocusNode _email = FocusNode();
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
-    final Map<String, dynamic> screenArguments =
-        // ignore: cast_nullable_to_non_nullable
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    print(widget.screenArguments);
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: Transform.scale(
-          scale: 0.8,
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Container(
-              width: 40.w,
-              height: 40.h,
-              padding: EdgeInsets.zero,
-              decoration: BoxDecoration(
-                color: AppColors.harp,
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_sharp,
-                  color: Colors.black,
-                  size: 25,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ),
-        ),
-      ),
       body: SafeArea(
         child: SizedBox(
           width: width,
@@ -80,6 +46,10 @@ class _SignupFormState extends State<SignupForm> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  const BackButtonWidget(),
+                  SizedBox(
+                    height: 20.h,
+                  ),
                   Text(
                     AppTextConstants.signupForm,
                     style: const TextStyle(
@@ -92,7 +62,6 @@ class _SignupFormState extends State<SignupForm> {
                   ),
                   TextField(
                     controller: firstName,
-                    focusNode: _firstName,
                     decoration: InputDecoration(
                       hintText: AppTextConstants.firstName,
                       hintStyle: TextStyle(
@@ -110,7 +79,6 @@ class _SignupFormState extends State<SignupForm> {
                   ),
                   TextField(
                     controller: lastName,
-                    focusNode: _lastName,
                     decoration: InputDecoration(
                       hintText: AppTextConstants.lastName,
                       hintStyle: TextStyle(
@@ -128,7 +96,6 @@ class _SignupFormState extends State<SignupForm> {
                   ),
                   TextField(
                     controller: birthday,
-                    focusNode: _birthday,
                     decoration: InputDecoration(
                       hintText: AppTextConstants.birthday,
                       hintStyle: TextStyle(
@@ -144,9 +111,8 @@ class _SignupFormState extends State<SignupForm> {
                   SizedBox(
                     height: 20.h,
                   ),
-                  TextField(
+                  TextFormField(
                     controller: email,
-                    focusNode: _email,
                     decoration: InputDecoration(
                       hintText: AppTextConstants.email,
                       hintStyle: TextStyle(
@@ -184,26 +150,85 @@ class _SignupFormState extends State<SignupForm> {
                           ),
                         ),
                       ),
-                      RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.grey,
-                          ),
-                          children: <TextSpan>[
-                            const TextSpan(
-                                text:
-                                    "By selecting agree and continue below, I\nagree to Company\u0027s"),
-                            TextSpan(
-                                text: ' Privacy policy, Terms of\nservice',
+                      SizedBox(
+                        width: 1.w,
+                      ),
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.grey,
+                            ),
+                            children: <InlineSpan>[
+                              const TextSpan(
+                                  text:
+                                      "By selecting agree and continue below, I agree to Company\u0027s "),
+                              TextSpan(
+                                text: 'Privacy policy, Terms of service',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                   decoration: TextDecoration.underline,
                                   color: AppColors.sushi,
-                                )),
-                          ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Theme(
+                        data: ThemeData(
+                          primarySwatch: Colors.blue,
+                          unselectedWidgetColor: AppColors.silver,
+                        ),
+                        child: Transform.scale(
+                          scale: 1.5,
+                          child: Checkbox(
+                            checkColor: Colors.white,
+                            activeColor: AppColors.primaryGreen,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.r),
+                            ),
+                            value: isAgree,
+                            onChanged: (bool? value) => setState(() {
+                              isAgree = value!;
+                            }),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 1.w,
+                      ),
+                      Expanded(
+                        child: Text.rich(TextSpan(
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.grey,
+                          ),
+                          children: <InlineSpan>[
+                            const TextSpan(
+                              text: 'Agree to environmental pledge ',
+                            ),
+                            TextSpan(
+                              text:
+                                  'with link in blue that directly connects to website.',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                                decoration: TextDecoration.underline,
+                                color: AppColors.sushi,
+                              ),
+                            ),
+                          ],
+                        )),
                       ),
                     ],
                   ),
@@ -214,7 +239,7 @@ class _SignupFormState extends State<SignupForm> {
                     width: width,
                     height: 60,
                     child: ElevatedButton(
-                      onPressed: () async => signupUser(screenArguments),
+                      onPressed: () async => signupUser(),
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
@@ -242,7 +267,9 @@ class _SignupFormState extends State<SignupForm> {
   }
 
   /// Method for verifying Code
-  Future<void> signupUser(Map<String, dynamic> data) async {
+  Future<void> signupUser() async {
+    final Map<String, dynamic> data = widget.screenArguments;
+
     final Map<String, dynamic> details = {
       'email': data['email'],
       'password': data['password'],

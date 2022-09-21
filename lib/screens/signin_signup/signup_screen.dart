@@ -7,10 +7,10 @@ import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:guided/common/widgets/back_button.dart';
 import 'package:guided/common/widgets/t-a-c.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -18,14 +18,11 @@ import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/text_helper.dart';
 import 'package:guided/models/api/api_standard_return.dart';
-import 'package:guided/models/guide.dart';
 import 'package:guided/models/preset_form_model.dart';
 import 'package:guided/models/user_model.dart';
 import 'package:guided/utils/secure_storage.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/text_service.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:intl_phone_field/phone_number.dart';
 import 'package:loading_elevated_button/loading_elevated_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -39,15 +36,10 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  final TextEditingController _phoneTextController = TextEditingController();
-  bool buttonIsLoading = false;
-
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
+  bool buttonIsLoading = false;
   List<String> errorMessages = <String>[];
-  TextServices textServices = TextServices();
-  String _phonenumber = '';
-  String country = '+63';
-  String _countryCode = '';
   String termsAndCondition = '';
   String travelerWaiverForm = '';
   String cancellationPolicy = '';
@@ -63,22 +55,11 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-
-  final FocusNode _nameFocusNode = FocusNode();
-  final FocusNode _emailFocusNode = FocusNode();
-  final FocusNode _passwordFocusNode = FocusNode();
 
   bool hidePassword = true;
   bool hideConfirmPassword = true;
 
   String _password = '';
-  String _confirmPassword = '';
 
   @override
   void initState() {
@@ -144,13 +125,6 @@ class _SignupScreenState extends State<SignupScreen> {
         AppleIDAuthorizationScopes.fullName,
       ],
     );
-
-    print(credential.email);
-    print(credential.authorizationCode);
-    print(credential.givenName);
-    print(credential.familyName);
-    print(credential.identityToken);
-    print(credential.userIdentifier);
 
     if (credential.identityToken != null) {
       setState(() {
@@ -231,27 +205,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
-                      width: 40.w,
-                      height: 40.h,
-                      padding: EdgeInsets.zero,
-                      decoration: BoxDecoration(
-                        color: AppColors.harp,
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back_sharp,
-                          color: Colors.black,
-                          size: 25,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
+                    const BackButtonWidget(),
                     SizedBox(
                       height: 20.h,
                     ),
@@ -402,7 +356,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(
                       height: 20.h,
                     ),
-
                     LoadingElevatedButton(
                       isLoading: googleLoading,
                       onPressed: googleSignIn,
@@ -504,67 +457,17 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(
                       height: 20.h,
                     ),
-
-                    // ListTile(
-                    //   onTap: () {
-                    //     // Insert here the Sign up to Facebook API
-                    //   },
-                    //   shape: RoundedRectangleBorder(
-                    //     side: BorderSide(
-                    //       color: AppColors.mercury,
-                    //     ),
-                    //     borderRadius: BorderRadius.circular(14.r),
-                    //   ),
-                    //   leading: Image.asset(
-                    //     AssetsPath.facebook,
-                    //     height: 30.h,
-                    //   ),
-                    //   title: Text(
-                    //     AppTextConstants.signupWithFacebook,
-                    //     style: const TextStyle(
-                    //       fontSize: 16,
-                    //       fontWeight: FontWeight.w600,
-                    //     ),
-                    //   ),
-                    // ),
-                    // SizedBox(
-                    //   height: 15.h,
-                    // ),
-                    // ListTile(
-                    //   onTap: () {
-                    //     // Insert here the Sign up to Google API
-                    //   },
-                    //   shape: RoundedRectangleBorder(
-                    //     side: BorderSide(
-                    //       color: AppColors.mercury,
-                    //     ),
-                    //     borderRadius: BorderRadius.circular(14),
-                    //   ),
-                    //   leading: Image.asset(
-                    //     AssetsPath.google,
-                    //     height: 30,
-                    //   ),
-                    //   title: Text(
-                    //     AppTextConstants.signupWithGoogle,
-                    //     style: const TextStyle(
-                    //       fontSize: 16,
-                    //       fontWeight: FontWeight.w600,
-                    //     ),
-                    //   ),
-                    // ),
-                    // SizedBox(height: 20.h),
                     Text(
-                      AppTextConstants.firstName,
+                      AppTextConstants.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     SizedBox(height: 15.h),
                     FormBuilderTextField(
-                      controller: _firstNameController,
-                      focusNode: _nameFocusNode,
+                      controller: name,
                       decoration: InputDecoration(
-                        hintText: AppTextConstants.firstName,
+                        hintText: AppTextConstants.name,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
                         ),
@@ -574,33 +477,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      name: 'first_name',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                      ]),
-                    ),
-                    SizedBox(height: 20.h),
-                    Text(
-                      AppTextConstants.lastName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 15.h),
-                    FormBuilderTextField(
-                      controller: _lastNameController,
-                      decoration: InputDecoration(
-                        hintText: AppTextConstants.lastName,
-                        hintStyle: TextStyle(
-                          color: AppColors.grey,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14.r),
-                          borderSide:
-                              BorderSide(color: Colors.grey, width: 0.2.w),
-                        ),
-                      ),
-                      name: 'last_name',
+                      name: 'name',
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(context),
                       ]),
@@ -614,7 +491,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(height: 15.h),
                     FormBuilderTextField(
                       controller: email,
-                      focusNode: _emailFocusNode,
                       decoration: InputDecoration(
                         hintText: AppTextConstants.emailHint,
                         hintStyle: TextStyle(
@@ -642,102 +518,13 @@ class _SignupScreenState extends State<SignupScreen> {
                     FormBuilderTextField(
                       controller: password,
                       obscureText: hidePassword,
-                      focusNode: _passwordFocusNode,
                       onChanged: (String? val) {
                         setState(() {
                           _password = val!.trim();
                         });
                       },
                       decoration: InputDecoration(
-                          hintText: AppTextConstants.passwordHint,
-                          hintStyle: TextStyle(
-                            color: AppColors.grey,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14.r),
-                            borderSide:
-                                BorderSide(color: Colors.grey, width: 0.2.w),
-                          ),
-                          suffixIcon: _password.isNotEmpty
-                              ? IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      hidePassword = !hidePassword;
-                                    });
-                                  },
-                                  icon: Icon(
-                                      hidePassword
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
-                                      color: Colors.grey))
-                              : null),
-                      name: 'password',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.minLength(context, 6),
-                        FormBuilderValidators.required(context),
-                      ]),
-                    ),
-                    SizedBox(height: 20.h),
-                    Text(
-                      AppTextConstants.confirmPassword,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 15),
-                    ),
-                    SizedBox(height: 15.h),
-                    FormBuilderTextField(
-                      controller: _confirmPasswordController,
-                      obscureText: hideConfirmPassword,
-                      onChanged: (String? val) {
-                        setState(() {
-                          _confirmPassword = val!.trim();
-                        });
-                      },
-                      decoration: InputDecoration(
-                          hintText: AppTextConstants.passwordHint,
-                          hintStyle: TextStyle(
-                            color: AppColors.grey,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14.r),
-                            borderSide:
-                                BorderSide(color: Colors.grey, width: 0.2.w),
-                          ),
-                          suffixIcon: _confirmPassword.trim().isNotEmpty
-                              ? IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      hideConfirmPassword =
-                                          !hideConfirmPassword;
-                                    });
-                                  },
-                                  icon: Icon(
-                                    hideConfirmPassword
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    color: Colors.grey,
-                                  ))
-                              : null),
-                      name: 'password',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.minLength(context, 6),
-                        FormBuilderValidators.required(context),
-                        // FormBuilderValidators.match(context, password.text,
-                        //     errorText:
-                        //         ErrorMessageConstants.passwordDoesNotMatch)
-                        FormBuilderValidators.equal(context, password.text,
-                            errorText:
-                                ErrorMessageConstants.passwordDoesNotMatch)
-                      ]),
-                    ),
-                    SizedBox(height: 20.h),
-                    IntlPhoneField(
-                      controller: _phoneTextController,
-                      dropdownIcon: const Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.white,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Phone number',
+                        hintText: AppTextConstants.passwordHint,
                         hintStyle: TextStyle(
                           color: AppColors.grey,
                         ),
@@ -746,14 +533,27 @@ class _SignupScreenState extends State<SignupScreen> {
                           borderSide:
                               BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
+                        suffixIcon: _password.isNotEmpty
+                            ? IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    hidePassword = !hidePassword;
+                                  });
+                                },
+                                icon: Icon(
+                                  hidePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.grey,
+                                ),
+                              )
+                            : null,
                       ),
-                      initialCountryCode: 'CA',
-                      onChanged: (PhoneNumber phone) {
-                        setState(() {
-                          _phonenumber = phone.number;
-                          _countryCode = phone.countryCode;
-                        });
-                      },
+                      name: 'password',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.minLength(context, 6),
+                        FormBuilderValidators.required(context),
+                      ]),
                     ),
                     SizedBox(height: 20.h),
                     SizedBox(
@@ -929,18 +729,13 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         buttonIsLoading = true;
       });
-      // print(_formKey.currentState?.value['email']);
-
-      final Map<String, dynamic> details = {
+      final Map<String, dynamic> details = <String, dynamic>{
         'email': _formKey.currentState?.value['email'],
         'password': _formKey.currentState?.value['password'],
-        'full_name':
-            '${_formKey.currentState?.value['first_name']} ${_formKey.currentState?.value['last_name']}',
+        'full_name': _formKey.currentState?.value['name'],
         'first_name': _formKey.currentState?.value['first_name'],
         'last_name': _formKey.currentState?.value['last_name'],
         'user_type': isTraveller ? 'Traveller' : 'Guide',
-        'phone_no': _countryCode + '0000' + _phonenumber,
-        'country_code': _countryCode,
         'is_traveller': isTraveller,
         // 'user_type_id': isTraveller ? '1e16e10d-ec6f-4c32-b5eb-cdfcfe0563a5' : 'c40cca07-110c-473e-a0e7-6720fc3d42ff', /// Dev
         'user_type_id': isTraveller
@@ -952,44 +747,14 @@ class _SignupScreenState extends State<SignupScreen> {
         'is_first_aid_trained': true,
         'is_guide': !isTraveller
       };
-      print(details);
+      await SecureStorage.saveValue(
+          key: 'registration_data', value: jsonEncode(details));
 
-      ///Register api
-      final APIStandardReturnFormat result =
-          await APIServices().register(details);
-
-      if (result.status == 'error') {
-        setState(() {
-          errorMessages = [];
-          buttonIsLoading = false;
-        });
-        final Map<String, dynamic> decoded = jsonDecode(result.errorResponse);
-        decoded['errors'].forEach((String k, dynamic v) =>
-            <dynamic>{errorMessages..add(textServices.filterErrorMessage(v))});
-      } else {
-        final Map<String, String> credentials = <String, String>{
-          'email': _formKey.currentState?.value['email'],
-          'password': _formKey.currentState?.value['password']
-        };
-
-        await APIServices()
-            .login(credentials)
-            .then((APIStandardReturnFormat response) async {
-          final UserModel user =
-              UserModel.fromJson(json.decode(response.successResponse));
-          UserSingleton.instance.user.token = user.token;
-        });
-
-        setState(() {
-          buttonIsLoading = false;
-        });
-        await Navigator.of(context).pushReplacementNamed('/login');
-      }
-
-    } else {
-      print("validation failed");
+      setState(() {
+        buttonIsLoading = false;
+      });
+      await Navigator.of(context)
+          .pushNamed('/continue_with_phone', arguments: details);
     }
   }
-
-
 }

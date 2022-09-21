@@ -228,7 +228,7 @@ class RouteGenerator {
             builder: (_) => const ContinueWithPhone(), settings: settings);
       case '/sign_up_form':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const SignupForm(), settings: settings);
+            builder: (_) => SignupForm(screenArguments: (settings.arguments ?? {}) as Map<String, dynamic>), settings: settings);
       case '/user_type':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const UserTypeScreen());

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/back_button.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -30,19 +31,6 @@ class _SignupVerifyState extends State<SignupVerify> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.chevron_left,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: SizedBox(
@@ -54,6 +42,10 @@ class _SignupVerifyState extends State<SignupVerify> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    const BackButtonWidget(),
+                    SizedBox(
+                      height: 20.h,
+                    ),
                     Text(
                       AppTextConstants.verifyPhone,
                       style: const TextStyle(
@@ -64,8 +56,17 @@ class _SignupVerifyState extends State<SignupVerify> {
                     SizedBox(
                       height: 20.h,
                     ),
+                    const Text(
+                      'Verification code sent to your phone',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'Gilroy',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                      ),
+                    ),
                     Text(
-                      'Verification code sent to your phone ${screenArguments['phone_number'].toString()}',
+                      '${screenArguments['country_code']} ${screenArguments['phone_number']}',
                       style: const TextStyle(
                         color: Colors.black,
                         fontFamily: 'Gilroy',
@@ -181,12 +182,11 @@ class _SignupVerifyState extends State<SignupVerify> {
 
   /// Method for verifying Code
   Future<void> verifyCode(Map<String, dynamic> data) async {
-    print(data['phone_number']);
     final Map<String, dynamic> details = {
       'phone_number': data['phone_number'],
       'verifyCode': _verifyCodeController.text
     };
-    
+
     if (_verifyCodeController.text.isNotEmpty) {
       incorrectOTP = false;
       await APIServices().request(

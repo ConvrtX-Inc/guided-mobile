@@ -11,8 +11,8 @@ class TacWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text.rich(
       TextSpan(
-        style: const TextStyle(fontSize: 12),
-        children: [
+        style: TextStyle(fontSize: 12, color: AppColors.grey,),
+        children: <InlineSpan>[
           const TextSpan(text: 'By Tapping'),
           const TextSpan(
             text: ' Login ',
