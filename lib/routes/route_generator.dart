@@ -87,13 +87,25 @@ import 'package:guided/screens/packages/create_package/package_price_screen.dart
 import 'package:guided/screens/packages/create_package/package_summary_screen.dart';
 import 'package:guided/screens/packages/create_package/waiver_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/a_connection_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/a_few_more_things_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/add_your_photos_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/booking_settings_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/describe_your_adventure_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/group_size_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/guided_cancellation_policy_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/schedule_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/some_quick_photo_advice_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/tell_travellers_and_us_more_about_you_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/tell_us_a_bit_more_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/the_perks_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/time_to_name_your_adventure_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/traveller_pricing_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/what_s_included_in_your_adventure_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/what_your_experience_focus_on_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/what_we_are_looking_for_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/where_should_travellers_meet_you_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/who_can_come_on_your_adventure_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/will_travellers_need_to_bring_anything_on_your_adventure_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/your_experience_screen.dart';
 import 'package:guided/screens/passwords/change_password.dart';
 import 'package:guided/screens/payments/payment_add_card.dart';
@@ -197,6 +209,42 @@ class RouteGenerator {
       case AppRoutes.WHERE_SHOULD_TRAVELLERS_MEET_YOU:
         return MaterialPageRoute<dynamic>(
             builder: (_) => const WhereShouldTravellersMeetYouScreen());
+      case AppRoutes.WHAT_S_INCLUDED_IN_YOUR_ADVENTURE:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const WhatIsIncludedInYourAdventureScreen());
+      case AppRoutes.WILL_TRAVELLERS_NEED_TO_BRING_ANYTHING_ON_YOUR_ADVENTURE:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const WillTravellersNeedToBringAnythingOnYourAdventureScreen());
+      case AppRoutes.WHO_CAN_COME_ON_YOUR_ADVENTURE:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const WhoCanComeOnYourAdventureScreen());
+      case AppRoutes.TIME_TO_NAME_YOUR_ADVENTURE_SCREEN:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TimeToNameYourAdventureScreen());
+      case AppRoutes.SOME_QUICK_PHOTO_ADVICE:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const SomeQuickPhotoAdviceScreen());
+      case AppRoutes.ADD_YOUR_PHOTOS_SCREEN:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AddYourPhotosScreen());
+      case AppRoutes.GROUP_SIZE_SCREEN:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const GroupSizeScreen());
+      case AppRoutes.SCHEDULE_SCREEN:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const ScheduleScreen());
+      case AppRoutes.TRAVELLER_PRICING:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const TravellerPricingScreen());
+      case AppRoutes.BOOKING_SETTINGS:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const BookingSettingsScreen());
+      case AppRoutes.GUIDED_CANCELLATION_POLICY:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const GuidedCancellationPolicyScreen());
+      case AppRoutes.A_FEW_MORE_THINGS:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const AFewMoreThingsScreen());
     //TODO: END OF: new figma create package
       case '/create_package':
         return MaterialPageRoute<dynamic>(

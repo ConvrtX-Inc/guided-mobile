@@ -13,15 +13,15 @@ import 'package:guided/utils/services/rest_api_service.dart';
 import '../../../constants/app_routes.dart';
 
 /// Create Package Screen
-class WhereShouldTravellersMeetYouScreen extends StatefulWidget {
+class WhatIsIncludedInYourAdventureScreen extends StatefulWidget {
   /// Constructor
-  const WhereShouldTravellersMeetYouScreen({Key? key}) : super(key: key);
+  const WhatIsIncludedInYourAdventureScreen({Key? key}) : super(key: key);
 
   @override
-  _WhereShouldTravellersMeetYouScreenState createState() => _WhereShouldTravellersMeetYouScreenState();
+  _WhatIsIncludedInYourAdventureScreenState createState() => _WhatIsIncludedInYourAdventureScreenState();
 }
 
-class _WhereShouldTravellersMeetYouScreenState extends State<WhereShouldTravellersMeetYouScreen> {
+class _WhatIsIncludedInYourAdventureScreenState extends State<WhatIsIncludedInYourAdventureScreen> {
   bool showMainActivityChoices = false;
   bool showSubActivityChoices = false;
   dynamic mainActivity;
@@ -50,7 +50,7 @@ class _WhereShouldTravellersMeetYouScreenState extends State<WhereShouldTravelle
                 children: [
                   BackButtonWidget(),
                   Spacer(),
-                  Text('9/21'),
+                  Text('10/21'),
                   IconButton(
                     icon: Icon(
                       Icons.menu,
@@ -80,7 +80,7 @@ class _WhereShouldTravellersMeetYouScreenState extends State<WhereShouldTravelle
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          HeaderText.headerText('Where should Travellers meet you?'),
+                          HeaderText.headerText("What's included in your Adventure?"),
                           SizedBox(
                             height: 20.h,
                           ),
@@ -102,7 +102,7 @@ class _WhereShouldTravellersMeetYouScreenState extends State<WhereShouldTravelle
           child: ElevatedButton(
             onPressed: () {
               // Temp set to different screen
-              Navigator.pushNamed(context, AppRoutes.WHAT_S_INCLUDED_IN_YOUR_ADVENTURE);
+              Navigator.pushNamed(context, AppRoutes.WILL_TRAVELLERS_NEED_TO_BRING_ANYTHING_ON_YOUR_ADVENTURE);
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
