@@ -20,4 +20,9 @@ class AppRoutes {
   static const String BOOKING_SETTINGS = 'booking_settings';
   static const String GUIDED_CANCELLATION_POLICY = 'guided_cancellation_policy';
   static const String A_FEW_MORE_THINGS = 'a_few_more_things';
+  static const String SUMMARY_1 = 'summary_1';
+  static const String SUMMARY_2 = 'summary_2';
+  static const String SUMMARY_3 = 'summary_3';
+  static const String SUMMARY_4 = 'summary_4';
+  static const String SUMMARY_5 = 'summary_5';
 }

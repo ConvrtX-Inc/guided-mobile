@@ -95,6 +95,11 @@ import 'package:guided/screens/packages/new_pages_create_package/group_size_scre
 import 'package:guided/screens/packages/new_pages_create_package/guided_cancellation_policy_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/schedule_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/some_quick_photo_advice_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/summary/summary_1_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/summary/summary_2_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/summary/summary_3_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/summary/summary_4_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/summary/summary_5_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/tell_travellers_and_us_more_about_you_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/tell_us_a_bit_more_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/the_perks_screen.dart';
@@ -245,6 +250,21 @@ class RouteGenerator {
       case AppRoutes.A_FEW_MORE_THINGS:
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AFewMoreThingsScreen());
+      case AppRoutes.SUMMARY_1:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const Summary1Screen());
+      case AppRoutes.SUMMARY_2:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const Summary2Screen());
+      case AppRoutes.SUMMARY_3:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const Summary3Screen());
+      case AppRoutes.SUMMARY_4:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const Summary4Screen());
+      case AppRoutes.SUMMARY_5:
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => const Summary5Screen());
     //TODO: END OF: new figma create package
       case '/create_package':
         return MaterialPageRoute<dynamic>(

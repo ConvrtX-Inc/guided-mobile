@@ -5,23 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/back_button.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/badge_model.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
-import '../../../constants/app_routes.dart';
-
 /// Create Package Screen
-class AFewMoreThingsScreen extends StatefulWidget {
+class Summary1Screen extends StatefulWidget {
   /// Constructor
-  const AFewMoreThingsScreen({Key? key}) : super(key: key);
+  const Summary1Screen({Key? key}) : super(key: key);
 
   @override
-  _AFewMoreThingsScreenState createState() => _AFewMoreThingsScreenState();
+  _Summary1ScreenState createState() => _Summary1ScreenState();
 }
 
-class _AFewMoreThingsScreenState extends State<AFewMoreThingsScreen> {
+class _Summary1ScreenState extends State<Summary1Screen> {
   bool showMainActivityChoices = false;
   bool showSubActivityChoices = false;
   dynamic mainActivity;
@@ -50,16 +49,6 @@ class _AFewMoreThingsScreenState extends State<AFewMoreThingsScreen> {
                 children: [
                   BackButtonWidget(),
                   Spacer(),
-                  Text('21/21'),
-                  IconButton(
-                    icon: Icon(
-                      Icons.menu,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      //TODO
-                    },
-                  )
                 ],
               ),
               InkWell(
@@ -80,7 +69,7 @@ class _AFewMoreThingsScreenState extends State<AFewMoreThingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          HeaderText.headerText("A few more things....."),
+                          HeaderText.headerText("Summary 1/5"),
                           SizedBox(
                             height: 20.h,
                           ),
@@ -102,7 +91,7 @@ class _AFewMoreThingsScreenState extends State<AFewMoreThingsScreen> {
           child: ElevatedButton(
             onPressed: () {
               // Temp set to different screen
-              Navigator.pushNamed(context, AppRoutes.SUMMARY_1);
+              Navigator.pushNamed(context, AppRoutes.SUMMARY_2);
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -113,7 +102,7 @@ class _AFewMoreThingsScreenState extends State<AFewMoreThingsScreen> {
               onPrimary: Colors.white,
             ),
             child: Text(
-              AppTextConstants.submit,
+              "Summary 1/5",
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
