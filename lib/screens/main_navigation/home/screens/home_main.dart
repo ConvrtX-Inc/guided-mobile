@@ -1,7 +1,5 @@
 // ignore_for_file: no_default_cases, always_specify_types, avoid_dynamic_calls, use_string_buffers, type_annotate_public_apis, always_declare_return_types, cascade_invocations
 
-import 'dart:convert';
-
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,15 +10,12 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/booking_request.dart';
-import 'package:guided/models/home.dart';
 import 'package:guided/models/package_model.dart';
 import 'package:guided/models/profile_data_model.dart';
-import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_earnings.dart';
 import 'package:guided/screens/main_navigation/home/widgets/home_features.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
-import 'package:guided/utils/home.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 /// Screen for home
@@ -75,20 +70,15 @@ class _HomeScreenState extends State<HomeScreen>
         await APIServices().getBookingRequest();
 
     if (resData.isNotEmpty) {
-
-
-
-
       pendingRequests = resData
           .where((BookingRequest request) =>
               request.status?.statusName!.toLowerCase() == 'pending')
           .toList();
 
-
       setState(() {
         _hasData = true;
         totalData = resData.length;
-        limit = pendingRequests.length <= 2 ?  pendingRequests.length: 3;
+        limit = pendingRequests.length <= 2 ? pendingRequests.length : 3;
       });
 
       debugPrint('Limit $limit');
@@ -202,69 +192,82 @@ class _HomeScreenState extends State<HomeScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Container(
-                        decoration: BoxDecoration(
-                          border: Border(bottom: BorderSide(width: 2.w)),
+                      decoration: BoxDecoration(
+                        border: Border(bottom: BorderSide(width: 2.w)),
+                      ),
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute<dynamic>(
+                              builder: (BuildContext context) =>
+                                  const MainNavigationScreen(
+                                navIndex: 1,
+                                contentIndex: 0,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          AppTextConstants.packages,
+                          style: AppTextStyle.defaultStyle,
                         ),
-                        child: TextButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute<dynamic>(
-                                      builder: (BuildContext context) =>
-                                          const MainNavigationScreen(
-                                            navIndex: 1,
-                                            contentIndex: 0,
-                                          )));
-                            },
-                            child: Text(
-                              AppTextConstants.packages,
-                              style: AppTextStyle.defaultStyle,
-                            ))),
+                      ),
+                    ),
                     TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                  builder: (BuildContext context) =>
-                                      const MainNavigationScreen(
-                                        navIndex: 1,
-                                        contentIndex: 1,
-                                      )));
-                        },
-                        child: Text(
-                          AppTextConstants.event,
-                          style: AppTextStyle.inactive,
-                        )),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute<dynamic>(
+                            builder: (BuildContext context) =>
+                                const MainNavigationScreen(
+                              navIndex: 1,
+                              contentIndex: 1,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        AppTextConstants.event,
+                        style: AppTextStyle.inactive,
+                      ),
+                    ),
                     TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                  builder: (BuildContext context) =>
-                                      const MainNavigationScreen(
-                                        navIndex: 1,
-                                        contentIndex: 2,
-                                      )));
-                        },
-                        child: Text(
-                          AppTextConstants.outfitter,
-                          style: AppTextStyle.inactive,
-                        )),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute<dynamic>(
+                            builder: (BuildContext context) =>
+                                const MainNavigationScreen(
+                              navIndex: 1,
+                              contentIndex: 2,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        AppTextConstants.outfitter,
+                        style: AppTextStyle.inactive,
+                      ),
+                    ),
                     TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                  builder: (BuildContext context) =>
-                                      const MainNavigationScreen(
-                                        navIndex: 1,
-                                        contentIndex: 3,
-                                      )));
-                        },
-                        child: Text(
-                          AppTextConstants.myads,
-                          style: AppTextStyle.inactive,
-                        )),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute<dynamic>(
+                            builder: (BuildContext context) =>
+                                const MainNavigationScreen(
+                              navIndex: 1,
+                              contentIndex: 3,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        AppTextConstants.myads,
+                        style: AppTextStyle.inactive,
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -26,6 +26,12 @@ class AppAPIPath {
   /// Returns facebook url
   static String facebookLogin = 'api/v1/auth/facebook/login';
 
+  /// Returns google url
+  static String googleLogin = 'api/v1/auth/google/login';
+
+  /// Returns apple url
+  static String appleLogin = 'api/v1/auth/apple/login';
+
   /// Returns user Type url
   static String userTpye = 'api/v1/user-types';
 

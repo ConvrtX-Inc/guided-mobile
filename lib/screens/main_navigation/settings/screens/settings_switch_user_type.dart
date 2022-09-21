@@ -2,6 +2,7 @@ import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/back_button.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -75,24 +76,18 @@ class _SettingsSwitchUserType extends State<SettingsSwitchUserType> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: SvgPicture.asset('assets/images/svg/arrow_back_with_tail.svg',
-                height: 29.h, width: 34.w),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
         resizeToAvoidBottomInset: true,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  const BackButtonWidget(),
+                  SizedBox(
+                    height: 20.h,
+                  ),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(

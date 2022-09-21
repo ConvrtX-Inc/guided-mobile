@@ -423,7 +423,7 @@ class APIServices {
       'Accept': '*/*'
     };
     final http.Response response = await http.post(
-      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.facebookLogin}'),
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.googleLogin}'),
       body: jsonEncode({'idToken': idToken}),
       headers: headers,
     );
@@ -438,7 +438,7 @@ class APIServices {
       'Accept': '*/*'
     };
     final http.Response response = await http.post(
-      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.facebookLogin}'),
+      Uri.parse('$apiBaseMode$apiBaseUrl/${AppAPIPath.appleLogin}'),
       body: jsonEncode(
           {'idToken': idToken, 'firstName': 'user', 'lastName': 'apple'}),
       headers: headers,

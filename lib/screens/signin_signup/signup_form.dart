@@ -144,6 +144,7 @@ class _SignupFormState extends State<SignupForm> {
                     height: 20.h,
                   ),
                   TextFormField(
+                    readOnly: true,
                     controller: email,
                     decoration: InputDecoration(
                       hintText: AppTextConstants.email,
@@ -331,9 +332,10 @@ class _SignupFormState extends State<SignupForm> {
     final Map<String, dynamic> details = <String, dynamic>{
       'email': data['email'],
       'password': data['password'],
-      'full_name': data['full_name'],
-      'first_name': data['first_name'],
-      'last_name': data['last_name'],
+      'full_name': firstName.text.isEmpty ? data['full_name'] : firstName.text,
+      'first_name': firstName.text.isEmpty ? data['first_name'] : firstName.text,
+      'last_name': lastName.text.isEmpty ? data['last_name'] : lastName.text,
+      'birth_day': birthday.text.isEmpty ? data['birth_day'] : birthday.text,
       'user_type': data['user_type'],
       'is_traveller': data['is_traveller'],
       // 'user_type_id': isTraveller ? '1e16e10d-ec6f-4c32-b5eb-cdfcfe0563a5' : 'c40cca07-110c-473e-a0e7-6720fc3d42ff', /// Dev

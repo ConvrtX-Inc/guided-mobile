@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:advance_notification/advance_notification.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +15,11 @@ import 'package:guided/common/widgets/country_dropdown.dart';
 import 'package:guided/common/widgets/decimal_text_input_formatter.dart';
 import 'package:guided/constants/api_path.dart';
 import 'package:guided/constants/app_colors.dart';
-import 'package:guided/constants/app_list.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/constants/asset_path.dart';
 import 'package:guided/constants/payment_config.dart';
 import 'package:guided/models/badge_model.dart';
-import 'package:guided/models/badgesModel.dart';
 import 'package:guided/models/card_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/image_bulk.dart';
@@ -99,6 +96,7 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   late Future<BadgeModelData> _loadingData;
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   final String _storagePathAdvertisementImg = 'advertisementImg';
+
   @override
   void initState() {
     super.initState();
@@ -1791,55 +1789,56 @@ class _AdvertisementAddState extends State<AdvertisementAdd> {
   ///Payment integration
   void handlePayment() {
     paymentSetDate(
-        context: context,
-        onContinueBtnPressed: (data) {
-          paymentMethod(
-              context: context,
-              onContinueBtnPressed: (paymentData) {
-                Navigator.of(context).pop();
+      context: context,
+      onContinueBtnPressed: (data) {
+        paymentMethod(
+            context: context,
+            onContinueBtnPressed: (paymentData) {
+              Navigator.of(context).pop();
 
-                final double price = data['amount'];
-                const String serviceName = 'Create Advertisement';
+              final double price = data['amount'];
+              const String serviceName = 'Create Advertisement';
 
-                String mode = '';
-                if (paymentData is CardModel) {
-                  mode = 'Credit Card';
-                } else {
-                  mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
-                }
+              String mode = '';
+              if (paymentData is CardModel) {
+                mode = 'Credit Card';
+              } else {
+                mode = Platform.isAndroid ? 'Google Pay' : 'Apple Pay';
+              }
 
-                debugPrint('Mode $mode');
-                final String transactionNumber =
-                    GlobalMixin().generateTransactionNumber();
-                confirmPaymentModal(
-                    context: context,
-                    serviceName: serviceName,
-                    paymentMethod: paymentData,
-                    paymentMode: mode,
-                    price: price,
-                    onPaymentSuccessful: () {
-                      // API Integration for create advertisement..
-                      advertisementDetail(
-                          price: price,
-                          serviceName: serviceName,
-                          transactionNumber: transactionNumber,
-                          mode: mode);
-                    },
-                    onPaymentFailed: () {
-                      paymentFailed(
-                          context: context,
-                          paymentDetails: PaymentDetails(
-                              serviceName: serviceName,
-                              price: price.toStringAsFixed(2),
-                              transactionNumber: transactionNumber),
-                          paymentMethod: mode);
-                    },
-                    paymentDetails: PaymentDetails(
+              debugPrint('Mode $mode');
+              final String transactionNumber =
+                  GlobalMixin().generateTransactionNumber();
+              confirmPaymentModal(
+                  context: context,
+                  serviceName: serviceName,
+                  paymentMethod: paymentData,
+                  paymentMode: mode,
+                  price: price,
+                  onPaymentSuccessful: () {
+                    // API Integration for create advertisement..
+                    advertisementDetail(
+                        price: price,
                         serviceName: serviceName,
-                        price: price.toStringAsFixed(2),
-                        transactionNumber: transactionNumber));
-              },
-              price: data['amount']);
-        });
+                        transactionNumber: transactionNumber,
+                        mode: mode);
+                  },
+                  onPaymentFailed: () {
+                    paymentFailed(
+                        context: context,
+                        paymentDetails: PaymentDetails(
+                            serviceName: serviceName,
+                            price: price.toStringAsFixed(2),
+                            transactionNumber: transactionNumber),
+                        paymentMethod: mode);
+                  },
+                  paymentDetails: PaymentDetails(
+                      serviceName: serviceName,
+                      price: price.toStringAsFixed(2),
+                      transactionNumber: transactionNumber));
+            },
+            price: data['amount']);
+      },
+    );
   }
 }

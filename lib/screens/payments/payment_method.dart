@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
+import 'package:guided/common/widgets/back_button.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_list.dart';
@@ -14,7 +15,6 @@ import 'package:guided/models/card_model.dart';
 import 'package:guided/models/payment_mode.dart';
 import 'package:guided/screens/widgets/reusable_widgets/credit_card.dart';
 import 'package:guided/utils/services/static_data_services.dart';
-
 import 'package:pay/pay.dart' as pay;
 
 /// returns google wallet
@@ -74,17 +74,7 @@ Future<dynamic> paymentMethod(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Row(children: <Widget>[
-                      GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                color: Colors.grey.withOpacity(0.2)),
-                            child: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.black,
-                            ),
-                          )),
+                      const BackButtonWidget(),
                       SizedBox(width: 20.w),
                       Text(
                         'Payment Method',
@@ -296,18 +286,12 @@ Future<dynamic> paymentMethod(
                           paymentItems: _paymentItems,
                           // margin: const EdgeInsets.only(top: 15),
                           onPaymentResult: (result) async {
-                            // debugPrint('Apple Pay Result ${result}');
-
-                            // final TokenData token = await Stripe.instance
-                            //     .createApplePayToken(result);
-                            // debugPrint('Apple Token $token');
-                            final jsonData = jsonDecode(result['token']);
-                            print(jsonData['header']['transactionId']);
-                            onContinueBtnPressed(
-                                jsonData['header']['transactionId'].toString());
-
-                            // debugPrint('Params ${params}');
-                            // onContinueBtnPressed(tokenJson);
+                            debugPrint('Payment succeed : $result');
+                            if (result.containsKey('token')) {
+                              final jsonData = jsonDecode(result['token']);
+                              // print(jsonData['header']['transactionId']);
+                              onContinueBtnPressed(jsonData);
+                            }
                           },
                           loadingIndicator: const Center(
                             child: CircularProgressIndicator(),

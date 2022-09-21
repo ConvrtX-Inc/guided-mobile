@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
       account?.authentication.then((GoogleSignInAuthentication googleKey) {
         print(googleKey.accessToken);
         APIServices()
-            .loginFacebook(googleKey.accessToken!)
+            .loginGoogle(googleKey.accessToken!)
             .then((APIStandardReturnFormat response) async {
           if (response.status == 'error') {
             AdvanceSnackBar(
@@ -575,7 +575,7 @@ class _LoginScreenState extends State<LoginScreen> {
         appleLoading = true;
       });
       APIServices()
-          .loginFacebook(credential.identityToken!)
+          .loginWithApple(credential.identityToken!)
           .then((APIStandardReturnFormat response) async {
         if (response.status == 'error') {
           AdvanceSnackBar(

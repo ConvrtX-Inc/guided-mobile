@@ -9,14 +9,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
-import 'package:guided/constants/asset_path.dart';
 import 'package:guided/helpers/hexColor.dart';
 import 'package:guided/routes/route_generator.dart';
-import 'package:guided/screens/auths/splashes/splash.dart';
-import 'package:guided/screens/main_navigation/home/screens/home_main.dart';
-import 'package:guided/screens/message/message_filter_screen.dart';
-import 'package:guided/screens/message/message_inbox.dart';
 import 'package:intl/date_symbol_data_local.dart';
+
 import 'firebase/firebase_options.dart';
 
 String _defaultHome = '/';
@@ -64,10 +60,10 @@ class MyApp extends StatelessWidget {
               color: Colors.black,
             ),
           ).apply(
-            // fontFamily: 'Lora',
-            // bodyColor: Colors.white,
-            // displayColor: Colors.white,
-          ),
+              // fontFamily: 'Lora',
+              // bodyColor: Colors.white,
+              // displayColor: Colors.white,
+              ),
         ),
         initialRoute: _defaultHome,
         onGenerateRoute: RouteGenerator.generateRoute,

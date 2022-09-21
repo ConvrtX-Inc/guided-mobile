@@ -21,39 +21,35 @@ class OutfitterList extends StatefulWidget {
 
 class _OutfitterListState extends State<OutfitterList>
     with AutomaticKeepAliveClientMixin<OutfitterList> {
+
   @override
   bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FutureBuilder<OutfitterModelData>(
-              future: APIServices().getOutfitterData(),
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                Widget _displayWidget;
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    _displayWidget = const MainContentSkeleton();
-                    break;
-                  default:
-                    if (snapshot.hasError) {
-                      _displayWidget = Center(
-                          child: APIMessageDisplay(
+        child: FutureBuilder<OutfitterModelData>(
+          future: APIServices().getOutfitterData(),
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            Widget _displayWidget;
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                _displayWidget = const MainContentSkeleton();
+                break;
+              default:
+                if (snapshot.hasError) {
+                  _displayWidget = Center(
+                      child: APIMessageDisplay(
                         message: 'Result: ${snapshot.error}',
                       ));
-                    } else {
-                      _displayWidget = buildOutfitterResult(snapshot.data!);
-                    }
+                } else {
+                  _displayWidget = buildOutfitterResult(snapshot.data!);
                 }
-                return _displayWidget;
-              },
-            )
-          ],
+            }
+            return _displayWidget;
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(

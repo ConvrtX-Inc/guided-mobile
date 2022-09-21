@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 class FirebaseServices {
 
   Future<String> uploadImageToFirebase(File _photo,String storagePath) async {
-    String filePath = '$storagePath/${DateTime.now().toString()}-${_photo.path.split("/").last}';
+    final String filePath = '$storagePath/${DateTime.now().toString()}-${_photo.path.split("/").last}';
     String downloadUrl ='';
 
     try {
