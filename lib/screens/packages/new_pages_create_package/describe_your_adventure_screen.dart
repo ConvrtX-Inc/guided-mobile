@@ -50,12 +50,11 @@ class _DescribeYourAdventureScreenState
           ),
           expand: true,
         );
-        if (!(result is bool)) {
+        print('result $result');
+        if (!(result is String)) {
           return;
         }
-        final state = _formKey.currentState!.value;
-        state['isRegulated'] = result;
-
+        final state = <dynamic, dynamic>{'isRegulated': result}..addAll(_formKey.currentState!.value);
         navigateTo(context, AppRoutes.TELL_TRAVELLERS_AND_US_MORE_ABOUT_YOU, state);
       },
       page: 7,

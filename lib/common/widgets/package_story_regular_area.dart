@@ -15,34 +15,34 @@ class PackageStoryRegularAreaWidget extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(30.w),
         child: FormBuilder(
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
           key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const ModalTitle(title: 'Regulated Areas'),
               SizedBox(height: 10.h),
-              Expanded(
-                child: ListView(
-                  children: [
-                    Center(
-                      child: Text(
-                        'Does your experience take a place in a National or Provincial Park, or on Government controlled land?',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    FormBuilderRadioGroup(
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(context),
-                        ]),
-                        name: 'isRegulated',
-                        options: ['Yes', 'No']
-                            .map((e) => FormBuilderFieldOption(value: e))
-                            .toList()),
-                  ],
+              Center(
+                child: Text(
+                  'Does your experience take a place in a National or Provincial Park, or on Government controlled land?',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
+              SizedBox(height: 10.h),
+              FormBuilderRadioGroup(
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(context),
+                ]),
+                name: 'isRegulated',
+                options: ['Yes', 'No']
+                    .map((e) => FormBuilderFieldOption(value: e))
+                    .toList(),
+              ),
+              SizedBox(height: 10.h),
               SizedBox(
                 width: width,
                 height: 60.h,
@@ -51,8 +51,10 @@ class PackageStoryRegularAreaWidget extends StatelessWidget {
                     if (_formKey.currentState?.validate() != true) {
                       return;
                     }
+                    print(_formKey.currentState?.value);
 
-                    Navigator.pop(context, _formKey.currentState?.value['isRegulated']);
+                    Navigator.pop(
+                        context, _formKey.currentState?.value['isRegulated']);
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(

@@ -27,7 +27,8 @@ class _TellTravellersAndUsMoreAboutYouScreenState
   @override
   Widget build(BuildContext context) {
     return PackageWidgetLayout(
-      buttonText: 'Next',
+      disableSpacer: true,
+      buttonText: 'Continue',
       onButton: () {
         if (_formKey.currentState?.validate() != true) {
           return;
@@ -36,14 +37,13 @@ class _TellTravellersAndUsMoreAboutYouScreenState
             _formKey.currentState!.value);
       },
       page: 8,
-      child: SingleChildScrollView(
-        child: FormBuilder(
-          key: _formKey,
-          onChanged: () {
-            _formKey.currentState!.save();
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: FormBuilder(
+        key: _formKey,
+        onChanged: () {
+          _formKey.currentState!.save();
+        },
+        child: Expanded(
+          child: ListView(
             children: <Widget>[
               HeaderText.headerTextLight(
                   'Tell Travellers  & us more about you'),

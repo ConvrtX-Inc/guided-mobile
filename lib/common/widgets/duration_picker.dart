@@ -10,29 +10,28 @@ class DurationModal extends StatelessWidget {
     return SafeArea(
       child: Container(
         child: Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Column(
+            Expanded(child: Column(
               mainAxisSize: MainAxisSize.min,
               children: hours
                   .map((e) => TextButton(
-                      onPressed: () => _onChoose(context, e), child: Text(e)))
+                  onPressed: () => _onChoose(context, e), child: Text(e)))
                   .toList(),
-            ),
-            Column(
+            ),),
+            Expanded(child: Column(
               mainAxisSize: MainAxisSize.min,
               children: days
                   .map((e) => TextButton(
-                      onPressed: () => _onChoose(context, e), child: Text(e)))
+                  onPressed: () => _onChoose(context, e), child: Text(e)))
                   .toList(),
-            ),
-            Column(
+            ),),
+            Expanded(child: Column(
               mainAxisSize: MainAxisSize.min,
               children: weeks
                   .map((e) => TextButton(
-                      onPressed: () => _onChoose(context, e), child: Text(e)))
+                  onPressed: () => _onChoose(context, e), child: Text(e)))
                   .toList(),
-            ),
+            ),),
           ],
         ),
       ),
