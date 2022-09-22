@@ -23,6 +23,7 @@ class TellUsABitMoreScreen extends StatefulWidget {
 
 class _TellUsABitMoreScreenState extends State<TellUsABitMoreScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
+  final _languages = <String>['English'];
 
   @override
   Widget build(BuildContext context) {
@@ -85,23 +86,35 @@ class _TellUsABitMoreScreenState extends State<TellUsABitMoreScreen> {
               ),
               SizedBox(height: 20.h),
               // TODO
-              AppTextField(
-                label: 'Language',
-                name: 'languages',
-                hintText: 'English',
-                validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(context),
-                ]),
-              ),
-              SizedBox(height: 10.h),
-              Text(
-                'Add additional languages',
-                style: TextStyle(
-                  color: AppColors.primaryGreen,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'GilRoy',
-                  fontSize: 14,
-                  decoration: TextDecoration.underline,
+              for (final item in _languages)
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AppTextField(
+                        label: 'Language',
+                        name: 'languages.0',
+                        hintText: 'English',
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(context),
+                        ]),
+                      ),
+                      SizedBox(height: 10.h),
+                    ],
+                  ),
+                ),
+              GestureDetector(
+                onTap: () {},
+                child: Text(
+                  'Add additional languages',
+                  style: TextStyle(
+                    color: AppColors.primaryGreen,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'GilRoy',
+                    fontSize: 14,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
             ],

@@ -180,7 +180,7 @@ class RouteGenerator {
             builder: (_) => const WhatYourExperienceFocusOnScreen(), settings: settings);
       case AppRoutes.WHAT_WE_ARE_LOOKING_FOR:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const WhatWeAreLookingForScreen(), settings: settings);
+            builder: (_) => WhatWeAreLookingForScreen(arguments: settings.arguments as Map), settings: settings);
       case AppRoutes.YOUR_EXPERIENCE:
         return MaterialPageRoute<dynamic>(
             builder: (_) => const YourExperienceScreen(), settings: settings);

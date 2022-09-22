@@ -28,6 +28,8 @@ class _WhatYourExperienceFocusOnScreenState
     extends State<WhatYourExperienceFocusOnScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
 
+  List<Activity> allActivities = [];
+
   @override
   Widget build(BuildContext context) {
     return PackageWidgetLayout(
@@ -38,7 +40,7 @@ class _WhatYourExperienceFocusOnScreenState
         }
 
         navigateTo(context, AppRoutes.WHAT_WE_ARE_LOOKING_FOR,
-            _formKey.currentState!.value);
+            {'allActivities': allActivities});
       },
       page: 2,
       child: SingleChildScrollView(
@@ -85,6 +87,14 @@ class _WhatYourExperienceFocusOnScreenState
                   ),
                 ),
               ),
+              if (allActivities.length > 0)
+                Center(
+                  child: CircleAvatar(
+                    child: Image.asset(allActivities.first.path),
+                    backgroundColor: Colors.transparent,
+                    radius: 64,
+                  ),
+                ),
             ],
           ),
         ),
@@ -92,14 +102,18 @@ class _WhatYourExperienceFocusOnScreenState
     );
   }
 
-  void _handleSelection(List<Activity> activity) {}
+  void _handleSelection(List<Activity> activities) {
+    setState(() {
+      allActivities = activities;
+    });
+  }
 
   void _openModalSelection() {
     showCustomModalBottomSheet(
       context: context,
       builder: (context) => ActivitySelection(
         onActivity: _handleSelection,
-        previousSelection: [],
+        previousSelection: allActivities,
       ),
       containerWidget: (_, animation, child) => FloatingModal(
         child: child,

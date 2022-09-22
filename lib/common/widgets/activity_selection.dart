@@ -9,10 +9,12 @@ import 'package:guided/utils/services/static_data_services.dart';
 class ActivitySelection extends StatefulWidget {
   final ValueChanged<List<Activity>> onActivity;
   final List<Activity> previousSelection;
+  final bool multiple;
 
   ActivitySelection({
     required this.onActivity,
     required this.previousSelection,
+    this.multiple = false,
   });
 
   @override
@@ -36,7 +38,7 @@ class _ActivitySelectionState extends State<ActivitySelection> {
     final double width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 30.w),
+        padding: EdgeInsets.all(30.w),
         child: Column(
           children: [
             const ModalTitle(title: 'Select a Badge'),
@@ -55,7 +57,15 @@ class _ActivitySelectionState extends State<ActivitySelection> {
                     selected: selection[item.id] != null,
                     onTap: () {
                       setState(() {
-                        selection[item.id] = item;
+                        if (selection.containsKey(item.id)) {
+                          selection.remove(item.id);
+                        } else {
+                          if (!widget.multiple) {
+                            selection.clear();
+                          }
+
+                          selection[item.id] = item;
+                        }
                       });
                     },
                   );
@@ -95,7 +105,6 @@ class _ActivitySelectionState extends State<ActivitySelection> {
   }
 }
 
-// TODO Finish this
 class ActivityListItem extends StatelessWidget {
   final Activity item;
   final VoidCallback onTap;
@@ -110,9 +119,18 @@ class ActivityListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: onTap,
       leading: CircleAvatar(
-        child: Image.asset(item.featureImage),
+        backgroundImage: AssetImage(item.path),
+        backgroundColor: Colors.transparent,
       ),
+      title: Text(item.name),
+      trailing: selected
+          ? CircleAvatar(
+              child: Image.asset('assets/images/complete.png'),
+              backgroundColor: Colors.transparent,
+            )
+          : null,
     );
   }
 }

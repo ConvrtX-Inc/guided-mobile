@@ -323,7 +323,7 @@ class _SignupFormState extends State<SignupForm> {
     }
 
     setState(() {
-      buttonIsLoading = false;
+      buttonIsLoading = true;
     });
 
     final Map<String, dynamic> data = widget.screenArguments;
@@ -366,7 +366,6 @@ class _SignupFormState extends State<SignupForm> {
         AdvanceSnackBar(
                 message: ErrorMessageConstants.loginWrongEmailorPassword)
             .show(context);
-        setState(() => buttonIsLoading = false);
       } else {
         setRoles(context, response);
       }
@@ -375,23 +374,5 @@ class _SignupFormState extends State<SignupForm> {
     if (mounted) {
       setState(() => buttonIsLoading = false);
     }
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>('ptosAgree', ptosAgree));
-    properties.add(DiagnosticsProperty<bool>('envAgree', envAgree));
-    // ignore: cascade_invocations
-    properties.add(
-        DiagnosticsProperty<TextEditingController>('firstName', firstName));
-    // ignore: cascade_invocations
-    properties
-        .add(DiagnosticsProperty<TextEditingController>('lastName', lastName));
-    // ignore: cascade_invocations
-    properties
-        .add(DiagnosticsProperty<TextEditingController>('birthday', birthday));
-    // ignore: cascade_invocations
-    properties.add(DiagnosticsProperty<TextEditingController>('email', email));
   }
 }
