@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/utils/package.util.dart';
 
 /// Create Package Screen
 class BookingSettingsScreen extends StatefulWidget {
@@ -29,13 +30,16 @@ class _BookingSettingsScreenState extends State<BookingSettingsScreen> {
           return;
         }
 
-        Navigator.of(context).pushNamed(AppRoutes.GUIDED_CANCELLATION_POLICY,
-            arguments: _formKey.currentState!.value);
+        navigateTo(context, AppRoutes.GUIDED_CANCELLATION_POLICY,
+            _formKey.currentState!.value);
       },
       page: 19,
       child: SingleChildScrollView(
         child: FormBuilder(
           key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

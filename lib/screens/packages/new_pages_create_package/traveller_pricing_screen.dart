@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/utils/package.util.dart';
 
 /// Create Package Screen
 class TravellerPricingScreen extends StatefulWidget {
@@ -29,13 +30,16 @@ class _TravellerPricingScreenState extends State<TravellerPricingScreen> {
           return;
         }
 
-        Navigator.of(context).pushNamed(AppRoutes.BOOKING_SETTINGS,
-            arguments: _formKey.currentState!.value);
+        navigateTo(context, AppRoutes.BOOKING_SETTINGS,
+            _formKey.currentState!.value);
       },
       page: 17,
       child: SingleChildScrollView(
         child: FormBuilder(
           key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

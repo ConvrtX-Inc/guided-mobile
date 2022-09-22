@@ -6,6 +6,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/utils/package.util.dart';
 
 import '../../../constants/app_routes.dart';
 
@@ -31,13 +32,16 @@ class _TellTravellersAndUsMoreAboutYouScreenState
         if (_formKey.currentState?.validate() != true) {
           return;
         }
-        Navigator.of(context).pushNamed(AppRoutes.WHERE_SHOULD_TRAVELLERS_MEET_YOU,
-            arguments: _formKey.currentState!.value);
+        navigateTo(context, AppRoutes.WHERE_SHOULD_TRAVELLERS_MEET_YOU,
+            _formKey.currentState!.value);
       },
       page: 8,
       child: SingleChildScrollView(
         child: FormBuilder(
           key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

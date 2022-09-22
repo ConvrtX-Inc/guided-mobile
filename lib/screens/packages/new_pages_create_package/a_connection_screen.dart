@@ -10,6 +10,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/badge_model.dart';
+import 'package:guided/utils/package.util.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 import '../../../constants/app_routes.dart';
@@ -36,12 +37,15 @@ class _AConnectionScreenState extends State<AConnectionScreen> {
             return;
           }
 
-          Navigator.of(context).pushNamed(AppRoutes.DESCRIBE_YOUR_ADVENTURE,
-              arguments: _formKey.currentState!.value);
+          navigateTo(context, AppRoutes.DESCRIBE_YOUR_ADVENTURE,
+              _formKey.currentState!.value);
         },
         child: SingleChildScrollView(
           child: FormBuilder(
             key: _formKey,
+            onChanged: () {
+              _formKey.currentState!.save();
+            },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[

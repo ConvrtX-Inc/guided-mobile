@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/utils/package.util.dart';
 
 /// Create Package Screen
 class WhatIsIncludedInYourAdventureScreen extends StatefulWidget {
@@ -31,13 +32,16 @@ class _WhatIsIncludedInYourAdventureScreenState
           return;
         }
 
-        Navigator.of(context).pushNamed(AppRoutes.WILL_TRAVELLERS_NEED_TO_BRING_ANYTHING_ON_YOUR_ADVENTURE,
-            arguments: _formKey.currentState!.value);
+        navigateTo(context, AppRoutes.WILL_TRAVELLERS_NEED_TO_BRING_ANYTHING_ON_YOUR_ADVENTURE,
+            _formKey.currentState!.value);
       },
       page: 10,
       child: SingleChildScrollView(
         child: FormBuilder(
           key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

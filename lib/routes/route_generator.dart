@@ -174,83 +174,83 @@ class RouteGenerator {
       //TODO: START OF: new figma create package
       case AppRoutes.TELL_US_A_BIT_MORE:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TellUsABitMoreScreen());
+            builder: (_) => const TellUsABitMoreScreen(), settings: settings);
       case AppRoutes.WHAT_OUR_EXPERIENCE_FOCUS_ON:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const WhatYourExperienceFocusOnScreen());
+            builder: (_) => const WhatYourExperienceFocusOnScreen(), settings: settings);
       case AppRoutes.WHAT_WE_ARE_LOOKING_FOR:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const WhatWeAreLookingForScreen());
+            builder: (_) => const WhatWeAreLookingForScreen(), settings: settings);
       case AppRoutes.YOUR_EXPERIENCE:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const YourExperienceScreen());
+            builder: (_) => const YourExperienceScreen(), settings: settings);
       case AppRoutes.THE_PERKS:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const ThePerksScreen());
+            builder: (_) => const ThePerksScreen(), settings: settings);
       case AppRoutes.A_CONNECTION:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const AConnectionScreen());
+            builder: (_) => const AConnectionScreen(), settings: settings);
       case AppRoutes.DESCRIBE_YOUR_ADVENTURE:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const DescribeYourAdventureScreen());
+            builder: (_) => const DescribeYourAdventureScreen(), settings: settings);
       case AppRoutes.TELL_TRAVELLERS_AND_US_MORE_ABOUT_YOU:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TellTravellersAndUsMoreAboutYouScreen());
+            builder: (_) => const TellTravellersAndUsMoreAboutYouScreen(), settings: settings);
       case AppRoutes.WHERE_SHOULD_TRAVELLERS_MEET_YOU:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const WhereShouldTravellersMeetYouScreen());
+            builder: (_) => const WhereShouldTravellersMeetYouScreen(), settings: settings);
       case AppRoutes.WHAT_S_INCLUDED_IN_YOUR_ADVENTURE:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const WhatIsIncludedInYourAdventureScreen());
+            builder: (_) => const WhatIsIncludedInYourAdventureScreen(), settings: settings);
       case AppRoutes.WILL_TRAVELLERS_NEED_TO_BRING_ANYTHING_ON_YOUR_ADVENTURE:
         return MaterialPageRoute<dynamic>(
             builder: (_) =>
-                const WillTravellersNeedToBringAnythingOnYourAdventureScreen());
+                const WillTravellersNeedToBringAnythingOnYourAdventureScreen(), settings: settings);
       case AppRoutes.WHO_CAN_COME_ON_YOUR_ADVENTURE:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const WhoCanComeOnYourAdventureScreen());
+            builder: (_) => const WhoCanComeOnYourAdventureScreen(), settings: settings);
       case AppRoutes.TIME_TO_NAME_YOUR_ADVENTURE_SCREEN:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TimeToNameYourAdventureScreen());
+            builder: (_) => const TimeToNameYourAdventureScreen(), settings: settings);
       case AppRoutes.SOME_QUICK_PHOTO_ADVICE:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const SomeQuickPhotoAdviceScreen());
+            builder: (_) => const SomeQuickPhotoAdviceScreen(), settings: settings);
       case AppRoutes.ADD_YOUR_PHOTOS_SCREEN:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const AddYourPhotosScreen());
+            builder: (_) => const AddYourPhotosScreen(), settings: settings);
       case AppRoutes.GROUP_SIZE_SCREEN:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const GroupSizeScreen());
+            builder: (_) => const GroupSizeScreen(), settings: settings);
       case AppRoutes.SCHEDULE_SCREEN:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const ScheduleScreen());
+            builder: (_) => const ScheduleScreen(), settings: settings);
       case AppRoutes.TRAVELLER_PRICING:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const TravellerPricingScreen());
+            builder: (_) => const TravellerPricingScreen(), settings: settings);
       case AppRoutes.BOOKING_SETTINGS:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const BookingSettingsScreen());
+            builder: (_) => const BookingSettingsScreen(), settings: settings);
       case AppRoutes.GUIDED_CANCELLATION_POLICY:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const GuidedCancellationPolicyScreen());
+            builder: (_) => const GuidedCancellationPolicyScreen(), settings: settings);
       case AppRoutes.A_FEW_MORE_THINGS:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const AFewMoreThingsScreen());
+            builder: (_) => const AFewMoreThingsScreen(), settings: settings);
       case AppRoutes.SUMMARY_1:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const Summary1Screen());
+            builder: (_) => const Summary1Screen(), settings: settings);
       case AppRoutes.SUMMARY_2:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const Summary2Screen());
+            builder: (_) => const Summary2Screen(), settings: settings);
       case AppRoutes.SUMMARY_3:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const Summary3Screen());
+            builder: (_) => const Summary3Screen(), settings: settings);
       case AppRoutes.SUMMARY_4:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const Summary4Screen());
+            builder: (_) => const Summary4Screen(), settings: settings);
       case AppRoutes.SUMMARY_5:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const Summary5Screen());
+            builder: (_) => const Summary5Screen(), settings: settings);
       //TODO: END OF: new figma create package
       case '/create_package':
         return MaterialPageRoute<dynamic>(

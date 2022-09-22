@@ -11,6 +11,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/models/activities_model.dart';
+import 'package:guided/utils/package.util.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Create Package Screen
@@ -36,13 +37,16 @@ class _WhatYourExperienceFocusOnScreenState
           return;
         }
 
-        Navigator.of(context).pushNamed(AppRoutes.WHAT_WE_ARE_LOOKING_FOR,
-            arguments: _formKey.currentState!.value);
+        navigateTo(context, AppRoutes.WHAT_WE_ARE_LOOKING_FOR,
+            _formKey.currentState!.value);
       },
       page: 2,
       child: SingleChildScrollView(
         child: FormBuilder(
           key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

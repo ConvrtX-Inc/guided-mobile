@@ -6,6 +6,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/utils/package.util.dart';
 
 import '../../../constants/app_routes.dart';
 
@@ -32,13 +33,16 @@ class _DescribeYourAdventureScreenState
           return;
         }
 
-        Navigator.of(context).pushNamed(AppRoutes.TELL_TRAVELLERS_AND_US_MORE_ABOUT_YOU,
-            arguments: _formKey.currentState!.value);
+        navigateTo(context, AppRoutes.TELL_TRAVELLERS_AND_US_MORE_ABOUT_YOU,
+            _formKey.currentState!.value);
       },
       page: 7,
       child: SingleChildScrollView(
         child: FormBuilder(
           key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

@@ -10,6 +10,7 @@ import 'package:guided/common/widgets/text_flieds.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/utils/package.util.dart';
 
 /// Create Package Screen
 class TellUsABitMoreScreen extends StatefulWidget {
@@ -32,12 +33,15 @@ class _TellUsABitMoreScreenState extends State<TellUsABitMoreScreen> {
           return;
         }
 
-        Navigator.of(context)
-            .pushNamed(AppRoutes.WHAT_OUR_EXPERIENCE_FOCUS_ON, arguments: _formKey.currentState!.value);
+        navigateTo(context, AppRoutes.WHAT_OUR_EXPERIENCE_FOCUS_ON,
+            _formKey.currentState!.value);
       },
       child: SingleChildScrollView(
         child: FormBuilder(
           key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

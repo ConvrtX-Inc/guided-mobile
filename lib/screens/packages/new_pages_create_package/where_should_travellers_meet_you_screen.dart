@@ -11,6 +11,7 @@ import 'package:guided/common/widgets/text_flieds.dart';
 import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/screens/packages/new_pages_create_package/widgets/confirm_meeting_point_widget.dart';
+import 'package:guided/utils/package.util.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Create Package Screen
@@ -36,7 +37,8 @@ class _WhereShouldTravellersMeetYouScreenState
           Container(
             padding: EdgeInsets.symmetric(horizontal: 30.w),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(30.0)),
+              borderRadius:
+                  BorderRadius.vertical(bottom: Radius.circular(30.0)),
               color: Colors.white,
             ),
             child: Column(
@@ -76,7 +78,7 @@ class _WhereShouldTravellersMeetYouScreenState
     );
 
     if (result is Map) {
-      Navigator.pushNamed(context, AppRoutes.WHAT_S_INCLUDED_IN_YOUR_ADVENTURE, arguments: result);
+      navigateTo(context, AppRoutes.WHAT_S_INCLUDED_IN_YOUR_ADVENTURE, result);
     }
   }
 }

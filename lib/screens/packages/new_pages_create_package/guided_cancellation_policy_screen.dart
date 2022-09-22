@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/utils/package.util.dart';
 
 /// Create Package Screen
 class GuidedCancellationPolicyScreen extends StatefulWidget {
@@ -31,13 +32,16 @@ class _GuidedCancellationPolicyScreenState
           return;
         }
 
-        Navigator.of(context).pushNamed(AppRoutes.A_FEW_MORE_THINGS,
-            arguments: _formKey.currentState!.value);
+        navigateTo(context, AppRoutes.A_FEW_MORE_THINGS,
+            _formKey.currentState!.value);
       },
       page: 20,
       child: SingleChildScrollView(
         child: FormBuilder(
           key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

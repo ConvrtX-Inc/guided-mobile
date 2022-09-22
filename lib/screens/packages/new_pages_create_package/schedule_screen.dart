@@ -10,6 +10,7 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/models/badge_model.dart';
+import 'package:guided/utils/package.util.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 
 import '../../../constants/app_routes.dart';
@@ -35,13 +36,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           return;
         }
 
-        Navigator.of(context).pushNamed(AppRoutes.TRAVELLER_PRICING,
-            arguments: _formKey.currentState!.value);
+        navigateTo(context, AppRoutes.TRAVELLER_PRICING,
+            _formKey.currentState!.value);
       },
       page: 16,
       child: SingleChildScrollView(
         child: FormBuilder(
           key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

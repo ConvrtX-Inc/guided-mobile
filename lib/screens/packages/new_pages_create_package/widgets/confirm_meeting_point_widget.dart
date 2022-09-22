@@ -16,6 +16,9 @@ class ConfirmMeetingPointModal extends StatelessWidget {
       body: SafeArea(
         child: FormBuilder(
           key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
           child: Padding(
             padding: EdgeInsets.all(30.w),
             child: Column(
