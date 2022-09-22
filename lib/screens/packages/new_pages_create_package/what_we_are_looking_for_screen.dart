@@ -96,7 +96,7 @@ class _WhatWeAreLookingForScreenState extends State<WhatWeAreLookingForScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'The Perks',
+                  'The Perks:',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 SizedBox(
@@ -104,7 +104,7 @@ class _WhatWeAreLookingForScreenState extends State<WhatWeAreLookingForScreen> {
                 ),
                 Expanded(
                   child: Text(
-                    'You have great knowledge, ability or background',
+                    "You give Travellers something they couldn't get on their own, something special. ",
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
@@ -117,7 +117,7 @@ class _WhatWeAreLookingForScreenState extends State<WhatWeAreLookingForScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'The Perks',
+                  'A Connection:',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 SizedBox(
@@ -125,7 +125,7 @@ class _WhatWeAreLookingForScreenState extends State<WhatWeAreLookingForScreen> {
                 ),
                 Expanded(
                   child: Text(
-                    'You have great knowledge, ability or background',
+                    'You provide a genuine, meaningful and memorable experience.',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
