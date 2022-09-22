@@ -186,7 +186,7 @@ class RouteGenerator {
             builder: (_) => YourExperienceScreen(arguments: settings.arguments as Map), settings: settings);
       case AppRoutes.THE_PERKS:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const ThePerksScreen(), settings: settings);
+            builder: (_) => ThePerksScreen(arguments: settings.arguments as Map), settings: settings);
       case AppRoutes.A_CONNECTION:
         return MaterialPageRoute<dynamic>(
             builder: (_) => const AConnectionScreen(), settings: settings);

@@ -42,8 +42,7 @@ class _YourExperienceScreenState extends State<YourExperienceScreen> {
         if (_formKey.currentState?.validate() != true) {
           return;
         }
-
-        navigateTo(context, AppRoutes.THE_PERKS, _formKey.currentState!.value);
+        navigateTo(context, AppRoutes.THE_PERKS, {});
       },
       child: FormBuilder(
         key: _formKey,
