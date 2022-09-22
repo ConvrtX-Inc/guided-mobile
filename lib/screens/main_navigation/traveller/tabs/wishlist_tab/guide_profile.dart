@@ -9,13 +9,10 @@ import 'package:guided/models/activities_model.dart';
 import 'package:guided/models/package_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/wishlist_activity_model.dart';
-import 'package:guided/screens/main_navigation/home/widgets/home_features.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/widget/guide_profile_feature.dart';
-import 'package:guided/screens/main_navigation/traveller/tabs/wishlist_tab/widget/post_features.dart';
 import 'package:guided/screens/widgets/reusable_widgets/api_message_display.dart';
 import 'package:guided/screens/widgets/reusable_widgets/main_content_skeleton.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
-import 'package:guided/utils/services/static_data_services.dart';
 
 /// Guide Profile
 class GuideProfile extends StatefulWidget {
@@ -29,7 +26,6 @@ class _GuideProfileState extends State<GuideProfile>
     with AutomaticKeepAliveClientMixin<GuideProfile> {
   @override
   bool get wantKeepAlive => true;
-  final List<Activity> activities = StaticDataService.getActivityList();
 
   @override
   void initState() {

@@ -29,3 +29,27 @@ class BackButtonWidget extends StatelessWidget {
     );
   }
 }
+
+class ModalBackButtonWidget extends StatelessWidget {
+  const ModalBackButtonWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+      width: 40.w,
+      height: 40.h,
+      padding: EdgeInsets.zero,
+      child: IconButton(
+        icon: const Icon(
+          Icons.close,
+          color: Colors.black,
+          size: 25,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+}

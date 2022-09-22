@@ -2,15 +2,15 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/common/widgets/back_button.dart';
+import 'package:guided/common/widgets/activity_selection.dart';
+import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_colors.dart';
+import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_text_style.dart';
-import 'package:guided/constants/app_texts.dart';
-import 'package:guided/models/badge_model.dart';
-import 'package:guided/utils/services/rest_api_service.dart';
-
-import '../../../constants/app_routes.dart';
+import 'package:guided/models/activities_model.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Create Package Screen
 class WhatYourExperienceFocusOnScreen extends StatefulWidget {
@@ -18,126 +18,84 @@ class WhatYourExperienceFocusOnScreen extends StatefulWidget {
   const WhatYourExperienceFocusOnScreen({Key? key}) : super(key: key);
 
   @override
-  _WhatYourExperienceFocusOnScreenState createState() => _WhatYourExperienceFocusOnScreenState();
+  _WhatYourExperienceFocusOnScreenState createState() =>
+      _WhatYourExperienceFocusOnScreenState();
 }
 
-class _WhatYourExperienceFocusOnScreenState extends State<WhatYourExperienceFocusOnScreen> {
-  bool showMainActivityChoices = false;
-  bool showSubActivityChoices = false;
-  dynamic mainActivity;
-
-  late Future<BadgeModelData> _loadingData;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _loadingData = APIServices().getBadgesModel();
-  }
+class _WhatYourExperienceFocusOnScreenState
+    extends State<WhatYourExperienceFocusOnScreen> {
+  final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
+    return PackageWidgetLayout(
+      buttonText: 'Next',
+      onButton: () {
+        if (_formKey.currentState?.validate() != true) {
+          return;
+        }
 
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+        Navigator.of(context).pushNamed(AppRoutes.WHAT_WE_ARE_LOOKING_FOR,
+            arguments: _formKey.currentState!.value);
+      },
+      child: SingleChildScrollView(
+        child: FormBuilder(
+          key: _formKey,
           child: Column(
-            children: [
-              Row(
-                children: [
-                  BackButtonWidget(),
-                  Spacer(),
-                  Text('2/21'),
-                  IconButton(
-                    icon: Icon(
-                      Icons.menu,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      //TODO
-                    },
-                  )
-                ],
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              HeaderText.headerTextLight('What will your adventure focus on?'),
+              const Text(
+                "Use Discovery Badge for unique Adventures that don't fall under other badges. It's a mixed bag of Adventures!",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: 'GilRoy',
+                  fontSize: 16,
+                ),
               ),
-              InkWell(
-                splashFactory: NoSplash.splashFactory,
-                highlightColor: Colors.transparent,
-                onTap: () {
-                  setState(() {
-                    showMainActivityChoices = false;
-                    showSubActivityChoices = false;
-                  });
-                },
+              SizedBox(
+                height: 20.h,
+              ),
+              Center(
                 child: SizedBox(
-                  width: width,
-                  height: height,
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          HeaderText.headerText('What will your adventure focus on?'),
-                          SizedBox(
-                            height: 20.h,
-                          ),
-                          const Text(
-                            "Use Discovery Badge for unique Adventures that don't fall under other badges. It's a mixed bag of Adventures!",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'GilRoy',
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
+                  height: 60.h,
+                  child: ElevatedButton(
+                    onPressed: _openModalSelection,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 24.0),
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(color: AppColors.silver),
+                        borderRadius: BorderRadius.circular(18.r),
                       ),
+                      primary: AppColors.primaryGreen,
+                      onPrimary: Colors.white,
+                    ),
+                    child: Text(
+                      'Select a Badge',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(10),
-        child: SizedBox(
-          width: width,
-          height: 60.h,
-          child: ElevatedButton(
-            onPressed: () {
-              // Temp set to different screen
-              Navigator.pushNamed(context, AppRoutes.WHAT_WE_ARE_LOOKING_FOR);
-            },
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: AppColors.silver),
-                borderRadius: BorderRadius.circular(18.r),
-              ),
-              primary: AppColors.primaryGreen,
-              onPrimary: Colors.white,
-            ),
-            child: Text(
-              AppTextConstants.continueText,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ),
-        ),
-      ),
+      page: 2,
     );
   }
 
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>(
-        'showMainActivityChoices', showMainActivityChoices));
-    properties.add(DiagnosticsProperty<bool>(
-        'showSubActivityChoices', showSubActivityChoices));
-    properties.add(DiagnosticsProperty('mainActivity', mainActivity));
+  void _handleSelection(List<Activity> activity) {}
+
+  void _openModalSelection() {
+    showMaterialModalBottomSheet(
+      context: context,
+      builder: (context) => ActivitySelection(
+        onActivity: _handleSelection,
+        previousSelection: [],
+      ),
+    );
   }
 }

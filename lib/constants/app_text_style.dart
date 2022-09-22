@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/constants/app_colors.dart';
@@ -144,15 +145,20 @@ class HeaderText {
   HeaderText(final String text);
 
   /// Widget
-  static Widget headerText(String text) {
+  static Widget headerTextLight(String text) {
+    return headerText(text, EdgeInsets.symmetric(vertical: 20.h));
+  }
+
+  static Widget headerText(String text, [padding = const EdgeInsets.all(8.0)]) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: padding,
       child: Text(
         text,
         style: const TextStyle(
-            fontWeight: FontWeight.w600, fontSize: 24, fontFamily: 'Gilroy'
-            // fontFamily: 'GilRoy',
-            ),
+          fontWeight: FontWeight.w600,
+          fontSize: 24,
+          fontFamily: 'Gilroy',
+        ),
       ),
     );
   }

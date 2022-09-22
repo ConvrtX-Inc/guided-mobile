@@ -10,15 +10,12 @@ import 'package:guided/common/widgets/country_dropdown.dart';
 import 'package:guided/common/widgets/custom_rounded_button.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
-import 'package:guided/controller/bank_account_controller.dart';
 import 'package:guided/controller/user_profile_controller.dart';
 import 'package:guided/models/country_currency_model.dart';
 import 'package:guided/models/country_model.dart';
 import 'package:guided/models/profile_data_model.dart';
 import 'package:guided/models/user_model.dart';
-import 'package:guided/utils/mixins/validator_mixin.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
-import 'package:http/src/response.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 ///Setup stripe account
@@ -97,86 +94,89 @@ class _SetupStripeAccountState extends State<SetupStripeAccount> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Expanded(
-                child: SingleChildScrollView(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                  SizedBox(height: 20.h),
-                  BorderlessTextField(
-                    title: AppTextConstants.firstName,
-                    hint: AppTextConstants.firstName,
-                    onValidate: (String val) {
-                      if (val.trim().isEmpty) {
-                        return '${AppTextConstants.firstName} is required';
-                      }
-                      return null;
-                    },
-                    onSaved: (String val) {
-                      _firstName = val.trim();
-                    },
-                  ),
-                  SizedBox(height: 20.h),
-                  BorderlessTextField(
-                    title: AppTextConstants.lastName,
-                    hint: AppTextConstants.lastName,
-                    onValidate: (String val) {
-                      if (val.trim().isEmpty) {
-                        return '${AppTextConstants.lastName} is required';
-                      }
-                      return null;
-                    },
-                    onSaved: (String val) {
-                      _lastName = val.trim();
-                    },
-                  ),
-                  SizedBox(height: 20.h),
-                  BorderlessTextField(
-                    title: AppTextConstants.companyName,
-                    hint: AppTextConstants.companyName,
-                    onValidate: (String val) {
-                      if (val.trim().isEmpty) {
-                        return '${AppTextConstants.companyName} is required';
-                      }
-                      return null;
-                    },
-                    onSaved: (String val) {
-                      _companyName = val.trim();
-                    },
-                  ),
-                  SizedBox(height: 20.h),
-                  Text('Phone Number'),
-                  SizedBox(height: 10.h),
-                  TextField(
-                    controller: phoneController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: AppTextConstants.phoneNumberHint,
-                      prefixIcon: SizedBox(
-                        child: CountryCodePicker(
-                          onChanged: _onCountryChange,
-                          initialSelection: AppTextConstants.defaultCountry,
-                          favorite: ['+1', 'US'],
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(height: 20.h),
+                    BorderlessTextField(
+                      title: AppTextConstants.firstName,
+                      hint: AppTextConstants.firstName,
+                      onValidate: (String val) {
+                        if (val.trim().isEmpty) {
+                          return '${AppTextConstants.firstName} is required';
+                        }
+                        return null;
+                      },
+                      onSaved: (String val) {
+                        _firstName = val.trim();
+                      },
+                    ),
+                    SizedBox(height: 20.h),
+                    BorderlessTextField(
+                      title: AppTextConstants.lastName,
+                      hint: AppTextConstants.lastName,
+                      onValidate: (String val) {
+                        if (val.trim().isEmpty) {
+                          return '${AppTextConstants.lastName} is required';
+                        }
+                        return null;
+                      },
+                      onSaved: (String val) {
+                        _lastName = val.trim();
+                      },
+                    ),
+                    SizedBox(height: 20.h),
+                    BorderlessTextField(
+                      title: AppTextConstants.companyName,
+                      hint: AppTextConstants.companyName,
+                      onValidate: (String val) {
+                        if (val.trim().isEmpty) {
+                          return '${AppTextConstants.companyName} is required';
+                        }
+                        return null;
+                      },
+                      onSaved: (String val) {
+                        _companyName = val.trim();
+                      },
+                    ),
+                    SizedBox(height: 20.h),
+                    Text('Phone Number'),
+                    SizedBox(height: 10.h),
+                    TextField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: AppTextConstants.phoneNumberHint,
+                        prefixIcon: SizedBox(
+                          child: CountryCodePicker(
+                            onChanged: _onCountryChange,
+                            initialSelection: AppTextConstants.defaultCountry,
+                            favorite: ['+1', 'US'],
+                          ),
+                        ),
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 0.2.w),
                         ),
                       ),
-                      hintStyle: TextStyle(
-                        color: AppColors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                        borderSide:
-                            BorderSide(color: Colors.grey, width: 0.2.w),
-                      ),
                     ),
-                  ),
-                  SizedBox(height: 20.h),
-                  DropDownCountry(
-                    fontSize: 16.sp,
-                    value: _country,
-                    setCountry: setCountry,
-                    list: listCountry,
-                  ),
-                  SizedBox(height: 20.h),
-                ]))),
+                    SizedBox(height: 20.h),
+                    DropDownCountry(
+                      fontSize: 16.sp,
+                      value: _country,
+                      setCountry: setCountry,
+                      list: listCountry,
+                    ),
+                    SizedBox(height: 20.h),
+                  ],
+                ),
+              ),
+            ),
             CustomRoundedButton(
                 isLoading: isSettingUpStripe,
                 title: !isSettingUpStripe
@@ -205,16 +205,16 @@ class _SetupStripeAccountState extends State<SetupStripeAccount> {
         'product_description': 'Provide tour services'
       });
 
+      debugPrint('Response Body: $params');
+
       final setupStripeResult = await APIServices().createStripeAccount(params);
-
-
 
       debugPrint('Response Body: ${setupStripeResult.statusCode}');
 
       if (setupStripeResult.statusCode == 201) {
         debugPrint('New Account ${setupStripeResult.body.toString()}');
-        final res =
-            await APIServices().getOnboardAccountLink(setupStripeResult.body.toString());
+        final res = await APIServices()
+            .getOnboardAccountLink(setupStripeResult.body.toString());
 
         final onBoardAccountRes = json.decode(res.body);
         debugPrint('Onboard Account REs $onBoardAccountRes');
@@ -231,6 +231,7 @@ class _SetupStripeAccountState extends State<SetupStripeAccount> {
         }
       } else {
         final setupStripeResponseBody = jsonDecode(setupStripeResult.body);
+        print('setupStripeResponseBody $setupStripeResponseBody');
         // final String errorMessage = onBoardAccountRes['errors']['account'];
         setState(() {
           isSettingUpStripe = false;
@@ -265,7 +266,6 @@ class _SetupStripeAccountState extends State<SetupStripeAccount> {
   }
 
   void setCountry(dynamic value) {
-    debugPrint('Value $value');
     setState(() {
       _country = value;
     });
