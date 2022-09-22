@@ -35,7 +35,7 @@ class _WhatYourExperienceFocusOnScreenState
     return PackageWidgetLayout(
       buttonText: 'Next',
       onButton: () {
-        if (_formKey.currentState?.validate() != true) {
+        if (_formKey.currentState?.validate() != true || allActivities.isEmpty) {
           return;
         }
 

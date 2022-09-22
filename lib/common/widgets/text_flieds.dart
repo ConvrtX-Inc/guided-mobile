@@ -10,11 +10,13 @@ class AppTextField extends StatelessWidget {
   final String? subLabel;
   final String? hintText;
   final int? maxLines;
+  final VoidCallback? onTap;
 
   AppTextField({
-    this.label,
-    this.subLabel,
     required this.name,
+    this.label,
+    this.onTap,
+    this.subLabel,
     this.validator,
     this.hintText,
     this.maxLines,
@@ -41,6 +43,8 @@ class AppTextField extends StatelessWidget {
           ),
         if (subLabel != null) SizedBox(height: 15.h),
         FormBuilderTextField(
+          readOnly: onTap != null,
+          onTap: onTap,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(
