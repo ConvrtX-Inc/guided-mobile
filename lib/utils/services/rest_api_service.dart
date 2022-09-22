@@ -341,8 +341,6 @@ class APIServices {
         });
 
     final dynamic parsedJson = json.decode(response.body);
-    print(response.request!.url);
-    print(parsedJson);
     return User.fromJson(parsedJson);
   }
 

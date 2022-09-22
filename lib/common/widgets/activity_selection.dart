@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/common/widgets/back_button.dart';
+import 'package:guided/common/widgets/modal.dart';
 import 'package:guided/common/widgets/text_flieds.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/models/activities_model.dart';
@@ -39,20 +39,7 @@ class _ActivitySelectionState extends State<ActivitySelection> {
         padding: EdgeInsets.symmetric(horizontal: 30.w),
         child: Column(
           children: [
-            Row(
-              children: [
-                const ModalBackButtonWidget(),
-                SizedBox(width: 20.w),
-                Text(
-                  'Select a Badge',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 24,
-                    fontFamily: 'Gilroy',
-                  ),
-                ),
-              ],
-            ),
+            const ModalTitle(title: 'Select a Badge'),
             SizedBox(height: 10.h),
             AppTextField(
               name: 'place',
@@ -79,11 +66,13 @@ class _ActivitySelectionState extends State<ActivitySelection> {
               width: width,
               height: 60.h,
               child: ElevatedButton(
-                onPressed: selection.isEmpty ? null : () {
-                  final allSelection = selection.values.toList();
-                  widget.onActivity(allSelection);
-                  Navigator.pop(context);
-                },
+                onPressed: selection.isEmpty
+                    ? null
+                    : () {
+                        final allSelection = selection.values.toList();
+                        widget.onActivity(allSelection);
+                        Navigator.pop(context);
+                      },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     side: BorderSide(color: AppColors.silver),
@@ -112,7 +101,11 @@ class ActivityListItem extends StatelessWidget {
   final VoidCallback onTap;
   final bool selected;
 
-  ActivityListItem({required this.item, required this.onTap, required this.selected,});
+  ActivityListItem({
+    required this.item,
+    required this.onTap,
+    required this.selected,
+  });
 
   @override
   Widget build(BuildContext context) {

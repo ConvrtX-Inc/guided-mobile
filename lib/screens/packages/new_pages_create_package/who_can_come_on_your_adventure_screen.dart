@@ -2,8 +2,10 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/back_button.dart';
+import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/constants/app_texts.dart';
@@ -18,117 +20,42 @@ class WhoCanComeOnYourAdventureScreen extends StatefulWidget {
   const WhoCanComeOnYourAdventureScreen({Key? key}) : super(key: key);
 
   @override
-  _WhoCanComeOnYourAdventureScreenState createState() => _WhoCanComeOnYourAdventureScreenState();
+  _WhoCanComeOnYourAdventureScreenState createState() =>
+      _WhoCanComeOnYourAdventureScreenState();
 }
 
-class _WhoCanComeOnYourAdventureScreenState extends State<WhoCanComeOnYourAdventureScreen> {
-  bool showMainActivityChoices = false;
-  bool showSubActivityChoices = false;
-  dynamic mainActivity;
-
-  late Future<BadgeModelData> _loadingData;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _loadingData = APIServices().getBadgesModel();
-  }
+class _WhoCanComeOnYourAdventureScreenState
+    extends State<WhoCanComeOnYourAdventureScreen> {
+  final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
+    return PackageWidgetLayout(
+      buttonText: 'Next',
+      onButton: () {
+        if (_formKey.currentState?.validate() != true) {
+          return;
+        }
 
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+        Navigator.of(context).pushNamed(
+            AppRoutes.TIME_TO_NAME_YOUR_ADVENTURE_SCREEN,
+            arguments: _formKey.currentState!.value);
+      },
+      page: 12,
+      child: SingleChildScrollView(
+        child: FormBuilder(
+          key: _formKey,
           child: Column(
-            children: [
-              Row(
-                children: [
-                  BackButtonWidget(),
-                  Spacer(),
-                  Text('12/21'),
-                  IconButton(
-                    icon: Icon(
-                      Icons.menu,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      //TODO
-                    },
-                  )
-                ],
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              HeaderText.headerTextLight("Who can come on your Adventure"),
+              SizedBox(
+                height: 20.h,
               ),
-              InkWell(
-                splashFactory: NoSplash.splashFactory,
-                highlightColor: Colors.transparent,
-                onTap: () {
-                  setState(() {
-                    showMainActivityChoices = false;
-                    showSubActivityChoices = false;
-                  });
-                },
-                child: SizedBox(
-                  width: width,
-                  height: height,
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          HeaderText.headerText("Who can come on your Adventure"),
-                          SizedBox(
-                            height: 20.h,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              )
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(10),
-        child: SizedBox(
-          width: width,
-          height: 60.h,
-          child: ElevatedButton(
-            onPressed: () {
-              // Temp set to different screen
-              Navigator.pushNamed(context, AppRoutes.TIME_TO_NAME_YOUR_ADVENTURE_SCREEN);
-            },
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: AppColors.silver),
-                borderRadius: BorderRadius.circular(18.r),
-              ),
-              primary: AppColors.primaryGreen,
-              onPrimary: Colors.white,
-            ),
-            child: Text(
-              AppTextConstants.continueText,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ),
-        ),
-      ),
     );
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>(
-        'showMainActivityChoices', showMainActivityChoices));
-    properties.add(DiagnosticsProperty<bool>(
-        'showSubActivityChoices', showSubActivityChoices));
-    properties.add(DiagnosticsProperty('mainActivity', mainActivity));
   }
 }

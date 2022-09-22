@@ -750,11 +750,12 @@ class _SignupScreenState extends State<SignupScreen> {
       await SecureStorage.saveValue(
           key: 'registration_data', value: jsonEncode(details));
 
-      setState(() {
-        buttonIsLoading = false;
-      });
       await Navigator.of(context)
           .pushNamed('/continue_with_phone', arguments: details);
+    }
+
+    if (mounted) {
+      setState(() => buttonIsLoading = false);
     }
   }
 }

@@ -11,7 +11,6 @@ import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_texts.dart';
 import 'package:guided/helpers/text_helper.dart';
 import 'package:guided/models/api/api_standard_return.dart';
-import 'package:guided/models/user_model.dart';
 import 'package:guided/utils/auth.utils.dart';
 import 'package:guided/utils/services/rest_api_service.dart';
 import 'package:guided/utils/services/text_service.dart';
@@ -21,9 +20,9 @@ import 'package:loading_elevated_button/loading_elevated_button.dart';
 /// Sign up form screen
 class SignupForm extends StatefulWidget {
   /// Constructor
-  SignupForm({required this.screenArguments, Key? key}) : super(key: key);
+  const SignupForm({required this.screenArguments, Key? key}) : super(key: key);
 
-  Map<String, dynamic> screenArguments;
+  final Map<String, dynamic> screenArguments;
 
   @override
   _SignupFormState createState() => _SignupFormState();
@@ -333,7 +332,8 @@ class _SignupFormState extends State<SignupForm> {
       'email': data['email'],
       'password': data['password'],
       'full_name': firstName.text.isEmpty ? data['full_name'] : firstName.text,
-      'first_name': firstName.text.isEmpty ? data['first_name'] : firstName.text,
+      'first_name':
+          firstName.text.isEmpty ? data['first_name'] : firstName.text,
       'last_name': lastName.text.isEmpty ? data['last_name'] : lastName.text,
       'birth_day': birthday.text.isEmpty ? data['birth_day'] : birthday.text,
       'user_type': data['user_type'],
@@ -351,9 +351,6 @@ class _SignupFormState extends State<SignupForm> {
         await APIServices().register(details);
 
     if (result.status == 'error') {
-      setState(() {
-        buttonIsLoading = false;
-      });
       final Map<String, dynamic> decoded = jsonDecode(result.errorResponse);
       decoded['errors'].forEach((String k, dynamic v) =>
           <dynamic>{errorMessages..add(textServices.filterErrorMessage(v))});
@@ -363,18 +360,20 @@ class _SignupFormState extends State<SignupForm> {
         'password': data['password']
       };
 
-      APIStandardReturnFormat response = await APIServices()
-          .login(credentials);
-      setState(() => buttonIsLoading = false);
+      APIStandardReturnFormat response = await APIServices().login(credentials);
 
       if (response.status == 'error') {
         AdvanceSnackBar(
-            message: ErrorMessageConstants.loginWrongEmailorPassword)
+                message: ErrorMessageConstants.loginWrongEmailorPassword)
             .show(context);
         setState(() => buttonIsLoading = false);
       } else {
         setRoles(context, response);
       }
+    }
+
+    if (mounted) {
+      setState(() => buttonIsLoading = false);
     }
   }
 

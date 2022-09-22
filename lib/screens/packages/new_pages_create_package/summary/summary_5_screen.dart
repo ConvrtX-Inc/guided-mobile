@@ -69,7 +69,7 @@ class _Summary5ScreenState extends State<Summary5Screen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          HeaderText.headerText("Summary 5/5"),
+                          HeaderText.headerTextLight("Summary 5/5"),
                           SizedBox(
                             height: 20.h,
                           ),

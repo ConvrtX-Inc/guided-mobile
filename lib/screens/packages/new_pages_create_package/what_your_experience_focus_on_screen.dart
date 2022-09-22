@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/activity_selection.dart';
+import 'package:guided/common/widgets/modal.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_routes.dart';
@@ -38,6 +39,7 @@ class _WhatYourExperienceFocusOnScreenState
         Navigator.of(context).pushNamed(AppRoutes.WHAT_WE_ARE_LOOKING_FOR,
             arguments: _formKey.currentState!.value);
       },
+      page: 2,
       child: SingleChildScrollView(
         child: FormBuilder(
           key: _formKey,
@@ -83,19 +85,22 @@ class _WhatYourExperienceFocusOnScreenState
           ),
         ),
       ),
-      page: 2,
     );
   }
 
   void _handleSelection(List<Activity> activity) {}
 
   void _openModalSelection() {
-    showMaterialModalBottomSheet(
+    showCustomModalBottomSheet(
       context: context,
       builder: (context) => ActivitySelection(
         onActivity: _handleSelection,
         previousSelection: [],
       ),
+      containerWidget: (_, animation, child) => FloatingModal(
+        child: child,
+      ),
+      expand: false,
     );
   }
 }

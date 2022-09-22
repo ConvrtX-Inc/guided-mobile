@@ -2,15 +2,16 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/common/widgets/back_button.dart';
-import 'package:guided/constants/app_colors.dart';
+import 'package:guided/common/widgets/map_widgets.dart';
+import 'package:guided/common/widgets/modal.dart';
+import 'package:guided/common/widgets/package_widgets.dart';
+import 'package:guided/common/widgets/text_flieds.dart';
+import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_text_style.dart';
-import 'package:guided/constants/app_texts.dart';
-import 'package:guided/models/badge_model.dart';
-import 'package:guided/utils/services/rest_api_service.dart';
-
-import '../../../constants/app_routes.dart';
+import 'package:guided/screens/packages/new_pages_create_package/widgets/confirm_meeting_point_widget.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 /// Create Package Screen
 class WhereShouldTravellersMeetYouScreen extends StatefulWidget {
@@ -18,117 +19,64 @@ class WhereShouldTravellersMeetYouScreen extends StatefulWidget {
   const WhereShouldTravellersMeetYouScreen({Key? key}) : super(key: key);
 
   @override
-  _WhereShouldTravellersMeetYouScreenState createState() => _WhereShouldTravellersMeetYouScreenState();
+  _WhereShouldTravellersMeetYouScreenState createState() =>
+      _WhereShouldTravellersMeetYouScreenState();
 }
 
-class _WhereShouldTravellersMeetYouScreenState extends State<WhereShouldTravellersMeetYouScreen> {
-  bool showMainActivityChoices = false;
-  bool showSubActivityChoices = false;
-  dynamic mainActivity;
-
-  late Future<BadgeModelData> _loadingData;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _loadingData = APIServices().getBadgesModel();
-  }
+class _WhereShouldTravellersMeetYouScreenState
+    extends State<WhereShouldTravellersMeetYouScreen> {
+  final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
-
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  BackButtonWidget(),
-                  Spacer(),
-                  Text('9/21'),
-                  IconButton(
-                    icon: Icon(
-                      Icons.menu,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      //TODO
-                    },
-                  )
-                ],
-              ),
-              InkWell(
-                splashFactory: NoSplash.splashFactory,
-                highlightColor: Colors.transparent,
-                onTap: () {
-                  setState(() {
-                    showMainActivityChoices = false;
-                    showSubActivityChoices = false;
-                  });
-                },
-                child: SizedBox(
-                  width: width,
-                  height: height,
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          HeaderText.headerText('Where should Travellers meet you?'),
-                          SizedBox(
-                            height: 20.h,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+      body: Stack(
+        children: [
+          MapLayout(),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 30.w),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(30.0)),
+              color: Colors.white,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SafeArea(
+                  child: CustomPackageCreationAppBar(page: 9),
+                  bottom: false,
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(10),
-        child: SizedBox(
-          width: width,
-          height: 60.h,
-          child: ElevatedButton(
-            onPressed: () {
-              // Temp set to different screen
-              Navigator.pushNamed(context, AppRoutes.WHAT_S_INCLUDED_IN_YOUR_ADVENTURE);
-            },
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: AppColors.silver),
-                borderRadius: BorderRadius.circular(18.r),
-              ),
-              primary: AppColors.primaryGreen,
-              onPrimary: Colors.white,
-            ),
-            child: Text(
-              AppTextConstants.continueText,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                HeaderText.headerTextLight('Where should Travellers meet you?'),
+                SizedBox(height: 10.h),
+                AppTextField(
+                  name: 'address',
+                  hintText: 'Enter address',
+                ),
+                SizedBox(height: 10.h),
+                TextButton(
+                  onPressed: _openModalSelection,
+                  child: Text('Enter Address Manually'),
+                ),
+              ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>(
-        'showMainActivityChoices', showMainActivityChoices));
-    properties.add(DiagnosticsProperty<bool>(
-        'showSubActivityChoices', showSubActivityChoices));
-    properties.add(DiagnosticsProperty('mainActivity', mainActivity));
+  void _openModalSelection() async {
+    final result = await showCustomModalBottomSheet(
+      context: context,
+      builder: (context) => ConfirmMeetingPointModal(),
+      containerWidget: (_, animation, child) => FloatingModal(
+        child: child,
+      ),
+      expand: false,
+    );
+
+    if (result is Map) {
+      Navigator.pushNamed(context, AppRoutes.WHAT_S_INCLUDED_IN_YOUR_ADVENTURE, arguments: result);
+    }
   }
 }

@@ -6,34 +6,43 @@ import 'package:guided/models/card_model.dart';
 import 'package:guided/models/certificate.dart';
 import 'package:guided/screens/activities/activities.dart';
 import 'package:guided/screens/activities/activity_package_info.dart';
-import 'package:guided/screens/auths/splashes/splash.dart';
-import 'package:guided/screens/bank_accounts/add_bank_account.dart';
-import 'package:guided/screens/bank_accounts/manage_payment.dart';
-
-import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
-import 'package:guided/screens/dicovery/discovery.dart';
-import 'package:guided/screens/dicovery/discovery_map.dart';
-import 'package:guided/screens/faq/faq.dart';
-
 import 'package:guided/screens/auths/logins/screens/login_screen.dart';
 import 'package:guided/screens/auths/splashes/screens/splash_screen.dart';
 import 'package:guided/screens/auths/splashes/screens/user_on_boarding_screen.dart';
 import 'package:guided/screens/auths/splashes/screens/user_type_screen.dart';
 import 'package:guided/screens/auths/splashes/screens/welcome_screen.dart';
+import 'package:guided/screens/auths/splashes/splash.dart';
 import 'package:guided/screens/auths/verifications/screens/create_new_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_screen.dart';
 import 'package:guided/screens/auths/verifications/screens/reset_password_verify_phone.dart';
+import 'package:guided/screens/bank_accounts/add_bank_account.dart';
+import 'package:guided/screens/bank_accounts/manage_payment.dart';
 import 'package:guided/screens/cancellation_policy/cancellation_policy_screen.dart';
+import 'package:guided/screens/dicovery/discovery.dart';
+import 'package:guided/screens/dicovery/discovery_map.dart';
 import 'package:guided/screens/faq/faq.dart';
 import 'package:guided/screens/home/availability_booking_dates.dart';
-
+import 'package:guided/screens/home/calendar_availability_screen.dart';
+import 'package:guided/screens/home/set_booking_date_screen.dart';
 import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
+import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
+import 'package:guided/screens/main_navigation/content/advertisements/advertisements_view.dart';
 import 'package:guided/screens/main_navigation/content/event/event_add.dart';
 import 'package:guided/screens/main_navigation/content/event/event_edit.dart';
 import 'package:guided/screens/main_navigation/content/event/event_view.dart';
+import 'package:guided/screens/main_navigation/content/outfitters/outfitters_edit.dart';
+import 'package:guided/screens/main_navigation/content/outfitters/outfitters_list.dart';
+import 'package:guided/screens/main_navigation/content/outfitters/outfitters_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/package_view.dart';
 import 'package:guided/screens/main_navigation/content/packages/packages_edit.dart';
 import 'package:guided/screens/main_navigation/content/packages/tab/tab_destination_edit.dart';
+import 'package:guided/screens/main_navigation/main_navigation.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_availability.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_become_a_guide.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_contact_us.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_guided_payments_payout_terms.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_local_laws_taxes_form.dart';
+import 'package:guided/screens/main_navigation/settings/screens/settings_switch_user_type.dart';
 import 'package:guided/screens/main_navigation/traveller/booking_journey/details.dart';
 import 'package:guided/screens/main_navigation/traveller/check_availability/check_availability.dart';
 import 'package:guided/screens/main_navigation/traveller/popular_guides/popular_guides_list.dart';
@@ -45,28 +54,8 @@ import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outf
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/outfitter_tab/hub_outfitter_view.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/discovery_hub/tab_discovery_hub_view.dart';
-import 'package:guided/screens/main_navigation/traveller/tabs/tab_inbox.dart';
 import 'package:guided/screens/main_navigation/traveller/tabs/tab_map.dart';
-
 import 'package:guided/screens/main_navigation/traveller/traveller_tabbar.dart';
-
-import 'package:guided/screens/message/message_custom_offer_screen.dart';
-import 'package:guided/screens/message/message_individual_screen.dart';
-import 'package:guided/screens/home/calendar_availability_screen.dart';
-import 'package:guided/screens/home/set_booking_date_screen.dart';
-import 'package:guided/screens/main_navigation/content/advertisements/advertisements_add.dart';
-import 'package:guided/screens/main_navigation/content/advertisements/advertisements_edit.dart';
-import 'package:guided/screens/main_navigation/content/advertisements/advertisements_view.dart';
-import 'package:guided/screens/main_navigation/content/outfitters/outfitters_edit.dart';
-import 'package:guided/screens/main_navigation/content/outfitters/outfitters_list.dart';
-import 'package:guided/screens/main_navigation/content/outfitters/outfitters_view.dart';
-import 'package:guided/screens/main_navigation/main_navigation.dart';
-import 'package:guided/screens/main_navigation/settings/screens/settings_contact_us.dart';
-import 'package:guided/screens/main_navigation/settings/screens/settings_guided_payments_payout_terms.dart';
-import 'package:guided/screens/main_navigation/settings/screens/settings_local_laws_taxes_form.dart';
-import 'package:guided/screens/main_navigation/settings/screens/settings_switch_user_type.dart';
-import 'package:guided/screens/main_navigation/settings/screens/settings_availability.dart';
-import 'package:guided/screens/main_navigation/settings/screens/settings_become_a_guide.dart';
 import 'package:guided/screens/message/message_custom_offer_screen.dart';
 import 'package:guided/screens/message/message_filter_screen.dart';
 import 'package:guided/screens/message/message_inbox.dart';
@@ -106,15 +95,16 @@ import 'package:guided/screens/packages/new_pages_create_package/the_perks_scree
 import 'package:guided/screens/packages/new_pages_create_package/time_to_name_your_adventure_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/traveller_pricing_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/what_s_included_in_your_adventure_screen.dart';
-import 'package:guided/screens/packages/new_pages_create_package/what_your_experience_focus_on_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/what_we_are_looking_for_screen.dart';
+import 'package:guided/screens/packages/new_pages_create_package/what_your_experience_focus_on_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/where_should_travellers_meet_you_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/who_can_come_on_your_adventure_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/will_travellers_need_to_bring_anything_on_your_adventure_screen.dart';
 import 'package:guided/screens/packages/new_pages_create_package/your_experience_screen.dart';
 import 'package:guided/screens/passwords/change_password.dart';
 import 'package:guided/screens/payments/payment_add_card.dart';
-
+import 'package:guided/screens/payments/payment_edit_card.dart';
+import 'package:guided/screens/payments/payment_manage_card.dart';
 import 'package:guided/screens/profile/main_profile.dart';
 import 'package:guided/screens/profile/profile_details/about_me/screen/edit_profile.dart';
 import 'package:guided/screens/profile/profile_details/certificate/screen/add_certificate_modal.dart';
@@ -122,12 +112,8 @@ import 'package:guided/screens/profile/profile_details/certificate/screen/certif
 import 'package:guided/screens/profile/profile_details/certificate/screen/edit_certificate.dart';
 import 'package:guided/screens/profile/profile_details/certificate/screen/view_certificate.dart';
 import 'package:guided/screens/profile/reviews_profile.dart';
-
-import 'package:guided/screens/payments/payment_edit_card.dart';
-import 'package:guided/screens/payments/payment_manage_card.dart';
 import 'package:guided/screens/refunds/guide/refund.dart';
 import 'package:guided/screens/refunds/traveler/request_refund.dart';
-
 import 'package:guided/screens/requests/ui/request_filter_screen.dart';
 import 'package:guided/screens/requests/ui/request_view.dart';
 import 'package:guided/screens/requests/ui/requests_screen.dart';
@@ -149,7 +135,6 @@ import '../screens/main_navigation/settings/screens/calendar_management/settings
 import '../screens/main_navigation/settings/screens/settings_main.dart';
 import '../screens/main_navigation/traveller/booking_journey/check_activity_availability.dart';
 import '../screens/main_navigation/traveller/booking_journey/go_to_paymentmethod.dart';
-import '../screens/main_navigation/traveller/booking_journey/guide_screen.dart';
 import '../screens/main_navigation/traveller/booking_journey/request_to_book.dart';
 
 /// Route generator configuration
@@ -186,7 +171,7 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) =>
                 const MainNavigationScreen(navIndex: 0, contentIndex: 0));
-        //TODO: START OF: new figma create package
+      //TODO: START OF: new figma create package
       case AppRoutes.TELL_US_A_BIT_MORE:
         return MaterialPageRoute<dynamic>(
             builder: (_) => const TellUsABitMoreScreen());
@@ -219,7 +204,8 @@ class RouteGenerator {
             builder: (_) => const WhatIsIncludedInYourAdventureScreen());
       case AppRoutes.WILL_TRAVELLERS_NEED_TO_BRING_ANYTHING_ON_YOUR_ADVENTURE:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const WillTravellersNeedToBringAnythingOnYourAdventureScreen());
+            builder: (_) =>
+                const WillTravellersNeedToBringAnythingOnYourAdventureScreen());
       case AppRoutes.WHO_CAN_COME_ON_YOUR_ADVENTURE:
         return MaterialPageRoute<dynamic>(
             builder: (_) => const WhoCanComeOnYourAdventureScreen());
@@ -265,7 +251,7 @@ class RouteGenerator {
       case AppRoutes.SUMMARY_5:
         return MaterialPageRoute<dynamic>(
             builder: (_) => const Summary5Screen());
-    //TODO: END OF: new figma create package
+      //TODO: END OF: new figma create package
       case '/create_package':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const CreatePackageScreen());
@@ -335,7 +321,10 @@ class RouteGenerator {
             builder: (_) => const ContinueWithPhone(), settings: settings);
       case '/sign_up_form':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => SignupForm(screenArguments: (settings.arguments ?? {}) as Map<String, dynamic>), settings: settings);
+            builder: (_) => SignupForm(
+                screenArguments:
+                    (settings.arguments ?? {}) as Map<String, dynamic>),
+            settings: settings);
       case '/user_type':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const UserTypeScreen());
@@ -436,7 +425,7 @@ class RouteGenerator {
             settings: settings);
       case '/main_profile':
         return MaterialPageRoute<dynamic>(
-            builder: (_) =>   MainProfileScreen(userId: args! as String));
+            builder: (_) => MainProfileScreen(userId: args! as String));
       case '/reviews_profile':
         return MaterialPageRoute<dynamic>(
             builder: (_) => const ReviewsProfileScreen());
@@ -568,10 +557,11 @@ class RouteGenerator {
             builder: (_) => ChangePasswordScreen());
       case '/activity_package_info':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => ActivityPackageInfo(package:  args! as ActivityPackage));
+            builder: (_) =>
+                ActivityPackageInfo(package: args! as ActivityPackage));
       case '/view_certificate':
         return MaterialPageRoute<dynamic>(
-            builder: (_) => CertificateView(certificate:  args! as Certificate));
+            builder: (_) => CertificateView(certificate: args! as Certificate));
       default:
         return _errorRoute();
     }

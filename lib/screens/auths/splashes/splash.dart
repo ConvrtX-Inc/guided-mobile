@@ -11,6 +11,7 @@ import 'package:guided/models/user_model.dart';
 import 'package:guided/screens/auths/splashes/screens/splash_screen.dart';
 import 'package:guided/screens/main_navigation/main_navigation.dart';
 import 'package:guided/screens/main_navigation/traveller/traveller_tabbar.dart';
+import 'package:guided/utils/auth.utils.dart';
 import 'package:guided/utils/secure_storage.dart';
 
 /// Splash Screen for waiting
@@ -36,7 +37,7 @@ class _SplashState extends State<Splash> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnimatedSplashScreen(
-        splash: Splash1(),
+        splash: _Splash1(),
         duration: 1500,
         splashIconSize: 700,
         splashTransition: SplashTransition.fadeTransition,
@@ -46,10 +47,9 @@ class _SplashState extends State<Splash> {
   }
 
   Widget getNextScreen() => FutureBuilder(
-      future: SecureStorage.readValue(key: AppTextConstants.userToken),
-      builder: (BuildContext context, AsyncSnapshot<String> userToken) {
-        if (userToken.data != null) {
-          UserSingleton.instance.user.token = userToken.data;
+      future: setupUser(),
+      builder: (BuildContext context, AsyncSnapshot<bool> userToken) {
+        if (userToken.hasData) {
           return getScreenByType();
         } else {
           return const SplashScreen();
@@ -74,7 +74,7 @@ class _SplashState extends State<Splash> {
       });
 }
 
-class Splash1 extends StatelessWidget {
+class _Splash1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;

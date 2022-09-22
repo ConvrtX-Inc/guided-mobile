@@ -2,13 +2,10 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:guided/common/widgets/back_button.dart';
-import 'package:guided/constants/app_colors.dart';
+import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_text_style.dart';
-import 'package:guided/constants/app_texts.dart';
-import 'package:guided/models/badge_model.dart';
-import 'package:guided/utils/services/rest_api_service.dart';
 
 import '../../../constants/app_routes.dart';
 
@@ -18,117 +15,41 @@ class TellTravellersAndUsMoreAboutYouScreen extends StatefulWidget {
   const TellTravellersAndUsMoreAboutYouScreen({Key? key}) : super(key: key);
 
   @override
-  _TellTravellersAndUsMoreAboutYouScreenState createState() => _TellTravellersAndUsMoreAboutYouScreenState();
+  _TellTravellersAndUsMoreAboutYouScreenState createState() =>
+      _TellTravellersAndUsMoreAboutYouScreenState();
 }
 
-class _TellTravellersAndUsMoreAboutYouScreenState extends State<TellTravellersAndUsMoreAboutYouScreen> {
-  bool showMainActivityChoices = false;
-  bool showSubActivityChoices = false;
-  dynamic mainActivity;
-
-  late Future<BadgeModelData> _loadingData;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _loadingData = APIServices().getBadgesModel();
-  }
+class _TellTravellersAndUsMoreAboutYouScreenState
+    extends State<TellTravellersAndUsMoreAboutYouScreen> {
+  final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+    return PackageWidgetLayout(
+      buttonText: 'Next',
+      onButton: () {
+        if (_formKey.currentState?.validate() != true) {
+          return;
+        }
+        Navigator.of(context).pushNamed(AppRoutes.WHERE_SHOULD_TRAVELLERS_MEET_YOU,
+            arguments: _formKey.currentState!.value);
+      },
+      page: 8,
+      child: SingleChildScrollView(
+        child: FormBuilder(
+          key: _formKey,
           child: Column(
-            children: [
-              Row(
-                children: [
-                  BackButtonWidget(),
-                  Spacer(),
-                  Text('8/21'),
-                  IconButton(
-                    icon: Icon(
-                      Icons.menu,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      //TODO
-                    },
-                  )
-                ],
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              HeaderText.headerTextLight(
+                  'Tell Travellers  & us more about you'),
+              SizedBox(
+                height: 20.h,
               ),
-              InkWell(
-                splashFactory: NoSplash.splashFactory,
-                highlightColor: Colors.transparent,
-                onTap: () {
-                  setState(() {
-                    showMainActivityChoices = false;
-                    showSubActivityChoices = false;
-                  });
-                },
-                child: SizedBox(
-                  width: width,
-                  height: height,
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(30.w, 10.h, 30.w, 10.h),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          HeaderText.headerText('Tell Travellers  & us more about you'),
-                          SizedBox(
-                            height: 20.h,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              )
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(10),
-        child: SizedBox(
-          width: width,
-          height: 60.h,
-          child: ElevatedButton(
-            onPressed: () {
-              // Temp set to different screen
-              Navigator.pushNamed(context, AppRoutes.WHERE_SHOULD_TRAVELLERS_MEET_YOU);
-            },
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: AppColors.silver),
-                borderRadius: BorderRadius.circular(18.r),
-              ),
-              primary: AppColors.primaryGreen,
-              onPrimary: Colors.white,
-            ),
-            child: Text(
-              AppTextConstants.continueText,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ),
-        ),
-      ),
     );
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>(
-        'showMainActivityChoices', showMainActivityChoices));
-    properties.add(DiagnosticsProperty<bool>(
-        'showSubActivityChoices', showSubActivityChoices));
-    properties.add(DiagnosticsProperty('mainActivity', mainActivity));
   }
 }

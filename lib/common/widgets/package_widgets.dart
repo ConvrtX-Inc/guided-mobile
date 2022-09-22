@@ -13,8 +13,8 @@ class PackageWidgetLayout extends StatefulWidget {
     Key? key,
     required this.buttonText,
     required this.onButton,
-    required this.child,
     required this.page,
+    required this.child,
   }) : super(key: key);
 
   @override
@@ -32,23 +32,7 @@ class _PackageWidgetLayoutState extends State<PackageWidgetLayout> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  const BackButtonWidget(),
-                  const Spacer(),
-                  Text('${widget.page}/21'),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.menu,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      //TODO
-                      print('Open menu');
-                    },
-                  )
-                ],
-              ),
+              CustomPackageCreationAppBar(page: widget.page),
               widget.child,
               Spacer(),
               SizedBox(
@@ -75,6 +59,35 @@ class _PackageWidgetLayoutState extends State<PackageWidgetLayout> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class CustomPackageCreationAppBar extends StatelessWidget {
+  final int page;
+
+  const CustomPackageCreationAppBar({Key? key, required this.page})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const BackButtonWidget(),
+        const Spacer(),
+        if (page > 0) Text('${page}/21'),
+        if (page > 0)
+          IconButton(
+            icon: const Icon(
+              Icons.menu,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              //TODO
+              print('Open menu');
+            },
+          )
+      ],
     );
   }
 }

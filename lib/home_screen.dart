@@ -2,12 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:guided/constants/app_colors.dart';
-import 'package:guided/screens/home/calendar_availability_screen.dart';
-import 'package:guided/screens/packages/create_package/create_package_screen.dart';
 
 /// Home Screen
 class HomeScreen extends StatefulWidget {
-
   /// Constructor
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -72,10 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: const Text(
                   'First Slot Availability',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
             ),
