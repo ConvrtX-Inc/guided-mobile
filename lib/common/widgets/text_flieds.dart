@@ -7,13 +7,17 @@ class AppTextField extends StatelessWidget {
   final String name;
   final FormFieldValidator<String>? validator;
   final String? label;
+  final String? subLabel;
   final String? hintText;
+  final int? maxLines;
 
   AppTextField({
     this.label,
+    this.subLabel,
     required this.name,
     this.validator,
     this.hintText,
+    this.maxLines,
   });
 
   @override
@@ -29,6 +33,13 @@ class AppTextField extends StatelessWidget {
             ),
           ),
         if (label != null) SizedBox(height: 15.h),
+        if (subLabel != null)
+          Text(
+            subLabel!,
+            style: const TextStyle(
+            ),
+          ),
+        if (subLabel != null) SizedBox(height: 15.h),
         FormBuilderTextField(
           decoration: InputDecoration(
             hintText: hintText,
@@ -42,6 +53,7 @@ class AppTextField extends StatelessWidget {
           ),
           name: name,
           validator: validator,
+          maxLines: maxLines,
         ),
       ],
     );
