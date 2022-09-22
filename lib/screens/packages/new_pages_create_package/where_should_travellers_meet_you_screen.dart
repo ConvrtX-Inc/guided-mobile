@@ -53,12 +53,14 @@ class _WhereShouldTravellersMeetYouScreenState
                 AppTextField(
                   name: 'address',
                   hintText: 'Enter address',
+                    prefixIcon: Icon(Icons.pin_drop)
                 ),
                 SizedBox(height: 10.h),
                 TextButton(
                   onPressed: _openModalSelection,
                   child: Text('Enter Address Manually'),
                 ),
+                SizedBox(height: 20.h),
               ],
             ),
           ),

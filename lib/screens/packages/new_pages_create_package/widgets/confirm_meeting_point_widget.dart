@@ -105,7 +105,7 @@ class ConfirmMeetingPointModal extends StatelessWidget {
                       onPrimary: Colors.white,
                     ),
                     child: Text(
-                      'Save',
+                      'Sound good',
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 16),
                     ),

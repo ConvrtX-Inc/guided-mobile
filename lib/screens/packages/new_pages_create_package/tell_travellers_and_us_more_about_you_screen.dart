@@ -8,7 +8,9 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/common/widgets/text_flieds.dart';
 import 'package:guided/constants/app_text_style.dart';
+import 'package:guided/models/user_model.dart';
 import 'package:guided/utils/package.util.dart';
+import 'package:guided/utils/services/rest_api_service.dart';
 
 import '../../../constants/app_routes.dart';
 
@@ -25,9 +27,11 @@ class TellTravellersAndUsMoreAboutYouScreen extends StatefulWidget {
 class _TellTravellersAndUsMoreAboutYouScreenState
     extends State<TellTravellersAndUsMoreAboutYouScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
+  User? user;
 
   @override
   Widget build(BuildContext context) {
+    print('user ${user?.toJson()}');
     return PackageWidgetLayout(
       disableSpacer: true,
       buttonText: 'Continue',
@@ -95,9 +99,15 @@ class _TellTravellersAndUsMoreAboutYouScreenState
               SizedBox(
                 height: 20.h,
               ),
+              if (user != null)
               ListTile(
-                title: Text('SSegning Lambou'),
+                title: Text(user!.fullName ?? user!.firstName ?? user!.lastName ?? user!.email!),
                 subtitle: Text('Location'),
+                leading: user!.firebaseProfilePicUrl?.isNotEmpty == true ? CircleAvatar(
+                  backgroundImage: NetworkImage(user!.firebaseProfilePicUrl!),
+                ) : CircleAvatar(
+                  backgroundImage: AssetImage('assets/images/png/student_profile.png'),
+                ),
               ),
               SizedBox(
                 height: 20.h,
@@ -124,5 +134,21 @@ class _TellTravellersAndUsMoreAboutYouScreenState
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    findUser();
+  }
+
+  void findUser() async {
+    final String? userId = UserSingleton.instance.user.user!.id;
+    final User user = await APIServices().getUserDetails(userId!);
+
+    if (mounted)
+      setState(() {
+        this.user = user;
+      });
   }
 }

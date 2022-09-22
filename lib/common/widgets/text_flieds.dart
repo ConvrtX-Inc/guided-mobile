@@ -11,6 +11,7 @@ class AppTextField extends StatelessWidget {
   final String? hintText;
   final int? maxLines;
   final VoidCallback? onTap;
+  final Widget? prefixIcon;
 
   AppTextField({
     required this.name,
@@ -20,6 +21,7 @@ class AppTextField extends StatelessWidget {
     this.validator,
     this.hintText,
     this.maxLines,
+    this.prefixIcon,
   });
 
   @override
@@ -50,6 +52,7 @@ class AppTextField extends StatelessWidget {
             hintStyle: TextStyle(
               color: AppColors.grey,
             ),
+            prefixIcon: prefixIcon,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14.r),
               borderSide: BorderSide(color: Colors.grey, width: 0.2.w),
