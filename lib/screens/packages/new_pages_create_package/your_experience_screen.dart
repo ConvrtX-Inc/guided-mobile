@@ -14,7 +14,8 @@ import '../../../models/activities_model.dart';
 /// Create Package Screen
 class YourExperienceScreen extends StatefulWidget {
   /// Constructor
-  const YourExperienceScreen({Key? key, required this.arguments}) : super(key: key);
+  const YourExperienceScreen({Key? key, required this.arguments})
+      : super(key: key);
   final Map<dynamic, dynamic> arguments;
 
   @override
@@ -50,105 +51,111 @@ class _YourExperienceScreenState extends State<YourExperienceScreen> {
           _formKey.currentState!.save();
         },
         child: Expanded(
-    child: ListView(
-          children: <Widget>[
-            HeaderText.headerTextLight('Your Experience'),
-
-            SizedBox(
-              height: 20.h,
-            ),
-            Stack(
-              children: [
-                PackageImageWidget(assetUrl: activity.featureImage),
-                Positioned(
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage(activity.path),
-                    backgroundColor: Colors.transparent,
-                    radius: 40.0,
+          child: ListView(
+            children: <Widget>[
+              HeaderText.headerTextLight('Your Experience'),
+              SizedBox(
+                height: 20.h,
+              ),
+              Stack(
+                children: [
+                  PackageImageWidget(assetUrl: activity.featureImage),
+                  Positioned(
+                    child: CircleAvatar(
+                      backgroundImage: AssetImage(activity.path),
+                      backgroundColor: Colors.transparent,
+                      radius: 40.0,
+                    ),
+                    bottom: 0.0,
+                    left: 0.0,
                   ),
-                  bottom: 0.0,
-                  left: 0.0,
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 20.h,
-                ),
-                Text(
-                    "At GuidED, we look for people who are passionate about the outdoors, who want to share their unique stories, skills and perspectives, and who have the knowledge that only a local or expert would have. ",
-                    style: TextStyle(fontSize: 16)),
-                SizedBox(
-                  height: 20.h,
-                ),
-                Text(
-                    "This could consist of:",
-                    style: TextStyle(fontSize: 16)),
-                SizedBox(
-                  height: 20.h,
-                ),
-                Text(
-                    "⚫️ Being a knowledgeable, well-rounded outdoor enthusiast ",
-                    style: TextStyle(fontSize: 16)),
-                SizedBox(
-                  height: 20.h,
-                ),
-                Text(
-                    "⚫️ Having specialized training & skills",
-                    style: TextStyle(fontSize: 16)),
-                SizedBox(
-                  height: 20.h,
-                ),
-                Text(
-                    "⚫️ Having certificates or achievements in your area of expertise",
-                    style: TextStyle(fontSize: 16)),
-                SizedBox(
-                  height: 20.h,
-                ),
-                Text(
-                    "Travellers love to learn something new on every Adventure",
-                    style: TextStyle(fontSize: 16)),
-                SizedBox(
-                  height: 20.h,
-                ),
-                Divider(),
-                SizedBox(
-                  height: 20.h,
-                ),
-                Text(
-                  'Have you lead this Adventure before?',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                SizedBox(
-                  height: 20.h,
-                ),
-                ListTile(
-                  leading: Checkbox(value: false, onChanged: (bool? value) {  },),
-                  title: Text(
-                    'Yes, I have lead this Adventure professionally',
-                    style: TextStyle(fontSize: 16),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 20.h,
                   ),
-                ),
-                ListTile(
-                  leading: Checkbox(value: false, onChanged: (bool? value) {  },),
-                  title: Text(
-                    'Yes, I have lead this Adventure before, but for only friends and family. ',
-                    style: TextStyle(fontSize: 16),
+                  Text(
+                      "At GuidED, we look for people who are passionate about the outdoors, who want to share their unique stories, skills and perspectives, and who have the knowledge that only a local or expert would have. ",
+                      style: TextStyle(fontSize: 16)),
+                  SizedBox(
+                    height: 20.h,
                   ),
-                ),
-                ListTile(
-                  leading: Checkbox(value: false, onChanged: (bool? value) {  },),
-                  title: Text(
-                    'No, I have never lead an Adventure before, but am excited to get started!',
-                    style: TextStyle(fontSize: 16),
+                  Text("This could consist of:",
+                      style: TextStyle(fontSize: 16)),
+                  SizedBox(
+                    height: 20.h,
                   ),
-                )
-              ],
-            ),
-          ],
-        ),
+                  Text(
+                      "⚫️ Being a knowledgeable, well-rounded outdoor enthusiast ",
+                      style: TextStyle(fontSize: 16)),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  Text("⚫️ Having specialized training & skills",
+                      style: TextStyle(fontSize: 16)),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  Text(
+                      "⚫️ Having certificates or achievements in your area of expertise",
+                      style: TextStyle(fontSize: 16)),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  Text(
+                      "Travellers love to learn something new on every Adventure",
+                      style: TextStyle(fontSize: 16)),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  Divider(),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  Text(
+                    'Have you lead this Adventure before?',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  ListTile(
+                    leading: Checkbox(
+                      value: false,
+                      onChanged: (bool? value) {},
+                    ),
+                    title: Text(
+                      'Yes, I have lead this Adventure professionally',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Checkbox(
+                      value: false,
+                      onChanged: (bool? value) {},
+                    ),
+                    title: Text(
+                      'Yes, I have lead this Adventure before, but for only friends and family. ',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Checkbox(
+                      value: false,
+                      onChanged: (bool? value) {},
+                    ),
+                    title: Text(
+                      'No, I have never lead an Adventure before, but am excited to get started!',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       page: 4,
