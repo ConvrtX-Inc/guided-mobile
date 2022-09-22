@@ -35,6 +35,7 @@ class _ThePerksScreenState extends State<ThePerksScreen> {
   @override
   Widget build(BuildContext context) {
     return PackageWidgetLayout(
+      disableSpacer: true,
       buttonText: 'Next',
       onButton: () {
         if (_formKey.currentState?.validate() != true) {

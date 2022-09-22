@@ -36,13 +36,13 @@ class _WhatWeAreLookingForScreenState extends State<WhatWeAreLookingForScreen> {
   @override
   Widget build(BuildContext context) {
     return PackageWidgetLayout(
+      disableSpacer: true,
       buttonText: 'Next',
       onButton: () {
         navigateTo(context, AppRoutes.YOUR_EXPERIENCE, {});
       },
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: Expanded(
+        child: ListView(
           children: <Widget>[
             HeaderText.headerTextLight('What we’re looking for?'),
             SizedBox(
