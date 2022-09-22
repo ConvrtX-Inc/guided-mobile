@@ -189,7 +189,7 @@ class RouteGenerator {
             builder: (_) => ThePerksScreen(arguments: settings.arguments as Map), settings: settings);
       case AppRoutes.A_CONNECTION:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => const AConnectionScreen(), settings: settings);
+            builder: (_) => AConnectionScreen(arguments: settings.arguments as Map), settings: settings);
       case AppRoutes.DESCRIBE_YOUR_ADVENTURE:
         return MaterialPageRoute<dynamic>(
             builder: (_) => const DescribeYourAdventureScreen(), settings: settings);

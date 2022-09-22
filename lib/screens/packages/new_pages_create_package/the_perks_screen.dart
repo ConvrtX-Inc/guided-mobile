@@ -42,7 +42,7 @@ class _ThePerksScreenState extends State<ThePerksScreen> {
         }
 
         navigateTo(
-            context, AppRoutes.A_CONNECTION, _formKey.currentState!.value);
+            context, AppRoutes.A_CONNECTION, {});
       },
       child: FormBuilder(
         key: _formKey,
