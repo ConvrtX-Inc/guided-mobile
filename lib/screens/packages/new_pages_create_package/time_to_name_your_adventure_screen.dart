@@ -3,7 +3,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/dividers.dart';
+import 'package:guided/common/widgets/package_adventure_name_modal.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/common/widgets/text_flieds.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -25,44 +26,68 @@ class _TimeToNameYourAdventureScreenState
     extends State<TimeToNameYourAdventureScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
 
+  num get _descriptionLength {
+    final value = _formKey.currentState?.value['description'];
+    if (value is String) {
+      return value.length;
+    }
+    return 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     return PackageWidgetLayout(
       disableSpacer: true,
-      buttonText: 'Next',
+      buttonText: 'Continue',
       onButton: () {
         if (_formKey.currentState?.validate() != true) {
           return;
         }
 
-        navigateTo(context, AppRoutes.SOME_QUICK_PHOTO_ADVICE,
-            _formKey.currentState!.value);
+        navigateTo(
+          context,
+          AppRoutes.SOME_QUICK_PHOTO_ADVICE,
+          _formKey.currentState!.value,
+        );
       },
       page: 13,
-      child: FormBuilder(
-        key: _formKey,
-        onChanged: () {
-          _formKey.currentState!.save();
-        },
-        child: Expanded(
-          child: ListView(
+      child: SingleChildScrollView(
+        child: FormBuilder(
+          key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               HeaderText.headerTextLight("Time to name your Adventure!"),
-              SizedBox(
-                height: 20.h,
-              ),
-              Text(
-                "Make it descriptive, unique & awesome so Travellers will know what your offering and it will really stand out.",
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(
-                height: 20.h,
+              const AppSizedBox(h: 20),
+              const Text(
+                'Make it descriptive, unique & awesome so Travellers will know what your offering and it will really stand out.',
               ),
               AppTextField(
                 name: 'description',
-                hintText: 'Explore the Secret Caves of Tobermory',
-                label: 'Description',
                 maxLines: 6,
+                hintText: 'Explore the Secret Caves of Tobermory',
+                maxLength: 60,
+              ),
+              Row(
+                children: [
+                  Text('$_descriptionLength/60'),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      showFloatingModal(
+                        context: context,
+                        builder: (c) => PackageAdventureNameModal(),
+                      );
+                    },
+                    child: Text(
+                      'Show Examples',
+                      style: AppTextStyle.underlinedLinkStyle,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

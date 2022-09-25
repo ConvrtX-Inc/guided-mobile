@@ -25,65 +25,71 @@ class ConfirmMeetingPointModal extends StatelessWidget {
               children: [
                 const ModalTitle(title: 'Confirm Meeting Point Address'),
                 SizedBox(height: 20.h),
-                Expanded(child: ListView(children: [AppTextField(
-                  name: 'street',
-                  hintText: 'Street Address',
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(context),
-                  ]),
+                Expanded(
+                  child: ListView(
+                    children: [
+                      AppTextField(
+                        name: 'street',
+                        hintText: 'Street Address',
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(context),
+                        ]),
+                      ),
+                      SizedBox(height: 20.h),
+                      AppTextField(
+                        name: 'suite',
+                        hintText: 'Apt, Suite, Bldg(Optional)',
+                      ),
+                      SizedBox(height: 20.h),
+                      AppTextField(
+                        name: 'city',
+                        hintText: 'City',
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(context),
+                        ]),
+                      ),
+                      SizedBox(height: 20.h),
+                      AppTextField(
+                        name: 'state',
+                        hintText: 'State',
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(context),
+                        ]),
+                      ),
+                      SizedBox(height: 20.h),
+                      AppTextField(
+                        name: 'zip',
+                        hintText: 'Postal Code',
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(context),
+                        ]),
+                      ),
+                      SizedBox(height: 20.h),
+                      AppTextField(
+                        name: 'country',
+                        hintText: 'Country',
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(context),
+                        ]),
+                      ),
+                      SizedBox(height: 10.h),
+                      const Text(
+                        'We will only share this address with Traveller who are booked with you',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'GilRoy',
+                          fontSize: 14,
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      AppTextField(
+                        name: 'pointName',
+                        hintText: 'Meeting point name (optional)',
+                      ),
+                    ],
+                  ),
                 ),
-                  SizedBox(height: 20.h),
-                  AppTextField(
-                    name: 'suite',
-                    hintText: 'Apt, Suite, Bldg(Optional)',
-                  ),
-                  SizedBox(height: 20.h),
-                  AppTextField(
-                    name: 'city',
-                    hintText: 'City',
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                    ]),
-                  ),
-                  SizedBox(height: 20.h),
-                  AppTextField(
-                    name: 'state',
-                    hintText: 'State',
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                    ]),
-                  ),
-                  SizedBox(height: 20.h),
-                  AppTextField(
-                    name: 'zip',
-                    hintText: 'Postal Code',
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                    ]),
-                  ),
-                  SizedBox(height: 20.h),
-                  AppTextField(
-                    name: 'country',
-                    hintText: 'Country',
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(context),
-                    ]),
-                  ),
-                  SizedBox(height: 10.h),
-                  const Text(
-                    'We will only share this address with Traveller who are booked with you',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'GilRoy',
-                      fontSize: 14,
-                    ),
-                  ),
-                  SizedBox(height: 10.h),
-                  AppTextField(
-                    name: 'pointName',
-                    hintText: 'Meeting point name (optional)',
-                  ),],),),
                 SizedBox(height: 20.h),
                 SizedBox(
                   width: width,
@@ -118,5 +124,4 @@ class ConfirmMeetingPointModal extends StatelessWidget {
       ),
     );
   }
-
 }

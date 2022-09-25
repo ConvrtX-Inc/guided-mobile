@@ -1,35 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/buttons.dart';
+import 'package:guided/common/widgets/dividers.dart';
 import 'package:guided/common/widgets/modal.dart';
 
-class SimpleTextModal extends StatefulWidget {
+final _options = [
+  "I will be operating the vehicle",
+  "Someone on my team will do the driving",
+  "Motorcycle",
+  "We provide the vehicle and the Traveller will do the driving",
+  "Travellers will be transported by a third-party licensed operator (Taxi, Uber, Shuttle Service, etc)",
+];
+
+class VehicleOperatorModal extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _SimpleTextModalState();
+    return _VehicleOperatorModalState();
   }
+
+  const VehicleOperatorModal();
 }
 
-class _SimpleTextModalState extends State<SimpleTextModal> {
+class _VehicleOperatorModalState extends State<VehicleOperatorModal> {
+  final _formKey = GlobalKey<FormBuilderState>();
+
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.all(30.w),
-        child: Column(
-          children: [
-            const ModalTitle(title: "Select what's included"),
-            SizedBox(height: 10.h),
-            Center(
-              child: Text("Contain"),
-            ),
-            SizedBox(
-              width: width,
-              height: 60.h,
-            ),
-          ],
+        child: FormBuilder(
+          key: _formKey,
+          onChanged: () {
+            _formKey.currentState!.save();
+          },
+          child: ListView(
+            children: [
+              const ModalTitle(
+                  title: "Who will operate the vehicle when driving?"),
+              const AppSizedBox(h: 10),
+              FormBuilderCheckboxGroup(
+                name: 'options',
+                options: _options
+                    .map(
+                      (e) => FormBuilderFieldOption(
+                        value: e,
+                        child: Text(e),
+                      ),
+                    )
+                    .toList(),
+              ),
+              const AppSizedBox(h: 10),
+              SimpleMainButton(
+                text: 'Looks Good',
+                onPressed: () {
+                  if (_formKey.currentState?.validate() != true) {
+                    return;
+                  }
+                  Navigator.pop(
+                      context, _formKey.currentState?.value['options']);
+                },
+              ),
+              const AppSizedBox(h: 60),
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+class VehicleOperator {
+  final List<String> options;
+
+  VehicleOperator(this.options);
 }

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/dividers.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/utils/package.util.dart';
@@ -45,9 +46,10 @@ class _GroupSizeScreenState extends State<GroupSizeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               HeaderText.headerTextLight("Group Size"),
-              SizedBox(
-                height: 20.h,
+              AppSizedBox(
+                h: 20.h,
               ),
+              Text("How many Travellers can you accommodate on your Adventure?  Will it be more fun with a large group?  Or is your Adventure more suited for less people?"),
             ],
           ),
         ),

@@ -2,14 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/modal.dart';
 
-class SimpleTextModal extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _SimpleTextModalState();
-  }
-}
-
-class _SimpleTextModalState extends State<SimpleTextModal> {
+class PackageAdventureNameModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
@@ -18,7 +11,7 @@ class _SimpleTextModalState extends State<SimpleTextModal> {
         padding: EdgeInsets.all(30.w),
         child: Column(
           children: [
-            const ModalTitle(title: "Select what's included"),
+            const ModalTitle(title: 'Examples'),
             SizedBox(height: 10.h),
             Center(
               child: Text("Contain"),
@@ -32,4 +25,6 @@ class _SimpleTextModalState extends State<SimpleTextModal> {
       ),
     );
   }
+
+  const PackageAdventureNameModal();
 }

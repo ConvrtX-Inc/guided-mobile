@@ -173,7 +173,7 @@ class _WhoCanComeOnYourAdventureScreenState
                 height: 20.h,
               ),
               AppTextField(
-                name: '',
+                name: 'additional_requirements',
                 hintText: "Additional requirements (Optional)",
                 maxLines: 7,
               ),

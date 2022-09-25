@@ -10,6 +10,7 @@ class AppTextField extends StatelessWidget {
   final String? subLabel;
   final String? hintText;
   final int? maxLines;
+  final int? maxLength;
   final VoidCallback? onTap;
   final Widget? prefixIcon;
 
@@ -21,6 +22,7 @@ class AppTextField extends StatelessWidget {
     this.validator,
     this.hintText,
     this.maxLines,
+    this.maxLength,
     this.prefixIcon,
   });
 
@@ -61,6 +63,7 @@ class AppTextField extends StatelessWidget {
           name: name,
           validator: validator,
           maxLines: maxLines,
+          maxLength: maxLength,
         ),
       ],
     );

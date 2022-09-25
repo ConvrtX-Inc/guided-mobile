@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/back_button.dart';
+import 'package:guided/common/widgets/dividers.dart';
 import 'package:guided/constants/app_colors.dart';
 
 class PackageWidgetLayout extends StatefulWidget {
   final Widget child;
   final String buttonText;
-  final VoidCallback onButton;
+  final VoidCallback? onButton;
   final int page;
   final bool disableSpacer;
 
   const PackageWidgetLayout({
     Key? key,
     required this.buttonText,
-    required this.onButton,
     required this.page,
     required this.child,
+    this.onButton,
     this.disableSpacer = false,
   }) : super(key: key);
 
@@ -37,6 +38,7 @@ class _PackageWidgetLayoutState extends State<PackageWidgetLayout> {
               CustomPackageCreationAppBar(page: widget.page),
               widget.child,
               if (!widget.disableSpacer) Spacer(),
+              const AppSizedBox(h: 20),
               SizedBox(
                 width: width,
                 height: 60.h,

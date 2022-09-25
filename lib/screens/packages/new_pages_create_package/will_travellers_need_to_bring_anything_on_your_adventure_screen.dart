@@ -3,11 +3,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:guided/common/widgets/dividers.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/utils/package.util.dart';
 
+import '../../../common/data/option_data.dart';
 import '../../../common/widgets/text_flieds.dart';
 import '../../../constants/app_routes.dart';
 
@@ -56,37 +57,35 @@ class _WillTravellersNeedToBringAnythingOnYourAdventureScreenState
             children: <Widget>[
               HeaderText.headerTextLight(
                   "Will Travellers need to bring anything on your Adventure?"),
-              SizedBox(
-                height: 20.h,
+              const AppSizedBox(h: 20),
+              FormBuilderRadioGroup(
+                name: 'traveller_bring_anything',
+                options: [
+                  OptionData(true, 'Yes'),
+                  OptionData(false, 'No, Travellers just need to show up')
+                ]
+                    .map(
+                      (e) => FormBuilderFieldOption(
+                        value: e.value,
+                        child: Text(
+                          e.label,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
-              RadioListTile(
-                title: Text("Yes",
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                value: true,
-                groupValue: false,
-                onChanged: (bool? value) {},
-              ),
-              RadioListTile(
-                title: Text("No, Travellers just need to show up",
-                    style:
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                value: false,
-                groupValue: false,
-                onChanged: (bool? value) {},
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
+              const AppSizedBox(h: 20),
               AppTextField(
-                name: '',
+                name: 'description',
                 subLabel: 'Description',
-                hintText: "Type description here",
-                maxLines: 7,
+                hintText: 'Type description here',
+                maxLines: 6,
               ),
-              SizedBox(
-                height: 20.h,
-              ),
+              const AppSizedBox(h: 20),
             ],
           ),
         ),

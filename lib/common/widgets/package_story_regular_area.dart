@@ -51,8 +51,6 @@ class PackageStoryRegularAreaWidget extends StatelessWidget {
                     if (_formKey.currentState?.validate() != true) {
                       return;
                     }
-                    print(_formKey.currentState?.value);
-
                     Navigator.pop(
                         context, _formKey.currentState?.value['isRegulated']);
                   },
