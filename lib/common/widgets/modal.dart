@@ -12,6 +12,7 @@ class FloatingModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      minimum: EdgeInsets.symmetric(vertical: 24),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: Material(

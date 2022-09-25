@@ -32,6 +32,7 @@ class _PackageWidgetLayoutState extends State<PackageWidgetLayout> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        minimum: EdgeInsets.symmetric(vertical: 30.h),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 30.w),
           child: Column(
@@ -39,7 +40,7 @@ class _PackageWidgetLayoutState extends State<PackageWidgetLayout> {
             children: [
               CustomPackageCreationAppBar(page: widget.page),
               widget.child,
-              const AppSizedBox(h: 20),
+              const AppSizedBox(h: 30),
               Row(
                 children: [
                   if (widget.beforeButton != null)
