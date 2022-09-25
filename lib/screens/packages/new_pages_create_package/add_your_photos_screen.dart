@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/buttons.dart';
 import 'package:guided/common/widgets/dividers.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
@@ -35,6 +34,7 @@ class _AddYourPhotosScreenState extends State<AddYourPhotosScreen> {
   @override
   Widget build(BuildContext context) {
     return PackageWidgetLayout(
+      disableSpacer: true,
       buttonText: 'Continue',
       onButton: _loading
           ? null
@@ -47,14 +47,13 @@ class _AddYourPhotosScreenState extends State<AddYourPhotosScreen> {
                   _formKey.currentState!.value);
             },
       page: 14,
-      child: SingleChildScrollView(
+      child: Expanded(
         child: FormBuilder(
           key: _formKey,
           onChanged: () {
             _formKey.currentState!.save();
           },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: <Widget>[
               HeaderText.headerTextLight("Add your photos"),
               const AppSizedBox(h: 10),
@@ -66,20 +65,26 @@ class _AddYourPhotosScreenState extends State<AddYourPhotosScreen> {
                 style: AppTextStyle.defaultStyle,
               ),
               const AppSizedBox(h: 20),
-              SimpleButton(
-                text: 'Upload',
-                onPressed: _upload,
+              Row(
+                children: [
+                  SimpleButton(
+                    text: 'Upload',
+                    onPressed: _upload,
+                  ),
+                ],
               ),
               const AppSizedBox(h: 20),
 
               ///
-              Wrap(
+              GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 2,
                 children: _files
                     .map(
-                      (e) => ClipRRect(
-                        borderRadius: BorderRadius.circular(24.0),
-                        child: SizedBox.fromSize(
-                          size: Size.fromWidth(100.w),
+                      (e) => Padding(
+                        padding: EdgeInsets.all(4),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24.0),
                           child: Image.network(e, fit: BoxFit.cover),
                         ),
                       ),
@@ -115,13 +120,17 @@ class _AddYourPhotosScreenState extends State<AddYourPhotosScreen> {
 
     final images = await ImagePicker().pickMultiImage();
     if (images == null) {
+      print('no file chosen');
       setState(() {
         _loading = false;
       });
       return;
     }
 
-    if (images.length + _files.length >= 12) {
+    print('chosen ${images.length} files');
+
+    if (images.length + _files.length >= 100) {
+      print('cannot upload ${images.length + _files.length} files');
       setState(() {
         _loading = false;
       });
@@ -131,6 +140,8 @@ class _AddYourPhotosScreenState extends State<AddYourPhotosScreen> {
     final result =
         await Future.wait(images.map(FirebaseServices.uploadImageToFirebase2));
     final filtered = result.where((e) => e.isNotEmpty);
+
+    print('uploaded ${filtered.length} files');
 
     if (mounted) {
       final allFiles = _files..addAll(filtered);
