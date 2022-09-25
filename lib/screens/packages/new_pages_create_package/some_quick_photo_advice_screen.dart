@@ -29,6 +29,7 @@ class _SomeQuickPhotoAdviceScreenState
   @override
   Widget build(BuildContext context) {
     return PackageWidgetLayout(
+      disableSpacer: true,
       buttonText: 'Continue',
       onButton: () {
         if (_formKey.currentState?.validate() != true) {
@@ -90,45 +91,63 @@ class _QuickPhotoAdviceWidget extends StatelessWidget {
           title,
           style: AppTextStyle.blackStyle,
         ),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Column(
-              children: [
-                const AppSizedBox(h: 10),
-                Row(
-                  children: [
-                    CircleAvatar(
-                      child: Image.asset('assets/images/complete.png'),
-                      backgroundColor: Colors.transparent,
-                    ),
-                    Text(
-                      'Descriptive & Interesting',
-                      style: TextStyle(
-                        color: AppColors.chateauGreen,
-                        fontFamily: AppTextConstants.fontGilroy,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ],
-        ),
+        const AppSizedBox(h: 10),
         Row(
           children: [
-            Column(
-              children: [
-                const AppSizedBox(h: 10),
-                Text(
-                  'Repetitive & Posed',
-                  style: TextStyle(
-                    color: AppColors.chateauGreen,
-                    fontFamily: AppTextConstants.fontGilroy,
+            Expanded(
+              child: Column(
+                children: [
+                  PackageImageWidget(
+                    assetUrl: should,
+                    clip: false,
                   ),
-                ),
-              ],
-            )
+                  const AppSizedBox(h: 10),
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        child: Image.asset('assets/images/complete.png'),
+                        backgroundColor: Colors.transparent,
+                        radius: 16,
+                      ),
+                      Expanded(
+                        child: Text(
+                          'Descriptive & Interesting',
+                          style: TextStyle(
+                            color: AppColors.chateauGreen,
+                            fontFamily: AppTextConstants.fontGilroy,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  PackageImageWidget(
+                    assetUrl: shouldNot,
+                    clip: false,
+                  ),
+                  const AppSizedBox(h: 10),
+                  Row(
+                    children: [
+                      const SizedBox(height: 32),
+                      Expanded(
+                        child: Text(
+                          'Repetitive & Posed',
+                          style: TextStyle(
+                            color: AppColors.chateauGreen,
+                            fontFamily: AppTextConstants.fontGilroy,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ],
