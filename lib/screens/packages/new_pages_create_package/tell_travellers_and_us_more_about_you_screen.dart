@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:guided/common/widgets/dividers.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/common/widgets/text_flieds.dart';
 import 'package:guided/constants/app_text_style.dart';
@@ -53,9 +54,7 @@ class _TellTravellersAndUsMoreAboutYouScreenState
             children: <Widget>[
               HeaderText.headerTextLight(
                   'Tell Travellers  & us more about you'),
-              SizedBox(
-                height: 20.h,
-              ),
+              const AppSizedBox(h: 10),
               Text(
                 'How are you leading this Adventure',
                 style: TextStyle(fontWeight: FontWeight.bold),

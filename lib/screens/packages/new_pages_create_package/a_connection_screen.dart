@@ -59,7 +59,7 @@ class _AConnectionScreenState extends State<AConnectionScreen> {
             children: <Widget>[
               HeaderText.headerTextLight('A Connection'),
               SizedBox(
-                height: 20.h,
+                height: 10.h,
               ),
               Stack(
                 children: [

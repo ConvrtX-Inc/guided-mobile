@@ -57,7 +57,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             children: <Widget>[
               HeaderText.headerTextLight("Schedule"),
               SizedBox(
-                height: 20.h,
+                height: 10.h,
               ),
               Text(
                 "What day & time will you start your Adventure?",

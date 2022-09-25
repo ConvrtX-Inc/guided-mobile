@@ -9,7 +9,6 @@ class PackageWidgetLayout extends StatefulWidget {
   final String buttonText;
   final VoidCallback? onButton;
   final int page;
-  final bool disableSpacer;
 
   const PackageWidgetLayout({
     Key? key,
@@ -17,7 +16,7 @@ class PackageWidgetLayout extends StatefulWidget {
     required this.page,
     required this.child,
     this.onButton,
-    this.disableSpacer = false,
+    bool disableSpacer = false,
   }) : super(key: key);
 
   @override
@@ -37,7 +36,6 @@ class _PackageWidgetLayoutState extends State<PackageWidgetLayout> {
             children: [
               CustomPackageCreationAppBar(page: widget.page),
               widget.child,
-              if (!widget.disableSpacer) Spacer(),
               const AppSizedBox(h: 20),
               SizedBox(
                 width: width,

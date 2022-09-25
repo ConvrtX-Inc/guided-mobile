@@ -49,7 +49,7 @@ class _SomeQuickPhotoAdviceScreenState
           child: ListView(
             children: <Widget>[
               HeaderText.headerTextLight("Some quick photo advice"),
-              const AppSizedBox(h: 20),
+              const AppSizedBox(h: 10),
               _QuickPhotoAdviceWidget(
                 title:
                     'Provide a variety of details and angels, including photos of people in action.',

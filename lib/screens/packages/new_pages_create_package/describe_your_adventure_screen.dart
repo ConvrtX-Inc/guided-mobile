@@ -68,7 +68,7 @@ class _DescribeYourAdventureScreenState
             children: <Widget>[
               HeaderText.headerTextLight('Describe your Adventure'),
               SizedBox(
-                height: 20.h,
+                height: 10.h,
               ),
               Text(
                 'What will you and your Travellers do?',

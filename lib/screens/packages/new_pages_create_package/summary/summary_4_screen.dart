@@ -71,7 +71,7 @@ class _Summary4ScreenState extends State<Summary4Screen> {
                         children: <Widget>[
                           HeaderText.headerTextLight("Summary 4/5"),
                           SizedBox(
-                            height: 20.h,
+                            height: 10.h,
                           ),
                         ],
                       ),
