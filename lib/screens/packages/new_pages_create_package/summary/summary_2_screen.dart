@@ -21,7 +21,7 @@ class _Summary2ScreenState extends State<Summary2Screen> {
   @override
   Widget build(BuildContext context) {
     return PackageWidgetLayout(
-      buttonText: 'Next',
+      buttonText: 'Next 2/5',
       child: Expanded(
         child: ListView(
           children: <Widget>[

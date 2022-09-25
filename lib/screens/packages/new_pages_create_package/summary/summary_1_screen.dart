@@ -32,7 +32,7 @@ class _Summary1ScreenState extends State<Summary1Screen> {
           children: <Widget>[
             HeaderText.headerTextLight("Summary 1/5"),
             AppSizedBox(
-              h: 5.h,
+              h: 5,
             ),
             Text(
               "1. Tell us a bit more",
