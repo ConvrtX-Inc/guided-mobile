@@ -67,24 +67,28 @@ class _TravellerPricingScreenState extends State<TravellerPricingScreen> {
               Row(
                 children: [
                   Container(
-                    width: MediaQuery.of(context).size.width / 1.5,
+                    width: MediaQuery.of(context).size.width / 2.4,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text("Price that will be displayed on the app (15% will go to GuidED)"),
                         Text(
-                          '115',
+                          '115', //TODO: Should be calculated based on + 15% of given price
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         )
                       ],
                     ),
                   ),
                   Container(
-                    width: MediaQuery.of(context).size.width / 1.5,
+                    width: MediaQuery.of(context).size.width / 2.4,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Your estimated earnings (5% will go to Guided)"),
+                        Text("Your estimated earnings (5% will go to Guided)\n"),
                         Text(
-                          '95',
+                          '95', //TODO: Should be calculated based on - 5% of given price
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         )
                       ],
