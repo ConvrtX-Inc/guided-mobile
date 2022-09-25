@@ -37,14 +37,13 @@ class _TellUsABitMoreScreenState extends State<TellUsABitMoreScreen> {
         navigateTo(context, AppRoutes.WHAT_OUR_EXPERIENCE_FOCUS_ON,
             _formKey.currentState!.value);
       },
-      child: SingleChildScrollView(
+      child: Expanded(
         child: FormBuilder(
           key: _formKey,
           onChanged: () {
             _formKey.currentState!.save();
           },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: <Widget>[
               HeaderText.headerTextLight('Tell us a bit more'),
               const Text(

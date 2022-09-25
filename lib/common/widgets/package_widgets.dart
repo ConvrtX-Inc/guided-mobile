@@ -9,13 +9,17 @@ class PackageWidgetLayout extends StatefulWidget {
   final String buttonText;
   final VoidCallback? onButton;
   final int page;
+  final WidgetBuilder? beforeButton;
+  final WidgetBuilder? afterButton;
 
   const PackageWidgetLayout({
     Key? key,
     required this.buttonText,
-    required this.page,
     required this.child,
+    this.page = -1,
     this.onButton,
+    this.beforeButton,
+    this.afterButton,
     bool disableSpacer = false,
   }) : super(key: key);
 
@@ -26,7 +30,6 @@ class PackageWidgetLayout extends StatefulWidget {
 class _PackageWidgetLayoutState extends State<PackageWidgetLayout> {
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -37,26 +40,37 @@ class _PackageWidgetLayoutState extends State<PackageWidgetLayout> {
               CustomPackageCreationAppBar(page: widget.page),
               widget.child,
               const AppSizedBox(h: 20),
-              SizedBox(
-                width: width,
-                height: 60.h,
-                child: ElevatedButton(
-                  onPressed: widget.onButton,
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(color: AppColors.silver),
-                      borderRadius: BorderRadius.circular(18.r),
+              Row(
+                children: [
+                  if (widget.beforeButton != null)
+                    Expanded(child: widget.beforeButton!(context),),
+                  if (widget.beforeButton != null) const AppSizedBox(w: 10),
+                  Expanded(
+                    child: SizedBox(
+                      height: 60.h,
+                      child: ElevatedButton(
+                        onPressed: widget.onButton,
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(color: AppColors.silver),
+                            borderRadius: BorderRadius.circular(18.r),
+                          ),
+                          primary: AppColors.primaryGreen,
+                          onPrimary: Colors.white,
+                        ),
+                        child: Text(
+                          widget.buttonText,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ),
                     ),
-                    primary: AppColors.primaryGreen,
-                    onPrimary: Colors.white,
                   ),
-                  child: Text(
-                    widget.buttonText,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                ),
-              ),
+                  if (widget.afterButton != null) const AppSizedBox(w: 10),
+                  if (widget.afterButton != null)
+                    Expanded(child: widget.afterButton!(context),),
+                ],
+              )
             ],
           ),
         ),

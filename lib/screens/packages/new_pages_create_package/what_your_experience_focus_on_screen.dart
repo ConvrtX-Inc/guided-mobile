@@ -43,14 +43,13 @@ class _WhatYourExperienceFocusOnScreenState
             {'allActivities': allActivities});
       },
       page: 2,
-      child: SingleChildScrollView(
+      child: Expanded(
         child: FormBuilder(
           key: _formKey,
           onChanged: () {
             _formKey.currentState!.save();
           },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: <Widget>[
               HeaderText.headerTextLight('What will your adventure focus on?'),
               const Text(
