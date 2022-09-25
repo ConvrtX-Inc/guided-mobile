@@ -141,7 +141,6 @@ class _WhoCanComeOnYourAdventureScreenState
                   ),
                 ],
               ),
-              // TODO: Chips
               SizedBox(
                 height: 20.h,
               ),
@@ -170,7 +169,6 @@ class _WhoCanComeOnYourAdventureScreenState
                   ),
                 ],
               ),
-              // TODO: Chips
               SizedBox(
                 height: 20.h,
               ),

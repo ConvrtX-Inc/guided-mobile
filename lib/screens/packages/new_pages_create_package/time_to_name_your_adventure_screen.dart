@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
+import 'package:guided/common/widgets/text_flieds.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/utils/package.util.dart';
 
@@ -27,6 +28,7 @@ class _TimeToNameYourAdventureScreenState
   @override
   Widget build(BuildContext context) {
     return PackageWidgetLayout(
+      disableSpacer: true,
       buttonText: 'Next',
       onButton: () {
         if (_formKey.currentState?.validate() != true) {
@@ -37,18 +39,30 @@ class _TimeToNameYourAdventureScreenState
             _formKey.currentState!.value);
       },
       page: 13,
-      child: SingleChildScrollView(
-        child: FormBuilder(
-          key: _formKey,
-          onChanged: () {
-            _formKey.currentState!.save();
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: FormBuilder(
+        key: _formKey,
+        onChanged: () {
+          _formKey.currentState!.save();
+        },
+        child: Expanded(
+          child: ListView(
             children: <Widget>[
               HeaderText.headerTextLight("Time to name your Adventure!"),
               SizedBox(
                 height: 20.h,
+              ),
+              Text(
+                "Make it descriptive, unique & awesome so Travellers will know what your offering and it will really stand out.",
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              AppTextField(
+                name: 'description',
+                hintText: 'Explore the Secret Caves of Tobermory',
+                label: 'Description',
+                maxLines: 6,
               ),
             ],
           ),
