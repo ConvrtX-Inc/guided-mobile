@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:guided/common/widgets/back_button.dart';
+import 'package:guided/common/widgets/dividers.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_routes.dart';
@@ -25,14 +26,38 @@ class _Summary5ScreenState extends State<Summary5Screen> {
   @override
   Widget build(BuildContext context) {
     return PackageWidgetLayout(
-      buttonText: 'Next',
+      disableSpacer: true,
+      buttonText: 'Submit 5/5',
       child: Expanded(
         child: ListView(
           children: <Widget>[
             HeaderText.headerTextLight("Summary 5/5"),
             SizedBox(
-              height: 10.h,
+              height: 5,
             ),
+            Text(
+              "5. Booking Settings",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            AppSizedBox(h: 20.h),
+            Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(width: 1, color: Colors.grey)),
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      fieldText(
+                        "Cutoff time",
+                      ),
+                      valueText(
+                        "1 hour before start time",
+                      ),
+                    ],
+                  ),
+                ))
           ],
         ),
       ),
@@ -55,6 +80,22 @@ class _Summary5ScreenState extends State<Summary5Screen> {
           ),
         ),
       ),
+    );
+  }
+
+  Text fieldText(String text) {
+    return Text(text, style: TextStyle(fontSize: 14));
+  }
+
+  Text valueText(String text) {
+    return Text(text,
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
+  }
+
+  Widget dividerWithMargin() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: Divider(thickness: 1, color: Colors.grey),
     );
   }
 }
