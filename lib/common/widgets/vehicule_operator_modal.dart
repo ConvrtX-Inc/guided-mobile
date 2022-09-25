@@ -58,8 +58,9 @@ class _VehicleOperatorModalState extends State<VehicleOperatorModal> {
                   if (_formKey.currentState?.validate() != true) {
                     return;
                   }
+                  final result = VehicleOperator(_formKey.currentState?.value['options']);
                   Navigator.pop(
-                      context, _formKey.currentState?.value['options']);
+                      context, result);
                 },
               ),
               const AppSizedBox(h: 60),

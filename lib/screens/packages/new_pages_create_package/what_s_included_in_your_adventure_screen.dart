@@ -50,13 +50,15 @@ class _WhatIsIncludedInYourAdventureScreenState
           return;
         }
 
+        final params = {}..addAll(_formKey.currentState!.value);
+
         if (_hasMotorized()) {
           final result = await showFloatingModal(
             context: context,
             builder: (c) => const VehicleOperatorModal(),
           );
           if (result is VehicleOperator) {
-            _formKey.currentState!.fields['operator']!.didChange(result);
+            params.addAll({'operator': result});
           } else {
             return;
           }
@@ -65,7 +67,7 @@ class _WhatIsIncludedInYourAdventureScreenState
         navigateTo(
             context,
             AppRoutes.WILL_TRAVELLERS_NEED_TO_BRING_ANYTHING_ON_YOUR_ADVENTURE,
-            _formKey.currentState!.value);
+            params);
       },
       page: 10,
       child: Expanded(

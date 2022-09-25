@@ -51,14 +51,13 @@ class _TimeToNameYourAdventureScreenState
         );
       },
       page: 13,
-      child: SingleChildScrollView(
+      child: Expanded(
         child: FormBuilder(
           key: _formKey,
           onChanged: () {
             _formKey.currentState!.save();
           },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: <Widget>[
               HeaderText.headerTextLight("Time to name your Adventure!"),
               const AppSizedBox(h: 20),

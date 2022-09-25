@@ -39,14 +39,13 @@ class _SomeQuickPhotoAdviceScreenState
             _formKey.currentState!.value);
       },
       page: 14,
-      child: SingleChildScrollView(
+      child: Expanded(
         child: FormBuilder(
           key: _formKey,
           onChanged: () {
             _formKey.currentState!.save();
           },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: <Widget>[
               HeaderText.headerTextLight("Some quick photo advice"),
               const AppSizedBox(h: 20),
@@ -85,16 +84,17 @@ class _QuickPhotoAdviceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           title,
           style: AppTextStyle.blackStyle,
         ),
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Column(
               children: [
-                PackageImageWidget(assetUrl: should),
                 const AppSizedBox(h: 10),
                 Row(
                   children: [
@@ -119,7 +119,6 @@ class _QuickPhotoAdviceWidget extends StatelessWidget {
           children: [
             Column(
               children: [
-                PackageImageWidget(assetUrl: shouldNot),
                 const AppSizedBox(h: 10),
                 Text(
                   'Repetitive & Posed',
