@@ -123,6 +123,7 @@ class _QuickPhotoAdviceWidget extends StatelessWidget {
                 ],
               ),
             ),
+            const AppSizedBox(w: 20),
             Expanded(
               child: Column(
                 children: [

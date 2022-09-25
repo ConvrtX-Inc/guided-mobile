@@ -13,6 +13,7 @@ class AppTextField extends StatelessWidget {
   final int? maxLength;
   final VoidCallback? onTap;
   final Widget? prefixIcon;
+  final Widget? suffixIcon;
 
   AppTextField({
     required this.name,
@@ -24,6 +25,7 @@ class AppTextField extends StatelessWidget {
     this.maxLines,
     this.maxLength,
     this.prefixIcon,
+    this.suffixIcon,
   });
 
   @override
@@ -55,6 +57,7 @@ class AppTextField extends StatelessWidget {
               color: AppColors.grey,
             ),
             prefixIcon: prefixIcon,
+            suffixIcon: suffixIcon,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14.r),
               borderSide: BorderSide(color: Colors.grey, width: 0.2.w),
