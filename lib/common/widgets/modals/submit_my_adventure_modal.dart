@@ -79,6 +79,6 @@ class _SubmitMyAdventureModalState extends State<SubmitMyAdventureModal> {
   }
 
   void submitPackage() {
-    //TODO
+    Navigator.of(context).pushNamedAndRemoveUntil('/main_navigation', ModalRoute.withName('/main_navigation'));
   }
 }

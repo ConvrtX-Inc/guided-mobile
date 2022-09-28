@@ -8,6 +8,7 @@ import 'package:guided/common/widgets/map_widgets.dart';
 import 'package:guided/common/widgets/modal.dart';
 import 'package:guided/common/widgets/package_widgets.dart';
 import 'package:guided/common/widgets/text_flieds.dart';
+import 'package:guided/constants/app_colors.dart';
 import 'package:guided/constants/app_routes.dart';
 import 'package:guided/constants/app_text_style.dart';
 import 'package:guided/screens/packages/new_pages_create_package/widgets/confirm_meeting_point_widget.dart';
@@ -51,10 +52,9 @@ class _WhereShouldTravellersMeetYouScreenState
                 HeaderText.headerTextLight('Where should Travellers meet you?'),
                 SizedBox(height: 10.h),
                 AppTextField(
-                  name: 'address',
-                  hintText: 'Enter address',
-                    prefixIcon: Icon(Icons.pin_drop)
-                ),
+                    name: 'address',
+                    hintText: 'Enter address',
+                    prefixIcon: Icon(Icons.pin_drop)),
                 SizedBox(height: 10.h),
                 TextButton(
                   onPressed: _openModalSelection,
@@ -62,6 +62,34 @@ class _WhereShouldTravellersMeetYouScreenState
                 ),
                 SizedBox(height: 20.h),
               ],
+            ),
+          ),
+          Positioned(
+            bottom: 24,
+            left: 24,
+            right: 24,
+            child: SizedBox(
+              height: 60.h,
+              child: ElevatedButton(
+                onPressed: () {
+                  navigateTo(context, AppRoutes.WHAT_S_INCLUDED_IN_YOUR_ADVENTURE, {});
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: AppColors.silver),
+                    borderRadius: BorderRadius.circular(18.r),
+                  ),
+                  primary: AppColors.primaryGreen,
+                  onPrimary: Colors.white,
+                ),
+                child: Text(
+                  'Context',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
