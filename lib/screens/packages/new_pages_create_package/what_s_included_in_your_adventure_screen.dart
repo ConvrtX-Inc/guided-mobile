@@ -110,6 +110,10 @@ class _WhatIsIncludedInYourAdventureScreenState
               ),
               GestureDetector(
                 onTap: () async {
+                  if (true) {
+                    // TODO
+                    return;
+                  }
                   final result = await showFloatingModal(
                     context: context,
                     builder: (c) => SimpleTextModal(),

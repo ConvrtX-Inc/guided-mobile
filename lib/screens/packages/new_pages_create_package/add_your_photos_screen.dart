@@ -77,6 +77,7 @@ class _AddYourPhotosScreenState extends State<AddYourPhotosScreen> {
 
               ///
               GridView.count(
+                physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 crossAxisCount: 2,
                 children: _files
